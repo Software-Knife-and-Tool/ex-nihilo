@@ -1,0 +1,30 @@
+(append '(1 2 3) '(a b c) '(x y z) 'f),(1 2 3 a b c x y z . f)
+(append '(1 2 3) '(a b c) '(x y z)),(1 2 3 a b c x y z)
+(append ()),:nil
+(append),:nil
+(bool (macro-function 'and)),:t
+(bool (macro-function 'block)),:t
+(bool (macro-function 'cond)),:t
+(bool (macro-function 'defconstant)),:t
+(bool (macro-function 'defmacro)),:t
+(bool (macro-function 'defun)),:t
+(bool (macro-function 'if)),:t
+(bool (macro-function 'let)),:t
+(bool (macro-function 'let*)),:t
+(bool (macro-function 'letf)),:t
+(bool (macro-function 'letf*)),:t
+(bool (macro-function 'load-once)),:t
+(bool (macro-function 'or)),:t
+(bool (macro-function 'progn)),:t
+(bool (macro-function 'return)),:t
+(bool (macro-function 'return-from)),:t
+(bool (macro-function 'unless)),:t
+(bool (macro-function 'when)),:t
+(cond (:t)),:t
+(functionp append),:t
+(functionp bool),:t
+(functionp gensym),:t
+(functionp list),:t
+(functionp list*),:t
+(functionp listp),:t
+(functionp vector),:t
