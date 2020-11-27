@@ -38,8 +38,8 @@ echo "Test Summary:" $1
 echo `date`
 echo "versions:" "libmu" `$EXEC -v`
 echo "----------------------------"
-echo "number of tests:" `wc -l $TMP/test.$$.log`
-echo "         failed:" `grep failed $TMP/test.$$.log | wc -l`
+echo "total tests:" `wc -l $TMP/test.$$.log | sed -e "s/^ *//" -e "s/ .*$//"`
+echo "     failed:" `grep failed $TMP/test.$$.log | wc -l`
 sed -n -e "/--$/p" $TMP/test.$$.log
 grep failed $TMP/test.$$.log
 rm -f $TMP/test.$$.log $TMP/expect.$$ $TMP/result.$$ $TMP/version.$$

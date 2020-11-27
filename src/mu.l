@@ -1,7 +1,7 @@
 ;;;
 ;;; mu forms
 ;;;
-(:defcon .version "0.0.17")
+(:defcon .version "0.0.18")
 
 ;;; list
 (:defcon list (:lambda (:rest args) args))
@@ -93,6 +93,7 @@
   (list 'mu.return :nil value)))
 
 ;;; internal recursive functions
+;;; note: this requires mutable lexicals
 (:defcon mu.recur (:macro (fn lambda :rest body)
   (unless (symbolp fn) (error "is not a symbol (recur)" fn))
   (unless (listp lambda) (error "is not a list (recur)" lambda))
@@ -125,16 +126,16 @@
 (:defcon cond (:macro (:rest forms)
   (letf ((clauses (forms)
            (and forms
-                (let ((clause (car forms))
-                      (result (gensym)))
-                  (mu:if (consp clause)
-                         (mu:if (cdr clause)
-                                (list 'mu:if (car clause)
-                                      (list* 'progn (cdr clause))
-                                      (clauses (cdr forms)))
-                                (list 'let (list (list result (car clause)))
-                                      (list 'mu:if result result (clauses (cdr forms)))))
-                         (raise "illegal clause (cond)" forms))))))
+             (let ((clause (car forms))
+                   (result (gensym)))
+               (mu:if (consp clause)
+                 (mu:if (cdr clause)
+                        (list 'mu:if (car clause)
+                              (list* 'progn (cdr clause))
+                              (clauses (cdr forms)))
+                        (list 'let (list (list result (car clause)))
+                              (list 'mu:if result result (clauses (cdr forms)))))
+                 (raise "illegal clause (cond)" forms))))))
         (and forms (clauses forms)))))
 
 ;;; defun (now with added recursion)
@@ -177,17 +178,4 @@
              el))
          ()
          lists)))
-
-;;; load-once macro
-(:defcon load-once (:macro (tag path)
- (unless (find-symbol (find-ns "mu") "lib-base") (raise "load-once: lib-base is not bound" :nil))
- (unless (symbolp tag) (raise "load-once: tag is not a symbol" tag))
- (unless (and (vectorp path) (eq :char (mu.vec-type path))) (raise "load-once: path is not a string" path))
- (unless (boundp tag)
-   (let ((concat (:lambda (:rest strings)
-           (let ((ostream (open-output-string "")))
-             (mapc (:lambda (str) (print str ostream :nil)) strings)
-             (get-output-string-stream ostream)))))
-     (list 'progn (list :defcon tag :nil)
-           (list 'load (concat (symbol-value (find-symbol (find-ns "mu") "lib-base")) path)))))))
 
