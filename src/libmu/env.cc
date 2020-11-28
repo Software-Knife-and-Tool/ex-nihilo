@@ -11,6 +11,8 @@
  **  env.cc: library environment
  **
  **/
+#include <vector>
+
 #include "libmu/env.h"
 
 #include <cassert>
@@ -326,18 +328,21 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
 #endif
   
   env_.lexical = Type::NIL;
-  
-  for (auto el : kExtFuncTab) {
+
+  for (const auto& el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
+    printf("env: 0x%x\n", &el);
     (void)Symbol::Bind(sym,
-                       Function(this, el, sym).Evict(this, "env:ext-fn"));
+                       Function(this, &el, sym).Evict(this, "env:ext-fn"));
   }
 
+#if 0
   for (auto el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,
                        Function(this, el, sym).Evict(this, "env:int-fn"));
   }
+#endif
   
 
 }

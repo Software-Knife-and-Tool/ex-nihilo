@@ -34,11 +34,6 @@ class Address : public Type {
     return TagOf(ptr) == TAG::ADDRESS;
   }
 
-  static void GcMark(Env* env, TagPtr code) {
-
-    env->heap_->GcMark(code);
-  }
-
   static TagPtr ViewOf(Env* env, TagPtr addr) {
     assert(IsType(addr));
   

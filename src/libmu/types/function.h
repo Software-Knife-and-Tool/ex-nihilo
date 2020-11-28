@@ -60,7 +60,13 @@ class Function : public Type {
   static size_t nreqs(TagPtr fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->nreqs;
+    if (Null(core(fn))) {
+      return Untag<Layout>(fn)->nreqs;
+    } else {
+      auto cfp = Untag<Env::TagPtrFn>(fn);
+
+      return cfp->nreqs;
+    }
   }
   
   static TagPtr lambda(TagPtr fn) {
@@ -182,11 +188,11 @@ class Function : public Type {
   }
 
   /* core functions */
-  explicit Function(Env* env, Env::TagPtrFn& core, TagPtr name) : Type() {
+  explicit Function(Env* env, const Env::TagPtrFn* core, TagPtr name) : Type() {
     assert(Symbol::IsType(name));
     
     function_.body = NIL;
-    function_.core = Address(static_cast<void*>(&core)).tag_;
+    function_.core = Address(static_cast<const void*>(core)).tag_;
     function_.context = std::vector<Frame*>{};
     function_.env = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
