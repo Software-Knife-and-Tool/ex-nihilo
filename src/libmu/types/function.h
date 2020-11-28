@@ -26,8 +26,8 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
+#include "libmu/types/address.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/code.h"
 
 namespace libmu {
 
@@ -39,7 +39,7 @@ class Function : public Type {
  private:
   typedef struct {
     size_t nreqs;
-    TagPtr code;
+    TagPtr core;
     TagPtr env;
     std::vector<Frame*>
            context;
@@ -99,6 +99,12 @@ class Function : public Type {
 
     return Untag<Layout>(fn)->env = nenv;
   }
+
+  static TagPtr core(TagPtr fn) {
+    assert(IsType(fn));
+
+    return Untag<Layout>(fn)->core;
+  }
   
   static TagPtr body(TagPtr fn) {
     assert(IsType(fn));
@@ -118,12 +124,6 @@ class Function : public Type {
     return Untag<Layout>(fn)->frame_id;
   }
   
-  static TagPtr code(TagPtr fn) {
-    assert(IsType(fn));
-
-    return Untag<Layout>(fn)->code;
-  }
-  
   static TagPtr name(TagPtr fn) {
     assert(IsType(fn));
 
@@ -141,6 +141,10 @@ class Function : public Type {
   static TagPtr Funcall(Env*, TagPtr, const std::vector<TagPtr>&);
   static void GcMark(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
+
+  static void Call(Env*, Env::Frame* fp, TagPtr) {
+    fp->value = NIL;
+  }
 
   static void PrintFunction(Env* env, TagPtr fn, TagPtr str, bool) {
     assert(IsType(fn));
@@ -169,23 +173,26 @@ class Function : public Type {
     return tag_;
   }
 
-  explicit Function(Env* env, Env::FrameFn exec, size_t nreqs, TagPtr name) : Type() {
+  /* core functions */
+  explicit Function(Env* env, Env::TagPtrFn& core, TagPtr name) : Type() {
     assert(Symbol::IsType(name));
     
     function_.body = NIL;
-    function_.code = Code(exec).Evict(env, "function:constructor.0-code");
+    function_.core = Address(static_cast<void*>(&core)).tag_;
     function_.context = std::vector<Frame*>{};
     function_.env = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
     function_.lambda = NIL;
-    function_.nreqs = nreqs;
+    function_.nreqs = 0;
     function_.name = name;
     
     env->frame_id_++;
 
     tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
   }
-
+  
+  /* think: merge with closures */
+  /* lambdas */
   explicit Function(Env* env, TagPtr lambda_list, TagPtr body, TagPtr name) : Type() {
     assert(Cons::IsList(lambda_list));
     assert(Symbol::IsType(name));
@@ -206,7 +213,7 @@ class Function : public Type {
     };
     
     function_.body = body;
-    function_.code = Code(exec).Evict(env, "function:constructor.1-code");
+    function_.core = NIL;
     function_.context = std::vector<Frame*>{};
     function_.env = Cons::List(env, env->lexenv_);
     function_.frame_id = Fixnum(env->frame_id_).tag_;
@@ -219,6 +226,7 @@ class Function : public Type {
     tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
   }
 
+  /* closures */
   explicit Function(Env* env,
                     std::vector<Frame*> context,
                     TagPtr lambda_list,
@@ -241,7 +249,8 @@ class Function : public Type {
     };
 
     function_.body = body;
-    function_.code = Code(exec).Evict(env, "function:constructor.2-code");
+    function_.core = NIL;
+    function_.name = NIL;
     function_.context = context;
     function_.env = Cons::List(env, env->lexenv_);
     function_.frame_id = Fixnum(env->frame_id_).tag_;

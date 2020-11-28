@@ -68,16 +68,22 @@ class Env {
   } Frame;
 
  public:
-  /** * mu kernel function implementation **/
+  /** * mu core function implementation **/
   typedef std::function<void(Frame*)> FrameFn;
 
-  /** * builtin function dispatch **/
+  /** * core function dispatch **/
   typedef struct {
     const char* name;
     FrameFn fn;
-    size_t lambda;
+    size_t nreqs;
   } TagPtrFn;
 
+  /** * map address to core function **/
+  TagPtrFn* CoreFunction(TagPtr caddr) {
+
+    return Type::Untag<TagPtrFn>(caddr);
+  }
+  
  private:
   std::unordered_map<TagPtr, std::stack<Frame*>> framecache_;
   std::map<std::string, TagPtr> namespaces_;

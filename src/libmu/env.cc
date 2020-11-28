@@ -26,7 +26,7 @@
 
 #include "libmu/mu/mu.h"
 
-#include "libmu/types/code.h"
+#include "libmu/types/address.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
@@ -42,7 +42,7 @@
 namespace libmu {
 namespace {
 
-static const std::vector<Env::TagPtrFn> kExtFuncTab{
+  static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"accept-socket-stream", mu::AcceptSocketStream, 1},
     {"acos", mu::Acos, 1},
     {"asin", mu::Asin, 1},
@@ -223,8 +223,8 @@ int Env::Gc(Env* env) {
 void Env::GcMark(Env* env, TagPtr ptr) {
   std::function<void(Env*, TagPtr)> noGc = [](Env*, TagPtr) {};
   static const std::map<SYS_CLASS, std::function<void(Env*, TagPtr)>>
-      kGcTypeMap{{SYS_CLASS::CHAR, noGc},
-                 {SYS_CLASS::CODE, Code::GcMark},
+      kGcTypeMap{{SYS_CLASS::ADDRESS, noGc},
+                 {SYS_CLASS::CHAR, noGc},
                  {SYS_CLASS::CONS, Cons::GcMark},
                  {SYS_CLASS::EXCEPTION, Exception::GcMark},
                  {SYS_CLASS::FIXNUM, noGc},
@@ -246,8 +246,8 @@ void Env::GcMark(Env* env, TagPtr ptr) {
 /** * make a view vector of pointer's contents **/
 TagPtr Env::ViewOf(Env* env, TagPtr object) {
   static const std::map<SYS_CLASS, std::function<TagPtr(Env*, TagPtr)>>
-      kViewMap{{SYS_CLASS::CHAR, Char::ViewOf},
-               {SYS_CLASS::CODE, Code::ViewOf},
+      kViewMap{{SYS_CLASS::ADDRESS, Address::ViewOf},
+               {SYS_CLASS::CHAR, Char::ViewOf},
                {SYS_CLASS::CONS, Cons::ViewOf},
                {SYS_CLASS::EXCEPTION, Exception::ViewOf},
                {SYS_CLASS::FIXNUM, Fixnum::ViewOf},
@@ -310,6 +310,7 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
       Namespace::Intern(this, mu_, String(this, "error-output").tag_),
       Stream(stderr).Evict(this, "env:stderr"));
 
+#if 0
   map_eval_ =
     Function(this,
              [](Env::Frame* fp) {
@@ -322,21 +323,23 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
              },
              1,
              Type::NIL).Evict(this, ".map_eval_");
-
-  /* mu functions */
+#endif
+  
+  env_.lexical = Type::NIL;
+  
   for (auto el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,
-                       Function(this, el.fn, el.lambda, sym).Evict(this, "env:ext-fn"));
+                       Function(this, el, sym).Evict(this, "env:ext-fn"));
   }
 
   for (auto el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,
-                       Function(this, el.fn, el.lambda, sym).Evict(this, "env:int-fn"));
+                       Function(this, el, sym).Evict(this, "env:int-fn"));
   }
   
-  env_.lexical = Type::NIL;
+
 }
 
 } /* namespace libmu */

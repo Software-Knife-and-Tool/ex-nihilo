@@ -23,17 +23,17 @@ help:
 	@echo make release - build for release
 	@echo make format - format source
 
-release:
+release: clean
 	@for i in $(MAKES); do		\
             make -f $$i $(RMAKEFLAGS);	\
 	done
 
-debug:
+debug: clean
 	@for i in $(MAKES); do		\
 	    make -f $$i $(DMAKEFLAGS);	\
 	done
 
-profile:
+profile: clean
 	@for i in $(MAKES); do		\
             make -f $$i $(PMAKEFLAGS);	\
 	done
