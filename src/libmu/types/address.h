@@ -50,6 +50,7 @@ class Address : public Type {
   TagPtr Evict(Env*, const char*) { return tag_; }
 
   explicit Address(void* caddr) : Type() {
+
     tag_ = Type::Entag(caddr, TAG::ADDRESS);
   }
 

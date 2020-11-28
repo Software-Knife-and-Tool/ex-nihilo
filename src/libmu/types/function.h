@@ -63,7 +63,7 @@ class Function : public Type {
     if (Null(core(fn))) {
       return Untag<Layout>(fn)->nreqs;
     } else {
-      auto cfp = Untag<Env::TagPtrFn>(fn);
+      auto cfp = Untag<Env::TagPtrFn>(core(fn));
 
       return cfp->nreqs;
     }
@@ -154,7 +154,7 @@ class Function : public Type {
     if (Null(core(fn))) {
       fp->value = NIL;
     } else {
-      auto cfp = Untag<Env::TagPtrFn>(fn);
+      auto cfp = Untag<Env::TagPtrFn>(core(fn));
 
       cfp->fn(fp);
     }
@@ -192,7 +192,7 @@ class Function : public Type {
     assert(Symbol::IsType(name));
     
     function_.body = NIL;
-    function_.core = Address(static_cast<const void*>(core)).tag_;
+    function_.core = Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
     function_.context = std::vector<Frame*>{};
     function_.env = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;

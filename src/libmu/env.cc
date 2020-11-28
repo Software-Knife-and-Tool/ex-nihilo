@@ -312,39 +312,19 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
       Namespace::Intern(this, mu_, String(this, "error-output").tag_),
       Stream(stderr).Evict(this, "env:stderr"));
 
-#if 0
-  map_eval_ =
-    Function(this,
-             [](Env::Frame* fp) {
-               fp->value =
-                 Cons::MapCar(fp->env,
-                              [](Env* env, TagPtr form) {
-                                return Eval(env, form);
-                              },
-                              fp->argv[0]);
-             },
-             1,
-             Type::NIL).Evict(this, ".map_eval_");
-#endif
-  
   env_.lexical = Type::NIL;
 
-  for (const auto& el : kExtFuncTab) {
+  for (auto& el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
-    printf("env: 0x%x\n", &el);
     (void)Symbol::Bind(sym,
                        Function(this, &el, sym).Evict(this, "env:ext-fn"));
   }
 
-#if 0
-  for (auto el : kIntFuncTab) {
+  for (auto& el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,
-                       Function(this, el, sym).Evict(this, "env:int-fn"));
+                       Function(this, &el, sym).Evict(this, "env:int-fn"));
   }
-#endif
-  
-
 }
 
 } /* namespace libmu */
