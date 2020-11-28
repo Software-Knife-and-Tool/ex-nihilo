@@ -142,8 +142,16 @@ class Function : public Type {
   static void GcMark(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 
-  static void Call(Env*, Env::Frame* fp, TagPtr) {
-    fp->value = NIL;
+  static void Call(Env*, Env::Frame* fp, TagPtr fn) {
+    assert(IsType(fn));
+
+    if (Null(core(fn))) {
+      fp->value = NIL;
+    } else {
+      auto cfp = Untag<Env::TagPtrFn>(fn);
+
+      cfp->fn(fp);
+    }
   }
 
   static void PrintFunction(Env* env, TagPtr fn, TagPtr str, bool) {
