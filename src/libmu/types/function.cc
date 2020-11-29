@@ -37,7 +37,7 @@ void Function::GcMark(Env* ev, TagPtr fn) {
 
   if (!ev->heap_->IsGcMarked(fn)) {
     ev->heap_->GcMark(fn);
-    ev->GcMark(ev, code(fn));
+    ev->GcMark(ev, core(fn));
     ev->GcMark(ev, env(fn));
     ev->GcMark(ev, lambda(fn));
     ev->GcMark(ev, name(fn));
@@ -80,14 +80,12 @@ Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
     Symbol::Keyword("func"),
     fn,
     Fixnum(ToUint64(fn) >> 3).tag_,
-    body(fn),
-    code(fn),
-    // function_.context = std::vector<Frame*>{};
-    // env(fn),
-    frame_id(fn),
-    lambda(fn),
+    name(fn),
     Fixnum(nreqs(fn)).tag_,
-    name(fn)
+    core(fn),
+    lambda(fn),
+    body(fn),
+    frame_id(fn)
   };
   
   return Vector(env, view).tag_;
@@ -133,8 +131,8 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
     if (frame->nargs) {
       env->Cache(frame);
     }
-  
-  Code::Call(code(fn), &fp);
+
+  CallFrame(&fp);
 
   for (auto frame : Function::context(fn))
     if (frame->nargs) {

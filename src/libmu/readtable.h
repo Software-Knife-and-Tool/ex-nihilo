@@ -8,7 +8,7 @@
 
 /********
  **
- **  readtable.h: kernel readtable
+ **  readtable.h: library readtable
  **
  **/
 

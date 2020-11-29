@@ -22,27 +22,25 @@
 #include "libmu/print.h"
 #include "libmu/read.h"
 
-#include "libmu/types/macro.h"
-#include "libmu/types/code.h"
+#include "libmu/types/address.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
+#include "libmu/types/macro.h"
 #include "libmu/types/stream.h"
 #include "libmu/types/struct.h"
 #include "libmu/types/symbol.h"
 #include "libmu/types/vector.h"
 
 namespace libmu {
-
 namespace {
 
 static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
-                                                    
+    {Symbol::Keyword("address"), SYS_CLASS::ADDRESS},     
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
-    {Symbol::Keyword("code"), SYS_CLASS::CODE},
     {Symbol::Keyword("cons"), SYS_CLASS::CONS},
     {Symbol::Keyword("except"), SYS_CLASS::EXCEPTION},
     {Symbol::Keyword("fixnum"), SYS_CLASS::FIXNUM},
@@ -59,11 +57,10 @@ static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("vector"), SYS_CLASS::VECTOR}};
 
 static const std::map<SYS_CLASS, TagPtr> kTypeMap{
-    
+    {SYS_CLASS::ADDRESS, Symbol::Keyword("address")},
     {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
     {SYS_CLASS::CHAR, Symbol::Keyword("char")},
     {SYS_CLASS::CONS, Symbol::Keyword("cons")},
-    {SYS_CLASS::CODE, Symbol::Keyword("code")},
     {SYS_CLASS::EXCEPTION, Symbol::Keyword("except")},
     {SYS_CLASS::FIXNUM, Symbol::Keyword("fixnum")},
     {SYS_CLASS::FLOAT, Symbol::Keyword("float")},
@@ -106,7 +103,7 @@ Type::SYS_CLASS Type::MapSymbolClass(TagPtr type_sym) {
 Type::SYS_CLASS Type::TypeOf(TagPtr ptr) {
   static const std::vector<std::pair<bool (*)(TagPtr), SYS_CLASS>> kPredMap{
       {Type::Null, SYS_CLASS::NULLT}, /* let this catch :nil before symbol sees it */
-      {Code::IsType, SYS_CLASS::CODE},
+      {Address::IsType, SYS_CLASS::ADDRESS},
       {Char::IsType, SYS_CLASS::CHAR},
       {Cons::IsType, SYS_CLASS::CONS},
       {Exception::IsType, SYS_CLASS::EXCEPTION},

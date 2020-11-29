@@ -11,7 +11,6 @@
 (bool (macro-function 'let*))
 (bool (macro-function 'letf))
 (bool (macro-function 'letf*))
-(bool (macro-function 'load-once))
 (bool (macro-function 'mu:block))
 (bool (macro-function 'mu:if))
 (bool (macro-function 'mu:return))

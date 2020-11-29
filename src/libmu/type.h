@@ -36,7 +36,7 @@ class Type {
   static constexpr auto to_underlying(E e) noexcept {
     return static_cast<std::underlying_type_t<E>>(e);
   }
-
+  
  public: /* TagPtr layout */
   /** * 3 bit staged low tag **/
   enum class TAG : uint8_t {
@@ -55,18 +55,18 @@ class Type {
     return static_cast<TAG>(to_underlying(ptr) & 0x7);
   }
 
-  /** * make tag **/
+  /** * make tagged pointer **/
   static constexpr TagPtr Entag(TagPtr ptr, TAG tag) {
     return static_cast<TagPtr>(to_underlying(ptr) | to_underlying(tag));
   }
 
-  /** * tag heap addresses **/
+  /** * address to tagged pointer **/
   static TagPtr Entag(void* caddr, TAG tag) {
     return static_cast<TagPtr>(reinterpret_cast<uint64_t>(caddr) |
                                to_underlying(tag));
   }
 
-  /** * TagPtr to type pointer **/
+  /** * tagged pointer to type pointer **/
   template <typename T>
   static T* Untag(TagPtr ptr) {
     return reinterpret_cast<T*>(to_underlying(ptr) & ~0x7);
@@ -131,6 +131,7 @@ class Type {
 
   /** * system classes **/
   enum class SYS_CLASS : uint8_t {
+    ADDRESS,
     BYTE,
     CHAR,
     CODE,
