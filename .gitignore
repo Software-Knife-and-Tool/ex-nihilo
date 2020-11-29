@@ -5,13 +5,9 @@
 *.html
 *.so
 *.out
-mu-exec
-mu-load
-mu-repl
+build/mu-exec
+build/mu-repl
 TAGS*
-perf/*.perf
-release/usr
-googletest
 *.log
 *.xref
 .DS_Store
