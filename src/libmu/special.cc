@@ -36,7 +36,7 @@ namespace {
 
 /** * map keyword to handler **/
 static const std::map<TagPtr, std::function<TagPtr(Env*, TagPtr)>> kSpecMap{
-    {Symbol::Keyword("defcon"), Compiler::DefConstant},
+    {Symbol::Keyword("defsym"), Compiler::DefConstant},
     {Symbol::Keyword("lambda"), Compiler::Lambda},
     {Symbol::Keyword("letq"), Compiler::Letq},
     {Symbol::Keyword("macro"), Compiler::DefMacro},
