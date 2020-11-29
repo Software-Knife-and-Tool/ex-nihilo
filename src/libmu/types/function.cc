@@ -132,7 +132,7 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
       env->Cache(frame);
     }
 
-  Call(env, &fp, fn);
+  CallFrame(&fp);
 
   for (auto frame : Function::context(fn))
     if (frame->nargs) {

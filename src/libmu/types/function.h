@@ -60,13 +60,9 @@ class Function : public Type {
   static size_t nreqs(TagPtr fn) {
     assert(IsType(fn));
 
-    if (Null(core(fn))) {
-      return Untag<Layout>(fn)->nreqs;
-    } else {
-      auto cfp = Untag<Env::TagPtrFn>(core(fn));
-
-      return cfp->nreqs;
-    }
+    return
+      Null(core(fn)) ? Untag<Layout>(fn)->nreqs
+                     : Untag<Env::TagPtrFn>(core(fn))->nreqs;
   }
   
   static TagPtr lambda(TagPtr fn) {
@@ -148,15 +144,21 @@ class Function : public Type {
   static void GcMark(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 
-  static void Call(Env*, Env::Frame* fp, TagPtr fn) {
-    assert(IsType(fn));
-
-    if (Null(core(fn))) {
+  static void CallFrame(Env::Frame* fp) {
+    static Env::FrameFn exec = [](Env::Frame* fp) {
       fp->value = NIL;
-    } else {
-      auto cfp = Untag<Env::TagPtrFn>(core(fn));
+      if (!Null(Function::body(fp->func)))
+        Cons::MapC(fp->env,
+                   [fp](Env* env, TagPtr form) {
+                     fp->value = Eval(env, form);
+                   },
+                   Function::body(fp->func));
+    };
 
-      cfp->fn(fp);
+    if (Null(core(fp->func))) {
+      exec(fp);
+    } else {
+      Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
     }
   }
 
@@ -216,6 +218,7 @@ class Function : public Type {
     size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
                    (Null(Compiler::restsym(lambda)) ? 0 : 1);
 
+#if 0
     static Env::FrameFn exec = [](Env::Frame* fp) {
       fp->value = NIL;
       if (!Null(Function::body(fp->func)))
@@ -225,6 +228,7 @@ class Function : public Type {
                    },
                    Function::body(fp->func));
     };
+#endif
     
     function_.body = body;
     function_.core = NIL;
