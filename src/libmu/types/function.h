@@ -208,9 +208,8 @@ class Function : public Type {
     : Type() {
     assert(Cons::IsList(form));
     assert(Symbol::IsType(name));
-    
-    auto lambda = Compiler::ParseLambda(env, Cons::car(form));
 
+    auto lambda = Compiler::ParseLambda(env, Cons::car(form));
     size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
                    (Null(Compiler::restsym(lambda)) ? 0 : 1);
 
@@ -228,12 +227,12 @@ class Function : public Type {
   }
 
   /* closures */
+  /* think: needs name? */
   explicit Function(Env* env, std::vector<Frame*> context, TagPtr form)
     : Type() {
     assert(Cons::IsList(form));
 
     auto lambda = Compiler::ParseLambda(env, Cons::car(form));
-
     size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
                    (Null(Compiler::restsym(lambda)) ? 0 : 1);
 

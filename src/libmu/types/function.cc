@@ -90,11 +90,14 @@ Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
 }
   
 /** * call function with argument vector **/
-Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
+Type::TagPtr Function::Funcall(Env* env,
+                               TagPtr fn,
                                const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  auto rest = !Null(Compiler::restsym(Cons::car(form(fn))));
+  /* think: aren't we checking arity on core functions? */
+  auto lambda = Cons::car(form(fn));
+  auto rest = !Null(Compiler::restsym(lambda));
   size_t nargs = nreqs(fn) + (rest ? 1 : 0);
 
   CheckArity(env, fn, argv);

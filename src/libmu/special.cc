@@ -108,7 +108,7 @@ Type::TagPtr Compiler::Lambda(Env* env, TagPtr form) {
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
-  return CompileLambda(env, form);
+  return CompileLambda(env, args);
 }
 
 /** * (:macro list . body) **/
@@ -125,7 +125,7 @@ Type::TagPtr Compiler::DefMacro(Env* env, TagPtr form) {
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
-  return Macro(CompileLambda(env, form)).Evict(env, "macro");
+  return Macro(CompileLambda(env, args)).Evict(env, "macro");
 }
 
 /** * (:letq symbol expr) **/

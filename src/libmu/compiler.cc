@@ -129,8 +129,8 @@ Type::TagPtr Compiler::CompileList(Env* env, TagPtr list) {
 }
 
 /** * parse lambda list **/
-Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda_list) {
-  assert(Cons::IsList(lambda_list));
+Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
+  assert(Cons::IsList(lambda));
 
   std::vector<TagPtr> lexicals;
 
@@ -138,16 +138,16 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda_list) {
   bool has_rest = false;
 
   std::function<void(Env*, TagPtr)> parse =
-    [&lexicals, lambda_list, &restsym, &has_rest](Env* env,
-                                                  TagPtr symbol) {
+    [&lexicals, lambda, &restsym, &has_rest](Env* env,
+                                             TagPtr symbol) {
     if (!Symbol::IsType(symbol))
       Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                       "non-symbol in lambda list (parse-lambda)", lambda_list);
+                       "non-symbol in lambda list (parse-lambda)", lambda);
 
     if (Type::Eq(Symbol::Keyword("rest"), symbol)) {
       if (has_rest)
         Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                         "multiple rest clauses (parse-lambda)", lambda_list);
+                         "multiple rest clauses (parse-lambda)", lambda);
       has_rest = true;
       return;
     }
@@ -155,7 +155,7 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda_list) {
     if (Symbol::IsKeyword(symbol))
       Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                        "keyword cannot be used as a lexical variable (parse-lambda)",
-                       lambda_list);
+                       lambda);
 
     auto el = std::find_if(
         lexicals.begin(), lexicals.end(), [restsym, symbol](TagPtr sym) {
@@ -165,23 +165,23 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda_list) {
     if (el != lexicals.end())
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        "duplicate symbol in lambda list (parse-lambda)",
-                       lambda_list);
+                       lambda);
 
     if (has_rest) restsym = symbol;
 
     lexicals.push_back(symbol);
   };
 
-  Cons::MapC(env, parse, lambda_list);
+  Cons::MapC(env, parse, lambda);
 
   if (has_rest && Type::Null(restsym))
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                     "early end of lambda list (parse-lambda)", lambda_list);
+                     "early end of lambda list (parse-lambda)", lambda);
 
-  if (lexicals.size() != (Cons::Length(env, lambda_list) - has_rest))
+  if (lexicals.size() != (Cons::Length(env, lambda) - has_rest))
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      ":rest should terminate lambda list (parse-lambda)",
-                     lambda_list);
+                     lambda);
 
   /** * ((lexicals...) . restsym) */
   return Cons(Cons::List(env, lexicals), restsym).Evict(env, "lambda:parse-lambda");

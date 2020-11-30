@@ -50,6 +50,7 @@ class Compiler : public Type {
 
     return Cons::car(lambda);
   }
+
   static constexpr TagPtr restsym(TagPtr lambda) {
     assert(Cons::IsList(lambda));
 
