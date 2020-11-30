@@ -38,15 +38,14 @@ using Frame = Env::Frame;
 class Function : public Type {
  private:
   typedef struct {
-    size_t nreqs;
-    TagPtr core;
-    TagPtr env;
+    TagPtr name;     /* debugging */
+    TagPtr core;     /* as an address */
+    TagPtr form;     /* as a lambda */
+    TagPtr env;      /* closures */
     std::vector<Frame*>
            context;
-    TagPtr lambda;
-    TagPtr body;
-    TagPtr frame_id;
-    TagPtr name;
+    TagPtr frame_id; /* lexical reference */
+    size_t nreqs;    /* arity checking */
   } Layout;
 
   Layout function_;
@@ -63,12 +62,6 @@ class Function : public Type {
     return
       Null(core(fn)) ? Untag<Layout>(fn)->nreqs
                      : Untag<Env::TagPtrFn>(core(fn))->nreqs;
-  }
-  
-  static TagPtr lambda(TagPtr fn) {
-    assert(IsType(fn));
-
-    return Untag<Layout>(fn)->lambda;
   }
   
   static std::vector<Frame*> context(TagPtr fn) {
@@ -96,28 +89,28 @@ class Function : public Type {
     return Untag<Layout>(fn)->env;
   }
   
-  static TagPtr env(TagPtr fn, TagPtr nenv) {
+  static TagPtr env(TagPtr fn, TagPtr env) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->env = nenv;
+    return Untag<Layout>(fn)->env = env;
   }
 
+  static TagPtr form(TagPtr fn) {
+    assert(IsType(fn));
+
+    return Untag<Layout>(fn)->form;
+  }
+
+  static TagPtr form(TagPtr fn, TagPtr form) {
+    assert(IsType(fn));
+
+    return Untag<Layout>(fn)->form = form;
+  }
+  
   static TagPtr core(TagPtr fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->core;
-  }
-  
-  static TagPtr body(TagPtr fn) {
-    assert(IsType(fn));
-
-    return Untag<Layout>(fn)->body;
-  }
-  
-  static void body(TagPtr fn, TagPtr body) {
-    assert(IsType(fn));
-
-    Untag<Layout>(fn)->body = body;
   }
   
   static TagPtr frame_id(TagPtr fn) {
@@ -145,18 +138,20 @@ class Function : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
   static void CallFrame(Env::Frame* fp) {
-    static Env::FrameFn exec = [](Env::Frame* fp) {
+    /* think: inline this? */
+    static Env::FrameFn lambda = [](Env::Frame* fp) {
       fp->value = NIL;
-      if (!Null(Function::body(fp->func)))
+      auto body = Cons::cdr(Function::form(fp->func));
+      if (!Null(body))
         Cons::MapC(fp->env,
                    [fp](Env* env, TagPtr form) {
                      fp->value = Eval(env, form);
                    },
-                   Function::body(fp->func));
+                   body);
     };
 
     if (Null(core(fp->func))) {
-      exec(fp);
+      lambda(fp);
     } else {
       Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
     }
@@ -169,7 +164,7 @@ class Function : public Type {
     auto stream = Stream::StreamDesignator(env, str);
 
     auto type = String::StdStringOf(
-                  Symbol::name(Type::MapClassSymbol(Type::TypeOf(fn))));
+                   Symbol::name(Type::MapClassSymbol(Type::TypeOf(fn))));
 
     auto name = String::StdStringOf(Symbol::name(Function::name(fn)));
     
@@ -190,17 +185,17 @@ class Function : public Type {
   }
 
   /* core functions */
-  explicit Function(Env* env, const Env::TagPtrFn* core, TagPtr name) : Type() {
+  explicit Function(Env* env, const Env::TagPtrFn* core, TagPtr name)
+    : Type() {
     assert(Symbol::IsType(name));
     
-    function_.body = NIL;
-    function_.core = Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
     function_.context = std::vector<Frame*>{};
+    function_.core = Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
     function_.env = NIL;
+    function_.form = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
-    function_.lambda = NIL;
-    function_.nreqs = 0;
     function_.name = name;
+    function_.nreqs = 0;
     
     env->frame_id_++;
 
@@ -209,35 +204,23 @@ class Function : public Type {
   
   /* think: merge with closures */
   /* lambdas */
-  explicit Function(Env* env, TagPtr lambda_list, TagPtr body, TagPtr name) : Type() {
-    assert(Cons::IsList(lambda_list));
+  explicit Function(Env* env, TagPtr form, TagPtr name)
+    : Type() {
+    assert(Cons::IsList(form));
     assert(Symbol::IsType(name));
     
-    auto lambda = Compiler::ParseLambda(env, lambda_list);
+    auto lambda = Compiler::ParseLambda(env, Cons::car(form));
 
     size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
                    (Null(Compiler::restsym(lambda)) ? 0 : 1);
 
-#if 0
-    static Env::FrameFn exec = [](Env::Frame* fp) {
-      fp->value = NIL;
-      if (!Null(Function::body(fp->func)))
-        Cons::MapC(fp->env,
-                   [fp](Env* env, TagPtr form) {
-                     fp->value = Eval(env, form);
-                   },
-                   Function::body(fp->func));
-    };
-#endif
-    
-    function_.body = body;
-    function_.core = NIL;
     function_.context = std::vector<Frame*>{};
+    function_.core = NIL;
     function_.env = Cons::List(env, env->lexenv_);
+    function_.form = form;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
-    function_.lambda = lambda;
-    function_.nreqs = nreqs;
     function_.name = name;
+    function_.nreqs = nreqs;
 
     env->frame_id_++;
 
@@ -245,34 +228,21 @@ class Function : public Type {
   }
 
   /* closures */
-  explicit Function(Env* env,
-                    std::vector<Frame*> context,
-                    TagPtr lambda_list,
-                    TagPtr body) : Type() {
-    assert(Cons::IsList(lambda_list));
+  explicit Function(Env* env, std::vector<Frame*> context, TagPtr form)
+    : Type() {
+    assert(Cons::IsList(form));
 
-    auto lambda = Compiler::ParseLambda(env, lambda_list);
+    auto lambda = Compiler::ParseLambda(env, Cons::car(form));
 
     size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
                    (Null(Compiler::restsym(lambda)) ? 0 : 1);
 
-    static Env::FrameFn exec = [](Env::Frame* fp) {
-      fp->value = NIL;
-      if (!Null(Function::body(fp->func)))
-        Cons::MapC(fp->env,
-                   [fp](Env* env, TagPtr form) {
-                     fp->value = Eval(env, form);
-                   },
-                   Function::body(fp->func));
-    };
-
-    function_.body = body;
-    function_.core = NIL;
-    function_.name = NIL;
     function_.context = context;
+    function_.core = NIL;
     function_.env = Cons::List(env, env->lexenv_);
+    function_.form = form;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
-    function_.lambda = lambda;
+    function_.name = NIL;
     function_.nreqs = nreqs;
 
     env->frame_id_++;

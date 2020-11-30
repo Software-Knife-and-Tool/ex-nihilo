@@ -104,15 +104,15 @@ Type::TagPtr Compiler::CompileLexical(Env* env, TagPtr fn, size_t nth) {
 }
 
 /** * create function **/
-Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr lambda, TagPtr body) {
-  assert(Cons::IsList(lambda));
-  assert(Cons::IsList(body));
+Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr form) {
+  assert(Cons::IsList(form));
 
-  auto fn = Function(env, lambda, Type::NIL, NIL).Evict(env, "lambda:compile-lambda");
+  auto fn = Function(env, form, NIL).Evict(env, "lambda:compile-lambda");
+  auto lambda = Cons::car(form);
+  
+  if (!Type::Null(lambda)) env->lexenv_.push_back(form);
 
-  if (!Type::Null(lambda)) env->lexenv_.push_back(fn);
-
-  Function::body(fn, CompileList(env, body));
+  Function::form(fn, Cons(lambda, CompileList(env, Cons::cdr(form))).tag_);
 
   if (!Type::Null(lambda)) env->lexenv_.pop_back();
 
@@ -132,7 +132,7 @@ bool Compiler::InLexicalEnv(Env* env,
   for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {
     assert(Function::IsType(*it));
 
-    auto lexicals = Compiler::lexicals(Function::lambda(*it));
+    auto lexicals = Compiler::lexicals(Cons::car(Function::form(*it)));
     assert(Cons::IsList(lexicals));
 
     for (size_t i = 0; i < Cons::Length(env, lexicals); ++i) {

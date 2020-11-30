@@ -37,11 +37,9 @@ void Function::GcMark(Env* ev, TagPtr fn) {
 
   if (!ev->heap_->IsGcMarked(fn)) {
     ev->heap_->GcMark(fn);
-    ev->GcMark(ev, core(fn));
     ev->GcMark(ev, env(fn));
-    ev->GcMark(ev, lambda(fn));
+    ev->GcMark(ev, form(fn));
     ev->GcMark(ev, name(fn));
-    ev->GcMark(ev, body(fn));
     for (auto fp : context(fn)) {
       for (size_t i = 0 ; i < fp->nargs; ++i)
         ev->GcMark(ev, fp->argv[i]);
@@ -55,7 +53,7 @@ void Function::CheckArity(Env* env, TagPtr fn,
   assert(IsType(fn));
 
   auto nreq = nreqs(fn);
-  auto rest = !Null(Compiler::restsym(lambda(fn)));
+  auto rest = !Null(Compiler::restsym(Cons::car(form(fn))));
   auto nargs = args.size();
 
   if (nargs < nreq)
@@ -75,17 +73,17 @@ void Function::CheckArity(Env* env, TagPtr fn,
 /** * make view of function **/
 Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
   assert(IsType(fn));
-  
+
+  /* think: add context */
   auto view = std::vector<TagPtr>{
     Symbol::Keyword("func"),
     fn,
     Fixnum(ToUint64(fn) >> 3).tag_,
     name(fn),
-    Fixnum(nreqs(fn)).tag_,
     core(fn),
-    lambda(fn),
-    body(fn),
-    frame_id(fn)
+    form(fn),
+    frame_id(fn),
+    Fixnum(nreqs(fn)).tag_
   };
   
   return Vector(env, view).tag_;
@@ -96,7 +94,7 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
                                const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  auto rest = !Null(Compiler::restsym(lambda(fn)));
+  auto rest = !Null(Compiler::restsym(Cons::car(form(fn))));
   size_t nargs = nreqs(fn) + (rest ? 1 : 0);
 
   CheckArity(env, fn, argv);

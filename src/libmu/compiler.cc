@@ -46,14 +46,14 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
           if (Type::Eq(Cons::car(fn), Symbol::Keyword("lambda"))) {
             auto lambda = Cons::Nth(fn, 1);
 
+            /* think: we need this check here? */
             if (!Cons::IsList(lambda))
               Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                                "lambda list", lambda);
 
-            /* compile (lambda-func . body) */
             rval =
               CompileList(env,
-                          Cons(CompileLambda(env, lambda, Cons::NthCdr(fn, 2)),
+                          Cons(CompileLambda(env, fn),
                                args).Evict(env, "compile:lambda"));
           } else {
             rval = CompileList(env, form);

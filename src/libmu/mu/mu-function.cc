@@ -70,20 +70,20 @@ void Closure(Frame* fp) {
     Cons::MapC(fp->env,
                [fp, &context](Env*, TagPtr fn) {
                  auto offset = 0;
-                 auto rest = !Type::Null(Compiler::restsym(Function::lambda(fn)));
+                 auto rest = !Type::Null(Compiler::restsym(Cons::car(Function::form(fn))));
                  size_t nargs = Function::nreqs(fn) + (rest ? 1 : 0);
-                 auto args = new TagPtr[nargs];
+                 auto args = new TagPtr[nargs]; /* think: does this need to be freed? */
 
-                 /* * check this, seems odd **/
+                 /* think: check this, seems odd */
                  Cons::MapC(fp->env,
-                            [fp, fn, &offset,&args](Env*, TagPtr) {
+                            [fp, fn, &offset, &args](Env*, TagPtr) {
                               auto lfp = fp->env->MapFrame(Function::frame_id(fn));
                               auto value = lfp->argv[offset];
                               
                               args[offset] = value;
                               offset++;
                             },
-                            Cons::car(Function::lambda(fn)));
+                            Cons::car(Cons::car(Function::form(fn))));
 
                  context.push_back(new Frame(fp->env,
                                              Function::frame_id(fn),
