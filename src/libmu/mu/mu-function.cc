@@ -83,7 +83,7 @@ void Closure(Frame* fp) {
                               args[offset] = value;
                               offset++;
                             },
-                            Cons::car(Cons::car(Function::form(fn))));
+                            Cons::car(Function::form(fn)));
 
                  context.push_back(new Frame(fp->env,
                                              Function::frame_id(fn),

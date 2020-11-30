@@ -16,22 +16,22 @@
 #include <map>
 #include <vector>
 
+#include "libmu/compiler.h"
 #include "libmu/env.h"
 #include "libmu/eval.h"
 #include "libmu/print.h"
+#include "libmu/print.h"
 #include "libmu/type.h"
-
-#include "libmu/compiler.h"
 
 #include "libmu/types/cons.h"
 #include "libmu/types/exception.h"
 #include "libmu/types/function.h"
 #include "libmu/types/macro.h"
+#include "libmu/types/namespace.h"
 #include "libmu/types/string.h"
 #include "libmu/types/symbol.h"
 
 namespace libmu {
-
 namespace {
 
 /** * map keyword to handler **/
@@ -48,7 +48,7 @@ static const std::map<TagPtr, std::function<TagPtr(Env*, TagPtr)>> kSpecMap{
 bool Compiler::IsSpecOp(Env* env, TagPtr symbol) {
   if (!Symbol::IsType(symbol))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "special?: is not a symbol", symbol);
+                     "special-operatorp: is not a symbol", symbol);
 
   return Symbol::IsKeyword(symbol) && (kSpecMap.count(symbol) != 0);
 }
@@ -169,3 +169,4 @@ Type::TagPtr Compiler::Quote(Env* env, TagPtr form) {
 }
 
 } /* namespace libmu */
+
