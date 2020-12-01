@@ -139,6 +139,7 @@ class Function : public Type {
     static Env::FrameFn lambda = [](Env::Frame* fp) {
       fp->value = NIL;
       auto body = Cons::cdr(Function::form(fp->func));
+      Print(fp->env, body, NIL, true); Terpri(fp->env, NIL);
       if (!Null(body))
         Cons::MapC(fp->env,
                    [fp](Env* env, TagPtr form) {
@@ -186,9 +187,10 @@ class Function : public Type {
     : Type() {
     assert(Symbol::IsType(name));
     
-    function_.arity = core.nreqs;
+    function_.arity = core->nreqs;
     function_.context = std::vector<Frame*>{};
-    function_.core = Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
+    function_.core =
+      Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
     function_.env = NIL;
     function_.form = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
@@ -200,22 +202,21 @@ class Function : public Type {
   }
   
   /* closures */
-  /* think: needs name? */
-  explicit Function(Env* env, TagPtr name, std::vector<Frame*> context, TagPtr form, int arity)
+  explicit Function(Env* env,
+                    TagPtr name,
+                    std::vector<Frame*> context,
+                    TagPtr form,
+                    int arity)
     : Type() {
     assert(Cons::IsList(form));
-
-    auto lambda = Compiler::ParseLambda(env, Cons::car(form));
-    size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
-                   (Null(Compiler::restsym(lambda)) ? 0 : 1);
 
     function_.arity = arity;
     function_.context = context;
     function_.core = NIL;
     function_.env = Cons::List(env, env->lexenv_);
-    function_.form = Cons(lambda, Cons::cdr(form)).tag_;
+    function_.form = form;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
-    function_.name = NIL;
+    function_.name = name;
 
     env->frame_id_++;
 

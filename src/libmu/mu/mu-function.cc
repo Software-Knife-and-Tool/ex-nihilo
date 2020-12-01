@@ -72,8 +72,8 @@ void Closure(Frame* fp) {
                  auto offset = 0;
                  auto lambda = Cons::car(Function::form(fn));
                  /* think: this all has to be wildly wrong */
-                 auto rest = !Type::Null(Compiler::restsym(lambda));
-                 size_t nargs = Function::nreqs(fn) + (rest ? 1 : 0);
+                 auto rest = Function::arity(fn) < 0;;
+                 size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
                  auto args = new TagPtr[nargs]; /* think: does this need to be freed? */
 
                  /* think: check this, seems odd */
@@ -85,7 +85,7 @@ void Closure(Frame* fp) {
                               args[offset] = value;
                               offset++;
                             },
-                            lambda);
+                            Cons::car(lambda));
 
                  context.push_back(new Frame(fp->env,
                                              Function::frame_id(fn),

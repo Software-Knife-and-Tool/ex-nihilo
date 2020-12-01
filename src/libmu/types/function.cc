@@ -52,21 +52,21 @@ void Function::CheckArity(Env* env, TagPtr fn,
                           const std::vector<TagPtr>& args) {
   assert(IsType(fn));
 
-  auto nreq = nreqs(fn);
-  auto rest = !Null(Compiler::restsym(Cons::car(form(fn))));
+  size_t nreqs = abs(arity(fn));
+  auto rest = arity(fn) < 0;
   auto nargs = args.size();
 
-  if (nargs < nreq)
+  if (nargs < nreqs)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "argument list arity: nargs (" + std::to_string(nargs) +
-                         ") < nreq (" + std::to_string(nreq) + ") (funcall)",
+                         ") < nreqs (" + std::to_string(nreqs) + ") (funcall)",
                      fn);
 
-  if (!rest && (nargs > nreq))
+  if (!rest && (nargs > nreqs))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "argument list arity: !rest && nargs (" +
                          std::to_string(nargs) + ") > nreq (" +
-                         std::to_string(nreq) + ") (funcall)",
+                         std::to_string(nreqs) + ") (funcall)",
                      fn);
 }
 
@@ -95,17 +95,15 @@ Type::TagPtr Function::Funcall(Env* env,
                                const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  /* think: aren't we checking arity on core functions? */
-  auto lambda = Cons::car(form(fn));
-  auto rest = !Null(Compiler::restsym(lambda));
-  size_t nargs = nreqs(fn) + (rest ? 1 : 0);
+  auto rest = arity(fn) < 0;
+  size_t nargs = abs(arity(fn)) + (rest ? 1 : 0);
 
   CheckArity(env, fn, argv);
 
   auto args = std::make_unique<TagPtr[]>(nargs);
   if (nargs) {
     size_t i = 0;
-    for (; i < nreqs(fn); i++) args[i] = argv[i];
+    for (; i < abs(arity(fn)); i++) args[i] = argv[i];
 
     if (rest) {
       if (i == argv.size()) {

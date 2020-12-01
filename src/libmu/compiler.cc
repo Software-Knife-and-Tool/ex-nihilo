@@ -132,6 +132,19 @@ Type::TagPtr Compiler::CompileList(Env* env, TagPtr list) {
                             list);
 }
 
+/** * compile lexical symbol */
+Type::TagPtr Compiler::CompileLexical(Env* env, TagPtr fn, size_t nth) {
+  assert(Function::IsType(fn));
+
+  return
+    Cons::List(env,
+               std::vector<TagPtr>{
+                 Namespace::FindInNsInterns(env,
+                                            env->mu_,
+                                            String(env, "frame-ref").tag_),
+                 Function::frame_id(fn), Fixnum(nth).tag_});
+}
+
 /** * parse lambda list **/
 Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
   assert(Cons::IsList(lambda));
@@ -191,31 +204,34 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
   return Cons(Cons::List(env, lexicals), restsym).Evict(env, "lambda:parse-lambda");
 }
   
-/** * compile lexical symbol */
-Type::TagPtr Compiler::CompileLexical(Env* env, TagPtr fn, size_t nth) {
-  assert(Function::IsType(fn));
-
-  return
-    Cons::List(env,
-               std::vector<TagPtr>{
-                 Namespace::FindInNsInterns(env,
-                                            env->mu_,
-                                            String(env, "frame-ref").tag_),
-                 Function::frame_id(fn), Fixnum(nth).tag_});
-}
-
-/** * create function **/
+/** * compile function definition **/
 Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr form) {
   assert(Cons::IsList(form));
 
   auto lambda = Compiler::ParseLambda(env, Cons::car(form));
-  auto fn = Function(env, NIL, form, 1).Evict(env, "lambda:compile-lambda");
+  auto arity = static_cast<int>(Cons::Length(env, Cons::car(lambda)));
+  /*
+  explicit Function(Env* env,
+                    TagPtr name,
+                    std::vector<Frame*> context,
+                    TagPtr form,
+                    int arity)
+  */
+  auto fn =
+    Function(env,
+             NIL,
+             std::vector<Frame*>{},
+             Cons(lambda, NIL).tag_,
+             arity).Evict(env, "woggles");
   
-  if (!Type::Null(lambda)) env->lexenv_.push_back(form);
+  if (arity)
+    env->lexenv_.push_back(fn);
 
+  /* think: this is ugly */
   Function::form(fn, Cons(lambda, CompileList(env, Cons::cdr(form))).tag_);
 
-  if (!Type::Null(lambda)) env->lexenv_.pop_back();
+  if (arity)
+    env->lexenv_.pop_back();
 
   return fn;
 }

@@ -83,7 +83,7 @@ Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
     Function::core(fn),
     Function::form(fn),
     Function::frame_id(fn),
-    Fixnum(Function::nreqs(fn)).tag_,
+    Fixnum(Function::arity(fn)).tag_,
     Function::name(fn)
   };
   
