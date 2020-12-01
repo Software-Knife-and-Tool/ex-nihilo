@@ -83,7 +83,7 @@ Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
     core(fn),
     form(fn),
     frame_id(fn),
-    Fixnum(nreqs(fn)).tag_
+    Fixnum(arity(fn)).tag_
   };
   
   return Vector(env, view).tag_;
@@ -140,9 +140,8 @@ Type::TagPtr Function::Funcall(Env* env,
       env->UnCache(frame);
     }
 
-  if (nargs) {
+  if (nargs)
     env->UnCache(&fp);
-  }
 
   env->PopFrame();
 

@@ -38,14 +38,13 @@ using Frame = Env::Frame;
 class Function : public Type {
  private:
   typedef struct {
+    int arity;       /* arity checking */
     TagPtr name;     /* debugging */
     TagPtr core;     /* as an address */
     TagPtr form;     /* as a lambda */
     TagPtr env;      /* closures */
-    std::vector<Frame*>
-           context;
+    std::vector<Frame*> context;
     TagPtr frame_id; /* lexical reference */
-    size_t nreqs;    /* arity checking */
   } Layout;
 
   Layout function_;
@@ -56,12 +55,10 @@ class Function : public Type {
   }
 
   /* accessors */
-  static size_t nreqs(TagPtr fn) {
+  static int arity(TagPtr fn) {
     assert(IsType(fn));
 
-    return
-      Null(core(fn)) ? Untag<Layout>(fn)->nreqs
-                     : Untag<Env::TagPtrFn>(core(fn))->nreqs;
+    return Untag<Layout>(fn)->arity;
   }
   
   static std::vector<Frame*> context(TagPtr fn) {
@@ -185,50 +182,26 @@ class Function : public Type {
   }
 
   /* core functions */
-  explicit Function(Env* env, const Env::TagPtrFn* core, TagPtr name)
+  explicit Function(Env* env, TagPtr name, const Env::TagPtrFn* core)
     : Type() {
     assert(Symbol::IsType(name));
     
+    function_.arity = core.nreqs;
     function_.context = std::vector<Frame*>{};
     function_.core = Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
     function_.env = NIL;
     function_.form = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
     function_.name = name;
-    function_.nreqs = 0;
     
     env->frame_id_++;
 
     tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
   }
   
-  /* think: merge with closures */
-  /* lambdas */
-  explicit Function(Env* env, TagPtr form, TagPtr name)
-    : Type() {
-    assert(Cons::IsList(form));
-    assert(Symbol::IsType(name));
-
-    auto lambda = Compiler::ParseLambda(env, Cons::car(form));
-    size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
-                   (Null(Compiler::restsym(lambda)) ? 0 : 1);
-
-    function_.context = std::vector<Frame*>{};
-    function_.core = NIL;
-    function_.env = Cons::List(env, env->lexenv_);
-    function_.form = form;
-    function_.frame_id = Fixnum(env->frame_id_).tag_;
-    function_.name = name;
-    function_.nreqs = nreqs;
-
-    env->frame_id_++;
-
-    tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
-  }
-
   /* closures */
   /* think: needs name? */
-  explicit Function(Env* env, std::vector<Frame*> context, TagPtr form)
+  explicit Function(Env* env, TagPtr name, std::vector<Frame*> context, TagPtr form, int arity)
     : Type() {
     assert(Cons::IsList(form));
 
@@ -236,13 +209,13 @@ class Function : public Type {
     size_t nreqs = Cons::Length(env, Compiler::lexicals(lambda)) -
                    (Null(Compiler::restsym(lambda)) ? 0 : 1);
 
+    function_.arity = arity;
     function_.context = context;
     function_.core = NIL;
     function_.env = Cons::List(env, env->lexenv_);
-    function_.form = form;
+    function_.form = Cons(lambda, Cons::cdr(form)).tag_;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
     function_.name = NIL;
-    function_.nreqs = nreqs;
 
     env->frame_id_++;
 

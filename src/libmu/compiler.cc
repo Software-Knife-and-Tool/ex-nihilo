@@ -43,6 +43,8 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
 
       switch (Type::TypeOf(fn)) {
         case SYS_CLASS::CONS: { /* lambda form */
+#if 0
+          /* think: shouldn't the special form compiler deal with this? */
           if (Type::Eq(Cons::car(fn), Symbol::Keyword("lambda"))) {
             auto lambda = Cons::Nth(fn, 1);
 
@@ -58,6 +60,8 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
           } else {
             rval = CompileList(env, form);
           }
+#endif
+          rval = CompileList(env, form);
           break;
         }
         case SYS_CLASS::NULLT: /* fall through */
@@ -204,8 +208,8 @@ Type::TagPtr Compiler::CompileLexical(Env* env, TagPtr fn, size_t nth) {
 Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr form) {
   assert(Cons::IsList(form));
 
-  auto fn = Function(env, form, NIL).Evict(env, "lambda:compile-lambda");
-  auto lambda = Cons::car(form);
+  auto lambda = Compiler::ParseLambda(env, Cons::car(form));
+  auto fn = Function(env, NIL, form, 1).Evict(env, "lambda:compile-lambda");
   
   if (!Type::Null(lambda)) env->lexenv_.push_back(form);
 
