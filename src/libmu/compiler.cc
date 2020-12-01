@@ -152,7 +152,7 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
   std::vector<TagPtr> lexicals;
 
   auto restsym = Type::NIL;
-  bool has_rest = false;
+  auto has_rest = false;
 
   std::function<void(Env*, TagPtr)> parse =
     [&lexicals, lambda, &restsym, &has_rest](Env* env,
@@ -184,8 +184,9 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
                        "duplicate symbol in lambda list (parse-lambda)",
                        lambda);
 
-    if (has_rest) restsym = symbol;
-
+    if (has_rest)
+      restsym = symbol;
+    
     lexicals.push_back(symbol);
   };
 
@@ -209,28 +210,21 @@ Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr form) {
   assert(Cons::IsList(form));
 
   auto lambda = Compiler::ParseLambda(env, Cons::car(form));
-  auto arity = static_cast<int>(Cons::Length(env, Cons::car(lambda)));
-  /*
-  explicit Function(Env* env,
-                    TagPtr name,
-                    std::vector<Frame*> context,
-                    TagPtr form,
-                    int arity)
-  */
+
   auto fn =
     Function(env,
              NIL,
              std::vector<Frame*>{},
-             Cons(lambda, NIL).tag_,
-             arity).Evict(env, "woggles");
-  
-  if (arity)
+             lambda,
+             Cons(lambda, NIL).tag_).Evict(env, "compiler::compile-lambda");
+
+  if (Function::arity(fn))
     env->lexenv_.push_back(fn);
 
   /* think: this is ugly */
   Function::form(fn, Cons(lambda, CompileList(env, Cons::cdr(form))).tag_);
 
-  if (arity)
+  if (Function::arity(fn))
     env->lexenv_.pop_back();
 
   return fn;

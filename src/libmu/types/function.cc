@@ -52,8 +52,8 @@ void Function::CheckArity(Env* env, TagPtr fn,
                           const std::vector<TagPtr>& args) {
   assert(IsType(fn));
 
-  size_t nreqs = abs(arity(fn));
-  auto rest = arity(fn) < 0;
+  size_t nreqs = arity_nreqs(fn);
+  auto rest = arity_rest(fn);
   auto nargs = args.size();
 
   if (nargs < nreqs)
@@ -95,23 +95,24 @@ Type::TagPtr Function::Funcall(Env* env,
                                const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  auto rest = arity(fn) < 0;
-  size_t nargs = abs(arity(fn)) + (rest ? 1 : 0);
+  size_t nargs = arity_nreqs(fn) + (arity_rest(fn) ? 1 : 0);
 
   CheckArity(env, fn, argv);
 
   auto args = std::make_unique<TagPtr[]>(nargs);
   if (nargs) {
     size_t i = 0;
-    for (; i < abs(arity(fn)); i++) args[i] = argv[i];
+    for (; i < arity_nreqs(fn); i++)
+      args[i] = argv[i];
 
-    if (rest) {
+    if (arity_rest(fn)) {
       if (i == argv.size()) {
         args[i] = NIL;
       } else {
         std::vector<TagPtr> restv;
 
-        for (size_t j = i; j < argv.size(); j++) restv.push_back(argv[j]);
+        for (size_t j = i; j < argv.size(); j++)
+          restv.push_back(argv[j]);
 
         args[i] = Cons::List(env, restv);
       }
@@ -122,9 +123,8 @@ Type::TagPtr Function::Funcall(Env* env,
 
   env->PushFrame(&fp);
   
-  if (nargs) {
+  if (nargs)
     env->Cache(&fp);
-  }
 
   for (auto frame : Function::context(fn))
     if (frame->nargs) {

@@ -38,7 +38,7 @@ using Frame = Env::Frame;
 class Function : public Type {
  private:
   typedef struct {
-    int arity;       /* arity checking */
+    size_t arity;    /* arity checking */
     TagPtr name;     /* debugging */
     TagPtr core;     /* as an address */
     TagPtr form;     /* as a lambda */
@@ -129,7 +129,39 @@ class Function : public Type {
     return Untag<Layout>(fn)->name = symbol;
   }
 
+  /* arity coding */
+  static constexpr size_t arity_nreqs(size_t arity) {
+    return arity >> 1;
+  }
+
+  static constexpr bool arity_rest(size_t arity) {
+    return arity & 1;
+  }
+
+  static size_t arity_nreqs(TagPtr fn) {
+    assert(IsType(fn));
+    
+    return arity_nreqs(arity(fn));
+  }
+
+  static bool arity_rest(TagPtr fn) {
+    assert(IsType(fn));
+
+    return arity_rest(arity(fn));
+  }
+
+  static size_t arity_of(Env* env, TagPtr lambda) {
+    assert(Cons::IsList(lambda));
+
+    auto nsyms = Cons::Length(env, Cons::car(lambda));
+    auto rest = !Null(Cons::cdr(lambda));
+
+    return
+      static_cast<size_t>(((nsyms - rest) << 1) | rest);
+  }
+  
   static void CheckArity(Env*, TagPtr, const std::vector<TagPtr>&);
+  
   static TagPtr Funcall(Env*, TagPtr, const std::vector<TagPtr>&);
   static void GcMark(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
@@ -139,7 +171,6 @@ class Function : public Type {
     static Env::FrameFn lambda = [](Env::Frame* fp) {
       fp->value = NIL;
       auto body = Cons::cdr(Function::form(fp->func));
-      Print(fp->env, body, NIL, true); Terpri(fp->env, NIL);
       if (!Null(body))
         Cons::MapC(fp->env,
                    [fp](Env* env, TagPtr form) {
@@ -148,11 +179,10 @@ class Function : public Type {
                    body);
     };
 
-    if (Null(core(fp->func))) {
+    if (Null(core(fp->func)))
       lambda(fp);
-    } else {
+    else
       Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
-    }
   }
 
   static void PrintFunction(Env* env, TagPtr fn, TagPtr str, bool) {
@@ -178,7 +208,6 @@ class Function : public Type {
 
     *fp = function_;
     tag_ = Entag(fp, TAG::FUNCTION);
-
     return tag_;
   }
 
@@ -187,7 +216,7 @@ class Function : public Type {
     : Type() {
     assert(Symbol::IsType(name));
     
-    function_.arity = core->nreqs;
+    function_.arity = core->nreqs << 1;
     function_.context = std::vector<Frame*>{};
     function_.core =
       Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
@@ -205,12 +234,12 @@ class Function : public Type {
   explicit Function(Env* env,
                     TagPtr name,
                     std::vector<Frame*> context,
-                    TagPtr form,
-                    int arity)
+                    TagPtr lambda,
+                    TagPtr form)
     : Type() {
     assert(Cons::IsList(form));
 
-    function_.arity = arity;
+    function_.arity = arity_of(env, lambda);
     function_.context = context;
     function_.core = NIL;
     function_.env = Cons::List(env, env->lexenv_);
