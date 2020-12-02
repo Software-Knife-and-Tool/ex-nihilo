@@ -167,12 +167,8 @@ class Function : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
   static void CallFrame(Env::Frame* fp) {
-    printf("function: 0x%llx", fp->func);
-    printf("core: "); Print(fp->env, Function::core(fp->func), NIL, false); Terpri(fp->env, NIL);
-    printf("form: "); Print(fp->env, Function::form(fp->func), NIL, false); Terpri(fp->env, NIL);
     fp->value = NIL;
     if (Null(core(fp->func))) {
-      printf("call: "); Print(fp->env, Function::form(fp->func), NIL, false); Terpri(fp->env, NIL);
       Cons::MapC(fp->env,
                  [fp](Env* env, TagPtr form) {
                    fp->value = Eval(env, form);
@@ -247,8 +243,6 @@ class Function : public Type {
     env->frame_id_++;
 
     tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
-    
-    printf("function: 0x%llx", tag_); Print(env, form, NIL, false); Terpri(env, NIL);
   }
 
 }; /* class Function */
