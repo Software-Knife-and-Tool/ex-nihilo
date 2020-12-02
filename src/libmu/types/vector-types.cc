@@ -217,7 +217,7 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
       vector_iter<uint8_t> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         PrintStdString(env, " ", stream, false);
-        Print(env, Fixnum(*iter).tag_, stream, esc);
+        libmu::Print(env, Fixnum(*iter).tag_, stream, esc);
       }
 
       PrintStdString(env, ")", stream, false);
@@ -228,9 +228,10 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
 
       vector_iter<char> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        Print(env, Char(*it).tag_, stream, false);
+        libmu::Print(env, Char(*it).tag_, stream, false);
 
-      if (esc) PrintStdString(env, "\"", stream, false);
+      if (esc)
+        PrintStdString(env, "\"", stream, false);
       break;
     }
     case SYS_CLASS::FIXNUM: {
@@ -239,7 +240,7 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
       vector_iter<int64_t> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         PrintStdString(env, " ", stream, false);
-        Print(env, Fixnum(*iter).tag_, stream, esc);
+        libmu::Print(env, Fixnum(*iter).tag_, stream, esc);
       }
 
       PrintStdString(env, ")", stream, false);
@@ -251,7 +252,7 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
       vector_iter<float> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         PrintStdString(env, " ", stream, false);
-        Print(env, Float(*iter).tag_, stream, esc);
+        libmu::Print(env, Float(*iter).tag_, stream, esc);
       }
 
       PrintStdString(env, ")", stream, false);
@@ -263,7 +264,7 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
       vector_iter<TagPtr> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         PrintStdString(env, " ", stream, false);
-        Print(env, *iter, stream, esc);
+        libmu::Print(env, *iter, stream, esc);
       }
 
       PrintStdString(env, ")", stream, false);
