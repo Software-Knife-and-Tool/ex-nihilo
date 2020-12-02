@@ -209,6 +209,9 @@ Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
 Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr form) {
   assert(Cons::IsList(form));
 
+  printf("CompileLambda: ");
+  Print(env, form, NIL, false); Terpri(env, NIL);
+  
   auto lambda = Compiler::ParseLambda(env, Cons::car(form));
 
   auto fn =

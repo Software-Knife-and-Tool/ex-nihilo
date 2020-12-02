@@ -63,7 +63,7 @@ Type::TagPtr Compiler::CompileSpecial(Env* env, TagPtr form) {
   return kSpecMap.at(symbol)(env, form);
 }
 
-/** * (:defcon symbol form) **/
+/** * (:defsym symbol form) **/
 Type::TagPtr Compiler::DefConstant(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 3)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -87,7 +87,9 @@ Type::TagPtr Compiler::DefConstant(Env* env, TagPtr form) {
 
   auto value = Eval(env, Compile(env, expr));
   (void)Symbol::Bind(sym, value);
-
+  
+  printf("defsym: binding 0x%llx\n", value);
+  
   if (Function::IsType(value))
     Function::name(value, sym);
   
@@ -108,7 +110,9 @@ Type::TagPtr Compiler::Lambda(Env* env, TagPtr form) {
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
-  return CompileLambda(env, args);
+  auto l = CompileLambda(env, args);
+  printf("lambda: binding 0x%llx\n", l);
+  return l;
 }
 
 /** * (:macro list . body) **/
