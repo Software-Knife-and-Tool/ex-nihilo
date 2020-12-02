@@ -316,13 +316,13 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   for (auto& el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,
-                       Function(this, &el, sym).Evict(this, "env:ext-fn"));
+                       Function(this, sym, &el).Evict(this, "env:ext-fn"));
   }
 
   for (auto& el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,
-                       Function(this, &el, sym).Evict(this, "env:int-fn"));
+                       Function(this, sym, &el).Evict(this, "env:int-fn"));
   }
 }
 

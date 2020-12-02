@@ -2,6 +2,7 @@
 #(:fixnum),#(:fixnum)
 #(:float),#(:float)
 #(:t),#(:t)
+(:defsym list1 (:lambda (:rest lists) lists)),list1
 (.apply fixnum+ '(1 2)),3
 (:defsym list1 (:lambda (:rest lists) lists)),list1
 (boundp 'foo),:nil

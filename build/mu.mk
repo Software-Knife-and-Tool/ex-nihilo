@@ -17,7 +17,6 @@ OBJS =  \
     float.o            \
     function.o         \
     heap.o             \
-    lambda.o           \
     libmu.o            \
     macro.o            \
     namespace.o        \

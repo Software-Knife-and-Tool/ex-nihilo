@@ -73,16 +73,17 @@ Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
   assert(IsType(macro));
 
   auto fn = func(macro); 
+
+  /* think: need nreqs? do we have any core macro expanders? */
   auto view = std::vector<TagPtr>{
     Symbol::Keyword("macro"),
     Fixnum(ToUint64(macro) >> 3).tag_,
     macro,
     fn,
-    Function::body(fn),
     Function::core(fn),
+    Function::form(fn),
     Function::frame_id(fn),
-    Function::lambda(fn),
-    Fixnum(Function::nreqs(fn)).tag_,
+    Fixnum(Function::arity(fn)).tag_,
     Function::name(fn)
   };
   
