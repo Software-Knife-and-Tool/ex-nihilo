@@ -217,7 +217,7 @@ size_t Cons::Length(Env* env, TagPtr list) {
 }
 
 /** * print list to stream **/
-void Cons::PrintCons(Env* env, TagPtr cons, TagPtr stream, bool esc) {
+void Cons::Print(Env* env, TagPtr cons, TagPtr stream, bool esc) {
   assert(IsList(cons));
   assert(Stream::IsType(stream));
 

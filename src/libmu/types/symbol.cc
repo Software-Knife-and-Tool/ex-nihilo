@@ -106,7 +106,7 @@ bool Symbol::IsBound(TagPtr sym) {
 }
 
 /** * print symbol to stream **/
-void Symbol::PrintSymbol(Env* env, TagPtr sym, TagPtr stream, bool esc) {
+void Symbol::Print(Env* env, TagPtr sym, TagPtr stream, bool esc) {
   assert(IsType(sym));
   assert(Stream::IsType(stream));
 

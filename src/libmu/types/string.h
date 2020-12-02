@@ -68,7 +68,7 @@ class String : public Vector {
     return Type::MakeImmediate(buffer, str.size(), IMMEDIATE_CLASS::STRING);
   }
 
-  static void PrintString(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr Read(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 

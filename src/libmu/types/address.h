@@ -54,7 +54,7 @@ class Address : public Type {
     tag_ = Type::Entag(caddr, TAG::ADDRESS);
   }
 
-}; /* class Code */
+}; /* class Address */
 
 } /* namespace libmu */
 

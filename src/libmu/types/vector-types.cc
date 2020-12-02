@@ -206,7 +206,7 @@ TagPtr Vector::ListToVector(Env* env, TagPtr vectype, TagPtr list) {
 }
 
 /** * print vector to stream **/
-void Vector::PrintVector(Env* env, TagPtr vector, TagPtr stream, bool esc) {
+void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
   assert(IsType(vector));
   assert(Stream::IsType(stream));
 

@@ -38,7 +38,7 @@ Type::TagPtr Char::ViewOf(Env* env, TagPtr ch) {
 }
 
 /** * print char object to stream **/
-void Char::PrintChar(Env* env, TagPtr ch, TagPtr stream, bool esc) {
+void Char::Print(Env* env, TagPtr ch, TagPtr stream, bool esc) {
   assert(IsType(ch));
   assert(Stream::IsType(stream));
 

@@ -47,24 +47,12 @@ void PrintEscape(Frame* fp) {
   auto escape = fp->argv[2];
 
   if (!Stream::IsStreamDesignator(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "prin1",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "print",
                      stream);
 
   Print(fp->env, obj, stream, !Type::Null(escape));
+  
   fp->value = obj;
-}
-
-/** * (print-unreadable object stream) => object **/
-void PrintUnreadable(Frame* fp) {
-  auto obj = fp->argv[0];
-  auto stream = fp->argv[1];
-
-  if (!Stream::IsStreamDesignator(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "print-unreadable", stream);
-
-  PrintUnreadable(fp->env, obj, stream);
-  fp->value = Type::NIL;
 }
 
 /** * (terpri stream) => :nil **/

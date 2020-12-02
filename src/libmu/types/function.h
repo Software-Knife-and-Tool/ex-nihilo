@@ -178,7 +178,7 @@ class Function : public Type {
       Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
   }
 
-  static void PrintFunction(Env* env, TagPtr fn, TagPtr str, bool) {
+  static void Print(Env* env, TagPtr fn, TagPtr str, bool) {
     assert(IsType(fn));
     assert(Stream::IsType(str));
 
@@ -192,7 +192,7 @@ class Function : public Type {
     std::stringstream hexs;
 
     hexs << std::hex << Type::to_underlying(fn);
-    PrintStdString(env, "#<:" + type + " 0x" + hexs.str() + ";" + name + ">", stream, false);
+    PrintStdString(env, "#<:" + type + " #x" + hexs.str() + " (" + name + ")>", stream, false);
   }
 
  public: /* object model */

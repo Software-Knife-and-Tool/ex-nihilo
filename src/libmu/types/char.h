@@ -33,7 +33,7 @@ class Char : public Type {
     return static_cast<uint8_t>(ImmediateData(ptr));
   }
 
-  static void PrintChar(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr Read(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 

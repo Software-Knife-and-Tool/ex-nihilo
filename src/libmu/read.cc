@@ -47,42 +47,34 @@ TagPtr ReadBroketSyntax(Env* env, TagPtr stream) {
 
   auto type = ReadForm(env, stream);
   auto addr = ReadForm(env, stream);
+  auto attr = ReadForm(env, stream);
+
+  auto bracket = Stream::ReadByte(env, stream);
+  if (Fixnum::Uint64Of(bracket) != '>')
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax (terminal)",
+                     bracket);
 
   auto sysclass = Type::MapSymbolClass(type);
   auto bits = Fixnum::Uint64Of(addr);
 
   if (!Fixnum::IsType(addr))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax",
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax (type)",
                      addr);
-
-  if (!ReadWSUntilEof(env, stream))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax",
-                     addr);
-
-  auto bracket = Stream::ReadByte(env, stream);
-  assert(Fixnum::Int64Of(bracket) == '>');
 
   switch (sysclass) {
-    case SYS_CLASS::FLOAT: {
-      auto u32bits = static_cast<uint32_t>(bits);
+    case SYS_CLASS::ADDRESS: {
+      auto caddr = reinterpret_cast<void*>(bits);
       
-      return Float(static_cast<float>(u32bits)).tag_;
+      return Address(caddr).tag_;
     }
-    case SYS_CLASS::BYTE:
-    case SYS_CLASS::CHAR:
-    case SYS_CLASS::CONS:
     case SYS_CLASS::EXCEPTION:
-    case SYS_CLASS::FIXNUM:
     case SYS_CLASS::FUNCTION:
     case SYS_CLASS::MACRO:
     case SYS_CLASS::NAMESPACE:
     case SYS_CLASS::STREAM:
-    case SYS_CLASS::STRING:
     case SYS_CLASS::STRUCT:
-    case SYS_CLASS::SYMBOL:
-    case SYS_CLASS::VECTOR:
     default:
-      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax",
+      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax (unimplemented)",
                        type);
       break;
   }

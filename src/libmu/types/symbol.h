@@ -100,7 +100,7 @@ class Symbol : public Type {
 
   static void GcMark(Env*, TagPtr);
   static bool IsBound(TagPtr);
-  static void PrintSymbol(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr ParseSymbol(Env*, std::string, bool);
   static TagPtr ViewOf(Env*, TagPtr);
 

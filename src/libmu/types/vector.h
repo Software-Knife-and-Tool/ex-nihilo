@@ -97,7 +97,7 @@ class Vector : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
   static void GcMark(Env*, TagPtr);
-  static void PrintVector(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, TagPtr, TagPtr, bool);
 
  public: /* object model */
   TagPtr Evict(Env*, const char*) { return tag_; }

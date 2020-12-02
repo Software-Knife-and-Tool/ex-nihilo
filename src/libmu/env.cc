@@ -122,7 +122,6 @@ namespace {
     {"open-socket-server", mu::SocketServerStream, 1},
     {"open-socket-stream", mu::SocketStream, 2},
     {"pow", mu::Pow, 2},
-    {"print-unreadable", mu::PrintUnreadable, 2},
     {"raise", mu::Raise, 2},
     {"raise-exception", mu::RaiseException, 1},
     {"read", mu::Read, 1},
