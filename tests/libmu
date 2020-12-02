@@ -3,7 +3,7 @@
 #(:float),#(:float)
 #(:t),#(:t)
 #<:float 0x1 >,1.000000
-(:defcon list1 (:lambda (:rest lists) lists)),list1
+(:defsym list1 (:lambda (:rest lists) lists)),list1
 (.apply fixnum+ '(1 2)),3
 (boundp 'foo),:nil
 (boundp :nil),:t
@@ -84,7 +84,7 @@
 (read (open-input-string "'f")),(:quote f)
 (sin 30.0),0.500000
 (special-operatorp 'foo),:nil
-(special-operatorp :defcon),:t
+(special-operatorp :defsym),:t
 (sqrt 2.0),1.414214
 (streamp standard-input),:t
 (streamp standard-output),:t

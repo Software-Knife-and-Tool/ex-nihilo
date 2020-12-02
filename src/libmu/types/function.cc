@@ -37,11 +37,9 @@ void Function::GcMark(Env* ev, TagPtr fn) {
 
   if (!ev->heap_->IsGcMarked(fn)) {
     ev->heap_->GcMark(fn);
-    ev->GcMark(ev, core(fn));
     ev->GcMark(ev, env(fn));
-    ev->GcMark(ev, lambda(fn));
+    ev->GcMark(ev, form(fn));
     ev->GcMark(ev, name(fn));
-    ev->GcMark(ev, body(fn));
     for (auto fp : context(fn)) {
       for (size_t i = 0 ; i < fp->nargs; ++i)
         ev->GcMark(ev, fp->argv[i]);
@@ -54,65 +52,67 @@ void Function::CheckArity(Env* env, TagPtr fn,
                           const std::vector<TagPtr>& args) {
   assert(IsType(fn));
 
-  auto nreq = nreqs(fn);
-  auto rest = !Null(Compiler::restsym(lambda(fn)));
+  size_t nreqs = arity_nreqs(fn);
+  auto rest = arity_rest(fn);
   auto nargs = args.size();
 
-  if (nargs < nreq)
+  if (nargs < nreqs)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "argument list arity: nargs (" + std::to_string(nargs) +
-                         ") < nreq (" + std::to_string(nreq) + ") (funcall)",
+                         ") < nreqs (" + std::to_string(nreqs) + ") (funcall)",
                      fn);
 
-  if (!rest && (nargs > nreq))
+  if (!rest && (nargs > nreqs))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "argument list arity: !rest && nargs (" +
                          std::to_string(nargs) + ") > nreq (" +
-                         std::to_string(nreq) + ") (funcall)",
+                         std::to_string(nreqs) + ") (funcall)",
                      fn);
 }
 
 /** * make view of function **/
 Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
   assert(IsType(fn));
-  
+
+  /* think: add context */
   auto view = std::vector<TagPtr>{
     Symbol::Keyword("func"),
     fn,
     Fixnum(ToUint64(fn) >> 3).tag_,
     name(fn),
-    Fixnum(nreqs(fn)).tag_,
     core(fn),
-    lambda(fn),
-    body(fn),
-    frame_id(fn)
+    form(fn),
+    frame_id(fn),
+    Fixnum(arity(fn)).tag_
   };
   
   return Vector(env, view).tag_;
 }
   
 /** * call function with argument vector **/
-Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
+Type::TagPtr Function::Funcall(Env* env,
+                               TagPtr fn,
                                const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  auto rest = !Null(Compiler::restsym(lambda(fn)));
-  size_t nargs = nreqs(fn) + (rest ? 1 : 0);
+  size_t nargs = arity_nreqs(fn) + (arity_rest(fn) ? 1 : 0);
 
   CheckArity(env, fn, argv);
 
   auto args = std::make_unique<TagPtr[]>(nargs);
   if (nargs) {
     size_t i = 0;
-    for (; i < nreqs(fn); i++) args[i] = argv[i];
+    for (; i < arity_nreqs(fn); i++)
+      args[i] = argv[i];
 
-    if (rest) {
+    if (arity_rest(fn)) {
       if (i == argv.size()) {
         args[i] = NIL;
       } else {
         std::vector<TagPtr> restv;
 
-        for (size_t j = i; j < argv.size(); j++) restv.push_back(argv[j]);
+        for (size_t j = i; j < argv.size(); j++)
+          restv.push_back(argv[j]);
 
         args[i] = Cons::List(env, restv);
       }
@@ -123,9 +123,8 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
 
   env->PushFrame(&fp);
   
-  if (nargs) {
+  if (nargs)
     env->Cache(&fp);
-  }
 
   for (auto frame : Function::context(fn))
     if (frame->nargs) {
@@ -139,9 +138,8 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
       env->UnCache(frame);
     }
 
-  if (nargs) {
+  if (nargs)
     env->UnCache(&fp);
-  }
 
   env->PopFrame();
 

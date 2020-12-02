@@ -43,21 +43,25 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
 
       switch (Type::TypeOf(fn)) {
         case SYS_CLASS::CONS: { /* lambda form */
+#if 0
+          /* think: shouldn't the special form compiler deal with this? */
           if (Type::Eq(Cons::car(fn), Symbol::Keyword("lambda"))) {
             auto lambda = Cons::Nth(fn, 1);
 
+            /* think: we need this check here? */
             if (!Cons::IsList(lambda))
               Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                                "lambda list", lambda);
 
-            /* compile (lambda-func . body) */
             rval =
               CompileList(env,
-                          Cons(CompileLambda(env, lambda, Cons::NthCdr(fn, 2)),
+                          Cons(CompileLambda(env, fn),
                                args).Evict(env, "compile:lambda"));
           } else {
             rval = CompileList(env, form);
           }
+#endif
+          rval = CompileList(env, form);
           break;
         }
         case SYS_CLASS::NULLT: /* fall through */
@@ -126,6 +130,136 @@ Type::TagPtr Compiler::CompileList(Env* env, TagPtr list) {
                               return Compile(env, form);
                             },
                             list);
+}
+
+/** * compile lexical symbol */
+Type::TagPtr Compiler::CompileLexical(Env* env, TagPtr fn, size_t nth) {
+  assert(Function::IsType(fn));
+
+  return
+    Cons::List(env,
+               std::vector<TagPtr>{
+                 Namespace::FindInNsInterns(env,
+                                            env->mu_,
+                                            String(env, "frame-ref").tag_),
+                 Function::frame_id(fn), Fixnum(nth).tag_});
+}
+
+/** * parse lambda list **/
+Type::TagPtr Compiler::ParseLambda(Env* env, TagPtr lambda) {
+  assert(Cons::IsList(lambda));
+
+  std::vector<TagPtr> lexicals;
+
+  auto restsym = Type::NIL;
+  auto has_rest = false;
+
+  std::function<void(Env*, TagPtr)> parse =
+    [&lexicals, lambda, &restsym, &has_rest](Env* env,
+                                             TagPtr symbol) {
+    if (!Symbol::IsType(symbol))
+      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                       "non-symbol in lambda list (parse-lambda)", lambda);
+
+    if (Type::Eq(Symbol::Keyword("rest"), symbol)) {
+      if (has_rest)
+        Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                         "multiple rest clauses (parse-lambda)", lambda);
+      has_rest = true;
+      return;
+    }
+
+    if (Symbol::IsKeyword(symbol))
+      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                       "keyword cannot be used as a lexical variable (parse-lambda)",
+                       lambda);
+
+    auto el = std::find_if(
+        lexicals.begin(), lexicals.end(), [restsym, symbol](TagPtr sym) {
+          return Type::Eq(symbol, sym) || Type::Eq(symbol, restsym);
+        });
+
+    if (el != lexicals.end())
+      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                       "duplicate symbol in lambda list (parse-lambda)",
+                       lambda);
+
+    if (has_rest)
+      restsym = symbol;
+    
+    lexicals.push_back(symbol);
+  };
+
+  Cons::MapC(env, parse, lambda);
+
+  if (has_rest && Type::Null(restsym))
+    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                     "early end of lambda list (parse-lambda)", lambda);
+
+  if (lexicals.size() != (Cons::Length(env, lambda) - has_rest))
+    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                     ":rest should terminate lambda list (parse-lambda)",
+                     lambda);
+
+  /** * ((lexicals...) . restsym) */
+  return Cons(Cons::List(env, lexicals), restsym).Evict(env, "lambda:parse-lambda");
+}
+  
+/** * compile function definition **/
+Type::TagPtr Compiler::CompileLambda(Env* env, TagPtr form) {
+  assert(Cons::IsList(form));
+
+  auto lambda = Compiler::ParseLambda(env, Cons::car(form));
+
+  auto fn =
+    Function(env,
+             NIL,
+             std::vector<Frame*>{},
+             lambda,
+             Cons(lambda, NIL).tag_).Evict(env, "compiler::compile-lambda");
+
+  if (Function::arity(fn))
+    env->lexenv_.push_back(fn);
+
+  /* think: this is ugly */
+  Function::form(fn,
+                 Cons(lambda,
+                      CompileList(env,
+                                  Cons::cdr(form))).Evict(env,
+                                                          "compiler::compile-lambda"));
+
+  if (Function::arity(fn))
+    env->lexenv_.pop_back();
+
+  return fn;
+}
+
+/** * is this symbol in the lexical environment? **/
+bool Compiler::InLexicalEnv(Env* env,
+                            TagPtr sym,
+                            TagPtr* lambda,
+                            size_t* nth) {
+  assert(Symbol::IsType(sym));
+
+  if (Symbol::IsKeyword(sym)) return false;
+
+  std::vector<TagPtr>::reverse_iterator it;
+  for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {
+    assert(Function::IsType(*it));
+
+    auto lexicals = Compiler::lexicals(Cons::car(Function::form(*it)));
+    assert(Cons::IsList(lexicals));
+
+    for (size_t i = 0; i < Cons::Length(env, lexicals); ++i) {
+      if (Eq(sym, Cons::Nth(lexicals, i))) {
+        *lambda = *it;
+        *nth = i;
+        return true;
+      }
+    }
+  }
+  
+  return false;
 }
 
 } /* namespace libmu */

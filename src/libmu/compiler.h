@@ -29,7 +29,7 @@ class Compiler : public Type {
 
  public:
   static TagPtr Compile(Env*, TagPtr);
-  static TagPtr CompileLambda(Env*, TagPtr, TagPtr);
+  static TagPtr CompileLambda(Env*, TagPtr);
   static TagPtr CompileLexical(Env*, TagPtr, size_t);
   static TagPtr CompileList(Env*, TagPtr);
   static TagPtr CompileSpecial(Env*, TagPtr);
@@ -50,6 +50,7 @@ class Compiler : public Type {
 
     return Cons::car(lambda);
   }
+
   static constexpr TagPtr restsym(TagPtr lambda) {
     assert(Cons::IsList(lambda));
 
