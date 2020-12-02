@@ -47,7 +47,7 @@ void String::Print(Env* env, TagPtr string, TagPtr stream, bool esc) {
 
   vector_iter<char> iter(string);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    Print(env, Char(*it).tag_, stream, false);
+    libmu::Print(env, Char(*it).tag_, stream, false);
 
   if (esc) PrintStdString(env, "\"", stream, false);
 }

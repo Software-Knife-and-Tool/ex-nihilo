@@ -228,12 +228,12 @@ void Cons::Print(Env* env, TagPtr cons, TagPtr stream, bool esc) {
   for (; Cons::IsType(lp) && !Null(lp); lp = Cons::cdr(lp)) {
     if (!Eq(lp, cons))
       PrintStdString(env, " ", stream, false);
-    Print(env, Cons::car(lp), stream, esc);
+    libmu::Print(env, Cons::car(lp), stream, esc);
   }
 
   if (!IsList(lp)) {
     PrintStdString(env, " . ", stream, false);
-    Print(env, lp, stream, esc);
+    libmu::Print(env, lp, stream, esc);
   }
 
   PrintStdString(env, ")", stream, false);
