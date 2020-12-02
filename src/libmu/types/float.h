@@ -38,7 +38,7 @@ class Float : public Type {
     return buf;
   }
 
-  static void PrintFloat(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */

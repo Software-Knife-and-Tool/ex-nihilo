@@ -43,7 +43,7 @@ Type::TagPtr Float::ViewOf(Env* env, TagPtr flt) {
 }
 
 /** * print float object to stream **/
-void Float::PrintFloat(Env* env, TagPtr lfloat, TagPtr stream, bool) {
+void Float::Print(Env* env, TagPtr lfloat, TagPtr stream, bool) {
   assert(IsType(lfloat));
   assert(Stream::IsType(stream));
 

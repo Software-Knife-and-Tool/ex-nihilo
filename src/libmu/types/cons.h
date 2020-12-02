@@ -64,7 +64,7 @@ class Cons : public Type {
   static void MapL(Env*, TagPtr, TagPtr);
   static TagPtr MapList(Env*, TagPtr, TagPtr);
 
-  static void PrintCons(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr Read(Env*, TagPtr);
 
   static void GcMark(Env*, TagPtr);

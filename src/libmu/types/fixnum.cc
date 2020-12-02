@@ -42,7 +42,7 @@ Type::TagPtr Fixnum::ViewOf(Env* env, TagPtr fix) {
 }
 
 /** * print fixnum to stream **/
-void Fixnum::PrintFixnum(Env* env, TagPtr fixnum, TagPtr stream, bool) {
+void Fixnum::Print(Env* env, TagPtr fixnum, TagPtr stream, bool) {
   assert(IsType(fixnum));
   assert(Stream::IsType(stream));
 

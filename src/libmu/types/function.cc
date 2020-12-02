@@ -123,9 +123,8 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
 
   env->PushFrame(&fp);
   
-  if (nargs) {
+  if (nargs)
     env->Cache(&fp);
-  }
 
   for (auto frame : Function::context(fn))
     if (frame->nargs) {
@@ -139,9 +138,8 @@ Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
       env->UnCache(frame);
     }
 
-  if (nargs) {
+  if (nargs)
     env->UnCache(&fp);
-  }
 
   env->PopFrame();
 

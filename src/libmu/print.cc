@@ -58,7 +58,7 @@ void PrintStdString(Env* env, const std::string& str, TagPtr strm, bool esc) {
 }
 
 /** * print object in broket syntax to stream **/
-void PrintUnreadable(Env* env, TagPtr object, TagPtr str) {
+void PrintAsBroket(Env* env, TagPtr object, TagPtr str) {
   auto stream = Stream::StreamDesignator(env, str);
 
   auto type = String::StdStringOf(
@@ -66,40 +66,39 @@ void PrintUnreadable(Env* env, TagPtr object, TagPtr str) {
   std::stringstream hexs;
 
   hexs << std::hex << Type::to_underlying(object);
-  PrintStdString(env, "#<:" + type + " 0x" + hexs.str() + ";>", stream, false);
+  PrintStdString(env, "#<:" + type + " #x" + hexs.str() + "()>", stream, false);
 }
 
 /** * print object to stream **/
 void Print(Env* env, TagPtr object, TagPtr str, bool esc) {
   auto stream = Stream::StreamDesignator(env, str);
-
+  
   static const std::map<SYS_CLASS,
                         std::function<void(Env*, TagPtr, TagPtr, bool)>>
-      kPrinMap{{SYS_CLASS::CHAR, Char::PrintChar},
-               {SYS_CLASS::CONS, Cons::PrintCons},
-               {SYS_CLASS::FIXNUM, Fixnum::PrintFixnum},
-               {SYS_CLASS::FLOAT, Float::PrintFloat},
-               {SYS_CLASS::FUNCTION, Function::PrintFunction},
-               {SYS_CLASS::STRING, String::PrintString},
-               {SYS_CLASS::SYMBOL, Symbol::PrintSymbol},
-               {SYS_CLASS::NULLT, Symbol::PrintSymbol},
-               {SYS_CLASS::VECTOR, Vector::PrintVector}};
+    kPrinMap{{SYS_CLASS::CHAR, Char::Print},
+             {SYS_CLASS::CONS, Cons::Print},
+             {SYS_CLASS::FIXNUM, Fixnum::Print},
+             {SYS_CLASS::FLOAT, Float::Print},
+             {SYS_CLASS::FUNCTION, Function::Print},
+             // think: about this     {SYS_CLASS::MACRO, Macro::Print},
+             {SYS_CLASS::STRING, String::Print},
+             {SYS_CLASS::SYMBOL, Symbol::Print},
+             {SYS_CLASS::NULLT, Symbol::Print},
+             {SYS_CLASS::VECTOR, Vector::Print}};
 
   auto printh = kPrinMap.count(Type::TypeOf(object)) != 0;
-
-  if (esc && !printh)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PRINT_NOT_READABLE,
-                     "printing unreadable object", Type::NIL);
 
   if (printh)
     kPrinMap.at(Type::TypeOf(object))(env, object, stream, esc);
   else
-    PrintUnreadable(env, object, stream);
+    PrintAsBroket(env, object, stream);
 }
 
 /** * print newline to stream **/
 void Terpri(Env* env, TagPtr stream) {
-  Print(env, Char('\n').Evict(env, ""), Stream::StreamDesignator(env, stream),
+  Print(env,
+        Char('\n').Evict(env, ""),
+        Stream::StreamDesignator(env, stream),
         false);
 }
 

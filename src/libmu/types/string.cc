@@ -39,7 +39,7 @@ Type::TagPtr String::ViewOf(Env* env, TagPtr string) {
   return Vector(env, view).tag_;
 }
 
-void String::PrintString(Env* env, TagPtr string, TagPtr stream, bool esc) {
+void String::Print(Env* env, TagPtr string, TagPtr stream, bool esc) {
   assert(String::IsType(string));
   assert(Stream::IsType(stream));
 
