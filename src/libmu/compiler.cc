@@ -37,13 +37,11 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
 
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::CONS: { /* funcall/macro call/special call */
-
       auto fn = Cons::car(form);
       auto args = Cons::cdr(form);
 
       switch (Type::TypeOf(fn)) {
         case SYS_CLASS::CONS: { /* lambda form */
-#if 0
           /* think: shouldn't the special form compiler deal with this? */
           if (Type::Eq(Cons::car(fn), Symbol::Keyword("lambda"))) {
             auto lambda = Cons::Nth(fn, 1);
@@ -60,9 +58,6 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
           } else {
             rval = CompileList(env, form);
           }
-#endif
-          rval = CompileList(env, form);
-          break;
         }
         case SYS_CLASS::NULLT: /* fall through */
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
