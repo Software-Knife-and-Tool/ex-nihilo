@@ -63,7 +63,6 @@ void GetNamespace(Frame*);
 void GetStringStream(Frame*);
 void HeapInfo(Frame*);
 void HeapLog(Frame*);
-void Identity(Frame*);
 void ImportOfNamespace(Frame*);
 void ImportOfNamespace(Frame*);
 void InFileStream(Frame*);

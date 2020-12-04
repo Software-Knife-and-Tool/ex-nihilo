@@ -1,3 +1,4 @@
+((identity fixnum+) 1 2),3
 (append '(1 2 3) '(a b c) '(x y z) 'f),(1 2 3 a b c x y z . f)
 (append '(1 2 3) '(a b c) '(x y z)),(1 2 3 a b c x y z)
 (append ()),:nil
@@ -23,6 +24,7 @@
 (functionp append),:t
 (functionp bool),:t
 (functionp gensym),:t
+(functionp identity),:t
 (functionp list),:t
 (functionp list*),:t
 (functionp listp),:t

@@ -3,6 +3,9 @@
 ;;;
 (:defsym .version "0.0.18")
 
+;;; identity
+(:defsym identity (:lambda (a) a))
+
 ;;; list
 (:defsym list (:lambda (:rest args) args))
 

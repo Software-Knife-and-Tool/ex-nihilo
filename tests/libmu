@@ -2,8 +2,9 @@
 #(:fixnum),#(:fixnum)
 #(:float),#(:float)
 #(:t),#(:t)
-(:defsym list1 (:lambda (:rest lists) lists)),list1
+((:lambda ())),:nil
 (.apply fixnum+ '(1 2)),3
+(:defsym list1 (:lambda (:rest lists) lists)),list1
 (:defsym list1 (:lambda (:rest lists) lists)),list1
 (boundp 'foo),:nil
 (boundp :nil),:t
@@ -108,7 +109,6 @@
 (functionp get-output-string-stream),:t
 (functionp heap-info),:t
 (functionp heap-log),:t
-(functionp identity),:t
 (functionp in-ns),:t
 (functionp intern),:t
 (functionp invoke),:t
