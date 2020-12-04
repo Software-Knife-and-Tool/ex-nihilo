@@ -117,7 +117,6 @@ void OutFileStream(Frame*);
 void OutStringStream(Frame*);
 void Pow(Frame*);
 void PrintEscape(Frame*);
-void PrintUnreadable(Frame*);
 void Raise(Frame*);
 void RaiseException(Frame*);
 void Read(Frame*);

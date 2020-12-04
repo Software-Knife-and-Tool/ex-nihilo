@@ -43,59 +43,60 @@ namespace libmu {
 using TagPtr = Type::TagPtr;
 using SYS_CLASS = Type::SYS_CLASS;
 
-/** * apply eval'd argument list to function **/
-Type::TagPtr Apply(Env* env, TagPtr fn, TagPtr form) {
+/** * apply function to argument list **/
+Type::TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
   assert(Function::IsType(fn));
-  assert(Cons::IsList(form));
+  assert(Cons::IsList(args));
 
   std::vector<TagPtr> argv;
-  Cons::MapC(
-      env, [&argv](Env* env, TagPtr form) { argv.push_back(Eval(env, form)); },
-      Cons::cdr(form));
+  Cons::MapC(env,
+             [&argv](Env*, TagPtr form) {
+               argv.push_back(form);
+             },
+             args);
 
   return Function::Funcall(env, fn, argv);
 }
 
 /** * evaluate form in environment **/
 Type::TagPtr Eval(Env* env, TagPtr form) {
-  auto rval = form;
+  auto rval = Type::NIL;
 
   switch (Type::TypeOf(form)) {
-    case SYS_CLASS::CONS: { /* function call */
-      auto fn = Eval(env, Cons::car(form));
-
-      switch (Type::TypeOf(fn)) {
-        case SYS_CLASS::SYMBOL: /* (symbol ...) */
-          assert(!(Compiler::IsSpecOp(env, fn) &&
-                   !Type::Eq(fn, Symbol::Keyword("quote"))));
-          assert(Type::Null(Macro::MacroFunction(env, fn)));
-
-          if (Type::Eq(fn, Symbol::Keyword("quote"))) { /* quoted form */
-            rval = Cons::Nth(form, 1);
-          } else if (Function::IsType(Symbol::value(fn))) { /* function call */
-            rval = Apply(env, Symbol::value(fn), form);
-          } else
-            Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
-                             "(eval)", fn);
-          break;
-        case SYS_CLASS::FUNCTION: /* function object */
-          rval = Apply(env, fn, form);
-          break;
-        default:
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)", fn);
-      }
-
+  case SYS_CLASS::SYMBOL:
+    if (!Symbol::IsBound(form))
+      Exception::Raise(env, Exception::EXCEPT_CLASS::UNBOUND_VARIABLE, "(eval)",
+                       form);
+    rval = Symbol::value(form);
+    break;
+  case SYS_CLASS::CONS: { /* function call */
+    auto fn = Eval(env, Cons::car(form));
+      
+    switch (Type::TypeOf(fn)) {
+    case SYS_CLASS::SYMBOL: /* can only be a keyword */
+      if (!Type::Eq(fn, Symbol::Keyword("quote")))
+        Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
+                         "(eval)", fn);
+      
+      rval = Cons::Nth(form, 1);
       break;
+    case SYS_CLASS::FUNCTION: /* function object */
+      rval = Apply(env,
+                   fn,
+                   Cons::MapCar(env,
+                                [](Env* env, TagPtr form) {
+                                  return Eval(env, form);
+                                },
+                                Cons::cdr(form)));
+      break;
+    default:
+      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)", fn);
     }
-    case SYS_CLASS::SYMBOL:
-      if (!Symbol::IsBound(form))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::UNBOUND_VARIABLE, "(eval)",
-                         form);
-      rval = Symbol::value(form);
-      break;
-    default: /* constant form */
-      rval = form;
-      break;
+    break;
+  }
+  default: /* constant form */
+    rval = form;
+    break;
   }
 
   return rval;

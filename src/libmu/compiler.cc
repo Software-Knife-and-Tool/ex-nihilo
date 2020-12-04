@@ -34,36 +34,18 @@ namespace libmu {
 /** * compile form **/
 TagPtr Compiler::Compile(Env* env, TagPtr form) {
   auto rval = Type::NIL;
+  
+  //  printf("compile>: "); Print(env, form, Type::NIL, true); Terpri(env, Type::NIL);
 
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::CONS: { /* funcall/macro call/special call */
-
       auto fn = Cons::car(form);
       auto args = Cons::cdr(form);
 
       switch (Type::TypeOf(fn)) {
-        case SYS_CLASS::CONS: { /* lambda form */
-#if 0
-          /* think: shouldn't the special form compiler deal with this? */
-          if (Type::Eq(Cons::car(fn), Symbol::Keyword("lambda"))) {
-            auto lambda = Cons::Nth(fn, 1);
-
-            /* think: we need this check here? */
-            if (!Cons::IsList(lambda))
-              Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                               "lambda list", lambda);
-
-            rval =
-              CompileList(env,
-                          Cons(CompileLambda(env, fn),
-                               args).Evict(env, "compile:lambda"));
-          } else {
-            rval = CompileList(env, form);
-          }
-#endif
-          rval = CompileList(env, form);
+        case SYS_CLASS::CONS: /* list form */
+          rval = Cons(Compile(env, fn), CompileList(env, Cons::cdr(form))).Evict(env, "compile:funcall");
           break;
-        }
         case SYS_CLASS::NULLT: /* fall through */
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
           auto lfn = Type::NIL;
@@ -94,9 +76,10 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
         case SYS_CLASS::FUNCTION: /* function */
           rval = CompileList(env, form);
           break;
+      case SYS_CLASS::MACRO: /* macro call */
         default:
           Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                           "compile function type", fn);
+                           "compile: function type", fn);
           break;
       }
       break;
@@ -116,6 +99,7 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
       break;
   }
 
+  // printf(">compile: "); Print(env, rval, Type::NIL, true); Terpri(env, Type::NIL);
   return rval;
 }
 
@@ -123,13 +107,11 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
 Type::TagPtr Compiler::CompileList(Env* env, TagPtr list) {
   assert(Cons::IsList(list));
 
-  return Type::Null(list)
-             ? Type::NIL
-             : Cons::MapCar(env,
-                            [](Env* env, TagPtr form) {
-                              return Compile(env, form);
-                            },
-                            list);
+  return Cons::MapCar(env,
+                      [](Env* env, TagPtr form) {
+                        return Compile(env, form);
+                      },
+                      list);
 }
 
 /** * compile lexical symbol */
@@ -239,9 +221,11 @@ bool Compiler::InLexicalEnv(Env* env,
                             TagPtr sym,
                             TagPtr* lambda,
                             size_t* nth) {
-  assert(Symbol::IsType(sym));
 
-  if (Symbol::IsKeyword(sym)) return false;
+  assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
+    
+  if (Symbol::IsKeyword(sym))
+    return false;
 
   std::vector<TagPtr>::reverse_iterator it;
   for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {

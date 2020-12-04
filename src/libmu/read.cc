@@ -47,7 +47,8 @@ TagPtr ReadBroketSyntax(Env* env, TagPtr stream) {
 
   auto type = ReadForm(env, stream);
   auto addr = ReadForm(env, stream);
-  auto attr = ReadForm(env, stream);
+  // auto attr = ReadForm(env, stream);
+  (void)ReadForm(env, stream);
 
   auto bracket = Stream::ReadByte(env, stream);
   if (Fixnum::Uint64Of(bracket) != '>')
