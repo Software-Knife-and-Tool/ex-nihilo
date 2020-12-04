@@ -35,22 +35,19 @@ namespace libmu {
 TagPtr Compiler::Compile(Env* env, TagPtr form) {
   auto rval = Type::NIL;
   
-  //  printf("compile>: "); Print(env, form, Type::NIL, true); Terpri(env, Type::NIL);
+  printf("compile>: "); Print(env, form, Type::NIL, true); Terpri(env, Type::NIL);
 
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::CONS: { /* funcall/macro call/special call */
       auto fn = Cons::car(form);
 
       switch (Type::TypeOf(fn)) {
-<<<<<<< HEAD
         case SYS_CLASS::CONS: /* fn is list form */
           rval = CompileList(env, form);
-=======
-        case SYS_CLASS::CONS: /* list form */
-          rval = Cons(Compile(env, fn), CompileList(env, Cons::cdr(form))).Evict(env, "compile:funcall");
->>>>>>> 2b7b48b5244245c685baee63e1907f3eb60effd5
           break;
         case SYS_CLASS::NULLT: /* fall through */
+          assert(false);
+          break;
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
           auto args = Cons::cdr(form);
           auto lfn = Type::NIL;
@@ -78,7 +75,7 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
           }
           break;
         }
-        case SYS_CLASS::FUNCTION: /* function */
+      case SYS_CLASS::FUNCTION: /* function */
           rval = CompileList(env, form);
           break;
       case SYS_CLASS::MACRO: /* macro call */
@@ -104,7 +101,7 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
       break;
   }
 
-  // printf(">compile: "); Print(env, rval, Type::NIL, true); Terpri(env, Type::NIL);
+  printf(">compile: "); Print(env, rval, Type::NIL, true); Terpri(env, Type::NIL);
   return rval;
 }
 
