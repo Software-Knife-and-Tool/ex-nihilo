@@ -38,16 +38,14 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::CONS: { /* funcall/macro call/special call */
       auto fn = Cons::car(form);
-      auto args = Cons::cdr(form);
 
       switch (Type::TypeOf(fn)) {
-        case SYS_CLASS::CONS: /* list form */
-          rval = Compile(env,
-                         Cons(Compile(env, fn),
-                              Cons::cdr(form)).Evict(env, "compile:fn"));
+        case SYS_CLASS::CONS: /* fn is list form */
+          rval = CompileList(env, form);
           break;
         case SYS_CLASS::NULLT: /* fall through */
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
+          auto args = Cons::cdr(form);
           auto lfn = Type::NIL;
           size_t nth;
 

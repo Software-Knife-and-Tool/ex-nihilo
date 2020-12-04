@@ -1,3 +1,4 @@
+((identity fixnum+) 1 2)
 (append '(1 2 3) '(a b c) '(x y z)
 (append '(1 2 3) '(a b c) '(x y z) 'f)
 (append ())
@@ -23,6 +24,7 @@
 (functionp append)
 (functionp bool)
 (functionp gensym)
+(functionp identity)
 (functionp list)
 (functionp list*)
 (functionp listp)

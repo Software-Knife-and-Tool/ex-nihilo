@@ -1,3 +1,5 @@
+((:lambda ()))
+((identity fixnum+) 1 2)
 (:defsym list1 (:lambda (:rest lists) lists))
 (:quote f)
 (apply fixnum+ '(1 2))

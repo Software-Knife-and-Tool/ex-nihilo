@@ -89,7 +89,6 @@ namespace {
     {"get-output-string-stream", mu::GetStringStream, 1},
     {"heap-info", mu::HeapInfo, 1},
     {"heap-log", mu::HeapLog, 1},
-    {"identity", mu::Identity, 1},
     {"in-ns", mu::SetNamespace, 1},
     {"intern", mu::InternNamespace, 4},
     {"invoke", mu::Invoke, 2},

@@ -65,10 +65,5 @@ void MakeView(Frame* fp) {
   fp->value = Env::ViewOf(fp->env, fp->argv[0]);
 }
 
-/** * (identity object) => object **/
-void Identity(Frame* fp) {
-  fp->value = fp->argv[0];
-}
-
 } /* namespace mu */
 } /* namespace libmu */
