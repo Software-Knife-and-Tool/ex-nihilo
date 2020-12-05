@@ -312,6 +312,19 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
 
   env_.lexical = Type::NIL;
 
+  map_eval_ = Function(this,
+                       Type::NIL,
+                       new TagPtrFn{".map_eval",
+                         [](Env::Frame* fp) {
+                           fp->value =
+                             Cons::MapCar(fp->env,
+                                          [](Env* env, TagPtr form) {
+                                            return Eval(env, form);
+                                          },
+                                          fp->argv[0]);
+                         },
+                         1}).Evict(this, ".map_eval_");
+
   for (auto& el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym,

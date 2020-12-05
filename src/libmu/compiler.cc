@@ -35,8 +35,6 @@ namespace libmu {
 TagPtr Compiler::Compile(Env* env, TagPtr form) {
   auto rval = Type::NIL;
   
-  printf("compile>: "); Print(env, form, Type::NIL, true); Terpri(env, Type::NIL);
-
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::CONS: { /* funcall/macro call/special call */
       auto fn = Cons::car(form);
@@ -56,14 +54,16 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
           rval = form;
           if (InLexicalEnv(env, fn, &lfn, &nth)) { /* lexical function */
             std::vector<TagPtr> lex{
-              Namespace::InternInNs(env, env->mu_, String(env, "apply").tag_),
-              Compile(env, CompileLexical(env, lfn, nth)),
-              Cons::List(env,
-                         std::vector<TagPtr>{
-                           env->map_eval_,
-                           Cons::List(env, std::vector<TagPtr>{
-                               Symbol::Keyword("quote"),
-                               CompileList(env, args)})})};
+              Namespace::InternInNs(env,
+                                    env->mu_,
+                                    String(env, "apply").tag_),
+                                    Compile(env, CompileLexical(env, lfn, nth)),
+                                    Cons::List(env,
+                                               std::vector<TagPtr>{
+                                                 env->map_eval_,
+                                                 Cons::List(env, std::vector<TagPtr>{
+                                                     Symbol::Keyword("quote"),
+                                                     CompileList(env, args)})})};
 
             rval = Compile(env, Cons::List(env, lex));
           } else if (!Type::Null(Macro::MacroFunction(env, fn))) {
@@ -101,7 +101,6 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
       break;
   }
 
-  printf(">compile: "); Print(env, rval, Type::NIL, true); Terpri(env, Type::NIL);
   return rval;
 }
 
