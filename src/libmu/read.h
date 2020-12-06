@@ -28,7 +28,6 @@
 
 namespace libmu {
 
-TagPtr ParseNumber(Env*, const std::string&);
 TagPtr Read(Env*, TagPtr);
 TagPtr ReadForm(Env*, TagPtr);
 bool ReadWSUntilEof(Env*, TagPtr);

@@ -23,38 +23,20 @@
 
 namespace libmu {
 
-class Compiler : public Type {
- private: /* singleton */
-  Compiler(){};
+TagPtr Compile(Env*, TagPtr);
+bool IsSpecOp(Env*, TagPtr);
 
- public:
-  static TagPtr Compile(Env*, TagPtr);
-  static TagPtr CompileLambda(Env*, TagPtr);
-  static TagPtr CompileLexical(Env*, TagPtr, size_t);
-  static TagPtr CompileList(Env*, TagPtr);
-  static TagPtr CompileSpecial(Env*, TagPtr);
+constexpr TagPtr lexicals(TagPtr lambda) {
+  assert(Cons::IsList(lambda));
 
-  static TagPtr DefConstant(Env*, TagPtr);
-  static TagPtr DefMacro(Env*, TagPtr);
-  static TagPtr Lambda(Env*, TagPtr);
-  static TagPtr Letq(Env*, TagPtr);
-  static TagPtr Quote(Env*, TagPtr);
+  return Cons::car(lambda);
+}
 
-  static bool IsSpecOp(Env*, TagPtr);
+constexpr TagPtr restsym(TagPtr lambda) {
+  assert(Cons::IsList(lambda));
 
-  static constexpr TagPtr lexicals(TagPtr lambda) {
-    assert(Cons::IsList(lambda));
-
-    return Cons::car(lambda);
-  }
-
-  static constexpr TagPtr restsym(TagPtr lambda) {
-    assert(Cons::IsList(lambda));
-
-    return Cons::cdr(lambda);
-  }
-
-}; /* class Compiler */
+  return Cons::cdr(lambda);
+}
 
 } /* namespace libmu */
 

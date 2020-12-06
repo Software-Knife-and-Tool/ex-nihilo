@@ -114,11 +114,10 @@ void libmu_withException(void* env, std::function<void(void*)> fn) {
 
 /** * eval **/
 void* libmu_eval(void* env, void* form) {
-  return reinterpret_cast<void*>(
-      libmu::Eval((libmu::Env*)env,
-                  libmu::Compiler::Compile(
-                      (libmu::Env*)env,
-                      libmu::Type::Entag(form, libmu::Type::TAG::ADDRESS))));
+  return reinterpret_cast<void*>(libmu::Eval(
+      (libmu::Env*)env,
+      Compile((libmu::Env*)env,
+              libmu::Type::Entag(form, libmu::Type::TAG::ADDRESS))));
 }
 
 /** * env - allocate an environment **/

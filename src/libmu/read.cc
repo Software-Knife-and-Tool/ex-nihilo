@@ -143,10 +143,8 @@ TagPtr RadixFixnum(Env* env, int radix, TagPtr stream) {
   return number;
 }
 
-}  // namespace
-
 /** * parse a numeric std::string **/
-Type::TagPtr ParseNumber(Env* env, const std::string& str) {
+TagPtr ParseNumber(Env* env, const std::string& str) {
   auto number = Type::NIL;
 
   try {
@@ -175,6 +173,8 @@ Type::TagPtr ParseNumber(Env* env, const std::string& str) {
 
   return number;
 }
+
+}  // namespace
 
 /** * absorb whitespace until eof **/
 bool ReadWSUntilEof(Env* env, TagPtr stream) {
@@ -277,7 +277,7 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
             break;
           }
           case SYNTAX_CHAR::DOT: /* read-time eval */
-            rval = Eval(env, Compiler::Compile(env, ReadForm(env, stream)));
+            rval = Eval(env, Compile(env, ReadForm(env, stream)));
             break;
           case SYNTAX_CHAR::VBAR: /* block comment */
             for (;;) {
