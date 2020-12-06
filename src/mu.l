@@ -1,7 +1,7 @@
 ;;;
 ;;; mu forms
 ;;;
-(:defsym .version "0.0.18")
+(:defsym .version "0.0.19")
 
 ;;; identity
 (:defsym identity (:lambda (a) a))
@@ -27,23 +27,48 @@
 ;;; list*
 (:defsym list* (:lambda (:rest args)
   (mu:if (cdr args)
-      (cons (car args) (apply list* (cdr args)))
+    (cons (car args) (apply list* (cdr args)))
     (car args))))
 
 ;;; progn/let/let*/macrolet
 (:defsym progn (:macro (:rest body)
-  (list (list* :lambda :nil body))))
+  (list (list* :lambda () body))))
 
 (:defsym let (:macro (bindl :rest body)
-   (list*
-     (list* :lambda (mapcar car bindl) body)
-       (list* (mapcar (:lambda (vl) (nth 1 vl)) bindl)))))
+  (list*
+    (list* :lambda (mapcar car bindl) body)
+    (list* (mapcar (:lambda (vl) (nth 1 vl)) bindl)))))
 
 (:defsym macrolet (:macro (bindl :rest body)
    (list*
      (list* :macro (mapcar car bindl) body)
        (list* (mapcar (:lambda (vl) (nth 1 vl)) bindl)))))
 
+;;; gensym
+(:defsym gensym
+   (let ((gensym-counter 0))
+     #'(:lambda ()
+        (let ((name (open-output-string "")))
+          (:letq gensym-counter (fixnum+ 1 gensym-counter))
+          (print "GENSYM-" name :nil)
+          (print gensym-counter name :nil)
+          (make-symbol (get-output-string-stream name))))))
+
+;;; internal recursive functions
+;;; think: this requires mutable lexicals
+(:defsym mu.recur (:macro (fn lambda :rest body)
+  (mu:if (symbolp fn)
+    (mu:if (listp lambda)
+      (let ((g (gensym)))
+        (list 'let                            
+          (list (list g (list :lambda (list fn)
+            (list 'closure
+              (list :letq fn (list* :lambda lambda body))))))
+          (list g :nil)))
+        (error "is not a list (recur)" lambda))
+    (error "is not a symbol (recur)" fn))))
+
+;;; let*
 (:defsym let* (:macro (bindl :rest body)
    (let ((fnc (:lambda (fn bindl body)
            (mu:if (cdr bindl)
@@ -68,16 +93,6 @@
                    (list 'mu:if value value (fn fn (cdr forms))))))))
     (mu:if forms (orf orf forms) :nil))))
 
-;;; gensym
-(:defsym gensym
-   (let ((gensym-counter 0))
-     #'(:lambda ()
-        (let ((name (open-output-string "")))
-          (:letq gensym-counter (fixnum+ 1 gensym-counter))
-          (print "GENSYM-" name :nil)
-          (print gensym-counter name :nil)
-          (make-symbol (get-output-string-stream name))))))
-
 ;;; when/unless macros
 (:defsym when (:macro (test :rest forms)
   (list 'mu:if test (list* 'progn forms) :nil)))
@@ -94,18 +109,6 @@
 
 (:defsym mu:return (:macro (value)
   (list 'mu.return :nil value)))
-
-;;; internal recursive functions
-;;; note: this requires mutable lexicals
-(:defsym mu.recur (:macro (fn lambda :rest body)
-  (unless (symbolp fn) (error "is not a symbol (recur)" fn))
-  (unless (listp lambda) (error "is not a list (recur)" lambda))
-  (let ((f (gensym)))
-    (list 'let                            
-      (list (list f (list :lambda (list fn)
-        (list 'closure
-          (list :letq fn (list* :lambda lambda body))))))
-      (list f :nil)))))
 
 ;;; letf - recursively defined lexical functions
 (:defsym letf (:macro (bindl :rest body)

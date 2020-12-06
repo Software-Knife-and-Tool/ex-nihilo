@@ -214,8 +214,6 @@ int Env::Gc(Env* env) {
     for (size_t i = 0; i < fp->nargs; ++i) GcMark(env, fp->argv[i]);
   }
 
-  GcMark(env, env->map_eval_);
-
   return env->heap_->Gc();
 }
 
