@@ -47,25 +47,11 @@ TagPtr Compiler::Compile(Env* env, TagPtr form) {
           assert(false);
           break;
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
-          auto args = Cons::cdr(form);
           auto lfn = Type::NIL;
           size_t nth;
 
-          rval = form;
-          if (InLexicalEnv(env, fn, &lfn, &nth)) { /* lexical function */
-            std::vector<TagPtr> lex{
-              Namespace::InternInNs(env,
-                                    env->mu_,
-                                    String(env, "apply").tag_),
-                                    Compile(env, CompileLexical(env, lfn, nth)),
-                                    Cons::List(env,
-                                               std::vector<TagPtr>{
-                                                 env->map_eval_,
-                                                 Cons::List(env, std::vector<TagPtr>{
-                                                     Symbol::Keyword("quote"),
-                                                     CompileList(env, args)})})};
-
-            rval = Compile(env, Cons::List(env, lex));
+          if (InLexicalEnv(env, fn, &lfn, &nth)) {
+            rval = CompileList(env, form);
           } else if (!Type::Null(Macro::MacroFunction(env, fn))) {
             rval = Compile(env, Macro::MacroExpand(env, form));
           } else if (IsSpecOp(env, fn)) {

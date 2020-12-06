@@ -101,7 +101,6 @@ class Env {
   TagPtr standard_input_;      /* standard input */
   TagPtr standard_output_;     /* standard output */
   TagPtr standard_error_;      /* standard error */
-  TagPtr map_eval_;            /* useful idiot */
   
  public: /* frame stack */
   constexpr void PushFrame(Frame* fp) { frames_.push_back(fp); }
