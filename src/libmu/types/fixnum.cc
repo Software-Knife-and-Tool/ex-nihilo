@@ -31,13 +31,10 @@ namespace libmu {
 /** * view of fixnum object **/
 Type::TagPtr Fixnum::ViewOf(Env* env, TagPtr fix) {
   assert(IsType(fix));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("fixnum"),
-    fix,
-    Fixnum(ToUint64(fix) >> 3).tag_
-  };
-    
+
+  auto view = std::vector<TagPtr>{Symbol::Keyword("fixnum"), fix,
+                                  Fixnum(ToUint64(fix) >> 3).tag_};
+
   return Vector(env, view).tag_;
 }
 
@@ -49,7 +46,7 @@ void Fixnum::Print(Env* env, TagPtr fixnum, TagPtr stream, bool) {
   std::ostringstream str;
 
   str << std::setbase(10) << Int64Of(fixnum);
-  PrintStdString(env, str.str(), stream, false);
+  core::PrintStdString(env, str.str(), stream, false);
 }
 
 } /* namespace libmu */

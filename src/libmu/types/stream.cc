@@ -35,7 +35,7 @@
 #include "libmu/types/namespace.h"
 
 namespace libmu {
-  
+
 /** * function stream? **/
 bool Stream::IsFunction(TagPtr ptr) {
   return IsType(ptr) && Function::IsType(Untag<Layout>(ptr)->fn);
@@ -45,24 +45,19 @@ bool Stream::IsFunction(TagPtr ptr) {
 void Stream::GcMark(Env* env, TagPtr stream) {
   assert(IsType(stream));
 
-  if (IsFunction(stream))
-    env->heap_->GcMark(func(stream));
-  
+  if (IsFunction(stream)) env->heap_->GcMark(func(stream));
+
   env->heap_->GcMark(stream);
 }
 
 /** * view of struct object **/
 Type::TagPtr Stream::ViewOf(Env* env, TagPtr stream) {
   assert(IsType(stream));
-  
+
   auto view = std::vector<TagPtr>{
-    Symbol::Keyword("stream"),
-    stream,
-    Fixnum(ToUint64(stream) >> 3).tag_,
-    Fixnum(streamId(stream)).tag_,
-    Fixnum(ToUint64(func(stream))).tag_
-  };
-    
+      Symbol::Keyword("stream"), stream, Fixnum(ToUint64(stream) >> 3).tag_,
+      Fixnum(streamId(stream)).tag_, Fixnum(ToUint64(func(stream))).tag_};
+
   return Vector(env, view).tag_;
 }
 
@@ -70,11 +65,10 @@ Type::TagPtr Stream::ViewOf(Env* env, TagPtr stream) {
 bool Stream::IsEof(TagPtr stream) {
   assert(Stream::IsType(stream));
 
-  if (IsFunction(stream))
-    return false;
+  if (IsFunction(stream)) return false;
 
   auto sp = Untag<Layout>(stream);
-    
+
   return Platform::IsEof(sp->stream) ? true : false;
 }
 
@@ -82,8 +76,7 @@ bool Stream::IsEof(TagPtr stream) {
 bool Stream::IsClosed(TagPtr stream) {
   assert(Stream::IsType(stream));
 
-  if (IsFunction(stream))
-    return false;
+  if (IsFunction(stream)) return false;
 
   auto sp = Untag<Layout>(stream);
 
@@ -94,8 +87,7 @@ bool Stream::IsClosed(TagPtr stream) {
 void Stream::Flush(TagPtr stream) {
   assert(IsType(stream));
 
-  if (IsFunction(stream))
-    return;
+  if (IsFunction(stream)) return;
 
   auto sp = Untag<Layout>(stream);
 
@@ -153,7 +145,7 @@ void Stream::WriteByte(TagPtr byte, TagPtr stream) {
 TagPtr Stream::ReadByte(Env* env, TagPtr strm) {
   auto stream = StreamDesignator(env, strm);
   assert(!Stream::IsFunction(stream));
-  
+
   auto sp = Untag<Layout>(stream);
   auto byte = Platform::ReadByte(sp->stream);
 
@@ -166,9 +158,9 @@ TagPtr Stream::ReadByte(Env* env, TagPtr strm) {
 TagPtr Stream::Close(TagPtr stream) {
   assert(IsType(stream));
   assert(!Stream::IsFunction(stream));
-  
+
   auto sp = Untag<Layout>(stream);
-  
+
   Platform::Close(sp->stream);
   return T;
 }
@@ -185,17 +177,17 @@ Type::TagPtr Stream::Evict(Env* env, const char* src) {
 Stream::Stream(Platform::StreamId streamid) : Type() {
   stream_.stream = streamid;
   stream_.fn = NIL;
-  
+
   tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);
 }
 
 Stream::Stream(TagPtr fn) : Type() {
   assert(Function::IsType(fn));
-  
+
   stream_.stream = Platform::STREAM_ERROR;
   stream_.fn = fn;
-  
+
   tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);
 }
-  
+
 } /* namespace libmu */

@@ -66,17 +66,17 @@ void ReadChar(Frame* fp) {
                      fp->argv[0]);
 
   if (Stream::IsFunction(stream)) {
-    auto ch = Function::Funcall(fp->env, Stream::func(stream), std::vector<TagPtr>{});
+    auto ch =
+        Function::Funcall(fp->env, Stream::func(stream), std::vector<TagPtr>{});
 
     if (!Char::IsType(ch))
       Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "function stream returns non-char (read-char)", stream);
+                       "function stream returns non-char (read-char)", stream);
     fp->value = ch;
   } else {
     auto byte = Stream::ReadByte(fp->env, stream);
 
-    fp->value = Type::Null(byte) ? byte
-                                 : Char(Fixnum::Uint64Of(byte)).tag_;
+    fp->value = Type::Null(byte) ? byte : Char(Fixnum::Uint64Of(byte)).tag_;
   }
 }
 
@@ -99,7 +99,7 @@ void UnReadChar(Frame* fp) {
                      stream);
 
   fp->value =
-    Stream::UnReadByte(Fixnum(Char::Uint8Of(fp->argv[0])).tag_, stream);
+      Stream::UnReadByte(Fixnum(Char::Uint8Of(fp->argv[0])).tag_, stream);
 }
 
 /** * (read-byte stream) => fixnum **/
@@ -115,9 +115,11 @@ void ReadByte(Frame* fp) {
                      fp->argv[0]);
 
   if (Stream::IsFunction(stream)) {
-    auto byte = Function::Funcall(fp->env, Stream::func(stream), std::vector<TagPtr>{});
+    auto byte =
+        Function::Funcall(fp->env, Stream::func(stream), std::vector<TagPtr>{});
 
-    if (!Fixnum::IsType(byte) || Fixnum::Int64Of(byte) < 0 || Fixnum::Int64Of(byte) > 255)
+    if (!Fixnum::IsType(byte) || Fixnum::Int64Of(byte) < 0 ||
+        Fixnum::Int64Of(byte) > 255)
       Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                        "function stream returns non-byte (read-byte)", stream);
     fp->value = byte;
@@ -132,8 +134,8 @@ void WriteChar(Frame* fp) {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[1]);
 
   if (!Char::IsType(ch))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(write-char)",
-                     ch);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "(write-char)", ch);
 
   if (!Stream::IsType(stream))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -151,8 +153,8 @@ void WriteByte(Frame* fp) {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[1]);
 
   if (!Fixnum::IsType(byte))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(write-byte)",
-                     byte);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "(write-byte)", byte);
 
   if (!Stream::IsType(stream))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -197,7 +199,7 @@ void OutStringStream(Frame* fp) {
                      init_string);
 
   fp->value =
-    Stream::MakeOutputString(fp->env, String::StdStringOf(init_string));
+      Stream::MakeOutputString(fp->env, String::StdStringOf(init_string));
 }
 
 /** * (output-file path) => stream **/
@@ -230,14 +232,13 @@ void GetStringStream(Frame* fp) {
   fp->value = String(fp->env, Platform::GetStdString(sp->stream)).tag_;
 }
 
-  /** * (open-socket-server port) **/
+/** * (open-socket-server port) **/
 void SocketServerStream(Frame* fp) {
   auto port = fp->argv[0];
 
   if (!Fixnum::IsType(port))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument must be a fixnum (open-socket-server)",
-                     port);
+                     "argument must be a fixnum (open-socket-server)", port);
 
   fp->value = Type::NIL;
 };
@@ -248,8 +249,7 @@ void FunctionStream(Frame* fp) {
 
   if (!Function::IsType(fn))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument must be a function (open-function-stream)",
-                     fn);
+                     "argument must be a function (open-function-stream)", fn);
 
   fp->value = Stream(fn).Evict(fp->env, "mu-stream:function-stream");
 };
@@ -273,13 +273,11 @@ void SocketStream(Frame* fp) {
 
   if (!Fixnum::IsType(ipaddr))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument must be a fixnum (make-socket-stream)",
-                     ipaddr);
+                     "argument must be a fixnum (make-socket-stream)", ipaddr);
 
   if (!Fixnum::IsType(port))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument must be a fixnum (make-socket-stream)",
-                     port);
+                     "argument must be a fixnum (make-socket-stream)", port);
 
   fp->value = Type::NIL;
 };
@@ -290,8 +288,7 @@ void ConnectSocketStream(Frame* fp) {
 
   if (!Stream::IsType(socket))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument must be a stream (make-socket-server)",
-                     socket);
+                     "argument must be a stream (make-socket-server)", socket);
 
   fp->value = Type::NIL;
 };
@@ -320,7 +317,8 @@ void Load(Frame* fp) {
     case SYS_CLASS::STREAM: {
       auto sp = Type::Untag<Stream::Layout>(filespec);
       while (!Platform::IsEof(sp->stream))
-        Eval(fp->env, Compiler::Compile(fp->env, Read(fp->env, filespec)));
+        core::Eval(fp->env,
+                   core::Compile(fp->env, core::Read(fp->env, filespec)));
 
       break;
     }
@@ -335,8 +333,9 @@ void Load(Frame* fp) {
       auto sp = Type::Untag<Stream::Layout>(istream);
 
       while (!Platform::IsEof(sp->stream))
-        Eval(fp->env, Compiler::Compile(fp->env, Read(fp->env, istream)));
-      
+        core::Eval(fp->env,
+                   core::Compile(fp->env, core::Read(fp->env, istream)));
+
       if (Type::Null(Stream::Close(istream)))
         Exception::Raise(fp->env, Exception::EXCEPT_CLASS::STREAM_ERROR,
                          "couldn't close (load)", filespec);

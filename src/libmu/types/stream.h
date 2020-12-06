@@ -74,15 +74,18 @@ class Stream : public Type {
   }
 
   static TagPtr MakeOutputFile(Env* env, std::string path) {
-    return Stream(Platform::OpenOutputFile(path)).Evict(env, "stream:make-output-file");
+    return Stream(Platform::OpenOutputFile(path))
+        .Evict(env, "stream:make-output-file");
   }
 
   static TagPtr MakeInputString(Env* env, std::string str) {
-    return Stream(Platform::OpenInputString(str)).Evict(env, "stream:make-input-string");
+    return Stream(Platform::OpenInputString(str))
+        .Evict(env, "stream:make-input-string");
   }
 
   static TagPtr MakeOutputString(Env* env, std::string init_string) {
-    return Stream(Platform::OpenOutputString(init_string)).Evict(env, "stream:make-output-string");
+    return Stream(Platform::OpenOutputString(init_string))
+        .Evict(env, "stream:make-output-string");
   }
 
   static TagPtr StreamDesignator(Env*, TagPtr);

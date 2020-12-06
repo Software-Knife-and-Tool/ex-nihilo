@@ -50,7 +50,8 @@ void NameOfNamespace(Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-name", ns);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-name",
+                     ns);
 
   fp->value = Namespace::name(fp->argv[0]);
 }
@@ -91,16 +92,14 @@ void NamespaceSymbols(Frame* fp) {
 
   std::vector<TagPtr> interns;
 
-  for (auto map : Namespace::interns(ns))
-    interns.push_back(map.second);
+  for (auto map : Namespace::interns(ns)) interns.push_back(map.second);
 
   std::vector<TagPtr> externs;
 
-  for (auto map : Namespace::externs(ns))
-    externs.push_back(map.second);
+  for (auto map : Namespace::externs(ns)) externs.push_back(map.second);
 
-  fp->value = Cons(Cons::List(fp->env, externs),
-                   Cons::List(fp->env, interns)).Evict(fp->env, "mu-namespace:symbols");
+  fp->value = Cons(Cons::List(fp->env, externs), Cons::List(fp->env, interns))
+                  .Evict(fp->env, "mu-namespace:symbols");
 }
 
 /** * (in-ns ns) => ns **/
@@ -115,9 +114,7 @@ void SetNamespace(Frame* fp) {
 }
 
 /** * (ns-current ns) => ns **/
-void GetNamespace(Frame* fp) {
-  fp->value = fp->env->namespace_;
-}
+void GetNamespace(Frame* fp) { fp->value = fp->env->namespace_; }
 
 /** * (find-symbol ns symbol) => symbol **/
 void FindSymbolNamespace(Frame* fp) {
@@ -125,16 +122,16 @@ void FindSymbolNamespace(Frame* fp) {
   auto name = fp->argv[1];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-symbol",
-                     ns);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "find-symbol", ns);
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-symbol",
-                     name);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "find-symbol", name);
 
   fp->value = Namespace::FindSymbol(fp->env, ns, name);
 }
-  
+
 /** * (find-in-ns ns :intern|:extern string) => symbol **/
 void FindInNamespace(Frame* fp) {
   auto ns = fp->argv[0];
@@ -142,18 +139,20 @@ void FindInNamespace(Frame* fp) {
   auto name = fp->argv[2];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns", ns);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
+                     ns);
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns", name);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
+                     name);
 
   if (Type::Eq(Symbol::Keyword("intern"), type)) {
     fp->value = Namespace::FindInNsInterns(fp->env, ns, name);
-  } else
-    if (Type::Eq(Symbol::Keyword("extern"), type)) {
+  } else if (Type::Eq(Symbol::Keyword("extern"), type)) {
     fp->value = Namespace::FindInNsExterns(fp->env, ns, name);
   } else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns", name);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
+                     name);
 }
 
 /** * (intern ns keyword symbol value) => symbol **/
@@ -162,23 +161,24 @@ void InternNamespace(Frame* fp) {
   auto type = fp->argv[1];
   auto name = fp->argv[2];
   auto value = fp->argv[3];
-  
+
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern", ns);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern",
+                     ns);
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern", name);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern",
+                     name);
 
   if (Type::Eq(Symbol::Keyword("intern"), type)) {
     fp->value = Namespace::InternInNs(fp->env, ns, name);
-  } else
-    if (Type::Eq(Symbol::Keyword("extern"), type)) {
+  } else if (Type::Eq(Symbol::Keyword("extern"), type)) {
     fp->value = Namespace::Intern(fp->env, ns, name);
   } else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern", name);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern",
+                     name);
 
-  if (!Symbol::IsBound(fp->value))
-    Symbol::Bind(fp->value, value);
+  if (!Symbol::IsBound(fp->value)) Symbol::Bind(fp->value, value);
 }
 
 } /* namespace mu */

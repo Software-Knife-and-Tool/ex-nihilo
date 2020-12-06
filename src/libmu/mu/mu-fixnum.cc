@@ -36,10 +36,12 @@ void FixAdd(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum+", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum+",
+                     fx0);
 
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum+", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum+",
+                     fx1);
 
   fp->value = Fixnum(Fixnum::Int64Of(fx0) + Fixnum::Int64Of(fx1)).tag_;
 }
@@ -50,9 +52,11 @@ void FixSub(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum-", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum-",
+                     fx0);
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum-", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum-",
+                     fx1);
 
   fp->value = Fixnum(Fixnum::Int64Of(fx0) - Fixnum::Int64Of(fx1)).tag_;
 }
@@ -63,9 +67,11 @@ void FixMul(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum*", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum*",
+                     fx0);
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum*", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum*",
+                     fx1);
 
   fp->value = Fixnum(Fixnum::Int64Of(fx0) * Fixnum::Int64Of(fx1)).tag_;
 }
@@ -76,10 +82,12 @@ void FixLessThan(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum<", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum<",
+                     fx0);
 
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum<", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum<",
+                     fx1);
 
   fp->value = Type::BoolOf(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1));
 }
@@ -90,14 +98,16 @@ void FixDiv(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx0);
 
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx1);
 
   if (Fixnum::Uint64Of(fx1) == 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO, "fixnum/",
-                     fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
+                     "fixnum/", fx1);
 
   fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
 }
@@ -122,13 +132,14 @@ void Logand(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logand", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logand",
+                     fx0);
 
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logand", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logand",
+                     fx1);
 
-  fp->value =
-    Fixnum(Fixnum::Uint64Of(fx0) & Fixnum::Uint64Of(fx1)).tag_;
+  fp->value = Fixnum(Fixnum::Uint64Of(fx0) & Fixnum::Uint64Of(fx1)).tag_;
 }
 
 /** * mu function (logor fixnum fixnum) => fixnum **/
@@ -137,13 +148,14 @@ void Logor(Frame* fp) {
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logor", fx0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logor",
+                     fx0);
 
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logor", fx1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "logor",
+                     fx1);
 
-  fp->value =
-    Fixnum(Fixnum::Uint64Of(fx0) | Fixnum::Uint64Of(fx1)).tag_;
+  fp->value = Fixnum(Fixnum::Uint64Of(fx0) | Fixnum::Uint64Of(fx1)).tag_;
 }
 
 /** * mu function (fixnum object) => fixnum **/

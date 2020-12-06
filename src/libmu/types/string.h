@@ -73,7 +73,6 @@ class String : public Vector {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-
   explicit String(Env* env, std::string str) : Vector(env, str) {}
 };
 

@@ -27,6 +27,8 @@
 
 namespace libmu {
 
+using heap::Heap;
+
 class Env;
 
 /** vector class type **/

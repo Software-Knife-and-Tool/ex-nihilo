@@ -31,13 +31,11 @@ using Frame = Env::Frame;
 
 /** * mu function (vector? form) => bool**/
 void IsVector(Frame* fp) {
-  
   fp->value = Type::BoolOf(Vector::IsType(fp->argv[0]));
 }
 
 /** * mu function (svref vector) => object **/
 void VectorRef(Frame* fp) {
-  
   auto vector = fp->argv[0];
   auto index = fp->argv[1];
 
@@ -80,7 +78,6 @@ void VectorRef(Frame* fp) {
 
 /** * mu function (svlength vector) => fixnum **/
 void VectorLength(Frame* fp) {
-  
   auto vector = fp->argv[0];
 
   if (!Vector::IsType(vector))
@@ -92,7 +89,6 @@ void VectorLength(Frame* fp) {
 
 /** * mu function (svtype vector) => symbol **/
 void VectorType(Frame* fp) {
-  
   if (!Vector::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svtype)",
                      fp->argv[0]);
@@ -102,7 +98,6 @@ void VectorType(Frame* fp) {
 
 /** * mu function (svmap function vector) => vector **/
 void VectorMap(Frame* fp) {
-  
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
@@ -119,7 +114,6 @@ void VectorMap(Frame* fp) {
 
 /** * mu function (svmapc function vector) => vector **/
 void VectorMapC(Frame* fp) {
-  
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
@@ -141,12 +135,12 @@ void MakeVector(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Symbol::IsType(type))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "vector", type);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
+                     type);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "vector", list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
+                     list);
 
   fp->value = Vector::ListToVector(fp->env, type, list);
 }

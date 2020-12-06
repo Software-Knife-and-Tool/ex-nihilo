@@ -51,6 +51,22 @@ class Macro : public Type {
   static TagPtr MacroExpand(Env*, TagPtr);
   static TagPtr MacroFunction(Env*, TagPtr);
 
+  static void Print(Env* env, TagPtr macro, TagPtr str, bool) {
+    auto fn = func(macro);
+
+    assert(Function::IsType(fn));
+    assert(Stream::IsType(str));
+
+    auto stream = Stream::StreamDesignator(env, str);
+    auto name = String::StdStringOf(Symbol::name(Function::name(fn)));
+
+    std::stringstream hexs;
+
+    hexs << std::hex << Type::to_underlying(fn);
+    core::PrintStdString(env, "#<:macro #x" + hexs.str() + " (" + name + ")>",
+                         stream, false);
+  }
+
   static void GcMark(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 
@@ -68,7 +84,7 @@ class Macro : public Type {
     assert(Function::IsType(func));
 
     macro_.func = func;
-    
+
     tag_ = Entag(reinterpret_cast<void*>(&macro_), TAG::EXTEND);
   }
 }; /* class Macro */

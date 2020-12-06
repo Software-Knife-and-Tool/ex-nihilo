@@ -30,7 +30,6 @@ namespace libmu {
 
 using platform::Platform;
 
-class Heap;
 class Namespace;
 
 using TagPtr = Type::TagPtr;
@@ -79,72 +78,52 @@ class Env {
   } TagPtrFn;
 
   /** * map address to core function **/
-  TagPtrFn* CoreFunction(TagPtr caddr) {
+  TagPtrFn* CoreFunction(TagPtr caddr) { return Type::Untag<TagPtrFn>(caddr); }
 
-    return Type::Untag<TagPtrFn>(caddr);
-  }
-  
  private:
   std::unordered_map<TagPtr, std::stack<Frame*>> framecache_;
   std::map<std::string, TagPtr> namespaces_;
 
  public:
-  std::unique_ptr<Heap> heap_; /* heap */
-  Platform* platform_;         /* platform */
-  std::vector<Frame*> frames_; /* frame stack */
-  size_t frame_id_;            /* frame cache */
-  std::vector<TagPtr> lexenv_; /* lexical symbols */
+  std::unique_ptr<heap::Heap> heap_; /* heap */
+  Platform* platform_;               /* platform */
+  std::vector<Frame*> frames_;       /* frame stack */
+  size_t frame_id_;                  /* frame cache */
+  std::vector<TagPtr> lexenv_;       /* lexical symbols */
+                                     /* syntax dispatch */
   std::unordered_map<TagPtr, TagPtr> readtable_;
-                               /* syntax dispatch */
-  TagPtr mu_;                  /* mu namespace */
-  TagPtr namespace_;           /* current namespace */
-  TagPtr standard_input_;      /* standard input */
-  TagPtr standard_output_;     /* standard output */
-  TagPtr standard_error_;      /* standard error */
-  
+  TagPtr mu_;              /* mu namespace */
+  TagPtr namespace_;       /* current namespace */
+  TagPtr standard_input_;  /* standard input */
+  TagPtr standard_output_; /* standard output */
+  TagPtr standard_error_;  /* standard error */
+
  public: /* frame stack */
   constexpr void PushFrame(Frame* fp) { frames_.push_back(fp); }
   constexpr void PopFrame() { frames_.pop_back(); }
   constexpr void Cache(Frame* fp) { framecache_[fp->frame_id].push(fp); }
   constexpr void UnCache(Frame* fp) { framecache_[fp->frame_id].pop(); }
 
+  /** * map id to frame **/
   constexpr Frame* MapFrame(TagPtr id) {
     assert(!framecache_[id].empty());
     return framecache_[id].top();
   }
 
-  static TagPtr FrameToVector(Env*, Frame*);
-  
-  static TagPtr LastFrame(Env* env) {
-    return env->frames_.empty() ?
-              Type::NIL : FrameToVector(env, env->frames_.front());
-  }
+  static TagPtr LastFrame(Env*);
 
  public: /* heap */
   static int Gc(Env*);
   static void GcMark(Env*, TagPtr);
 
-  static TagPtr Gensym(Env*);
   static TagPtr MapNamespace(Env*, std::string);
   static void AddNamespace(Env*, TagPtr);
-  
- private:
-  typedef struct {
-    TagPtr lexical; /* lexical stack */
-  } Layout;
 
-  Layout env_;
-
- public:
   static bool InHeap(Env* env, TagPtr ptr) {
-    return
-      Type::IsImmediate(ptr) ? false
-                             : env->heap_->in_heap(Type::ToAddress(ptr));
+    return Type::IsImmediate(ptr) ? false
+                                  : env->heap_->in_heap(Type::ToAddress(ptr));
   }
 
-  static TagPtr lexical(TagPtr str) { return Type::Untag<Layout>(str)->lexical; }
-
-  static bool Debug(Env*, std::string);
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */

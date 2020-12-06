@@ -50,8 +50,8 @@ void PrintEscape(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "print",
                      stream);
 
-  Print(fp->env, obj, stream, !Type::Null(escape));
-  
+  core::Print(fp->env, obj, stream, !Type::Null(escape));
+
   fp->value = obj;
 }
 
@@ -63,7 +63,7 @@ void Terpri(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "terpri",
                      stream);
 
-  Terpri(fp->env, stream);
+  core::Terpri(fp->env, stream);
   fp->value = Type::NIL;
 }
 

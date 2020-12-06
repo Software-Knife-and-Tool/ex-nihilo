@@ -57,13 +57,11 @@ void IsSpecOp(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "special-operator?", symbol);
 
-  fp->value = Type::BoolOf(Compiler::IsSpecOp(fp->env, symbol));
+  fp->value = Type::BoolOf(core::IsSpecOp(fp->env, symbol));
 }
 
 /** * (make-view object) => vector **/
-void MakeView(Frame* fp) {
-  fp->value = Env::ViewOf(fp->env, fp->argv[0]);
-}
+void MakeView(Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
 
 } /* namespace mu */
 } /* namespace libmu */

@@ -33,8 +33,8 @@ void SymbolValue(Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "symbol-value",
-                     symbol);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "symbol-value", symbol);
 
   if (!Symbol::IsBound(symbol))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::UNBOUND_VARIABLE,
@@ -86,14 +86,15 @@ void UninternedSymbol(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "uninterned-symbol", fp->argv[0]);
 
-  fp->value = Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
+  fp->value =
+      Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
 }
 
 /** * (make-keyword string) */
 void MakeKeyword(Frame* fp) {
   if (!String::IsType(fp->argv[0]))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "make-keyword",
-                     fp->argv[0]);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "make-keyword", fp->argv[0]);
 
   fp->value = Symbol::Keyword(fp->argv[0]);
 }

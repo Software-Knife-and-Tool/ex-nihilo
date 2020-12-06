@@ -40,18 +40,14 @@ void Cons::GcMark(Env* env, TagPtr ptr) {
 /** * view of cons object **/
 Type::TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
   assert(IsType(cons));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("cons"),
-    cons,
-    Fixnum(ToUint64(cons) >> 3).tag_,
-    car(cons),
-    cdr(cons)
-  };
-    
+
+  auto view = std::vector<TagPtr>{Symbol::Keyword("cons"), cons,
+                                  Fixnum(ToUint64(cons) >> 3).tag_, car(cons),
+                                  cdr(cons)};
+
   return Vector(env, view).tag_;
 }
-  
+
 /** * mapcar :func list **/
 Type::TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
@@ -73,8 +69,7 @@ Type::TagPtr Cons::MapCar(Env* env, std::function<TagPtr(Env*, TagPtr)> fn,
                           TagPtr list) {
   assert(IsList(list));
 
-  if (Null(list))
-    return NIL;
+  if (Null(list)) return NIL;
 
   std::vector<TagPtr> vlist;
   cons_iter<TagPtr> iter(list);
@@ -89,8 +84,7 @@ void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
   assert(IsList(list));
 
-  if (Null(list))
-    return;
+  if (Null(list)) return;
 
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
@@ -101,8 +95,7 @@ void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
 void Cons::MapC(Env* env, std::function<void(Env*, TagPtr)> fn, TagPtr list) {
   assert(IsList(list));
 
-  if (Null(list))
-    return;
+  if (Null(list)) return;
 
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
@@ -140,8 +133,7 @@ void Cons::MapL(Env* env, TagPtr func, TagPtr list) {
 
 /** * make a list from a std::vector **/
 Type::TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
-  if (src.size() == 0)
-    return NIL;
+  if (src.size() == 0) return NIL;
 
   TagPtr rlist = NIL;
 
@@ -155,8 +147,8 @@ Type::TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
 Type::TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
   if (src.size() == 0) return NIL;
 
-  TagPtr rlist =
-    Cons(src[src.size() - 2], src[src.size() - 1]).Evict(env, "cons:list-dot.0");
+  TagPtr rlist = Cons(src[src.size() - 2], src[src.size() - 1])
+                     .Evict(env, "cons:list-dot.0");
 
   if (src.size() > 2)
     for (auto nth = src.size() - 2; nth != 0; --nth)
@@ -174,8 +166,7 @@ Type::TagPtr Cons::Nth(TagPtr list, size_t index) {
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     nth = it->car;
-    if (index-- == 0)
-      break;
+    if (index-- == 0) break;
   }
 
   return nth;
@@ -185,13 +176,11 @@ Type::TagPtr Cons::Nth(TagPtr list, size_t index) {
 Type::TagPtr Cons::NthCdr(TagPtr list, size_t index) {
   assert(IsList(list));
 
-  if (index == 0)
-    return list;
+  if (index == 0) return list;
 
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    if (--index == 0)
-      return it->cdr;
+    if (--index == 0) return it->cdr;
 
   return NIL;
 }
@@ -200,11 +189,10 @@ Type::TagPtr Cons::NthCdr(TagPtr list, size_t index) {
 size_t Cons::Length(Env* env, TagPtr list) {
   assert(IsList(list));
 
-  if (Null(list))
-    return 0;
-  
+  if (Null(list)) return 0;
+
   size_t len = 0;
-  
+
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     len++;
@@ -221,22 +209,21 @@ void Cons::Print(Env* env, TagPtr cons, TagPtr stream, bool esc) {
   assert(IsList(cons));
   assert(Stream::IsType(stream));
 
-  PrintStdString(env, "(", stream, false);
+  core::PrintStdString(env, "(", stream, false);
 
   auto lp = cons;
 
   for (; Cons::IsType(lp) && !Null(lp); lp = Cons::cdr(lp)) {
-    if (!Eq(lp, cons))
-      PrintStdString(env, " ", stream, false);
-    libmu::Print(env, Cons::car(lp), stream, esc);
+    if (!Eq(lp, cons)) core::PrintStdString(env, " ", stream, false);
+    core::Print(env, Cons::car(lp), stream, esc);
   }
 
   if (!IsList(lp)) {
-    PrintStdString(env, " . ", stream, false);
-    libmu::Print(env, lp, stream, esc);
+    core::PrintStdString(env, " . ", stream, false);
+    core::Print(env, lp, stream, esc);
   }
 
-  PrintStdString(env, ")", stream, false);
+  core::PrintStdString(env, ")", stream, false);
 }
 
 /** * list parser **/
@@ -246,28 +233,27 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
   std::vector<TagPtr> vlist;
   TagPtr ch;
 
-  if (!ReadWSUntilEof(env, stream))
+  if (!core::ReadWSUntilEof(env, stream))
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      "early end of file in list form (read)", Type::NIL);
 
   ch = Stream::ReadByte(env, stream);
-  if (MapSyntaxChar(ch) == SYNTAX_CHAR::CPAREN)
-    return Type::NIL;
+  if (core::MapSyntaxChar(ch) == core::SYNTAX_CHAR::CPAREN) return Type::NIL;
 
   Stream::UnReadByte(ch, stream);
 
   for (;;) {
-    auto el = ReadForm(env, stream);
+    auto el = core::ReadForm(env, stream);
 
-    if (SyntaxEq(el, SYNTAX_CHAR::DOT)) {
-      vlist.push_back(ReadForm(env, stream));
+    if (core::SyntaxEq(el, core::SYNTAX_CHAR::DOT)) {
+      vlist.push_back(core::ReadForm(env, stream));
 
-      if (!ReadWSUntilEof(env, stream))
+      if (!core::ReadWSUntilEof(env, stream))
         Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                          "early end of file in dotted form", Type::NIL);
 
       ch = Stream::ReadByte(env, stream);
-      if (MapSyntaxChar(ch) != SYNTAX_CHAR::CPAREN)
+      if (core::MapSyntaxChar(ch) != core::SYNTAX_CHAR::CPAREN)
         Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                          "syntax problem in dotted form (read)",
                          Char(Fixnum::Uint64Of(ch)).tag_);
@@ -277,12 +263,12 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 
     vlist.push_back(el);
 
-    if (!ReadWSUntilEof(env, stream))
+    if (!core::ReadWSUntilEof(env, stream))
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        "early end of file in list form (read)", Type::NIL);
 
     ch = Stream::ReadByte(env, stream);
-    if (MapSyntaxChar(ch) == SYNTAX_CHAR::CPAREN)
+    if (core::MapSyntaxChar(ch) == core::SYNTAX_CHAR::CPAREN)
       return Cons::List(env, vlist);
 
     Stream::UnReadByte(ch, stream);
@@ -290,11 +276,8 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 }
 
 /** * evict cons to heap **/
-  TagPtr Cons::Evict(Env* env, const char* src) {
-  // assert(Type::IsImmediate(cons_.car) || Env::InHeap(env, cons_.car));
-  // assert(Type::IsImmediate(cons_.cdr) || Env::InHeap(env, cons_.cdr));
-
-    auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS, src);
+TagPtr Cons::Evict(Env* env, const char* src) {
+  auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS, src);
 
   *cp = cons_;
   tag_ = Entag(cp, TAG::CONS);
@@ -306,7 +289,7 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 Cons::Cons(TagPtr car, TagPtr cdr) : Type() {
   cons_.car = car;
   cons_.cdr = cdr;
-  
+
   tag_ = Entag(reinterpret_cast<void*>(&cons_), TAG::CONS);
 }
 

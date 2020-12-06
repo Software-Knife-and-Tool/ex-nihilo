@@ -33,7 +33,8 @@ namespace libmu {
 
 /** * namespace type class **/
 class Namespace : public Type {
- private: /* symbol map */
+ private: /* symbol map, keyed by hash id */
+  /* think: wouldn't it be less stress to key by symbol TagPtr? */
   typedef std::unordered_map<uint32_t, TagPtr> symbol_map;
   typedef symbol_map::const_iterator symbol_iter;
 
@@ -90,21 +91,19 @@ class Namespace : public Type {
     return Untag<Layout>(ns)->name;
   }
 
-  /** * accessor **/
+  /** * accessors **/
   static TagPtr import(TagPtr ns) {
     assert(IsType(ns));
 
     return Untag<Layout>(ns)->import;
   }
 
-  /** * accessor **/
   static symbol_map externs(TagPtr ns) {
     assert(IsType(ns));
 
     return *Untag<Layout>(ns)->externs.get();
   }
 
-  /** * accessor **/
   static symbol_map interns(TagPtr ns) {
     assert(IsType(ns));
 

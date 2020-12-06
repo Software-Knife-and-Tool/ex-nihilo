@@ -52,7 +52,7 @@ TagPtr NamespaceOf(Env* env, const std::string& symbol, char sep) {
 }
 
 /** * parse symbol name string **/
-  TagPtr NameOf(Env* env, const std::string& symbol, char sep) {
+TagPtr NameOf(Env* env, const std::string& symbol, char sep) {
   auto cpos = symbol.find_last_of(sep);
 
   return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + 1) : symbol)
@@ -62,18 +62,16 @@ TagPtr NamespaceOf(Env* env, const std::string& symbol, char sep) {
 } /* anonymous namespace */
 
 /** * view of symbol object **/
-Type::TagPtr Symbol::ViewOf(Env* env, TagPtr symbol) {
+TagPtr Symbol::ViewOf(Env* env, TagPtr symbol) {
   assert(IsType(symbol));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("symbol"),
-    symbol,
-    Fixnum(ToUint64(symbol) >> 3).tag_,
-    name(symbol),
-    ns(symbol),
-    value(symbol)
-  };
-    
+
+  auto view = std::vector<TagPtr>{Symbol::Keyword("symbol"),
+                                  symbol,
+                                  Fixnum(ToUint64(symbol) >> 3).tag_,
+                                  name(symbol),
+                                  ns(symbol),
+                                  value(symbol)};
+
   return Vector(env, view).tag_;
 }
 
@@ -102,7 +100,7 @@ bool Symbol::IsBound(TagPtr sym) {
   assert(IsType(sym));
 
   return IsKeyword(sym) ||
-         !Eq(value(sym), static_cast<TagPtr>(SYNTAX_CHAR::UNBOUND));
+         !Eq(value(sym), static_cast<TagPtr>(core::SYNTAX_CHAR::UNBOUND));
 }
 
 /** * print symbol to stream **/
@@ -111,14 +109,15 @@ void Symbol::Print(Env* env, TagPtr sym, TagPtr stream, bool esc) {
   assert(Stream::IsType(stream));
 
   if (IsKeyword(sym)) {
-    PrintStdString(env, ":", stream, false);
+    core::PrintStdString(env, ":", stream, false);
   } else if (esc) {
     auto ns = Symbol::ns(sym);
 
-    if (Null(ns)) PrintStdString(env, "#:", stream, false);
+    if (Null(ns)) core::PrintStdString(env, "#:", stream, false);
   }
 
-  PrintStdString(env, String::StdStringOf(Symbol::name(sym)), stream, false);
+  core::PrintStdString(env, String::StdStringOf(Symbol::name(sym)), stream,
+                       false);
 }
 
 /** * parse symbol **/
@@ -128,9 +127,9 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
   if (string.size() == 0)
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      "naked symbol syntax (read)", Type::NIL);
-  
+
   if (string.size() == 1 && string[0] == '.')
-    return static_cast<TagPtr>(SYNTAX_CHAR::DOT);
+    return static_cast<TagPtr>(core::SYNTAX_CHAR::DOT);
 
   auto ch = string[0];
   auto keywdp = ch == ':';
@@ -150,26 +149,24 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
   } else {
     auto ext_ns = NamespaceOf(env, string, ':');
     auto int_ns = NamespaceOf(env, string, '.');
-          
+
     if (intern) {
-      if (!Null(ext_ns)) {
+      if (!Null(ext_ns))
         rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ':'));
-      } else if (!Null(int_ns)) {
+      else if (!Null(int_ns))
         rval = Namespace::InternInNs(env, int_ns, NameOf(env, string, '.'));
-      } else {
+      else {
         auto name = String(env, string).tag_;
         rval = Namespace::FindInNsInterns(env, env->namespace_, name);
-        if (Null(rval))
-          rval = Namespace::Intern(env, env->namespace_, name);
+        if (Null(rval)) rval = Namespace::Intern(env, env->namespace_, name);
       }
     } else if (Null(ext_ns) && Null(int_ns)) {
       auto name = String(env, string).tag_;
       rval = Symbol(NIL, name).Evict(env, "symbol:read");
-    } else {
+    } else
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        "uninterned symbols may not be qualified (read)",
                        String(env, string).tag_);
-    }
   }
 
   return rval;
@@ -177,11 +174,11 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
 
 /** * evict symbol to the heap **/
 Type::TagPtr Symbol::Evict(Env* env, const char* src) {
-    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL, src);
+  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL, src);
 
   assert(Null(symbol_.ns) || Env::InHeap(env, symbol_.ns));
   assert(Type::IsImmediate(symbol_.name) || Env::InHeap(env, symbol_.name));
-         
+
   *sp = symbol_;
   tag_ = Type::Entag(sp, TAG::SYMBOL);
 
@@ -195,7 +192,7 @@ Symbol::Symbol(TagPtr ns, TagPtr name) {
 
   symbol_.ns = ns;
   symbol_.name = name;
-  symbol_.value = static_cast<TagPtr>(SYNTAX_CHAR::UNBOUND);
+  symbol_.value = static_cast<TagPtr>(core::SYNTAX_CHAR::UNBOUND);
 
   tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
 }

@@ -20,6 +20,7 @@
 #include "libmu/read.h"
 
 namespace libmu {
+namespace core {
 
 /** * test for syntax char **/
 bool SyntaxEq(TagPtr form, SYNTAX_CHAR syn) {
@@ -103,4 +104,5 @@ SYNTAX_CHAR MapSyntaxChar(TagPtr ch) {
              : static_cast<SYNTAX_CHAR>(Fixnum::Uint64Of(ch));
 }
 
+} /* namespace core */
 } /* namespace libmu */

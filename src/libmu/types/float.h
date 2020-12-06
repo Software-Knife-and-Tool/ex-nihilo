@@ -32,7 +32,7 @@ class Float : public Type {
     assert(IsType(fl));
 
     float buf = 0.0;
-    
+
     std::memcpy(reinterpret_cast<char*>(&buf), reinterpret_cast<char*>(&fl) + 4,
                 sizeof(float));
     return buf;
@@ -43,7 +43,7 @@ class Float : public Type {
 
  public: /* object model */
   TagPtr Evict(Env*, const char*) { return tag_; }
-  
+
   explicit Float(float fl) : Type() {
     uint64_t buf = 0;
 

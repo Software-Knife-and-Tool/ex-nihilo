@@ -36,7 +36,7 @@ class Type {
   static constexpr auto to_underlying(E e) noexcept {
     return static_cast<std::underlying_type_t<E>>(e);
   }
-  
+
  public: /* TagPtr layout */
   /** * 3 bit staged low tag **/
   enum class TAG : uint8_t {
@@ -101,17 +101,17 @@ class Type {
                                 (static_cast<uint8_t>(TAG::IMMEDIATE) & 0x7)));
   }
 
-  /** * extended immediate data (56 bits) **/
+  /** * immediate data (56 bits) **/
   static constexpr uint64_t ImmediateData(TagPtr ptr) {
     return static_cast<uint64_t>(ptr) >> 8;
   }
 
-  /** * extended immediate size (3 bits) **/
+  /** * immediate size (3 bits) **/
   static constexpr size_t ImmediateSize(TagPtr ptr) {
     return static_cast<size_t>((static_cast<uint64_t>(ptr) >> 5) & 0x7);
   }
 
-  /** * extended immediate class (2 bits) **/
+  /** * immediate class (2 bits) **/
   static constexpr IMMEDIATE_CLASS ImmediateClass(TagPtr ptr) {
     return static_cast<IMMEDIATE_CLASS>((static_cast<uint64_t>(ptr) >> 3) &
                                         0x3);
@@ -142,7 +142,6 @@ class Type {
     FUNCTION,
     MACRO,
     NAMESPACE,
-    NULLT,
     STREAM,
     STRING,
     STRUCT,
@@ -162,7 +161,7 @@ class Type {
   static constexpr bool IsImmediate(TagPtr ptr) {
     return TagOf(ptr) == TAG::IMMEDIATE;
   }
-  
+
   static constexpr bool IsExtended(TagPtr ptr) {
     return TagOf(ptr) == TAG::EXTEND;
   }
@@ -171,10 +170,10 @@ class Type {
   static constexpr bool Null(TagPtr ptr) { return Eq(ptr, NIL); }
 
  public:       /* object model */
-  TagPtr tag_;     /* tagged pointer for type constructors */
-  
+  TagPtr tag_; /* tagged pointer for type constructors */
+
   virtual TagPtr Evict(Env*, const char*) = 0;
-  
+
 }; /* class Type */
 
 } /* namespace libmu */

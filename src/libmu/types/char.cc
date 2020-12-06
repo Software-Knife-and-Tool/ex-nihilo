@@ -26,14 +26,11 @@ namespace libmu {
 /** * view of char object **/
 Type::TagPtr Char::ViewOf(Env* env, TagPtr ch) {
   assert(IsType(ch));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("char"),
-    ch,
-    Fixnum(ToUint64(ch) >> 3).tag_,
-    Fixnum(Uint8Of(ch)).tag_
-  };
-    
+
+  auto view = std::vector<TagPtr>{Symbol::Keyword("char"), ch,
+                                  Fixnum(ToUint64(ch) >> 3).tag_,
+                                  Fixnum(Uint8Of(ch)).tag_};
+
   return Vector(env, view).tag_;
 }
 
@@ -43,19 +40,19 @@ void Char::Print(Env* env, TagPtr ch, TagPtr stream, bool esc) {
   assert(Stream::IsType(stream));
 
   if (esc) {
-    PrintStdString(env, "#\\", stream, false);
+    core::PrintStdString(env, "#\\", stream, false);
     switch (Char::Uint8Of(ch)) {
       case 0x0a:
-        PrintStdString(env, "newline", stream, false);
+        core::PrintStdString(env, "newline", stream, false);
         break;
       case 0x0d:
-        PrintStdString(env, "return", stream, false);
+        core::PrintStdString(env, "return", stream, false);
         break;
       case ' ':
-        PrintStdString(env, "space", stream, false);
+        core::PrintStdString(env, "space", stream, false);
         break;
       case '\t':
-        PrintStdString(env, "tab", stream, false);
+        core::PrintStdString(env, "tab", stream, false);
         break;
       default:
         Stream::WriteByte(Fixnum(Uint8Of(ch)).tag_, stream);
@@ -82,7 +79,7 @@ TagPtr Char::Read(Env* env, TagPtr stream) {
     Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR, "eof in #\\",
                      Type::NIL);
 
-  if (MapSyntaxType(ch) == SYNTAX_TYPE::WSPACE)
+  if (core::MapSyntaxType(ch) == core::SYNTAX_TYPE::WSPACE)
     Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
                      "malformed character literal", Type::NIL);
 
@@ -90,7 +87,9 @@ TagPtr Char::Read(Env* env, TagPtr stream) {
 
   for (;;) {
     ch = Stream::ReadByte(env, stream);
-    if (Type::Null(ch) || MapSyntaxType(ch) != SYNTAX_TYPE::CONSTITUENT) break;
+    if (Type::Null(ch) ||
+        core::MapSyntaxType(ch) != core::SYNTAX_TYPE::CONSTITUENT)
+      break;
     buffer.push_back(Fixnum::Int64Of(ch));
   }
 
@@ -105,8 +104,8 @@ TagPtr Char::Read(Env* env, TagPtr stream) {
   else if (kCharLit.count(buffer))
     value = Char(kCharLit.at(buffer)).tag_;
   else
-    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR, "unmapped char",
-                     String(env, buffer).tag_);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+                     "unmapped char", String(env, buffer).tag_);
 
   return value;
 }

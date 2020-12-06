@@ -72,21 +72,19 @@ void Macro::GcMark(Env* env, TagPtr macro) {
 Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
   assert(IsType(macro));
 
-  auto fn = func(macro); 
+  auto fn = func(macro);
 
   /* think: need nreqs? do we have any core macro expanders? */
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("macro"),
-    Fixnum(ToUint64(macro) >> 3).tag_,
-    macro,
-    fn,
-    Function::core(fn),
-    Function::form(fn),
-    Function::frame_id(fn),
-    Fixnum(Function::arity(fn)).tag_,
-    Function::name(fn)
-  };
-  
+  auto view = std::vector<TagPtr>{Symbol::Keyword("macro"),
+                                  Fixnum(ToUint64(macro) >> 3).tag_,
+                                  macro,
+                                  fn,
+                                  Function::core(fn),
+                                  Function::form(fn),
+                                  Function::frame_id(fn),
+                                  Fixnum(Function::arity(fn)).tag_,
+                                  Function::name(fn)};
+
   return Vector(env, view).tag_;
 }
 
@@ -94,7 +92,7 @@ Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
 Type::TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
   assert(Symbol::IsType(macsym));
 
-  auto macfn = Symbol::value(Compiler::Compile(env, macsym));
+  auto macfn = Symbol::value(core::Compile(env, macsym));
 
   return IsType(macfn) ? func(macfn) : NIL;
 }

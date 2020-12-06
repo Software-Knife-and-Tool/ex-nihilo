@@ -47,7 +47,6 @@ void MacroFunction(Frame* fp) {
 
 /** * (macroexpand form) => object **/
 void MacroExpand(Frame* fp) {
-
   fp->value = Macro::MacroExpand(fp->env, fp->argv[0]);
 }
 

@@ -88,27 +88,27 @@ class Exception : public Type {
     return Untag<Layout>(exception)->reason;
   }
 
-  static constexpr bool IsType(TagPtr ptr) {    
+  static constexpr bool IsType(TagPtr ptr) {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::EXCEPTION;
   }
 
   static void GcMark(Env*, TagPtr);
 
-  [[noreturn]] static void Raise(Env*, EXCEPT_CLASS, const std::string&, TagPtr);
+  [[noreturn]] static void Raise(Env*, EXCEPT_CLASS, const std::string&,
+                                 TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
   TagPtr Evict(Env* env, const char* src) {
-    auto ep = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::EXCEPTION, src);
+    auto ep =
+        env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::EXCEPTION, src);
 
     *ep = exception_;
     return Entag(ep, TAG::EXTEND);
   }
 
-  explicit Exception(TagPtr tag,
-                     TagPtr frame,
-                     TagPtr source,
-                     TagPtr reason) : Type() {
+  explicit Exception(TagPtr tag, TagPtr frame, TagPtr source, TagPtr reason)
+      : Type() {
     assert(Symbol::IsKeyword(tag));
 
     exception_.tag = tag;
@@ -118,7 +118,6 @@ class Exception : public Type {
 
     tag_ = Entag(reinterpret_cast<void*>(&exception_), TAG::EXTEND);
   }
-
 };
 
 } /* namespace libmu */

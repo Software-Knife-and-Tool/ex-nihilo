@@ -40,10 +40,12 @@ void MapCar(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapcar", func);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapcar",
+                     func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapcar", list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapcar",
+                     list);
 
   fp->value = Type::Null(list) ? Type::NIL : Cons::MapCar(fp->env, func, list);
 }
@@ -54,10 +56,12 @@ void MapC(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapc", func);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapc",
+                     func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapc", list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapc",
+                     list);
 
   Cons::MapC(fp->env, func, list);
   fp->value = list;
@@ -85,10 +89,12 @@ void MapL(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapl", func);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapl",
+                     func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapl", list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapl",
+                     list);
 
   Cons::MapL(fp->env, func, list);
   fp->value = list;
@@ -99,8 +105,8 @@ void ListLength(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "list-length",
-                     list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "list-length", list);
 
   fp->value = Fixnum(Cons::Length(fp->env, list)).tag_;
 }
@@ -153,13 +159,16 @@ void Nthcdr(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr", list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr",
+                     list);
 
   if (!Fixnum::IsType(nth))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr", nth);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr",
+                     nth);
 
   if (Fixnum::Int64Of(nth) < 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr", nth);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr",
+                     nth);
 
   fp->value = Cons::NthCdr(list, Fixnum::Uint64Of(nth));
 }

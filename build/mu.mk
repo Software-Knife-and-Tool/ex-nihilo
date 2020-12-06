@@ -23,7 +23,6 @@ OBJS =  \
     print.o            \
     read.o             \
     readtable.o        \
-    special.o          \
     stream.o           \
     string.o           \
     symbol.o           \

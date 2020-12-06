@@ -23,6 +23,7 @@
 #include "libmu/types/char.h"
 
 namespace libmu {
+namespace core {
 
 using TagPtr = Type::TagPtr;
 using IMMEDIATE_CLASS = Type::IMMEDIATE_CLASS;
@@ -63,6 +64,7 @@ bool SyntaxEq(TagPtr, SYNTAX_CHAR);
 SYNTAX_TYPE MapSyntaxType(TagPtr);
 SYNTAX_CHAR MapSyntaxChar(TagPtr);
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_READTABLE_H_ */

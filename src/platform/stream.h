@@ -70,7 +70,7 @@ static const int STREAM_FILE = 0x0010;
 static const int STREAM_STD = 0x0020;
 static const int STREAM_SOCKET = 0x0040;
 static const int STREAM_CLOSED = 0x0080;
-  
+
 static Platform::StreamId StreamIdOf(Stream *ms) {
   return reinterpret_cast<Platform::StreamId>(ms);
 }

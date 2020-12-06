@@ -36,7 +36,8 @@ void MakeStruct(Frame* fp) {
   auto values = fp->argv[1];
 
   if (!Symbol::IsKeyword(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct", name);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
+                     name);
 
   if (!Cons::IsList(values))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
@@ -50,8 +51,8 @@ void StructType(Frame* fp) {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct-type",
-                     strct);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "struct-type", strct);
 
   fp->value = Struct::stype(strct);
 }
@@ -61,8 +62,8 @@ void StructValues(Frame* fp) {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct-slots",
-                     strct);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "struct-slots", strct);
 
   fp->value = Struct::slots(strct);
 }
