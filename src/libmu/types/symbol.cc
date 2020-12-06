@@ -62,7 +62,7 @@ TagPtr NameOf(Env* env, const std::string& symbol, char sep) {
 } /* anonymous namespace */
 
 /** * view of symbol object **/
-Type::TagPtr Symbol::ViewOf(Env* env, TagPtr symbol) {
+TagPtr Symbol::ViewOf(Env* env, TagPtr symbol) {
   assert(IsType(symbol));
 
   auto view = std::vector<TagPtr>{Symbol::Keyword("symbol"),
@@ -100,7 +100,7 @@ bool Symbol::IsBound(TagPtr sym) {
   assert(IsType(sym));
 
   return IsKeyword(sym) ||
-         !Eq(value(sym), static_cast<TagPtr>(SYNTAX_CHAR::UNBOUND));
+         !Eq(value(sym), static_cast<TagPtr>(core::SYNTAX_CHAR::UNBOUND));
 }
 
 /** * print symbol to stream **/
@@ -109,14 +109,15 @@ void Symbol::Print(Env* env, TagPtr sym, TagPtr stream, bool esc) {
   assert(Stream::IsType(stream));
 
   if (IsKeyword(sym)) {
-    PrintStdString(env, ":", stream, false);
+    core::PrintStdString(env, ":", stream, false);
   } else if (esc) {
     auto ns = Symbol::ns(sym);
 
-    if (Null(ns)) PrintStdString(env, "#:", stream, false);
+    if (Null(ns)) core::PrintStdString(env, "#:", stream, false);
   }
 
-  PrintStdString(env, String::StdStringOf(Symbol::name(sym)), stream, false);
+  core::PrintStdString(env, String::StdStringOf(Symbol::name(sym)), stream,
+                       false);
 }
 
 /** * parse symbol **/
@@ -128,7 +129,7 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
                      "naked symbol syntax (read)", Type::NIL);
 
   if (string.size() == 1 && string[0] == '.')
-    return static_cast<TagPtr>(SYNTAX_CHAR::DOT);
+    return static_cast<TagPtr>(core::SYNTAX_CHAR::DOT);
 
   auto ch = string[0];
   auto keywdp = ch == ':';
@@ -150,11 +151,11 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
     auto int_ns = NamespaceOf(env, string, '.');
 
     if (intern) {
-      if (!Null(ext_ns)) {
+      if (!Null(ext_ns))
         rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ':'));
-      } else if (!Null(int_ns)) {
+      else if (!Null(int_ns))
         rval = Namespace::InternInNs(env, int_ns, NameOf(env, string, '.'));
-      } else {
+      else {
         auto name = String(env, string).tag_;
         rval = Namespace::FindInNsInterns(env, env->namespace_, name);
         if (Null(rval)) rval = Namespace::Intern(env, env->namespace_, name);
@@ -162,11 +163,10 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
     } else if (Null(ext_ns) && Null(int_ns)) {
       auto name = String(env, string).tag_;
       rval = Symbol(NIL, name).Evict(env, "symbol:read");
-    } else {
+    } else
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        "uninterned symbols may not be qualified (read)",
                        String(env, string).tag_);
-    }
   }
 
   return rval;
@@ -192,7 +192,7 @@ Symbol::Symbol(TagPtr ns, TagPtr name) {
 
   symbol_.ns = ns;
   symbol_.name = name;
-  symbol_.value = static_cast<TagPtr>(SYNTAX_CHAR::UNBOUND);
+  symbol_.value = static_cast<TagPtr>(core::SYNTAX_CHAR::UNBOUND);
 
   tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
 }

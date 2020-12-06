@@ -92,7 +92,7 @@ Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
 Type::TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
   assert(Symbol::IsType(macsym));
 
-  auto macfn = Symbol::value(Compile(env, macsym));
+  auto macfn = Symbol::value(core::Compile(env, macsym));
 
   return IsType(macfn) ? func(macfn) : NIL;
 }

@@ -39,6 +39,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 
 using TagPtr = Type::TagPtr;
 using SYS_CLASS = Type::SYS_CLASS;
@@ -98,4 +99,5 @@ Type::TagPtr Eval(Env* env, TagPtr form) {
   return rval;
 }
 
+} /* namespace core */
 } /* namespace libmu */

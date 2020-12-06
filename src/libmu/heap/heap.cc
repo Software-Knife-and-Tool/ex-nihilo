@@ -31,6 +31,7 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
+namespace heap {
 
 using SYS_CLASS = Type::SYS_CLASS;
 
@@ -210,4 +211,5 @@ Heap::Heap() {
   logging_ = false;
 }
 
+} /* namespace heap */
 } /* namespace libmu */

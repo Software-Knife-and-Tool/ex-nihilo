@@ -27,12 +27,14 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
 using TagPtr = Type::TagPtr;
 
 TagPtr Apply(Env*, TagPtr, TagPtr);
 TagPtr Eval(Env*, TagPtr);
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_EVAL_H_ */

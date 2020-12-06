@@ -41,7 +41,7 @@ using Frame = Env::Frame;
 
 /** * (eval object) => object **/
 void Eval(Frame* fp) {
-  fp->value = Eval(fp->env, Compile(fp->env, fp->argv[0]));
+  fp->value = core::Eval(fp->env, core::Compile(fp->env, fp->argv[0]));
 }
 
 /** * (%env-stack-depth object) => fixnum **/

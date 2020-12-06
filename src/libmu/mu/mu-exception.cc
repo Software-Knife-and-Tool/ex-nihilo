@@ -118,7 +118,8 @@ void Block(Frame* fp) {
                      "is not a function (.block)", fn);
 
   try {
-    fp->value = Eval(fp->env, Cons::List(fp->env, std::vector<TagPtr>{fn}));
+    fp->value =
+        core::Eval(fp->env, Cons::List(fp->env, std::vector<TagPtr>{fn}));
   } catch (TagPtr ex) {
     if (Cons::IsType(ex) && Type::Eq(tag, Cons::car(ex)))
       fp->value = Cons::cdr(ex);

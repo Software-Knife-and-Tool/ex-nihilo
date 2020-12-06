@@ -209,21 +209,21 @@ void Cons::Print(Env* env, TagPtr cons, TagPtr stream, bool esc) {
   assert(IsList(cons));
   assert(Stream::IsType(stream));
 
-  PrintStdString(env, "(", stream, false);
+  core::PrintStdString(env, "(", stream, false);
 
   auto lp = cons;
 
   for (; Cons::IsType(lp) && !Null(lp); lp = Cons::cdr(lp)) {
-    if (!Eq(lp, cons)) PrintStdString(env, " ", stream, false);
-    libmu::Print(env, Cons::car(lp), stream, esc);
+    if (!Eq(lp, cons)) core::PrintStdString(env, " ", stream, false);
+    core::Print(env, Cons::car(lp), stream, esc);
   }
 
   if (!IsList(lp)) {
-    PrintStdString(env, " . ", stream, false);
-    libmu::Print(env, lp, stream, esc);
+    core::PrintStdString(env, " . ", stream, false);
+    core::Print(env, lp, stream, esc);
   }
 
-  PrintStdString(env, ")", stream, false);
+  core::PrintStdString(env, ")", stream, false);
 }
 
 /** * list parser **/
@@ -233,27 +233,27 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
   std::vector<TagPtr> vlist;
   TagPtr ch;
 
-  if (!ReadWSUntilEof(env, stream))
+  if (!core::ReadWSUntilEof(env, stream))
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      "early end of file in list form (read)", Type::NIL);
 
   ch = Stream::ReadByte(env, stream);
-  if (MapSyntaxChar(ch) == SYNTAX_CHAR::CPAREN) return Type::NIL;
+  if (core::MapSyntaxChar(ch) == core::SYNTAX_CHAR::CPAREN) return Type::NIL;
 
   Stream::UnReadByte(ch, stream);
 
   for (;;) {
-    auto el = ReadForm(env, stream);
+    auto el = core::ReadForm(env, stream);
 
-    if (SyntaxEq(el, SYNTAX_CHAR::DOT)) {
-      vlist.push_back(ReadForm(env, stream));
+    if (core::SyntaxEq(el, core::SYNTAX_CHAR::DOT)) {
+      vlist.push_back(core::ReadForm(env, stream));
 
-      if (!ReadWSUntilEof(env, stream))
+      if (!core::ReadWSUntilEof(env, stream))
         Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                          "early end of file in dotted form", Type::NIL);
 
       ch = Stream::ReadByte(env, stream);
-      if (MapSyntaxChar(ch) != SYNTAX_CHAR::CPAREN)
+      if (core::MapSyntaxChar(ch) != core::SYNTAX_CHAR::CPAREN)
         Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                          "syntax problem in dotted form (read)",
                          Char(Fixnum::Uint64Of(ch)).tag_);
@@ -263,12 +263,13 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 
     vlist.push_back(el);
 
-    if (!ReadWSUntilEof(env, stream))
+    if (!core::ReadWSUntilEof(env, stream))
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        "early end of file in list form (read)", Type::NIL);
 
     ch = Stream::ReadByte(env, stream);
-    if (MapSyntaxChar(ch) == SYNTAX_CHAR::CPAREN) return Cons::List(env, vlist);
+    if (core::MapSyntaxChar(ch) == core::SYNTAX_CHAR::CPAREN)
+      return Cons::List(env, vlist);
 
     Stream::UnReadByte(ch, stream);
   }
@@ -276,9 +277,6 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 
 /** * evict cons to heap **/
 TagPtr Cons::Evict(Env* env, const char* src) {
-  // assert(Type::IsImmediate(cons_.car) || Env::InHeap(env, cons_.car));
-  // assert(Type::IsImmediate(cons_.cdr) || Env::InHeap(env, cons_.cdr));
-
   auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS, src);
 
   *cp = cons_;

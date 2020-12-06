@@ -39,6 +39,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 /** * read #<:type fixnum attr-list> syntax **/
@@ -328,4 +329,5 @@ TagPtr Read(Env* env, TagPtr stream_designator) {
              : ReadForm(env, Stream::StreamDesignator(env, stream));
 }
 
+}  // namespace core
 } /* namespace libmu */

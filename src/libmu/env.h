@@ -30,7 +30,6 @@ namespace libmu {
 
 using platform::Platform;
 
-class Heap;
 class Namespace;
 
 using TagPtr = Type::TagPtr;
@@ -86,12 +85,12 @@ class Env {
   std::map<std::string, TagPtr> namespaces_;
 
  public:
-  std::unique_ptr<Heap> heap_; /* heap */
-  Platform* platform_;         /* platform */
-  std::vector<Frame*> frames_; /* frame stack */
-  size_t frame_id_;            /* frame cache */
-  std::vector<TagPtr> lexenv_; /* lexical symbols */
-                               /* syntax dispatch */
+  std::unique_ptr<heap::Heap> heap_; /* heap */
+  Platform* platform_;               /* platform */
+  std::vector<Frame*> frames_;       /* frame stack */
+  size_t frame_id_;                  /* frame cache */
+  std::vector<TagPtr> lexenv_;       /* lexical symbols */
+                                     /* syntax dispatch */
   std::unordered_map<TagPtr, TagPtr> readtable_;
   TagPtr mu_;              /* mu namespace */
   TagPtr namespace_;       /* current namespace */

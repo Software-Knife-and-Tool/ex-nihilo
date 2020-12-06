@@ -211,61 +211,61 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
 
   switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::BYTE: {
-      PrintStdString(env, "#(:byte", stream, false);
+      core::PrintStdString(env, "#(:byte", stream, false);
 
       vector_iter<uint8_t> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-        PrintStdString(env, " ", stream, false);
-        libmu::Print(env, Fixnum(*iter).tag_, stream, esc);
+        core::PrintStdString(env, " ", stream, false);
+        core::Print(env, Fixnum(*iter).tag_, stream, esc);
       }
 
-      PrintStdString(env, ")", stream, false);
+      core::PrintStdString(env, ")", stream, false);
       break;
     }
     case SYS_CLASS::CHAR: {
-      if (esc) PrintStdString(env, "\"", stream, false);
+      if (esc) core::PrintStdString(env, "\"", stream, false);
 
       vector_iter<char> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        libmu::Print(env, Char(*it).tag_, stream, false);
+        core::Print(env, Char(*it).tag_, stream, false);
 
-      if (esc) PrintStdString(env, "\"", stream, false);
+      if (esc) core::PrintStdString(env, "\"", stream, false);
       break;
     }
     case SYS_CLASS::FIXNUM: {
-      PrintStdString(env, "#(:fixnum", stream, false);
+      core::PrintStdString(env, "#(:fixnum", stream, false);
 
       vector_iter<int64_t> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-        PrintStdString(env, " ", stream, false);
-        libmu::Print(env, Fixnum(*iter).tag_, stream, esc);
+        core::PrintStdString(env, " ", stream, false);
+        core::Print(env, Fixnum(*iter).tag_, stream, esc);
       }
 
-      PrintStdString(env, ")", stream, false);
+      core::PrintStdString(env, ")", stream, false);
       break;
     }
     case SYS_CLASS::FLOAT: {
-      PrintStdString(env, "#(:float", stream, false);
+      core::PrintStdString(env, "#(:float", stream, false);
 
       vector_iter<float> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-        PrintStdString(env, " ", stream, false);
-        libmu::Print(env, Float(*iter).tag_, stream, esc);
+        core::PrintStdString(env, " ", stream, false);
+        core::Print(env, Float(*iter).tag_, stream, esc);
       }
 
-      PrintStdString(env, ")", stream, false);
+      core::PrintStdString(env, ")", stream, false);
       break;
     }
     case SYS_CLASS::T: {
-      PrintStdString(env, "#(:t", stream, false);
+      core::PrintStdString(env, "#(:t", stream, false);
 
       vector_iter<TagPtr> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-        PrintStdString(env, " ", stream, false);
-        libmu::Print(env, *iter, stream, esc);
+        core::PrintStdString(env, " ", stream, false);
+        core::Print(env, *iter, stream, esc);
       }
 
-      PrintStdString(env, ")", stream, false);
+      core::PrintStdString(env, ")", stream, false);
       break;
     }
     default:

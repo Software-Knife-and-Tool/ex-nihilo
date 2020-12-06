@@ -164,7 +164,8 @@ class Function : public Type {
     fp->value = NIL;
     if (Null(core(fp->func))) {
       Cons::MapC(
-          fp->env, [fp](Env* env, TagPtr form) { fp->value = Eval(env, form); },
+          fp->env,
+          [fp](Env* env, TagPtr form) { fp->value = core::Eval(env, form); },
           Cons::cdr(Function::form(fp->func)));
     } else
       Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
@@ -184,8 +185,9 @@ class Function : public Type {
     std::stringstream hexs;
 
     hexs << std::hex << Type::to_underlying(fn);
-    PrintStdString(env, "#<:" + type + " #x" + hexs.str() + " (" + name + ")>",
-                   stream, false);
+    core::PrintStdString(env,
+                         "#<:" + type + " #x" + hexs.str() + " (" + name + ")>",
+                         stream, false);
   }
 
  public: /* object model */

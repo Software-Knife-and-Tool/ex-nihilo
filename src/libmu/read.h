@@ -27,11 +27,13 @@
 #include "libmu/types/char.h"
 
 namespace libmu {
+namespace core {
 
 TagPtr Read(Env*, TagPtr);
 TagPtr ReadForm(Env*, TagPtr);
 bool ReadWSUntilEof(Env*, TagPtr);
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_READ_H_ */

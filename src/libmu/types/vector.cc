@@ -149,7 +149,7 @@ Vector::Vector(Env* env, std::vector<float> src) {
 TagPtr Vector::Read(Env* env, TagPtr stream) {
   assert(Stream::IsType(stream));
 
-  auto vectype = ReadForm(env, stream);
+  auto vectype = core::ReadForm(env, stream);
 
   if (!Symbol::IsKeyword(vectype))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,

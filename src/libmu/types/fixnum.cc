@@ -46,7 +46,7 @@ void Fixnum::Print(Env* env, TagPtr fixnum, TagPtr stream, bool) {
   std::ostringstream str;
 
   str << std::setbase(10) << Int64Of(fixnum);
-  PrintStdString(env, str.str(), stream, false);
+  core::PrintStdString(env, str.str(), stream, false);
 }
 
 } /* namespace libmu */

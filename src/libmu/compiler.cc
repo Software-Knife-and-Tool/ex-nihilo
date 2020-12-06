@@ -30,6 +30,7 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
+namespace core {
 namespace {
 /** * parse lambda list **/
 TagPtr ParseLambda(Env* env, TagPtr lambda) {
@@ -101,7 +102,7 @@ bool InLexicalEnv(Env* env, TagPtr sym, TagPtr* lambda, size_t* nth) {
   for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {
     assert(Function::IsType(*it));
 
-    auto lexicals = libmu::lexicals(Cons::car(Function::form(*it)));
+    auto lexicals = core::lexicals(Cons::car(Function::form(*it)));
     assert(Cons::IsList(lexicals));
 
     for (size_t i = 0; i < Cons::Length(env, lexicals); ++i) {
@@ -343,4 +344,5 @@ TagPtr Compile(Env* env, TagPtr form) {
   return rval;
 }
 
+}  // namespace core
 } /* namespace libmu */

@@ -317,7 +317,8 @@ void Load(Frame* fp) {
     case SYS_CLASS::STREAM: {
       auto sp = Type::Untag<Stream::Layout>(filespec);
       while (!Platform::IsEof(sp->stream))
-        Eval(fp->env, Compile(fp->env, Read(fp->env, filespec)));
+        core::Eval(fp->env,
+                   core::Compile(fp->env, core::Read(fp->env, filespec)));
 
       break;
     }
@@ -332,7 +333,8 @@ void Load(Frame* fp) {
       auto sp = Type::Untag<Stream::Layout>(istream);
 
       while (!Platform::IsEof(sp->stream))
-        Eval(fp->env, Compile(fp->env, Read(fp->env, istream)));
+        core::Eval(fp->env,
+                   core::Compile(fp->env, core::Read(fp->env, istream)));
 
       if (Type::Null(Stream::Close(istream)))
         Exception::Raise(fp->env, Exception::EXCEPT_CLASS::STREAM_ERROR,

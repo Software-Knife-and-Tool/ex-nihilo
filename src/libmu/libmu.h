@@ -24,21 +24,27 @@
 
 using platform::Platform;
 
+namespace libmu {
+namespace api {
+
 extern "C" {
-void* libmu_t();
-void* libmu_nil();
-const char* libmu_version();
-void* libmu_eval(void*, void*);
-void* libmu_read_stream(void*, void*);
-void* libmu_read_string(void*, std::string);
-void* libmu_read_cstr(void*, const char*);
-void libmu_print(void*, void*, void*, bool);
-const char* libmu_print_cstr(void*, void*, bool);
-void libmu_terpri(void*, void*);
-void libmu_withException(void*, std::function<void(void*)>);
-void* libmu_env_default(Platform*);
-void* libmu_env(Platform*, Platform::StreamId, Platform::StreamId,
-                Platform::StreamId);
+void* t();
+void* nil();
+const char* version();
+void* eval(void*, void*);
+void* read_stream(void*, void*);
+void* read_string(void*, std::string);
+void* read_cstr(void*, const char*);
+void print(void*, void*, void*, bool);
+const char* print_cstr(void*, void*, bool);
+void terpri(void*, void*);
+void withException(void*, std::function<void(void*)>);
+void* env_default(Platform*);
+void* env(Platform*, Platform::StreamId, Platform::StreamId,
+          Platform::StreamId);
 }
+
+} /* namespace api */
+} /* namespace libmu */
 
 #endif /* _LIBMU_LIBMU_H_ */

@@ -37,6 +37,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 
 using TagPtr = Type::TagPtr;
 using SYS_CLASS = Type::SYS_CLASS;
@@ -96,4 +97,5 @@ void Terpri(Env* env, TagPtr stream) {
         false);
 }
 
+}  // namespace core
 } /* namespace libmu */

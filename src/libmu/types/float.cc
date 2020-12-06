@@ -48,7 +48,7 @@ void Float::Print(Env* env, TagPtr lfloat, TagPtr stream, bool) {
   std::ostringstream str;
 
   str << std::fixed << std::setprecision(6) << Float::FloatOf(lfloat);
-  PrintStdString(env, str.str(), stream, false);
+  core::PrintStdString(env, str.str(), stream, false);
 }
 
 } /* namespace libmu */

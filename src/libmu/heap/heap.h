@@ -29,6 +29,7 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace heap {
 
 class Env;
 
@@ -141,6 +142,7 @@ class Heap {
   explicit Heap();
 };
 
+} /* namespace heap */
 } /* namespace libmu */
 
 #endif /* _LIBMU_HEAP_HEAP_H_ */

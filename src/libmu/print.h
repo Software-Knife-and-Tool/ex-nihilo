@@ -18,6 +18,7 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
 using TagPtr = Type::TagPtr;
 
@@ -25,6 +26,7 @@ void Print(Env*, TagPtr, TagPtr, bool);
 void PrintStdString(Env*, const std::string&, TagPtr, bool);
 void Terpri(Env*, TagPtr);
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_PRINT_H_ */

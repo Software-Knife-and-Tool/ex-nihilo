@@ -22,6 +22,7 @@
 #include "libmu/types/cons.h"
 
 namespace libmu {
+namespace core {
 
 TagPtr Compile(Env*, TagPtr);
 bool IsSpecOp(Env*, TagPtr);
@@ -38,6 +39,7 @@ constexpr TagPtr restsym(TagPtr lambda) {
   return Cons::cdr(lambda);
 }
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_COMPILER_H_ */

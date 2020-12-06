@@ -50,7 +50,7 @@ void Read(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::END_OF_FILE, "read",
                      stream);
 
-  fp->value = Read(fp->env, stream);
+  fp->value = core::Read(fp->env, stream);
 }
 
 /** * mu function (set-macro-character char function) => object **/

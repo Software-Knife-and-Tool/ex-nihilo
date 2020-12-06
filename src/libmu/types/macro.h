@@ -63,8 +63,8 @@ class Macro : public Type {
     std::stringstream hexs;
 
     hexs << std::hex << Type::to_underlying(fn);
-    PrintStdString(env, "#<:macro #x" + hexs.str() + " (" + name + ")>", stream,
-                   false);
+    core::PrintStdString(env, "#<:macro #x" + hexs.str() + " (" + name + ")>",
+                         stream, false);
   }
 
   static void GcMark(Env*, TagPtr);
