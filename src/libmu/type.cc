@@ -48,34 +48,14 @@ static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("func"), SYS_CLASS::FUNCTION},
     {Symbol::Keyword("macro"), SYS_CLASS::MACRO},
     {Symbol::Keyword("namespc"), SYS_CLASS::NAMESPACE},
-    {Symbol::Keyword("null"), SYS_CLASS::NULLT},
     {Symbol::Keyword("stream"), SYS_CLASS::STREAM},
     {Symbol::Keyword("string"), SYS_CLASS::STRING},
     {Symbol::Keyword("struct"), SYS_CLASS::STRUCT},
     {Symbol::Keyword("symbol"), SYS_CLASS::SYMBOL},
-    {Symbol::Keyword("t"), SYS_CLASS::T},
+    {Type::T, SYS_CLASS::T},
     {Symbol::Keyword("vector"), SYS_CLASS::VECTOR}};
 
-static const std::map<SYS_CLASS, TagPtr> kTypeMap{
-    {SYS_CLASS::ADDRESS, Symbol::Keyword("address")},
-    {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
-    {SYS_CLASS::CHAR, Symbol::Keyword("char")},
-    {SYS_CLASS::CONS, Symbol::Keyword("cons")},
-    {SYS_CLASS::EXCEPTION, Symbol::Keyword("except")},
-    {SYS_CLASS::FIXNUM, Symbol::Keyword("fixnum")},
-    {SYS_CLASS::FLOAT, Symbol::Keyword("float")},
-    {SYS_CLASS::FUNCTION, Symbol::Keyword("func")},
-    {SYS_CLASS::MACRO, Symbol::Keyword("macro")},
-    {SYS_CLASS::NAMESPACE, Symbol::Keyword("namespc")},
-    {SYS_CLASS::NULLT, Symbol::Keyword("null")},
-    {SYS_CLASS::STREAM, Symbol::Keyword("stream")},
-    {SYS_CLASS::STRING, Symbol::Keyword("string")},
-    {SYS_CLASS::STRUCT, Symbol::Keyword("struct")},
-    {SYS_CLASS::SYMBOL, Symbol::Keyword("symbol")},
-    {SYS_CLASS::T, Symbol::Keyword("t")},
-    {SYS_CLASS::VECTOR, Symbol::Keyword("vector")}};
-
-} /* anonymous namespace */
+}  // namespace
 
 /** * is type a class symbol? **/
 bool Type::IsClassSymbol(TagPtr type_sym) {
@@ -84,26 +64,42 @@ bool Type::IsClassSymbol(TagPtr type_sym) {
   return kSymbolMap.count(type_sym) != 0;
 }
 
-/** * class symbol map */
-Type::TagPtr Type::MapClassSymbol(SYS_CLASS sys_class) {
-  assert(kTypeMap.count(sys_class));
-
-  return kTypeMap.at(sys_class);
-}
-
 /** * type symbol map **/
-Type::SYS_CLASS Type::MapSymbolClass(TagPtr type_sym) {
+SYS_CLASS Type::MapSymbolClass(TagPtr type_sym) {
   assert(Symbol::IsKeyword(type_sym));
   assert(kSymbolMap.count(type_sym));
 
   return kSymbolMap.at(type_sym);
 }
 
+/** * class symbol map */
+TagPtr Type::MapClassSymbol(SYS_CLASS sys_class) {
+  static const std::map<SYS_CLASS, TagPtr> kTypeMap{
+      {SYS_CLASS::ADDRESS, Symbol::Keyword("address")},
+      {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
+      {SYS_CLASS::CHAR, Symbol::Keyword("char")},
+      {SYS_CLASS::CONS, Symbol::Keyword("cons")},
+      {SYS_CLASS::EXCEPTION, Symbol::Keyword("except")},
+      {SYS_CLASS::FIXNUM, Symbol::Keyword("fixnum")},
+      {SYS_CLASS::FLOAT, Symbol::Keyword("float")},
+      {SYS_CLASS::FUNCTION, Symbol::Keyword("func")},
+      {SYS_CLASS::MACRO, Symbol::Keyword("macro")},
+      {SYS_CLASS::NAMESPACE, Symbol::Keyword("namespc")},
+      {SYS_CLASS::STREAM, Symbol::Keyword("stream")},
+      {SYS_CLASS::STRING, Symbol::Keyword("string")},
+      {SYS_CLASS::STRUCT, Symbol::Keyword("struct")},
+      {SYS_CLASS::SYMBOL, Symbol::Keyword("symbol")},
+      {SYS_CLASS::T, Type::T},
+      {SYS_CLASS::VECTOR, Symbol::Keyword("vector")}};
+
+  assert(kTypeMap.count(sys_class));
+
+  return kTypeMap.at(sys_class);
+}
+
 /** * type of tagged pointer **/
-Type::SYS_CLASS Type::TypeOf(TagPtr ptr) {
+SYS_CLASS Type::TypeOf(TagPtr ptr) {
   static const std::vector<std::pair<bool (*)(TagPtr), SYS_CLASS>> kPredMap{
-      {Type::Null,
-       SYS_CLASS::NULLT}, /* let this catch :nil before symbol sees it */
       {Address::IsType, SYS_CLASS::ADDRESS},
       {Char::IsType, SYS_CLASS::CHAR},
       {Cons::IsType, SYS_CLASS::CONS},

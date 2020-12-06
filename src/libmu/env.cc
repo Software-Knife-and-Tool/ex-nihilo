@@ -231,7 +231,6 @@ void Env::GcMark(Env* env, TagPtr ptr) {
                  {SYS_CLASS::FUNCTION, Function::GcMark},
                  {SYS_CLASS::MACRO, Macro::GcMark},
                  {SYS_CLASS::NAMESPACE, Namespace::GcMark},
-                 {SYS_CLASS::NULLT, noGc},
                  {SYS_CLASS::STREAM, Stream::GcMark},
                  {SYS_CLASS::STRING, Vector::GcMark},
                  {SYS_CLASS::STRUCT, Struct::GcMark},

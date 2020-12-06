@@ -80,7 +80,6 @@ void Print(Env* env, TagPtr object, TagPtr str, bool esc) {
                {SYS_CLASS::MACRO, Macro::Print},
                {SYS_CLASS::STRING, String::Print},
                {SYS_CLASS::SYMBOL, Symbol::Print},
-               {SYS_CLASS::NULLT, Symbol::Print},
                {SYS_CLASS::VECTOR, Vector::Print}};
 
   auto printh = kPrinMap.count(Type::TypeOf(object)) != 0;
