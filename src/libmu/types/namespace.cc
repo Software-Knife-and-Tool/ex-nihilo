@@ -36,43 +36,36 @@ void Namespace::GcMark(Env* env, TagPtr ns) {
   if (!env->heap_->IsGcMarked(ns)) {
     env->heap_->GcMark(ns);
     env->GcMark(env, import(ns));
-    for (auto entry : externs(ns))
-      Symbol::GcMark(env, entry.second);
-    for (auto entry : interns(ns))
-      Symbol::GcMark(env, entry.second);
+    for (auto entry : externs(ns)) Symbol::GcMark(env, entry.second);
+    for (auto entry : interns(ns)) Symbol::GcMark(env, entry.second);
   }
 }
 
-/** * view of struct object **/
+/** * view of namespace object **/
 Type::TagPtr Namespace::ViewOf(Env* env, TagPtr ns) {
   assert(IsType(ns));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("ns"),
-    ns,
-    Fixnum(ToUint64(ns) >> 3).tag_,
-    name(ns),
-    import(ns)
-  };
-    
+
+  auto view =
+      std::vector<TagPtr>{Symbol::Keyword("ns"), ns,
+                          Fixnum(ToUint64(ns) >> 3).tag_, name(ns), import(ns)};
+
   return Vector(env, view).tag_;
 }
 
-/** * find symbol in this namespace/imports **/
+/** * find symbol in namespace/imports **/
 TagPtr Namespace::FindSymbol(Env* env, TagPtr ns, TagPtr str) {
   assert(IsType(ns));
   assert(String::IsType(str));
 
   for (; !Type::Null(ns); ns = Namespace::import(ns)) {
     auto sym = Namespace::FindInNsExterns(env, ns, str);
-    if (!Type::Null(sym))
-      return sym;
+    if (!Type::Null(sym)) return sym;
   }
 
   return Type::NIL;
 }
 
-/** * intern symbol in namespace **/
+/** * intern extern symbol in namespace **/
 Type::TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
   assert(IsType(ns));
   assert(String::IsType(name));
@@ -93,9 +86,10 @@ Type::TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
   auto key = static_cast<TagPtr>(hash_id(name));
   auto sym = FindInNsInterns(env, ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
-                                  Symbol(ns, name).Evict(env, "ns:intern-in-ns"))
-                         : sym;
+  return Type::Null(sym)
+             ? Insert(Untag<Layout>(ns)->interns, key,
+                      Symbol(ns, name).Evict(env, "ns:intern-in-ns"))
+             : sym;
 }
 
 /** * extern symbol in namespace **/
@@ -106,9 +100,10 @@ Type::TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
   auto key = static_cast<TagPtr>(hash_id(name));
   auto sym = FindInNsExterns(env, ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
-                                  Symbol(ns, name).Evict(env, "ns:extern-in-ns"))
-                         : sym;
+  return Type::Null(sym)
+             ? Insert(Untag<Layout>(ns)->externs, key,
+                      Symbol(ns, name).Evict(env, "ns:extern-in-ns"))
+             : sym;
 }
 
 /** * namespace symbols **/
@@ -120,8 +115,7 @@ Type::TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
 
   std::vector<TagPtr> symv;
 
-  for (auto map : list)
-    symv.push_back(map.second);
+  for (auto map : list) symv.push_back(map.second);
 
   return Cons::List(env, symv);
 }
@@ -132,7 +126,7 @@ Type::TagPtr Namespace::Evict(Env* env, const char* src) {
 
   *np = namespace_;
   tag_ = Entag(np, TAG::EXTEND);
-  
+
   return tag_;
 }
 

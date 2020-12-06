@@ -35,7 +35,7 @@
 
 namespace libmu {
 namespace mu {
-  
+
 using Frame = Env::Frame;
 
 /** *  (stack-trace) => :nil **/
@@ -55,13 +55,11 @@ void StackInspect(Frame* fp) {
 /** *  (systime => list **/
 void SystemTime(Frame* fp) {
   unsigned long ts[2];
-    
+
   Platform::SystemTime(ts);
 
-  fp->value =
-    Cons::List(fp->env,
-               std::vector<Type::TagPtr>{Fixnum(ts[0]).tag_,
-                                         Fixnum(ts[1]).tag_});
+  fp->value = Cons::List(fp->env, std::vector<Type::TagPtr>{
+                                      Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
 }
 
 /** *  (runtime) => list **/
@@ -70,10 +68,8 @@ void RunTime(Frame* fp) {
 
   Platform::ProcessTime(ts);
 
-  fp->value =
-    Cons::List(fp->env,
-               std::vector<Type::TagPtr>{Fixnum(ts[0]).tag_,
-                                         Fixnum(ts[1]).tag_});
+  fp->value = Cons::List(fp->env, std::vector<Type::TagPtr>{
+                                      Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
 }
 
 /** *  (exit fixnum) never returns **/
@@ -88,33 +84,32 @@ void Exit(Frame* fp) {
 
 /** *  (system string) **/
 void System(Frame* fp) {
-
   auto cmd = fp->argv[0];
 
   if (!String::IsType(cmd))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "is not a string (system)", cmd);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "is not a string (system)", cmd);
 
   fp->value = Fixnum(Platform::System(String::StdStringOf(cmd))).tag_;
 }
 
 /** * (system-env string) **/
 void SystemEnv(Frame* fp) {
-
   auto env = Platform::Environment();
   auto vars = std::vector<TagPtr>{};
-  
+
   for (auto ep = env; *ep != NULL; ep++) {
     auto env_var = std::string(*ep);
     auto eq = strchr(*ep, '=');
 
     assert(eq != NULL);
-    
+
     auto name = String(fp->env, env_var.substr(0, eq - *ep)).tag_;
     auto value = String(fp->env, env_var.substr(eq - *ep + 1)).tag_;
-    
+
     vars.push_back(Cons(name, value).Evict(fp->env, "mu-platform:system-env"));
   }
-  
+
   fp->value = Cons::List(fp->env, vars);
 }
 
@@ -122,18 +117,18 @@ void SystemEnv(Frame* fp) {
 void Invoke(Frame* fp) {
   auto fn = fp->argv[0];
   auto arg = fp->argv[1];
-  
+
   if (!Fixnum::IsType(fn))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "%invoke", fn);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "%invoke",
+                     fn);
 
   if (!String::IsType(arg))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "%invoke", arg);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "%invoke",
+                     arg);
 
-  fp->value = String(fp->env,
-                     Platform::Invoke(Fixnum::Uint64Of(fn),
-                                      String::StdStringOf(arg))).tag_;
+  fp->value = String(fp->env, Platform::Invoke(Fixnum::Uint64Of(fn),
+                                               String::StdStringOf(arg)))
+                  .tag_;
 }
 
 } /* namespace mu */

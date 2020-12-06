@@ -41,8 +41,7 @@ void Function::GcMark(Env* ev, TagPtr fn) {
     ev->GcMark(ev, form(fn));
     ev->GcMark(ev, name(fn));
     for (auto fp : context(fn)) {
-      for (size_t i = 0 ; i < fp->nargs; ++i)
-        ev->GcMark(ev, fp->argv[i]);
+      for (size_t i = 0; i < fp->nargs; ++i) ev->GcMark(ev, fp->argv[i]);
     }
   }
 }
@@ -75,23 +74,20 @@ Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
   assert(IsType(fn));
 
   /* think: add context */
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("func"),
-    fn,
-    Fixnum(ToUint64(fn) >> 3).tag_,
-    name(fn),
-    core(fn),
-    form(fn),
-    frame_id(fn),
-    Fixnum(arity(fn)).tag_
-  };
-  
+  auto view = std::vector<TagPtr>{Symbol::Keyword("func"),
+                                  fn,
+                                  Fixnum(ToUint64(fn) >> 3).tag_,
+                                  name(fn),
+                                  core(fn),
+                                  form(fn),
+                                  frame_id(fn),
+                                  Fixnum(arity(fn)).tag_};
+
   return Vector(env, view).tag_;
 }
-  
+
 /** * call function with argument vector **/
-Type::TagPtr Function::Funcall(Env* env,
-                               TagPtr fn,
+Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
                                const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
@@ -102,8 +98,7 @@ Type::TagPtr Function::Funcall(Env* env,
   auto args = std::make_unique<TagPtr[]>(nargs);
   if (nargs) {
     size_t i = 0;
-    for (; i < arity_nreqs(fn); i++)
-      args[i] = argv[i];
+    for (; i < arity_nreqs(fn); i++) args[i] = argv[i];
 
     if (arity_rest(fn)) {
       if (i == argv.size()) {
@@ -111,8 +106,7 @@ Type::TagPtr Function::Funcall(Env* env,
       } else {
         std::vector<TagPtr> restv;
 
-        for (size_t j = i; j < argv.size(); j++)
-          restv.push_back(argv[j]);
+        for (size_t j = i; j < argv.size(); j++) restv.push_back(argv[j]);
 
         args[i] = Cons::List(env, restv);
       }
@@ -122,9 +116,8 @@ Type::TagPtr Function::Funcall(Env* env,
   Env::Frame fp(env, frame_id(fn), fn, args.get(), nargs);
 
   env->PushFrame(&fp);
-  
-  if (nargs)
-    env->Cache(&fp);
+
+  if (nargs) env->Cache(&fp);
 
   for (auto frame : Function::context(fn))
     if (frame->nargs) {
@@ -138,8 +131,7 @@ Type::TagPtr Function::Funcall(Env* env,
       env->UnCache(frame);
     }
 
-  if (nargs)
-    env->UnCache(&fp);
+  if (nargs) env->UnCache(&fp);
 
   env->PopFrame();
 

@@ -154,7 +154,7 @@ void VectorType(Frame*);
 void WithException(Frame*);
 void WriteByte(Frame*);
 void WriteChar(Frame*);
-  
+
 } /* namespace mu */
 } /* namespace libmu */
 

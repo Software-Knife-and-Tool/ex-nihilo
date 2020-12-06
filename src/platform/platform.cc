@@ -46,14 +46,13 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 
 #include "platform/ffi.h"
 #include "platform/platform.h"
 
-extern char** environ;
+extern char **environ;
 
 namespace platform {
 
@@ -105,22 +104,16 @@ void Platform::ProcessTime(unsigned long *retn) {
 }
 
 /** * system **/
-int Platform::System(const std::string cmd) {
-
-  return system(cmd.c_str());
-}
+int Platform::System(const std::string cmd) { return system(cmd.c_str()); }
 
 /** * system environment **/
-char** Platform::Environment() {
-  
-  return environ;
-}
+char **Platform::Environment() { return environ; }
 
 /** * platform invoke **/
 std::string Platform::Invoke(uint64_t fnp, std::string arg) {
 
   /* I ought to be slapped for this */
-  std::string (* fn)(std::string) = (std::string (*)(std::string))(fnp);
+  std::string (*fn)(std::string) = (std::string(*)(std::string))(fnp);
 
   return fn(arg);
 }

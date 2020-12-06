@@ -59,8 +59,8 @@ void HeapLog(Frame* fp) {
     case Type::T:
       break;
     default:
-      Exception::Raise(fp->env, EXCEPT_CLASS::TYPE_ERROR, "is not boolean (heap-log)",
-                       fp->value);
+      Exception::Raise(fp->env, EXCEPT_CLASS::TYPE_ERROR,
+                       "is not boolean (heap-log)", fp->value);
   }
 
   fp->env->heap_->logging(Type::Null(fp->value) ? false : true);
@@ -78,10 +78,14 @@ void HeapInfo(Frame* fp) {
                                                         int size) {
     return Vector(fp->env,
                   std::vector<TagPtr>{
-                    Fixnum(-1).tag_, /* figure out per object size */
-                    Fixnum(size).tag_,
-                    Fixnum(fp->env->heap_->nalloc_->at(static_cast<int>(sys_class))).tag_,
-                    Fixnum(fp->env->heap_->nfree_->at(static_cast<int>(sys_class))).tag_})
+                      Fixnum(-1).tag_, /* figure out per object size */
+                      Fixnum(size).tag_,
+                      Fixnum(fp->env->heap_->nalloc_->at(
+                                 static_cast<int>(sys_class)))
+                          .tag_,
+                      Fixnum(fp->env->heap_->nfree_->at(
+                                 static_cast<int>(sys_class)))
+                          .tag_})
         .tag_;
   };
 
@@ -101,10 +105,12 @@ void HeapInfo(Frame* fp) {
                      Fixnum(fp->env->heap_->size()).tag_,
                      Fixnum(fp->env->heap_->alloc()).tag_,
                      Fixnum(std::accumulate(fp->env->heap_->nalloc_->begin(),
-                                            fp->env->heap_->nalloc_->end(), 0)).tag_,
+                                            fp->env->heap_->nalloc_->end(), 0))
+                         .tag_,
                      Fixnum(std::accumulate(fp->env->heap_->nfree_->begin(),
-                                            fp->env->heap_->nfree_->end(), 0)).tag_})
-                .tag_;
+                                            fp->env->heap_->nfree_->end(), 0))
+                         .tag_})
+              .tag_;
       break;
     default:
       fp->value = type_vec(sys_class, fp->env->heap_->room(sys_class));

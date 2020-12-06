@@ -20,7 +20,6 @@
 #include "libmu/env.h"
 #include "libmu/eval.h"
 #include "libmu/print.h"
-#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/types/cons.h"
@@ -87,10 +86,9 @@ Type::TagPtr Compiler::DefConstant(Env* env, TagPtr form) {
 
   auto value = Eval(env, Compile(env, expr));
   (void)Symbol::Bind(sym, value);
-  
-  if (Function::IsType(value))
-    Function::name(value, sym);
-  
+
+  if (Function::IsType(value)) Function::name(value, sym);
+
   return Cons::List(env, std::vector<TagPtr>{Symbol::Keyword("quote"), sym});
 }
 
@@ -104,7 +102,8 @@ Type::TagPtr Compiler::Lambda(Env* env, TagPtr form) {
   auto lambda = Cons::Nth(args, 0);
 
   if (!Cons::IsList(lambda))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":lambda", lambda);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":lambda",
+                     lambda);
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
@@ -121,7 +120,8 @@ Type::TagPtr Compiler::DefMacro(Env* env, TagPtr form) {
   auto lambda = Cons::Nth(args, 0);
 
   if (!Cons::IsList(lambda))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":macro", lambda);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":macro",
+                     lambda);
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
@@ -146,14 +146,13 @@ Type::TagPtr Compiler::Letq(Env* env, TagPtr form) {
   if (!Cons::IsList(lsym))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":letq", lsym);
 
-  auto letq = Namespace::FindInNsInterns(env, env->mu_, String(env, "letq").tag_);
+  auto letq =
+      Namespace::FindInNsInterns(env, env->mu_, String(env, "letq").tag_);
   assert(!Null(letq));
-  
-  return Cons::List(env,
-                    std::vector<TagPtr>{letq,
-                                        Cons::Nth(lsym, 1),
-                                        Cons::Nth(lsym, 2),
-                                        Compiler::Compile(env, expr)});
+
+  return Cons::List(
+      env, std::vector<TagPtr>{letq, Cons::Nth(lsym, 1), Cons::Nth(lsym, 2),
+                               Compiler::Compile(env, expr)});
 }
 
 /** * (:quote object) **/
@@ -169,4 +168,3 @@ Type::TagPtr Compiler::Quote(Env* env, TagPtr form) {
 }
 
 } /* namespace libmu */
-

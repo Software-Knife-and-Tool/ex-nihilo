@@ -36,13 +36,10 @@ class Compiler : public Type {
 
   static TagPtr DefConstant(Env*, TagPtr);
   static TagPtr DefMacro(Env*, TagPtr);
-  static TagPtr Environ(Env*, TagPtr);
   static TagPtr Lambda(Env*, TagPtr);
   static TagPtr Letq(Env*, TagPtr);
-  static TagPtr ParseLambda(Env*, TagPtr);
   static TagPtr Quote(Env*, TagPtr);
 
-  static bool InLexicalEnv(Env*, TagPtr, TagPtr*, size_t*);
   static bool IsSpecOp(Env*, TagPtr);
 
   static constexpr TagPtr lexicals(TagPtr lambda) {

@@ -43,7 +43,8 @@ void Read(Frame* fp) {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
   if (!Stream::IsType(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "read", stream);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "read",
+                     stream);
 
   if (Stream::IsEof(stream))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::END_OF_FILE, "read",
@@ -58,16 +59,12 @@ void SetMacroChar(Frame* fp) {
   auto reader = fp->argv[1];
 
   if (!Char::IsType(macro_char))
-    Exception::Raise(fp->env,
-                     Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "(set-macro-character)",
-                     macro_char);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "(set-macro-character)", macro_char);
 
   if (!Function::IsType(reader))
-    Exception::Raise(fp->env,
-                     Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "(set-macro-character)",
-                     reader);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "(set-macro-character)", reader);
 
   fp->env->readtable_[macro_char] = reader;
   fp->value = Type::T;

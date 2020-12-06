@@ -42,17 +42,15 @@ const char* libmu_version() { return "0.0.20"; }
 
 /** * read_stdin interface **/
 void* libmu_read_stream(void* env, void* stream) {
-  return (void*)libmu::Type::ToAddress(libmu::Read(((libmu::Env*)env),
-                                                   libmu::Type::Entag(stream, libmu::Type::TAG::ADDRESS)));
+  return (void*)libmu::Type::ToAddress(
+      libmu::Read(((libmu::Env*)env),
+                  libmu::Type::Entag(stream, libmu::Type::TAG::ADDRESS)));
 }
 
 /** * read interface **/
 void* libmu_read_cstr(void* env, const char* src) {
-  return
-    (void*)libmu::Type::ToAddress(
-       libmu::Read((libmu::Env*)env,
-                   libmu::Stream::MakeInputString((libmu::Env*)env,
-                                                  src)));
+  return (void*)libmu::Type::ToAddress(libmu::Read(
+      (libmu::Env*)env, libmu::Stream::MakeInputString((libmu::Env*)env, src)));
 }
 
 /** * read interface **/
@@ -64,18 +62,15 @@ void* libmu_read_string(void* env, std::string src) {
 void libmu_print(void* env, void* ptr, void* stream, bool esc) {
   libmu::Print((libmu::Env*)env,
                libmu::Type::Entag(ptr, libmu::Type::TAG::ADDRESS),
-               libmu::Type::Entag(stream, libmu::Type::TAG::ADDRESS),
-               esc);
+               libmu::Type::Entag(stream, libmu::Type::TAG::ADDRESS), esc);
 }
 
 /** * print to a cstring **/
 const char* libmu_print_cstr(void* env, void* ptr, bool esc) {
   auto stream = libmu::Stream::MakeOutputString((libmu::Env*)env, "");
-  
+
   libmu::Print((libmu::Env*)env,
-               libmu::Type::Entag(ptr, libmu::Type::TAG::ADDRESS),
-               stream,
-               esc);
+               libmu::Type::Entag(ptr, libmu::Type::TAG::ADDRESS), stream, esc);
 
   auto sp = libmu::Type::Untag<libmu::Stream::Layout>(stream);
 
@@ -90,19 +85,18 @@ void libmu_terpri(void* env, void* stream) {
   libmu::Terpri((libmu::Env*)env,
                 libmu::Type::Entag(stream, libmu::Type::TAG::ADDRESS));
 }
-  
+
 /** * catch library throws **/
 void libmu_withException(void* env, std::function<void(void*)> fn) {
   try {
     fn(env);
   } catch (libmu::TagPtr exception) {
-    auto std_error =
-      libmu::Symbol::value(((libmu::Env*)env)->standard_error_);
+    auto std_error = libmu::Symbol::value(((libmu::Env*)env)->standard_error_);
     auto tag = libmu::Exception::tag(exception);
     auto source = libmu::Exception::source(exception);
     auto reason = libmu::Exception::reason(exception);
     auto frame = libmu::Exception::frame(exception);
-    
+
     libmu::PrintStdString((libmu::Env*)env, "exception: ", std_error, false);
     libmu::Print((libmu::Env*)env, tag, std_error, false);
     libmu::PrintStdString((libmu::Env*)env, " ", std_error, false);
@@ -120,9 +114,11 @@ void libmu_withException(void* env, std::function<void(void*)> fn) {
 
 /** * eval **/
 void* libmu_eval(void* env, void* form) {
-  return reinterpret_cast<void*>(libmu::Eval(
-      (libmu::Env*)env,
-      libmu::Compiler::Compile((libmu::Env*)env, libmu::Type::Entag(form, libmu::Type::TAG::ADDRESS))));
+  return reinterpret_cast<void*>(
+      libmu::Eval((libmu::Env*)env,
+                  libmu::Compiler::Compile(
+                      (libmu::Env*)env,
+                      libmu::Type::Entag(form, libmu::Type::TAG::ADDRESS))));
 }
 
 /** * env - allocate an environment **/
@@ -135,10 +131,7 @@ void* libmu_env_default(Platform* platform) {
 }
 
 /** * env - allocate an environment **/
-void* libmu_env(Platform* platform,
-          Platform::StreamId stdin,
-          Platform::StreamId stdout,
-          Platform::StreamId stderr) {
+void* libmu_env(Platform* platform, Platform::StreamId stdin,
+                Platform::StreamId stdout, Platform::StreamId stderr) {
   return (void*)new libmu::Env(platform, stdin, stdout, stderr);
 }
-

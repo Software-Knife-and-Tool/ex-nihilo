@@ -49,54 +49,50 @@ Type::TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
   assert(Cons::IsList(args));
 
   std::vector<TagPtr> argv;
-  Cons::MapC(env,
-             [&argv](Env*, TagPtr form) {
-               argv.push_back(form);
-             },
-             args);
+  Cons::MapC(
+      env, [&argv](Env*, TagPtr form) { argv.push_back(form); }, args);
 
   return Function::Funcall(env, fn, argv);
 }
 
 /** * evaluate form in environment **/
 Type::TagPtr Eval(Env* env, TagPtr form) {
-  auto rval = Type::NIL;
+  TagPtr rval;
 
   switch (Type::TypeOf(form)) {
-  case SYS_CLASS::SYMBOL:
-    if (!Symbol::IsBound(form))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::UNBOUND_VARIABLE, "(eval)",
-                       form);
-    rval = Symbol::value(form);
-    break;
-  case SYS_CLASS::CONS: { /* function call */
-    auto fn = Eval(env, Cons::car(form));
-      
-    switch (Type::TypeOf(fn)) {
-    case SYS_CLASS::SYMBOL: /* can only be a keyword */
-      if (!Type::Eq(fn, Symbol::Keyword("quote")))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
-                         "(eval)", fn);
-      
-      rval = Cons::Nth(form, 1);
+    case SYS_CLASS::SYMBOL:
+      if (!Symbol::IsBound(form))
+        Exception::Raise(env, Exception::EXCEPT_CLASS::UNBOUND_VARIABLE,
+                         "(eval)", form);
+      rval = Symbol::value(form);
       break;
-    case SYS_CLASS::FUNCTION: /* function object */
-      rval = Apply(env,
-                   fn,
-                   Cons::MapCar(env,
-                                [](Env* env, TagPtr form) {
-                                  return Eval(env, form);
-                                },
-                                Cons::cdr(form)));
+    case SYS_CLASS::CONS: { /* function call */
+      auto fn = Eval(env, Cons::car(form));
+
+      switch (Type::TypeOf(fn)) { /* keyword, should be :quote */
+        case SYS_CLASS::SYMBOL:
+          if (!Type::Eq(fn, Symbol::Keyword("quote")))
+            Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
+                             "(eval)", fn);
+
+          rval = Cons::Nth(form, 1);
+          break;
+        case SYS_CLASS::FUNCTION: /* function object */
+          rval = Apply(
+              env, fn,
+              Cons::MapCar(
+                  env, [](Env* env, TagPtr form) { return Eval(env, form); },
+                  Cons::cdr(form)));
+          break;
+        default:
+          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)",
+                           fn);
+      }
       break;
-    default:
-      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)", fn);
     }
-    break;
-  }
-  default: /* constant form */
-    rval = form;
-    break;
+    default: /* constant */
+      rval = form;
+      break;
   }
 
   return rval;

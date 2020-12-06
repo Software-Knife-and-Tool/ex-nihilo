@@ -36,7 +36,7 @@ class Type {
   static constexpr auto to_underlying(E e) noexcept {
     return static_cast<std::underlying_type_t<E>>(e);
   }
-  
+
  public: /* TagPtr layout */
   /** * 3 bit staged low tag **/
   enum class TAG : uint8_t {
@@ -162,7 +162,7 @@ class Type {
   static constexpr bool IsImmediate(TagPtr ptr) {
     return TagOf(ptr) == TAG::IMMEDIATE;
   }
-  
+
   static constexpr bool IsExtended(TagPtr ptr) {
     return TagOf(ptr) == TAG::EXTEND;
   }
@@ -171,10 +171,10 @@ class Type {
   static constexpr bool Null(TagPtr ptr) { return Eq(ptr, NIL); }
 
  public:       /* object model */
-  TagPtr tag_;     /* tagged pointer for type constructors */
-  
+  TagPtr tag_; /* tagged pointer for type constructors */
+
   virtual TagPtr Evict(Env*, const char*) = 0;
-  
+
 }; /* class Type */
 
 } /* namespace libmu */

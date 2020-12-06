@@ -34,66 +34,61 @@ using Frame = Env::Frame;
 
 /** * (function? object) => bool **/
 void IsFunction(Frame* fp) {
-
   fp->value = Type::BoolOf(Function::IsType(fp->argv[0]));
 }
 
 /** * (trampoline thunk) => object **/
 void Trampoline(Frame* fp) {
-
   fp->value = fp->argv[0];
 
   if (!Function::IsType(fp->value))
-    Exception::Raise(fp->env,
-                     Exception::EXCEPT_CLASS::TYPE_ERROR, "trampoline",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "trampoline",
                      fp->value);
 
   do {
-    fp->value =
-      Function::Funcall(fp->env, fp->value, std::vector<TagPtr>{});
+    fp->value = Function::Funcall(fp->env, fp->value, std::vector<TagPtr>{});
   } while (Function::IsType(fp->value));
 }
 
 /** * (closure function) => function **/
 void Closure(Frame* fp) {
-
   auto fn = fp->argv[0];
 
   if (!Function::IsType(fn))
-    Exception::Raise(fp->env,
-                     Exception::EXCEPT_CLASS::TYPE_ERROR, "closure",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "closure",
                      fn);
 
   if (!Type::Null(Function::env(fn))) {
     std::vector<Frame*> context{};
 
-    Cons::MapC(fp->env,
-               [fp, &context](Env*, TagPtr fn) {
-                 auto offset = 0;
-                 auto lambda = Cons::car(Function::form(fn));
-                 /* think: this all has to be wildly wrong */
-                 auto rest = Function::arity(fn) < 0;;
-                 size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
-                 auto args = new TagPtr[nargs]; /* think: does this need to be freed? */
+    Cons::MapC(
+        fp->env,
+        [fp, &context](Env*, TagPtr fn) {
+          auto offset = 0;
+          auto lambda = Cons::car(Function::form(fn));
+          /* think: this all has to be wildly wrong */
+          auto rest = Function::arity(fn) < 0;
+          ;
+          size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
+          auto args =
+              new TagPtr[nargs]; /* think: does this need to be freed? */
 
-                 /* think: check this, seems odd */
-                 Cons::MapC(fp->env,
-                            [fp, fn, &offset, &args](Env*, TagPtr) {
-                              auto lfp = fp->env->MapFrame(Function::frame_id(fn));
-                              auto value = lfp->argv[offset];
-                              
-                              args[offset] = value;
-                              offset++;
-                            },
-                            Cons::car(lambda));
+          /* think: check this, seems odd */
+          Cons::MapC(
+              fp->env,
+              [fp, fn, &offset, &args](Env*, TagPtr) {
+                auto lfp = fp->env->MapFrame(Function::frame_id(fn));
+                auto value = lfp->argv[offset];
 
-                 context.push_back(new Frame(fp->env,
-                                             Function::frame_id(fn),
-                                             fn,
-                                             args,
-                                             nargs));
-               },
-               Function::env(fn));
+                args[offset] = value;
+                offset++;
+              },
+              Cons::car(lambda));
+
+          context.push_back(
+              new Frame(fp->env, Function::frame_id(fn), fn, args, nargs));
+        },
+        Function::env(fn));
 
     Function::context(fn, context);
   }
@@ -121,18 +116,17 @@ void FrameRef(Frame* fp) {
 
 /** * (%letq frame-id offset value) => value **/
 void Letq(Frame* fp) {
-
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];
   auto value = fp->argv[2];
 
   if (!Fixnum::IsType(frame_id))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "letq", frame_id);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "letq",
+                     frame_id);
 
   if (!Fixnum::IsType(offset))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "letq", offset);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "letq",
+                     offset);
 
   auto lfp = fp->env->MapFrame(frame_id);
 
@@ -143,7 +137,6 @@ void Letq(Frame* fp) {
 
 /** * mu function (testif test function function) => object **/
 void TestIf(Frame* fp) {
-
   fp->value = Type::Null(fp->argv[0]) ? fp->argv[2] : fp->argv[1];
 }
 

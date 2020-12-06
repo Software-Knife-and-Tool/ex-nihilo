@@ -19,8 +19,8 @@
 #include "libmu/env.h"
 #include "libmu/type.h"
 
-#include "libmu/types/cons.h"
 #include "libmu/heap/heap.h"
+#include "libmu/types/cons.h"
 
 namespace libmu {
 
@@ -36,7 +36,6 @@ class Struct : public Type {
 
  public: /* TagPtr */
   static constexpr bool IsType(TagPtr ptr) {
-
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
@@ -56,15 +55,11 @@ class Struct : public Type {
   /** * view of struct object **/
   static Type::TagPtr ViewOf(Env* env, TagPtr strct) {
     assert(IsType(strct));
-  
-    auto view = std::vector<TagPtr>{
-      Symbol::Keyword("struct"),
-      strct,
-      Fixnum(ToUint64(strct) >> 3).tag_,
-      stype(strct),
-      slots(strct)
-    };
-    
+
+    auto view = std::vector<TagPtr>{Symbol::Keyword("struct"), strct,
+                                    Fixnum(ToUint64(strct) >> 3).tag_,
+                                    stype(strct), slots(strct)};
+
     return Vector(env, view).tag_;
   }
 
@@ -87,7 +82,7 @@ class Struct : public Type {
 
     tag_ = Entag(reinterpret_cast<void*>(&struct_), TAG::EXTEND);
   }
-  
+
 }; /* class Struct */
 
 } /* namespace libmu */

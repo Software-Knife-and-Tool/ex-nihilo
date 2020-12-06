@@ -52,9 +52,11 @@ void FloatAdd(Frame* fp) {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float+", fl0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float+",
+                     fl0);
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float+", fl1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float+",
+                     fl1);
 
   fp->value = Float(Float::FloatOf(fl0) + Float::FloatOf(fl1)).tag_;
 }
@@ -65,10 +67,12 @@ void FloatSub(Frame* fp) {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float-", fl0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float-",
+                     fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float-", fl1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float-",
+                     fl1);
 
   fp->value = Float(Float::FloatOf(fl0) - Float::FloatOf(fl1)).tag_;
 }
@@ -79,10 +83,12 @@ void FloatMul(Frame* fp) {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float*", fl0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float*",
+                     fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float*", fl1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float*",
+                     fl1);
 
   fp->value = Float(Float::FloatOf(fl0) * Float::FloatOf(fl1)).tag_;
 }
@@ -93,10 +99,12 @@ void FloatDiv(Frame* fp) {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float/", fl0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float/",
+                     fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float/", fl1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float/",
+                     fl1);
 
   fp->value = Float(Float::FloatOf(fl0) / Float::FloatOf(fl1)).tag_;
 }
@@ -107,10 +115,12 @@ void FloatLessThan(Frame* fp) {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<", fl0);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<",
+                     fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<", fl1);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<",
+                     fl1);
 
   fp->value = Type::BoolOf(Float::FloatOf(fl0) < Float::FloatOf(fl1));
 }
@@ -132,13 +142,14 @@ void Pow(Frame* fp) {
   auto exp = fp->argv[1];
 
   if (!Float::IsType(base))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(pow)", base);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(pow)",
+                     base);
 
   if (!Float::IsType(exp))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(pow)", exp);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(pow)",
+                     exp);
 
-  fp->value =
-    Float(pow(Float::FloatOf(base), Float::FloatOf(exp))).tag_;
+  fp->value = Float(pow(Float::FloatOf(base), Float::FloatOf(exp))).tag_;
 }
 
 /** * (atan float) => float **/
@@ -212,7 +223,8 @@ void Sine(Frame* fp) {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(sin)", theta);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(sin)",
+                     theta);
 
   fp->value = Float(sin(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;
 }
@@ -222,10 +234,10 @@ void Cosine(Frame* fp) {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(cos)", theta);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(cos)",
+                     theta);
 
-  fp->value =
-    Float(cos(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;
+  fp->value = Float(cos(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;
 }
 
 /** * (tan float) => float **/
@@ -233,7 +245,8 @@ void Tangent(Frame* fp) {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(tan)", theta);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(tan)",
+                     theta);
 
   fp->value = Float(tan(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;
 }

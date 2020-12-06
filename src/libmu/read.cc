@@ -41,31 +41,33 @@
 namespace libmu {
 namespace {
 
-/** * read #<...> syntax **/
+/** * read #<:type fixnum attr-list> syntax **/
 TagPtr ReadBroketSyntax(Env* env, TagPtr stream) {
   assert(Stream::IsType(stream));
 
   auto type = ReadForm(env, stream);
-  auto addr = ReadForm(env, stream);
-  // auto attr = ReadForm(env, stream);
+  auto tagptr = ReadForm(env, stream);
+
+  /* think: this is the attribute list. Do something with it? */
+  /* the attribute list is there to keep the reader from bumping into the > */
   (void)ReadForm(env, stream);
 
   auto bracket = Stream::ReadByte(env, stream);
   if (Fixnum::Uint64Of(bracket) != '>')
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax (terminal)",
-                     bracket);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "broket syntax (terminal)", bracket);
 
   auto sysclass = Type::MapSymbolClass(type);
-  auto bits = Fixnum::Uint64Of(addr);
+  auto tagptr_bits = Fixnum::Uint64Of(tagptr);
 
-  if (!Fixnum::IsType(addr))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax (type)",
-                     addr);
+  if (!Fixnum::IsType(tagptr))
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "broket syntax (type)", tagptr);
 
   switch (sysclass) {
     case SYS_CLASS::ADDRESS: {
-      auto caddr = reinterpret_cast<void*>(bits);
-      
+      auto caddr = reinterpret_cast<void*>(tagptr_bits);
+
       return Address(caddr).tag_;
     }
     case SYS_CLASS::EXCEPTION:
@@ -75,12 +77,12 @@ TagPtr ReadBroketSyntax(Env* env, TagPtr stream) {
     case SYS_CLASS::STREAM:
     case SYS_CLASS::STRUCT:
     default:
-      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "broket syntax (unimplemented)",
-                       type);
+      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                       "broket syntax (unimplemented)", type);
       break;
   }
 
-  return Type::FromUint64(bits);
+  return Type::FromUint64(tagptr_bits);
 }
 
 /** * read atom **/
@@ -106,17 +108,17 @@ std::string ParseAtom(Env* env, TagPtr stream) {
   if (string.size() == 0)
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      "naked atom syntax (read-atom)", Type::NIL);
-  
+
   return string;
 }
 
 /** * read radixed fixnum from stream **/
 TagPtr RadixFixnum(Env* env, int radix, TagPtr stream) {
   assert(Stream::IsType(stream));
-  
+
   std::string str = ParseAtom(env, stream);
   auto number = Type::NIL;
-  
+
   try {
     size_t n;
     uint64_t fxval = std::stoull(str, &n, radix);
@@ -128,20 +130,20 @@ TagPtr RadixFixnum(Env* env, int radix, TagPtr stream) {
       number = Fixnum(fxval).tag_;
     }
   } catch (std::invalid_argument& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                     "parse-number", String(env, str).tag_);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "parse-number",
+                     String(env, str).tag_);
   } catch (std::out_of_range& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                     "parse-number", String(env, str).tag_);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "parse-number",
+                     String(env, str).tag_);
   } catch (std::exception& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                     "parse-number", String(env, str).tag_);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "parse-number",
+                     String(env, str).tag_);
   }
 
   return number;
 }
 
-} /* anonymous namespace */
+}  // namespace
 
 /** * parse a numeric std::string **/
 Type::TagPtr ParseNumber(Env* env, const std::string& str) {
@@ -160,16 +162,15 @@ Type::TagPtr ParseNumber(Env* env, const std::string& str) {
     } else {
       auto flval = std::stof(str, &n);
 
-      if (n == str.length())
-        return Float(flval).tag_;
+      if (n == str.length()) return Float(flval).tag_;
     }
   } catch (std::invalid_argument& ex) {
     return Type::NIL;
   } catch (std::out_of_range& ex) {
     return Type::NIL;
   } catch (std::exception& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "malformed float",
-                     String(env, str).tag_);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                     "malformed float", String(env, str).tag_);
   }
 
   return number;
@@ -199,7 +200,7 @@ bool ReadWSUntilEof(Env* env, TagPtr stream) {
 /** * read form **/
 TagPtr ReadForm(Env* env, TagPtr stream_designator) {
   TagPtr ch;
-  auto rval = Type::NIL;
+  TagPtr rval;
 
   auto stream = Stream::StreamDesignator(env, stream_designator);
 
@@ -210,8 +211,7 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
 
   /* macro character expander */
   if (env->readtable_.count(ch_) > 0)
-    return Function::Funcall(env,
-                             env->readtable_[ch_],
+    return Function::Funcall(env, env->readtable_[ch_],
                              std::vector<TagPtr>{stream, ch_});
 
   switch (MapSyntaxChar(ch)) {
@@ -239,10 +239,14 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
       if (Type::Null(ch))
         Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE, "read",
                          stream);
-      else if (Fixnum::Int64Of(ch) == '<') rval = ReadBroketSyntax(env, stream);
-      else if (Fixnum::Int64Of(ch) == 'x') rval = RadixFixnum(env, 16, stream);
-      else if (Fixnum::Int64Of(ch) == 'd') rval = RadixFixnum(env, 10, stream);
-      else if (Fixnum::Int64Of(ch) == 'o') rval = RadixFixnum(env, 8, stream);
+      else if (Fixnum::Int64Of(ch) == '<')
+        rval = ReadBroketSyntax(env, stream);
+      else if (Fixnum::Int64Of(ch) == 'x')
+        rval = RadixFixnum(env, 16, stream);
+      else if (Fixnum::Int64Of(ch) == 'd')
+        rval = RadixFixnum(env, 10, stream);
+      else if (Fixnum::Int64Of(ch) == 'o')
+        rval = RadixFixnum(env, 8, stream);
       else
         switch (MapSyntaxChar(ch)) {
           case SYNTAX_CHAR::BACKSLASH: /* char syntax */
@@ -254,23 +258,21 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
           case SYNTAX_CHAR::QUOTE: { /* closure syntax */
             auto fn = ReadForm(env, stream);
             if (Type::Null(ch))
-              Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE, "read",
-                               stream);
-            rval = Cons::List(env,
-                              std::vector<TagPtr>{
-                                Namespace::FindSymbol(env, env->mu_, String(env, "closure").tag_),
-                                fn
-                              });
+              Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
+                               "read", stream);
+            rval = Cons::List(
+                env, std::vector<TagPtr>{
+                         Namespace::FindSymbol(env, env->mu_,
+                                               String(env, "closure").tag_),
+                         fn});
             break;
           }
           case SYNTAX_CHAR::COLON: { /* uninterned symbol */
             std::string atom = ParseAtom(env, stream);
             rval = ParseNumber(env, atom);
             if (!Type::Null(rval))
-              Exception::Raise(env,
-                               Exception::EXCEPT_CLASS::READER_ERROR,
-                               "uninterned symbol",
-                               String(env, atom).tag_);
+              Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+                               "uninterned symbol", String(env, atom).tag_);
             rval = Symbol::ParseSymbol(env, atom, false);
             break;
           }
@@ -301,15 +303,14 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
         }
       break;
     case SYNTAX_CHAR::CPAREN:
-      Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR, "naked syntax",
-                       Char(')').tag_);
+      Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+                       "naked syntax", Char(')').tag_);
       break;
     default: { /* unadorned atom */
       Stream::UnReadByte(ch, stream);
       std::string atom = ParseAtom(env, stream);
       rval = ParseNumber(env, atom);
-      if (Type::Null(rval))
-        rval = Symbol::ParseSymbol(env, atom, true);
+      if (Type::Null(rval)) rval = Symbol::ParseSymbol(env, atom, true);
       break;
     }
   }
@@ -321,9 +322,10 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
 TagPtr Read(Env* env, TagPtr stream_designator) {
   auto stream = Stream::StreamDesignator(env, stream_designator);
 
-  return Stream::IsFunction(stream) ?
-    Function::Funcall(env, Stream::func(stream), std::vector<TagPtr>{}) :
-    ReadForm(env, Stream::StreamDesignator(env, stream));
+  return Stream::IsFunction(stream)
+             ? Function::Funcall(env, Stream::func(stream),
+                                 std::vector<TagPtr>{})
+             : ReadForm(env, Stream::StreamDesignator(env, stream));
 }
 
 } /* namespace libmu */

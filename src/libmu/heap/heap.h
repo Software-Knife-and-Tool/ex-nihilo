@@ -17,8 +17,8 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cstdio>
 #include <cinttypes>
+#include <cstdio>
 #include <iostream>
 #include <list>
 #include <string>
@@ -48,7 +48,7 @@ class Heap {
   char* alloc_;          /* alloc barrier */
   bool logging_;         /* logging enable */
   HeapInfo* conses_;     /* gc caching */
-  
+
   /** * HeapInfo from TagPtr **/
   static HeapInfo* GetHeapInfo(TagPtr ptr) {
     return reinterpret_cast<HeapInfo*>((static_cast<uint64_t>(ptr) & ~7) - 8);
@@ -110,9 +110,9 @@ class Heap {
   }
 
  public:
-  size_t nobjects_; /* number of objects in the heap */
+  size_t nobjects_;               /* number of objects in the heap */
   std::vector<uint32_t>* nalloc_; /* allocated counts */
-  std::vector<uint32_t>* nfree_; /* free counts */
+  std::vector<uint32_t>* nfree_;  /* free counts */
 
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }

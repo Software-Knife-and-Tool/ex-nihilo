@@ -61,9 +61,7 @@ void IsSpecOp(Frame* fp) {
 }
 
 /** * (make-view object) => vector **/
-void MakeView(Frame* fp) {
-  fp->value = Env::ViewOf(fp->env, fp->argv[0]);
-}
+void MakeView(Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
 
 } /* namespace mu */
 } /* namespace libmu */

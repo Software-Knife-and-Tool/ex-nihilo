@@ -70,22 +70,20 @@ void EnvStack(Frame* fp) {
     std::vector<TagPtr> frame;
     std::vector<TagPtr> args;
 
-    if (n-- == 0)
-      break;
-    
+    if (n-- == 0) break;
+
     frame.push_back(Symbol::Keyword("frame"));
     frame.push_back(fp->func);
     frame.push_back(Fixnum(fp->nargs).tag_);
 
-    for (size_t i = 0; i < fp->nargs; ++i)
-      args.push_back(fp->argv[i]);
+    for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
 
     frame.push_back(Cons::List(fp->env, args));
     frame.push_back(fp->frame_id);
 
     stack.push_back(Vector(fp->env, frame).tag_);
   }
-  
+
   fp->value = Cons::List(fp->env, stack);
 }
 
@@ -104,10 +102,7 @@ void Apply(Frame* fp) {
 
   std::vector<TagPtr> argv;
   Cons::MapC(
-      fp->env,
-      [&argv](Env*, Type::TagPtr form) {
-        argv.push_back(form);
-      },
+      fp->env, [&argv](Env*, Type::TagPtr form) { argv.push_back(form); },
       fp->argv[1]);
 
   fp->value = Function::Funcall(fp->env, func, argv);

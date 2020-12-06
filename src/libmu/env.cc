@@ -44,7 +44,8 @@
 namespace libmu {
 namespace {
 
-  static const std::vector<Env::TagPtrFn> kExtFuncTab{
+/** * library extern core functions **/
+static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"accept-socket-stream", mu::AcceptSocketStream, 1},
     {"acos", mu::Acos, 1},
     {"asin", mu::Asin, 1},
@@ -156,7 +157,8 @@ namespace {
     {"write-byte", mu::WriteByte, 2},
     {"write-char", mu::WriteChar, 2}};
 
-  static const std::vector<Env::TagPtrFn> kIntFuncTab{
+/** * library intern core functions **/
+static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"apply", mu::Apply, 2},
     {"block", mu::Block, 2},
     {"env-stack", mu::EnvStack, 2},
@@ -178,36 +180,29 @@ namespace {
     {"vec-type", mu::VectorType, 1},
     {"vector", mu::MakeVector, 2}};
 
-} /* anonymous namespace */
-
 /** * make vector of frame **/
-Type::TagPtr Env::FrameToVector(Env* env, Frame* fp) {
-
+TagPtr FrameToVector(Env* env, Frame* fp) {
   auto args = std::vector<TagPtr>();
-  
-  for (size_t i = 0; i < fp->nargs; ++i)
-    args.push_back(fp->argv[i]);
-    
-  auto frame = std::vector<TagPtr>{
-    Symbol::Keyword("frame"),
-    fp->func,
-    Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
-    Cons::List(env, args),    
-    fp->frame_id
-  };
-  
+
+  for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
+
+  auto frame =
+      std::vector<TagPtr>{Symbol::Keyword("frame"), fp->func,
+                          Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
+                          Cons::List(env, args), fp->frame_id};
+
   return Vector(env, frame).tag_;
 }
+
+} /* anonymous namespace */
 
 /** * garbage collection **/
 int Env::Gc(Env* env) {
   env->heap_->ClearRefBits();
 
-  for (auto ns : env->namespaces_)
-    GcMark(env, ns.second);
+  for (auto ns : env->namespaces_) GcMark(env, ns.second);
 
-  for (auto fn : env->lexenv_)
-    GcMark(env, fn);
+  for (auto fn : env->lexenv_) GcMark(env, fn);
 
   for (auto fp : env->frames_) {
     GcMark(env, fp->func);
@@ -215,6 +210,12 @@ int Env::Gc(Env* env) {
   }
 
   return env->heap_->Gc();
+}
+
+/** grab last frame **/
+TagPtr Env::LastFrame(Env* env) {
+  return env->frames_.empty() ? Type::NIL
+                              : FrameToVector(env, env->frames_.front());
 }
 
 /** * garbage collection **/
@@ -308,18 +309,14 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
       Namespace::Intern(this, mu_, String(this, "error-output").tag_),
       Stream(stderr).Evict(this, "env:stderr"));
 
-  env_.lexical = Type::NIL;
-
   for (auto& el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
-    (void)Symbol::Bind(sym,
-                       Function(this, sym, &el).Evict(this, "env:ext-fn"));
+    (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this, "env:ext-fn"));
   }
 
   for (auto& el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
-    (void)Symbol::Bind(sym,
-                       Function(this, sym, &el).Evict(this, "env:int-fn"));
+    (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this, "env:int-fn"));
   }
 }
 

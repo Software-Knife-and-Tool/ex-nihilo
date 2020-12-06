@@ -49,7 +49,7 @@ Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
       nfree_->at(static_cast<int>(tag))--;
       return cp;
     }
-    
+
     for (auto hp = reinterpret_cast<uint64_t>(uaddr_);
          hp < reinterpret_cast<uint64_t>(alloc_);
          hp += Size(*reinterpret_cast<HeapInfo*>(hp))) {
@@ -77,8 +77,7 @@ void* Heap::Alloc(size_t nbytes, SYS_CLASS tag, const char* src) {
 
     alloc_ += nalloc;
 
-    if (alloc_ > uaddr_ + (pagesz_ * npages_))
-      assert(!"heap capacity botch");
+    if (alloc_ > uaddr_ + (pagesz_ * npages_)) assert(!"heap capacity botch");
 
     *reinterpret_cast<HeapInfo*>(halloc) = MakeHeapInfo(nalloc, tag);
 
@@ -89,10 +88,11 @@ void* Heap::Alloc(size_t nbytes, SYS_CLASS tag, const char* src) {
       auto name = Symbol::name(Type::MapClassSymbol(tag));
       printf("heap log: %s %s\n", String::StdStringOf(name).c_str(), src);
     }
-    
+
     return reinterpret_cast<void*>(halloc + sizeof(HeapInfo));
   } else {
-    return reinterpret_cast<void*>(reinterpret_cast<char*>(fp) + sizeof(HeapInfo));
+    return reinterpret_cast<void*>(reinterpret_cast<char*>(fp) +
+                                   sizeof(HeapInfo));
   }
 }
 
@@ -120,8 +120,7 @@ size_t Heap::room(SYS_CLASS tag) {
        hp < reinterpret_cast<uint64_t>(alloc_);
        hp += Size(*reinterpret_cast<HeapInfo*>(hp))) {
     hinfo = *reinterpret_cast<HeapInfo*>(hp);
-    if (tag == SysClass(hinfo))
-      total_size += Size(hinfo);
+    if (tag == SysClass(hinfo)) total_size += Size(hinfo);
   }
 
   return total_size;
@@ -130,8 +129,7 @@ size_t Heap::room(SYS_CLASS tag) {
 /** * heap object marked? **/
 bool Heap::IsGcMarked(TagPtr ptr) {
   if ((Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
-      (Type::TypeOf(ptr) != SYS_CLASS::FLOAT) &&
-      !Type::IsImmediate(ptr)) {
+      (Type::TypeOf(ptr) != SYS_CLASS::FLOAT) && !Type::IsImmediate(ptr)) {
     auto hinfo = GetHeapInfo(ptr);
 
     return RefBits(*hinfo) == 0 ? false : true;
@@ -143,8 +141,7 @@ bool Heap::IsGcMarked(TagPtr ptr) {
 /** * mark heap object **/
 void Heap::GcMark(TagPtr ptr) {
   if ((Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
-      (Type::TypeOf(ptr) != SYS_CLASS::FLOAT) &&
-      !Type::IsImmediate(ptr)) {
+      (Type::TypeOf(ptr) != SYS_CLASS::FLOAT) && !Type::IsImmediate(ptr)) {
     auto hinfo = GetHeapInfo(ptr);
 
     *hinfo = RefBits(*hinfo, 1);
@@ -162,8 +159,7 @@ void Heap::ClearRefBits() {
     *reinterpret_cast<HeapInfo*>(hp) = RefBits(hinfo, 0);
   }
 
-  for (auto fp = nfree_->begin(); fp != nfree_->end(); ++fp)
-    *fp = 0;
+  for (auto fp = nfree_->begin(); fp != nfree_->end(); ++fp) *fp = 0;
 }
 
 /** * garbage collection **/
@@ -184,7 +180,7 @@ size_t Heap::Gc() {
       nfree_->at(static_cast<int>(SysClass(hinfo)))++;
       if (SysClass(hinfo) == SYS_CLASS::CONS) {
         auto hi = reinterpret_cast<HeapInfo**>(hp);
-        
+
         hi[1] = conses_;
         conses_ = reinterpret_cast<HeapInfo*>(hp);
       }

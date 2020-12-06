@@ -26,14 +26,11 @@ namespace libmu {
 /** * view of char object **/
 Type::TagPtr Char::ViewOf(Env* env, TagPtr ch) {
   assert(IsType(ch));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("char"),
-    ch,
-    Fixnum(ToUint64(ch) >> 3).tag_,
-    Fixnum(Uint8Of(ch)).tag_
-  };
-    
+
+  auto view = std::vector<TagPtr>{Symbol::Keyword("char"), ch,
+                                  Fixnum(ToUint64(ch) >> 3).tag_,
+                                  Fixnum(Uint8Of(ch)).tag_};
+
   return Vector(env, view).tag_;
 }
 
@@ -105,8 +102,8 @@ TagPtr Char::Read(Env* env, TagPtr stream) {
   else if (kCharLit.count(buffer))
     value = Char(kCharLit.at(buffer)).tag_;
   else
-    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR, "unmapped char",
-                     String(env, buffer).tag_);
+    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+                     "unmapped char", String(env, buffer).tag_);
 
   return value;
 }

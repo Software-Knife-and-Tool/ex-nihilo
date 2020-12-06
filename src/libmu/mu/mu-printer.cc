@@ -51,7 +51,7 @@ void PrintEscape(Frame* fp) {
                      stream);
 
   Print(fp->env, obj, stream, !Type::Null(escape));
-  
+
   fp->value = obj;
 }
 

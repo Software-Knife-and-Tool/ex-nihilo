@@ -29,13 +29,13 @@ namespace libmu {
 /** * view of string object **/
 Type::TagPtr String::ViewOf(Env* env, TagPtr string) {
   assert(IsType(string));
-  
+
   auto view = std::vector<TagPtr>{
-    Symbol::Keyword("string"),
-    string,
-    Fixnum(ToUint64(string) >> 3).tag_,
+      Symbol::Keyword("string"),
+      string,
+      Fixnum(ToUint64(string) >> 3).tag_,
   };
-    
+
   return Vector(env, view).tag_;
 }
 
@@ -75,8 +75,8 @@ TagPtr String::Read(Env* env, TagPtr stream) {
     ch = Stream::ReadByte(env, stream);
 
     if (Type::Null(ch))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE, "EOF in string",
-                       stream);
+      Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
+                       "EOF in string", stream);
   }
 
   return String(env, str).tag_;

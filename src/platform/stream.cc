@@ -103,7 +103,7 @@ std::string Platform::GetStdString(StreamId stream) {
 void Platform::Flush(StreamId stream) {
   auto sp = StructOfStreamId(stream);
 
-   if ((sp->flags & STREAM_STD) && (sp->flags & STREAM_OUTPUT))
+  if ((sp->flags & STREAM_STD) && (sp->flags & STREAM_OUTPUT))
     fflush(stdout);
 }
 
@@ -167,7 +167,7 @@ int Platform::ReadByte(Platform::StreamId stream) {
   } else {
     assert(false);
   }
-  
+
   if (ch == 0x4)
     return -1;
 
@@ -239,8 +239,8 @@ Platform::StreamId Platform::OpenOutputFile(std::string pathname) {
   return StreamIdOf(sp);
 }
 
-  Platform::StreamId Platform::OpenOutputString(std::string init) {
-    std::stringstream *ofs = new std::stringstream(init);
+Platform::StreamId Platform::OpenOutputString(std::string init) {
+  std::stringstream *ofs = new std::stringstream(init);
 
   auto sp = new Stream();
   sp->flags = STREAM_STRING | STREAM_OUTPUT;
@@ -326,7 +326,7 @@ Platform::StreamId Platform::AcceptSocketStream(Platform::StreamId stream) {
     printf("Hello message sent\n");
     return 0;
 #endif
-    
+
   auto sp = new Stream();
   sp->u.sostream = socket_fd;
 

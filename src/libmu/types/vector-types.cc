@@ -108,8 +108,7 @@ void Vector::MapC(Env* env, TagPtr func, TagPtr vector) {
     case SYS_CLASS::CHAR: {
       Vector::vector_iter<char> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        (void)Function::Funcall(env, func,
-                                std::vector<TagPtr>{Char(*it).tag_});
+        (void)Function::Funcall(env, func, std::vector<TagPtr>{Char(*it).tag_});
       break;
     }
     case SYS_CLASS::BYTE: {
@@ -230,8 +229,7 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
         libmu::Print(env, Char(*it).tag_, stream, false);
 
-      if (esc)
-        PrintStdString(env, "\"", stream, false);
+      if (esc) PrintStdString(env, "\"", stream, false);
       break;
     }
     case SYS_CLASS::FIXNUM: {

@@ -40,11 +40,8 @@ void IsException(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "error",
                      reason);
 
-  Exception::Raise(
-      fp->env,
-      Exception::EXCEPT_CLASS::SIMPLE_ERROR,
-      String::StdStringOf(reason),
-      object);
+  Exception::Raise(fp->env, Exception::EXCEPT_CLASS::SIMPLE_ERROR,
+                   String::StdStringOf(reason), object);
 }
 
 /** * (raise-exception exception) **/
@@ -63,17 +60,17 @@ void MakeException(Frame* fp) {
   auto tag = fp->argv[0];
   auto reason = fp->argv[1];
   auto source = fp->argv[2];
-  
+
   if (!Symbol::IsKeyword(tag))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "exception", tag);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "exception",
+                     tag);
 
   if (!String::IsType(reason))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "exception", reason);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "exception",
+                     reason);
 
-  fp->value =
-    Exception(tag, Env::LastFrame(fp->env), source, reason).Evict(fp->env, "mu-exception:make");
+  fp->value = Exception(tag, Env::LastFrame(fp->env), source, reason)
+                  .Evict(fp->env, "mu-exception:make");
 }
 
 /** * (with-exception func func) **/

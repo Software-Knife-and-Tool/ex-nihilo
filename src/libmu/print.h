@@ -22,7 +22,6 @@ namespace libmu {
 using TagPtr = Type::TagPtr;
 
 void Print(Env*, TagPtr, TagPtr, bool);
-void PrintUnreadable(Env*, TagPtr, TagPtr);
 void PrintStdString(Env*, const std::string&, TagPtr, bool);
 void Terpri(Env*, TagPtr);
 

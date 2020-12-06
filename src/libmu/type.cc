@@ -38,7 +38,7 @@ namespace libmu {
 namespace {
 
 static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
-    {Symbol::Keyword("address"), SYS_CLASS::ADDRESS},     
+    {Symbol::Keyword("address"), SYS_CLASS::ADDRESS},
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
     {Symbol::Keyword("cons"), SYS_CLASS::CONS},
@@ -80,14 +80,14 @@ static const std::map<SYS_CLASS, TagPtr> kTypeMap{
 /** * is type a class symbol? **/
 bool Type::IsClassSymbol(TagPtr type_sym) {
   assert(Symbol::IsKeyword(type_sym));
-  
+
   return kSymbolMap.count(type_sym) != 0;
 }
 
 /** * class symbol map */
 Type::TagPtr Type::MapClassSymbol(SYS_CLASS sys_class) {
   assert(kTypeMap.count(sys_class));
-  
+
   return kTypeMap.at(sys_class);
 }
 
@@ -102,7 +102,8 @@ Type::SYS_CLASS Type::MapSymbolClass(TagPtr type_sym) {
 /** * type of tagged pointer **/
 Type::SYS_CLASS Type::TypeOf(TagPtr ptr) {
   static const std::vector<std::pair<bool (*)(TagPtr), SYS_CLASS>> kPredMap{
-      {Type::Null, SYS_CLASS::NULLT}, /* let this catch :nil before symbol sees it */
+      {Type::Null,
+       SYS_CLASS::NULLT}, /* let this catch :nil before symbol sees it */
       {Address::IsType, SYS_CLASS::ADDRESS},
       {Char::IsType, SYS_CLASS::CHAR},
       {Cons::IsType, SYS_CLASS::CONS},

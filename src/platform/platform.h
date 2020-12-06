@@ -126,7 +126,7 @@ public: /* streams */
 
   static std::string GetStdString(StreamId);
   static void Flush(StreamId);
-  
+
   static int ReadByte(StreamId);
   static int UnReadByte(int, StreamId);
   static void WriteByte(int, StreamId);
@@ -142,7 +142,7 @@ public: /* tasks */
 public: /* threads */
 public: /* generalize conditions */
 public: /* generalize ffi */
-  static char** Environment();
+  static char **Environment();
   static int System(const std::string);
   static std::string Invoke(uint64_t, std::string);
 

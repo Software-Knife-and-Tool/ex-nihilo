@@ -49,26 +49,28 @@ using platform::Platform;
 void exec(Platform *platform, int) {
 
   auto env = libmu_env_default(platform);
-  
-  libmu_withException(env, [platform](void* env) {
+
+  libmu_withException(env, [platform](void *env) {
     for (const Platform::OptMap &opt : *platform->options_) {
       switch (platform->name(opt)[0]) {
       case '?': /* fall through */
       case 'h': {
         const char *helpmsg =
-          "OVERVIEW: mu-exec - posix platform mu exec\n"
-          "USAGE: mu-exec [options] [src-file...]\n"
-          "\n"
-          "OPTIONS:\n"
-          "  -h                   print this message\n"
-          "  -v                   print version string\n"
-          "  -l SRCFILE           load SRCFILE in sequence\n"
-          "  -e SEXPR             evaluate SEXPR and print result\n"
-          "  -q SEXPR             evaluate SEXPR quietly\n"
-          "  src-file             load source file\n";
-        
+            "OVERVIEW: mu-exec - posix platform mu exec\n"
+            "USAGE: mu-exec [options] [src-file...]\n"
+            "\n"
+            "OPTIONS:\n"
+            "  -h                   print this message\n"
+            "  -v                   print version string\n"
+            "  -l SRCFILE           load SRCFILE in sequence\n"
+            "  -e SEXPR             evaluate SEXPR and print result\n"
+            "  -q SEXPR             evaluate SEXPR quietly\n"
+            "  src-file             load source file\n";
+
         std::cout << helpmsg << std::endl;
-        if (platform->name(opt)[0] == '?') { return; }
+        if (platform->name(opt)[0] == '?') {
+          return;
+        }
         break;
       }
       case 'l': {
@@ -77,16 +79,12 @@ void exec(Platform *platform, int) {
         break;
       }
       case 'q':
-        (void)libmu_eval(env,
-                         libmu_read_string(env,
-                                           platform->value(opt)));
+        (void)libmu_eval(env, libmu_read_string(env, platform->value(opt)));
         break;
       case 'e':
-        libmu_print(env, libmu_eval(env,
-                                    libmu_read_string(env,
-                                                      platform->value(opt))),
-                    libmu_nil(),
-                    false);
+        libmu_print(
+            env, libmu_eval(env, libmu_read_string(env, platform->value(opt))),
+            libmu_nil(), false);
         libmu_terpri(env, libmu_nil());
         break;
       case 'v':
@@ -94,9 +92,9 @@ void exec(Platform *platform, int) {
         break;
       }
     }
-    
+
     /* load files from command line */
-    for (const std::string& file : *platform->optargs_) {
+    for (const std::string &file : *platform->optargs_) {
       auto cmd = "(load \"" + file + "\")";
       (void)libmu_eval(env, libmu_read_string(env, cmd));
     }

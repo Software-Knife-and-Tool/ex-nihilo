@@ -30,19 +30,18 @@ namespace libmu {
 class Address : public Type {
  public: /* TagPtr */
   static constexpr bool IsType(TagPtr ptr) {
-    
     return TagOf(ptr) == TAG::ADDRESS;
   }
 
   static TagPtr ViewOf(Env* env, TagPtr addr) {
     assert(IsType(addr));
-  
+
     auto view = std::vector<TagPtr>{
-      Symbol::Keyword("address"),
-      addr,
-      Fixnum(ToUint64(addr)).tag_,
+        Symbol::Keyword("address"),
+        addr,
+        Fixnum(ToUint64(addr)).tag_,
     };
-    
+
     return Vector(env, view).tag_;
   }
 
@@ -50,7 +49,6 @@ class Address : public Type {
   TagPtr Evict(Env*, const char*) { return tag_; }
 
   explicit Address(void* caddr) : Type() {
-
     tag_ = Type::Entag(caddr, TAG::ADDRESS);
   }
 

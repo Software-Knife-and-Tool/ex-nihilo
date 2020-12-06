@@ -74,7 +74,7 @@ class Cons : public Type {
   TagPtr Evict(Env*, const char*);
 
   explicit Cons(TagPtr, TagPtr);
-  
+
  public:
   /** * cons iterator **/
   template <typename T>

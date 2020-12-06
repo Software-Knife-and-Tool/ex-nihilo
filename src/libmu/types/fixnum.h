@@ -47,7 +47,7 @@ class Fixnum : public Type {
  public: /* object model */
   TagPtr Evict(Env*, const char*) { return tag_; }
 
-  explicit Fixnum(int64_t val) : Type() { 
+  explicit Fixnum(int64_t val) : Type() {
     tag_ = Entag(static_cast<TagPtr>(val << 2), TAG::EFIXNUM);
   }
 };

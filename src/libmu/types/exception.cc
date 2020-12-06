@@ -44,30 +44,25 @@ void Exception::GcMark(Env* env, TagPtr exception) {
 /** * make view of exception **/
 Type::TagPtr Exception::ViewOf(Env* env, TagPtr ex) {
   assert(IsType(ex));
-  
-  auto view = std::vector<TagPtr>{
-    Symbol::Keyword("except"),
-    ex,
-    Fixnum(ToUint64(ex) >> 3).tag_,
-    tag(ex),
-    source(ex),
-    reason(ex),
-    frame(ex)
-  };
-  
+
+  auto view = std::vector<TagPtr>{Symbol::Keyword("except"),
+                                  ex,
+                                  Fixnum(ToUint64(ex) >> 3).tag_,
+                                  tag(ex),
+                                  source(ex),
+                                  reason(ex),
+                                  frame(ex)};
+
   return Vector(env, view).tag_;
 }
-  
+
 /** * raise exception **/
-void Exception::Raise(Env* env,
-                      EXCEPT_CLASS ctype,
-                      const std::string& reason,
+void Exception::Raise(Env* env, EXCEPT_CLASS ctype, const std::string& reason,
                       TagPtr source) {
   typedef std::pair<std::string, TagPtr> ExDesc;
 
   static const std::map<EXCEPT_CLASS, ExDesc> kExceptMap{
-      {EXCEPT_CLASS::SIMPLE_ERROR,
-       {"simple-error", Symbol::Keyword("simple")}},
+      {EXCEPT_CLASS::SIMPLE_ERROR, {"simple-error", Symbol::Keyword("simple")}},
       {EXCEPT_CLASS::ARITHMETIC_ERROR,
        {"arithmetic-error", Symbol::Keyword("arith")}},
       {EXCEPT_CLASS::FLOATING_POINT_OVERFLOW,
@@ -77,7 +72,8 @@ void Exception::Raise(Env* env,
        {"floating-point-underflow", Symbol::Keyword("fpunder")}},
       {EXCEPT_CLASS::STORAGE_CONDITION,
        {"storage-condition", Symbol::Keyword("store")}},
-      {EXCEPT_CLASS::CONTROL_ERROR, {"control-error", Symbol::Keyword("control")}},
+      {EXCEPT_CLASS::CONTROL_ERROR,
+       {"control-error", Symbol::Keyword("control")}},
       {EXCEPT_CLASS::PARSE_ERROR, {"parse-error", Symbol::Keyword("parse")}},
       {EXCEPT_CLASS::STREAM_ERROR, {"stream-error", Symbol::Keyword("stream")}},
       {EXCEPT_CLASS::DIVISION_BY_ZERO,
@@ -85,7 +81,8 @@ void Exception::Raise(Env* env,
       {EXCEPT_CLASS::PRINT_NOT_READABLE,
        {"print-not-readable", Symbol::Keyword("print")}},
       {EXCEPT_CLASS::END_OF_FILE, {"end-of-file", Symbol::Keyword("eof")}},
-      {EXCEPT_CLASS::PROGRAM_ERROR, {"program-error", Symbol::Keyword("program")}},
+      {EXCEPT_CLASS::PROGRAM_ERROR,
+       {"program-error", Symbol::Keyword("program")}},
       {EXCEPT_CLASS::TYPE_ERROR, {"type-error", Symbol::Keyword("type")}},
       {EXCEPT_CLASS::READER_ERROR, {"reader-error", Symbol::Keyword("read")}},
       {EXCEPT_CLASS::UNBOUND_SLOT, {"unbound-slot", Symbol::Keyword("unslot")}},
@@ -103,10 +100,9 @@ void Exception::Raise(Env* env,
 
   auto ex = kExceptMap.at(ctype);
 
-  throw Exception(ex.second,
-                  Env::LastFrame(env),
-                  source,
-                  String(env, reason).tag_).Evict(env, "exception:reason");
+  throw Exception(ex.second, Env::LastFrame(env), source,
+                  String(env, reason).tag_)
+      .Evict(env, "exception:reason");
 }
 
 } /* namespace libmu */
