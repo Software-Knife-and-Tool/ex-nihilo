@@ -52,7 +52,7 @@
           (:letq gensym-counter (fixnum+ 1 gensym-counter))
           (print "GENSYM-" name :nil)
           (print gensym-counter name :nil)
-          (make-symbol (get-output-string-stream name))))))
+          (make-symbol (get-output-stream-string name))))))
 
 ;;; internal recursive functions
 ;;; think: this requires mutable lexicals

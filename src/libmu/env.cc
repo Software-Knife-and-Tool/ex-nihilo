@@ -84,7 +84,7 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"floatp", mu::IsFloat, 1},
     {"functionp", mu::IsFunction, 1},
     {"gc", mu::Gc, 1},
-    {"get-output-string-stream", mu::GetStringStream, 1},
+    {"get-output-stream-string", mu::GetStringStream, 1},
     {"heap-info", mu::HeapInfo, 1},
     {"heap-log", mu::HeapLog, 1},
     {"in-ns", mu::SetNamespace, 1},
@@ -92,7 +92,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"invoke", mu::Invoke, 2},
     {"keyword", mu::MakeKeyword, 1},
     {"keywordp", mu::IsKeyword, 1},
-    {"list-length", mu::ListLength, 1},
     {"load", mu::Load, 1},
     {"log", mu::Log, 1},
     {"log10", mu::Log10, 1},
@@ -162,6 +161,7 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"env-stack-depth", mu::EnvStackDepth, 0},
     {"frame-ref", mu::FrameRef, 2},
     {"if", mu::TestIf, 3},
+    {"length", mu::ListLength, 1},
     {"letq", mu::Letq, 3},
     {"mapc", mu::MapC, 2},
     {"mapcar", mu::MapCar, 2},
@@ -170,11 +170,11 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"return", mu::Return, 2},
     {"print", mu::PrintEscape, 3},
     {"trampoline", mu::Trampoline, 1},
-    {"vec-length", mu::VectorLength, 1},
-    {"vec-map", mu::VectorMap, 2},
-    {"vec-mapc", mu::VectorMapC, 2},
-    {"vec-ref", mu::VectorRef, 2},
-    {"vec-type", mu::VectorType, 1}};
+    {"vector-length", mu::VectorLength, 1},
+    {"vector-map", mu::VectorMap, 2},
+    {"vector-mapc", mu::VectorMapC, 2},
+    {"vector-ref", mu::VectorRef, 2},
+    {"vector-type", mu::VectorType, 1}};
 
 /** * make vector of frame **/
 TagPtr FrameToVector(Env* env, Frame* fp) {

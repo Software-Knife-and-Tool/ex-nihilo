@@ -100,7 +100,7 @@
 (null (functionp floatp)),:nil
 (null (functionp functionp)),:nil
 (null (functionp gc)),:nil
-(null (functionp get-output-string-stream)),:nil
+(null (functionp get-output-stream-string)),:nil
 (null (functionp heap-info)),:nil
 (null (functionp heap-log)),:nil
 (null (functionp in-ns)),:nil
@@ -108,7 +108,7 @@
 (null (functionp invoke)),:nil
 (null (functionp keyword)),:nil
 (null (functionp keywordp)),:nil
-(null (functionp list-length)),:nil
+(null (functionp length)),:nil
 (null (functionp load)),:nil
 (null (functionp log)),:nil
 (null (functionp log10)),:nil
@@ -169,21 +169,21 @@
 (null (functionp trampoline)),:nil
 (null (functionp type-of)),:nil
 (null (functionp unread-char)),:nil
-(null (functionp vec-length)),:nil
-(null (functionp vec-map)),:nil
-(null (functionp vec-mapc)),:nil
-(null (functionp vec-ref)),:nil
-(null (functionp vec-type)),:nil
+(null (functionp vector-length)),:nil
+(null (functionp vector-map)),:nil
+(null (functionp vector-mapc)),:nil
+(null (functionp vector-ref)),:nil
+(null (functionp vector-type)),:nil
 (null (functionp vectorp)),:nil
 (null (functionp view)),:nil
 (null (functionp with-exception)),:nil
 (null (functionp write-byte)),:nil
 (null (functionp write-char)),:nil
-(get-output-string-stream (open-output-string "")),
+(get-output-stream-string (open-output-string "")),
 (keywordp 'foo),:nil
 (keywordp :keyp),:keyp
-(list-length '(1 2 3)),3
-(list-length :nil),0
+(length '(1 2 3)),3
+(length :nil),0
 (log 10.0),2.302585
 (log10 1000.0),3.000000
 (logand 3 1),1
@@ -225,14 +225,14 @@
 (type-of (car (systime))),:fixnum
 (type-of load),:func
 (type-of macroexpand),:func
-(vec-length "abc"),3
-(vec-length #(:t 1 2 3)),3
-(vec-map (:lambda (n) (fixnum+ 1 n)) #(:fixnum 1 2 3)),#(:fixnum 2 3 4)
-(vec-mapc (:lambda (n) (.print n :nil :nil)) #(:fixnum 1 2 3)),123#(:fixnum 1 2 3)
-(vec-ref #(:fixnum 1 2 3) 1),2
-(vec-ref #(:float 1.0 2.0 3.0) 1),2.000000
-(vec-ref #(:t 'a 2 3.0) 1),2
-(vec-type #(:t a b c)),:t
+(vector-length "abc"),3
+(vector-length #(:t 1 2 3)),3
+(vector-map (:lambda (n) (fixnum+ 1 n)) #(:fixnum 1 2 3)),#(:fixnum 2 3 4)
+(vector-mapc (:lambda (n) (.print n :nil :nil)) #(:fixnum 1 2 3)),123#(:fixnum 1 2 3)
+(vector-ref #(:fixnum 1 2 3) 1),2
+(vector-ref #(:float 1.0 2.0 3.0) 1),2.000000
+(vector-ref #(:t 'a 2 3.0) 1),2
+(vector-type #(:t a b c)),:t
 (null (vectorp #(:char #\\a #\\a #\\a))),:nil
 (null (vectorp #(:fixnum 1 2 3))),:nil
 (null (vectorp #(:float 1.0 2.0 3.0))),:nil
