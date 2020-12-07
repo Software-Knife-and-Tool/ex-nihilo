@@ -28,4 +28,3 @@
 (functionp list)
 (functionp list*)
 (functionp listp)
-(functionp vector)

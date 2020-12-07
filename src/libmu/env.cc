@@ -53,7 +53,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"boundp", mu::IsBound, 1},
     {"car", mu::Car, 1},
     {"cdr", mu::Cdr, 1},
-    {"char", mu::CharCoerce, 1},
     {"charp", mu::IsChar, 1},
     {"close", mu::Close, 1},
     {"closure", mu::Closure, 1},
@@ -71,14 +70,12 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"find-ns", mu::FindNamespace, 1},
     {"find-symbol", mu::FindSymbolNamespace, 2},
     {"find-in-ns", mu::FindInNamespace, 3},
-    {"fixnum", mu::FixnumCoerce, 1},
     {"fixnum*", mu::FixMul, 2},
     {"fixnum+", mu::FixAdd, 2},
     {"fixnum-", mu::FixSub, 2},
     {"fixnum/", mu::FixDiv, 2},
     {"fixnum<", mu::FixLessThan, 2},
     {"fixnump", mu::IsFixnum, 1},
-    {"float", mu::FloatCoerce, 1},
     {"float*", mu::FloatMul, 2},
     {"float+", mu::FloatAdd, 2},
     {"float-", mu::FloatSub, 2},
@@ -114,7 +111,7 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"nth", mu::Nth, 2},
     {"nthcdr", mu::Nthcdr, 2},
     {"null", mu::Null, 1},
-    {"open-function-stream", mu::FunctionStream, 1},
+    {"open-stream", mu::FunctionStream, 1},
     {"open-input-file", mu::InFileStream, 1},
     {"open-input-string", mu::InStringStream, 1},
     {"open-output-file", mu::OutFileStream, 1},
@@ -177,8 +174,7 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"vec-map", mu::VectorMap, 2},
     {"vec-mapc", mu::VectorMapC, 2},
     {"vec-ref", mu::VectorRef, 2},
-    {"vec-type", mu::VectorType, 1},
-    {"vector", mu::MakeVector, 2}};
+    {"vec-type", mu::VectorType, 1}};
 
 /** * make vector of frame **/
 TagPtr FrameToVector(Env* env, Frame* fp) {

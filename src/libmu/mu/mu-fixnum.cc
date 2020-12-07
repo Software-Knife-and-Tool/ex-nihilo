@@ -158,20 +158,5 @@ void Logor(Frame* fp) {
   fp->value = Fixnum(Fixnum::Uint64Of(fx0) | Fixnum::Uint64Of(fx1)).tag_;
 }
 
-/** * mu function (fixnum object) => fixnum **/
-void FixnumCoerce(Frame* fp) {
-  auto fx = fp->argv[0];
-
-  if (Char::IsType(fx))
-    fp->value = Fixnum(Char::Uint8Of(fx)).tag_;
-  else if (Float::IsType(fx))
-    fp->value = Fixnum(static_cast<uint64_t>(Float::FloatOf(fx))).tag_;
-  else if (Fixnum::IsType(fx))
-    fp->value = fx;
-  else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "cannot be coerced to fixnum (fixnum)", fx);
-}
-
 } /* namespace mu */
 } /* namespace libmu */

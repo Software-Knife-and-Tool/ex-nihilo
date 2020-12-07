@@ -31,21 +31,6 @@ void IsFloat(Frame* fp) {
   fp->value = Type::GenBool(Float::IsType(fp->argv[0]), fp->argv[0]);
 }
 
-/** * (float object) => float **/
-void FloatCoerce(Frame* fp) {
-  auto fl = fp->argv[0];
-
-  fp->value = Type::NIL;
-
-  if (Fixnum::IsType(fl))
-    fp->value = Float(static_cast<float>(Fixnum::Int64Of(fl))).tag_;
-  else if (Float::IsType(fl))
-    fp->value = fl;
-  else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "cannot be converted to float (float)", fl);
-}
-
 /** * (float+ float float) => float **/
 void FloatAdd(Frame* fp) {
   auto fl0 = fp->argv[0];
