@@ -86,7 +86,8 @@ void UninternedSymbol(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "uninterned-symbol", fp->argv[0]);
 
-  fp->value = Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
+  fp->value =
+      Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
 }
 
 /** * (keyword string) */
