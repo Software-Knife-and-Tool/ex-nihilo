@@ -30,8 +30,10 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * (gc bool) => fixnum **/
-void Gc(Env::Frame* fp) {
+void Gc(Frame* fp) {
   auto arg = fp->argv[0];
 
   switch (arg) {
@@ -47,7 +49,7 @@ void Gc(Env::Frame* fp) {
 }
 
 /** * mu function (heap-log bool) => :nil **/
-void HeapLog(Env::Frame* fp) {
+void HeapLog(Frame* fp) {
   fp->value = fp->argv[0];
 
   switch (fp->value) {
@@ -63,7 +65,7 @@ void HeapLog(Env::Frame* fp) {
 }
 
 /** * mu function (heap-info type) => vector **/
-void HeapInfo(Env::Frame* fp) {
+void HeapInfo(Frame* fp) {
   auto type = fp->argv[0];
 
   if (!Symbol::IsKeyword(type) || !Type::IsClassSymbol(type))

@@ -24,13 +24,15 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * mu function (exception? object) => bool **/
-void IsException(Env::Frame* fp) {
+void IsException(Frame* fp) {
   fp->value = Type::GenBool(Exception::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * mu function (raise string object) never returns **/
-[[noreturn]] void Raise(Env::Frame* fp) {
+[[noreturn]] void Raise(Frame* fp) {
   auto reason = fp->argv[0];
   auto object = fp->argv[1];
 
@@ -43,7 +45,7 @@ void IsException(Env::Frame* fp) {
 }
 
 /** * (raise-exception exception) **/
-[[noreturn]] void RaiseException(Env::Frame* fp) {
+[[noreturn]] void RaiseException(Frame* fp) {
   auto exception = fp->argv[0];
 
   if (!Exception::IsType(exception))
@@ -54,7 +56,7 @@ void IsException(Env::Frame* fp) {
 }
 
 /** * (exception tag source) **/
-void MakeException(Env::Frame* fp) {
+void MakeException(Frame* fp) {
   auto tag = fp->argv[0];
   auto reason = fp->argv[1];
   auto source = fp->argv[2];
@@ -72,7 +74,7 @@ void MakeException(Env::Frame* fp) {
 }
 
 /** * (with-exception func func) **/
-void WithException(Env::Frame* fp) {
+void WithException(Frame* fp) {
   auto thunk = fp->argv[0];
   auto handler = fp->argv[1];
 
@@ -103,7 +105,7 @@ void WithException(Env::Frame* fp) {
 }
 
 /** * (block :symbol :func) => object **/
-void Block(Env::Frame* fp) {
+void Block(Frame* fp) {
   auto tag = fp->argv[0];
   auto fn = fp->argv[1];
 
@@ -129,7 +131,7 @@ void Block(Env::Frame* fp) {
 }
 
 /** * (return :keyword object) **/
-void Return(Env::Frame* fp) {
+void Return(Frame* fp) {
   auto tag = fp->argv[0];
   auto value = fp->argv[1];
 

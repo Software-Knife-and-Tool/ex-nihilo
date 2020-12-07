@@ -27,13 +27,15 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * mu function (vector? form) => bool**/
-void IsVector(Env::Frame* fp) {
+void IsVector(Frame* fp) {
   fp->value = Type::GenBool(Vector::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * mu function (svref vector) => object **/
-void VectorRef(Env::Frame* fp) {
+void VectorRef(Frame* fp) {
   auto vector = fp->argv[0];
   auto index = fp->argv[1];
 
@@ -75,7 +77,7 @@ void VectorRef(Env::Frame* fp) {
 }
 
 /** * mu function (svlength vector) => fixnum **/
-void VectorLength(Env::Frame* fp) {
+void VectorLength(Frame* fp) {
   auto vector = fp->argv[0];
 
   if (!Vector::IsType(vector))
@@ -86,7 +88,7 @@ void VectorLength(Env::Frame* fp) {
 }
 
 /** * mu function (svtype vector) => symbol **/
-void VectorType(Env::Frame* fp) {
+void VectorType(Frame* fp) {
   if (!Vector::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svtype)",
                      fp->argv[0]);
@@ -95,7 +97,7 @@ void VectorType(Env::Frame* fp) {
 }
 
 /** * mu function (svmap function vector) => vector **/
-void VectorMap(Env::Frame* fp) {
+void VectorMap(Frame* fp) {
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
@@ -111,7 +113,7 @@ void VectorMap(Env::Frame* fp) {
 }
 
 /** * mu function (svmapc function vector) => vector **/
-void VectorMapC(Env::Frame* fp) {
+void VectorMapC(Frame* fp) {
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
@@ -128,7 +130,7 @@ void VectorMapC(Env::Frame* fp) {
 }
 
 /** * (vector type list) => vector **/
-void MakeVector(Env::Frame* fp) {
+void MakeVector(Frame* fp) {
   auto type = fp->argv[0];
   auto list = fp->argv[1];
 

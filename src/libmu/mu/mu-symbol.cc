@@ -26,8 +26,10 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * (symbol-value symbol) => object **/
-void SymbolValue(Env::Frame* fp) {
+void SymbolValue(Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -42,7 +44,7 @@ void SymbolValue(Env::Frame* fp) {
 }
 
 /** * (symbol-name symbol) => string **/
-void SymbolName(Env::Frame* fp) {
+void SymbolName(Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -53,7 +55,7 @@ void SymbolName(Env::Frame* fp) {
 }
 
 /** * (symbol-namespace symbol) => namespace **/
-void SymbolNamespace(Env::Frame* fp) {
+void SymbolNamespace(Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -64,32 +66,31 @@ void SymbolNamespace(Env::Frame* fp) {
 }
 
 /** * (symbol? object) => bool **/
-void IsSymbol(Env::Frame* fp) {
+void IsSymbol(Frame* fp) {
   fp->value = Type::GenBool(Symbol::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (keyword? object) => bool **/
-void IsKeyword(Env::Frame* fp) {
+void IsKeyword(Frame* fp) {
   fp->value = Type::GenBool(Symbol::IsKeyword(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (bound? symbol) => bool **/
-void IsBound(Env::Frame* fp) {
+void IsBound(Frame* fp) {
   fp->value = Type::GenBool(Symbol::IsBound(fp->argv[0]), Type::T);
 }
 
 /** * (uninterned-symbol string) => symbol **/
-void UninternedSymbol(Env::Frame* fp) {
+void UninternedSymbol(Frame* fp) {
   if (!String::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "uninterned-symbol", fp->argv[0]);
 
-  fp->value =
-      Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
+  fp->value = Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
 }
 
 /** * (keyword string) */
-void MakeKeyword(Env::Frame* fp) {
+void MakeKeyword(Frame* fp) {
   if (!String::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "make-keyword", fp->argv[0]);

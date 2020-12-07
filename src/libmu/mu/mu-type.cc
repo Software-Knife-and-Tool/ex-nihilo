@@ -34,8 +34,10 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * (type-of object) => symbol **/
-void TypeOf(Env::Frame* fp) {
+void TypeOf(Frame* fp) {
   auto obj = fp->argv[0];
 
   fp->value = Struct::IsType(obj) ? Struct::stype(obj)
@@ -43,12 +45,12 @@ void TypeOf(Env::Frame* fp) {
 }
 
 /** * (eq object object) => bool **/
-void Eq(Env::Frame* fp) {
+void Eq(Frame* fp) {
   fp->value = Type::GenBool(Type::Eq(fp->argv[0], fp->argv[1]), fp->argv[0]);
 }
 
 /** * (special-operator? form) => bool **/
-void IsSpecOp(Env::Frame* fp) {
+void IsSpecOp(Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -59,7 +61,7 @@ void IsSpecOp(Env::Frame* fp) {
 }
 
 /** * (make-view object) => vector **/
-void MakeView(Env::Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
+void MakeView(Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
 
 } /* namespace mu */
 } /* namespace libmu */

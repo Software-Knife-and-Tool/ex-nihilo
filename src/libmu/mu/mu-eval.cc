@@ -37,18 +37,20 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * (eval object) => object **/
-void Eval(Env::Frame* fp) {
+void Eval(Frame* fp) {
   fp->value = core::Eval(fp->env, core::Compile(fp->env, fp->argv[0]));
 }
 
-/** * (%env-stack-depth object) => fixnum **/
-void EnvStackDepth(Env::Frame* fp) {
+/** * (.env-stack-depth object) => fixnum **/
+void EnvStackDepth(Frame* fp) {
   fp->value = Fixnum(fp->env->frames_.size() - 1).tag_;
 }
 
-/** * (%env-stack) => list **/
-void EnvStack(Env::Frame* fp) {
+/** * (.env-stack) => list **/
+void EnvStack(Frame* fp) {
   auto offset = fp->argv[0];
   auto take = fp->argv[1];
 
@@ -85,8 +87,8 @@ void EnvStack(Env::Frame* fp) {
   fp->value = Cons::List(fp->env, stack);
 }
 
-/** * mu function (apply func list) => object **/
-void Apply(Env::Frame* fp) {
+/** * (apply func list) => object **/
+void Apply(Frame* fp) {
   auto func = fp->argv[0];
   auto args = fp->argv[1];
 

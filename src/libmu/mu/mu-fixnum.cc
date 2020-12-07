@@ -23,13 +23,15 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * mu function (fixnum? fixnum) => bool **/
-void IsFixnum(Env::Frame* fp) {
+void IsFixnum(Frame* fp) {
   fp->value = Type::GenBool(Fixnum::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * mu function (fixnum+ fixnum fixnum) => fixnum **/
-void FixAdd(Env::Frame* fp) {
+void FixAdd(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -45,7 +47,7 @@ void FixAdd(Env::Frame* fp) {
 }
 
 /** * mu function (fixnum- fixnum fixnum) => fixnum **/
-void FixSub(Env::Frame* fp) {
+void FixSub(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -60,7 +62,7 @@ void FixSub(Env::Frame* fp) {
 }
 
 /** * mu function (fixnum* fixnum fixnum) => fixnum **/
-void FixMul(Env::Frame* fp) {
+void FixMul(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -75,7 +77,7 @@ void FixMul(Env::Frame* fp) {
 }
 
 /** * mu function (fixnum< fixnum fixnum) => bool **/
-void FixLessThan(Env::Frame* fp) {
+void FixLessThan(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -91,7 +93,7 @@ void FixLessThan(Env::Frame* fp) {
 }
 
 /** * mu function (fixnum/ fixnum fixnum) => fixnum**/
-void FixDiv(Env::Frame* fp) {
+void FixDiv(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -111,7 +113,7 @@ void FixDiv(Env::Frame* fp) {
 }
 
 /** * mu function (mod fixnum fixnum) => fixnum **/
-void Mod(Env::Frame* fp) {
+void Mod(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -125,7 +127,7 @@ void Mod(Env::Frame* fp) {
 }
 
 /** * mu function (logand fixnum fixnum) => fixnum **/
-void Logand(Env::Frame* fp) {
+void Logand(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -141,7 +143,7 @@ void Logand(Env::Frame* fp) {
 }
 
 /** * mu function (logor fixnum fixnum) => fixnum **/
-void Logor(Env::Frame* fp) {
+void Logor(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -157,7 +159,7 @@ void Logor(Env::Frame* fp) {
 }
 
 /** * mu function (fixnum object) => fixnum **/
-void FixnumCoerce(Env::Frame* fp) {
+void FixnumCoerce(Frame* fp) {
   auto fx = fp->argv[0];
 
   if (Char::IsType(fx))

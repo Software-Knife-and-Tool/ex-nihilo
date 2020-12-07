@@ -30,13 +30,15 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * (function? object) => bool **/
-void IsFunction(Env::Frame* fp) {
+void IsFunction(Frame* fp) {
   fp->value = Type::GenBool(Function::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (trampoline thunk) => object **/
-void Trampoline(Env::Frame* fp) {
+void Trampoline(Frame* fp) {
   fp->value = fp->argv[0];
 
   if (!Function::IsType(fp->value))
@@ -49,7 +51,7 @@ void Trampoline(Env::Frame* fp) {
 }
 
 /** * (closure function) => function **/
-void Closure(Env::Frame* fp) {
+void Closure(Frame* fp) {
   auto fn = fp->argv[0];
 
   if (!Function::IsType(fn))
@@ -57,7 +59,7 @@ void Closure(Env::Frame* fp) {
                      fn);
 
   if (!Type::Null(Function::env(fn))) {
-    std::vector<Env::Frame*> context{};
+    std::vector<Frame*> context{};
 
     Cons::MapC(
         fp->env,
@@ -95,7 +97,7 @@ void Closure(Env::Frame* fp) {
 }
 
 /** * (.frame-ref fixnum fixnum) => object **/
-void FrameRef(Env::Frame* fp) {
+void FrameRef(Frame* fp) {
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];
 
@@ -113,7 +115,7 @@ void FrameRef(Env::Frame* fp) {
 }
 
 /** * (%letq frame-id offset value) => value **/
-void Letq(Env::Frame* fp) {
+void Letq(Frame* fp) {
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];
   auto value = fp->argv[2];
@@ -134,7 +136,7 @@ void Letq(Env::Frame* fp) {
 }
 
 /** * mu function (testif test function function) => object **/
-void TestIf(Env::Frame* fp) {
+void TestIf(Frame* fp) {
   fp->value = Type::Null(fp->argv[0]) ? fp->argv[2] : fp->argv[1];
 }
 

@@ -24,13 +24,15 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * (float? object) => bool **/
-void IsFloat(Env::Frame* fp) {
+void IsFloat(Frame* fp) {
   fp->value = Type::GenBool(Float::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (float object) => float **/
-void FloatCoerce(Env::Frame* fp) {
+void FloatCoerce(Frame* fp) {
   auto fl = fp->argv[0];
 
   fp->value = Type::NIL;
@@ -45,7 +47,7 @@ void FloatCoerce(Env::Frame* fp) {
 }
 
 /** * (float+ float float) => float **/
-void FloatAdd(Env::Frame* fp) {
+void FloatAdd(Frame* fp) {
   auto fl0 = fp->argv[0];
   auto fl1 = fp->argv[1];
 
@@ -60,7 +62,7 @@ void FloatAdd(Env::Frame* fp) {
 }
 
 /** * (float- float float) => float **/
-void FloatSub(Env::Frame* fp) {
+void FloatSub(Frame* fp) {
   auto fl0 = fp->argv[0];
   auto fl1 = fp->argv[1];
 
@@ -76,7 +78,7 @@ void FloatSub(Env::Frame* fp) {
 }
 
 /** * (float* float float) => float**/
-void FloatMul(Env::Frame* fp) {
+void FloatMul(Frame* fp) {
   auto fl0 = fp->argv[0];
   auto fl1 = fp->argv[1];
 
@@ -92,7 +94,7 @@ void FloatMul(Env::Frame* fp) {
 }
 
 /** * (float/ float float) => float **/
-void FloatDiv(Env::Frame* fp) {
+void FloatDiv(Frame* fp) {
   auto fl0 = fp->argv[0];
   auto fl1 = fp->argv[1];
 
@@ -108,7 +110,7 @@ void FloatDiv(Env::Frame* fp) {
 }
 
 /** * (float< float float) => bool **/
-void FloatLessThan(Env::Frame* fp) {
+void FloatLessThan(Frame* fp) {
   auto fl0 = fp->argv[0];
   auto fl1 = fp->argv[1];
 
@@ -124,7 +126,7 @@ void FloatLessThan(Env::Frame* fp) {
 }
 
 /** * (sqrt float) => float **/
-void Sqrt(Env::Frame* fp) {
+void Sqrt(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -135,7 +137,7 @@ void Sqrt(Env::Frame* fp) {
 }
 
 /** * (pow float float') => float **/
-void Pow(Env::Frame* fp) {
+void Pow(Frame* fp) {
   auto base = fp->argv[0];
   auto exp = fp->argv[1];
 
@@ -151,7 +153,7 @@ void Pow(Env::Frame* fp) {
 }
 
 /** * (atan float) => float **/
-void Atan(Env::Frame* fp) {
+void Atan(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -162,7 +164,7 @@ void Atan(Env::Frame* fp) {
 }
 
 /** * (asin float) => float **/
-void Asin(Env::Frame* fp) {
+void Asin(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -173,7 +175,7 @@ void Asin(Env::Frame* fp) {
 }
 
 /** * (acos float) => float **/
-void Acos(Env::Frame* fp) {
+void Acos(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -184,7 +186,7 @@ void Acos(Env::Frame* fp) {
 }
 
 /** * (exp float) => float **/
-void Exp(Env::Frame* fp) {
+void Exp(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -195,7 +197,7 @@ void Exp(Env::Frame* fp) {
 }
 
 /** * (log float) => float **/
-void Log(Env::Frame* fp) {
+void Log(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -206,7 +208,7 @@ void Log(Env::Frame* fp) {
 }
 
 /** * (log10 float) => float **/
-void Log10(Env::Frame* fp) {
+void Log10(Frame* fp) {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
@@ -217,7 +219,7 @@ void Log10(Env::Frame* fp) {
 }
 
 /** * (sin float) => float **/
-void Sine(Env::Frame* fp) {
+void Sine(Frame* fp) {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
@@ -228,7 +230,7 @@ void Sine(Env::Frame* fp) {
 }
 
 /** * (cos float) => float **/
-void Cosine(Env::Frame* fp) {
+void Cosine(Frame* fp) {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
@@ -239,7 +241,7 @@ void Cosine(Env::Frame* fp) {
 }
 
 /** * (tan float) => float **/
-void Tangent(Env::Frame* fp) {
+void Tangent(Frame* fp) {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
