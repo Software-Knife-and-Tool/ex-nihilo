@@ -26,10 +26,8 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** * (symbol-value symbol) => object **/
-void SymbolValue(Frame* fp) {
+void SymbolValue(Env::Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -44,7 +42,7 @@ void SymbolValue(Frame* fp) {
 }
 
 /** * (symbol-name symbol) => string **/
-void SymbolName(Frame* fp) {
+void SymbolName(Env::Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -55,7 +53,7 @@ void SymbolName(Frame* fp) {
 }
 
 /** * (symbol-namespace symbol) => namespace **/
-void SymbolNamespace(Frame* fp) {
+void SymbolNamespace(Env::Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -66,22 +64,22 @@ void SymbolNamespace(Frame* fp) {
 }
 
 /** * (symbol? object) => bool **/
-void IsSymbol(Frame* fp) {
-  fp->value = Type::BoolOf(Symbol::IsType(fp->argv[0]));
+void IsSymbol(Env::Frame* fp) {
+  fp->value = Type::GenBool(Symbol::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (keyword? object) => bool **/
-void IsKeyword(Frame* fp) {
-  fp->value = Type::BoolOf(Symbol::IsKeyword(fp->argv[0]));
+void IsKeyword(Env::Frame* fp) {
+  fp->value = Type::GenBool(Symbol::IsKeyword(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (bound? symbol) => bool **/
-void IsBound(Frame* fp) {
-  fp->value = Type::BoolOf(Symbol::IsBound(fp->argv[0]));
+void IsBound(Env::Frame* fp) {
+  fp->value = Type::GenBool(Symbol::IsBound(fp->argv[0]), Type::T);
 }
 
 /** * (uninterned-symbol string) => symbol **/
-void UninternedSymbol(Frame* fp) {
+void UninternedSymbol(Env::Frame* fp) {
   if (!String::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "uninterned-symbol", fp->argv[0]);
@@ -90,8 +88,8 @@ void UninternedSymbol(Frame* fp) {
       Symbol(Type::NIL, fp->argv[0]).Evict(fp->env, "mu-symbol:unintern");
 }
 
-/** * (make-keyword string) */
-void MakeKeyword(Frame* fp) {
+/** * (keyword string) */
+void MakeKeyword(Env::Frame* fp) {
   if (!String::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "make-keyword", fp->argv[0]);

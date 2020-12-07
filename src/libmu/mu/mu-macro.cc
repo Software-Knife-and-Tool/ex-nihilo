@@ -32,10 +32,8 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** * (macro-function symbol) => function **/
-void MacroFunction(Frame* fp) {
+void MacroFunction(Env::Frame* fp) {
   auto macsym = fp->argv[0];
 
   if (!Symbol::IsType(macsym))
@@ -46,7 +44,7 @@ void MacroFunction(Frame* fp) {
 }
 
 /** * (macroexpand form) => object **/
-void MacroExpand(Frame* fp) {
+void MacroExpand(Env::Frame* fp) {
   fp->value = Macro::MacroExpand(fp->env, fp->argv[0]);
 }
 

@@ -23,13 +23,13 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** * mu function (char? object) => bool */
-void IsChar(Frame* fp) { fp->value = Type::BoolOf(Char::IsType(fp->argv[0])); }
+void IsChar(Env::Frame* fp) {
+  fp->value = Type::GenBool(Char::IsType(fp->argv[0]), fp->argv[0]);
+}
 
 /** * mu function (char object) => chat **/
-void CharCoerce(Frame* fp) {
+void CharCoerce(Env::Frame* fp) {
   auto ch = fp->argv[0];
 
   if (Char::IsType(ch))

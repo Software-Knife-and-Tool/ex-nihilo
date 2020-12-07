@@ -38,10 +38,8 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** * (print object stream) => object **/
-void PrintEscape(Frame* fp) {
+void PrintEscape(Env::Frame* fp) {
   auto obj = fp->argv[0];
   auto stream = fp->argv[1];
   auto escape = fp->argv[2];
@@ -56,7 +54,7 @@ void PrintEscape(Frame* fp) {
 }
 
 /** * (terpri stream) => :nil **/
-void Terpri(Frame* fp) {
+void Terpri(Env::Frame* fp) {
   auto stream = fp->argv[0];
 
   if (!Stream::IsStreamDesignator(stream))

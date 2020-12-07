@@ -23,15 +23,13 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** * mu function (fixnum? fixnum) => bool **/
-void IsFixnum(Frame* fp) {
-  fp->value = Type::BoolOf(Fixnum::IsType(fp->argv[0]));
+void IsFixnum(Env::Frame* fp) {
+  fp->value = Type::GenBool(Fixnum::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * mu function (fixnum+ fixnum fixnum) => fixnum **/
-void FixAdd(Frame* fp) {
+void FixAdd(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -47,7 +45,7 @@ void FixAdd(Frame* fp) {
 }
 
 /** * mu function (fixnum- fixnum fixnum) => fixnum **/
-void FixSub(Frame* fp) {
+void FixSub(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -62,7 +60,7 @@ void FixSub(Frame* fp) {
 }
 
 /** * mu function (fixnum* fixnum fixnum) => fixnum **/
-void FixMul(Frame* fp) {
+void FixMul(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -77,7 +75,7 @@ void FixMul(Frame* fp) {
 }
 
 /** * mu function (fixnum< fixnum fixnum) => bool **/
-void FixLessThan(Frame* fp) {
+void FixLessThan(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -89,11 +87,11 @@ void FixLessThan(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum<",
                      fx1);
 
-  fp->value = Type::BoolOf(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1));
+  fp->value = Type::GenBool(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1), fx0);
 }
 
 /** * mu function (fixnum/ fixnum fixnum) => fixnum**/
-void FixDiv(Frame* fp) {
+void FixDiv(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -113,7 +111,7 @@ void FixDiv(Frame* fp) {
 }
 
 /** * mu function (mod fixnum fixnum) => fixnum **/
-void Mod(Frame* fp) {
+void Mod(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -127,7 +125,7 @@ void Mod(Frame* fp) {
 }
 
 /** * mu function (logand fixnum fixnum) => fixnum **/
-void Logand(Frame* fp) {
+void Logand(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -143,7 +141,7 @@ void Logand(Frame* fp) {
 }
 
 /** * mu function (logor fixnum fixnum) => fixnum **/
-void Logor(Frame* fp) {
+void Logor(Env::Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -159,7 +157,7 @@ void Logor(Frame* fp) {
 }
 
 /** * mu function (fixnum object) => fixnum **/
-void FixnumCoerce(Frame* fp) {
+void FixnumCoerce(Env::Frame* fp) {
   auto fx = fp->argv[0];
 
   if (Char::IsType(fx))

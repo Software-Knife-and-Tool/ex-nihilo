@@ -156,7 +156,9 @@ class Type {
   static TagPtr MapClassSymbol(SYS_CLASS);
   static SYS_CLASS MapSymbolClass(TagPtr);
 
-  static constexpr TagPtr BoolOf(bool test) { return test ? T : NIL; }
+  static constexpr TagPtr GenBool(bool test, TagPtr value) {
+    return test ? value : NIL;
+  }
 
   static constexpr bool IsImmediate(TagPtr ptr) {
     return TagOf(ptr) == TAG::IMMEDIATE;
