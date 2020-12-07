@@ -19,7 +19,6 @@ LIBS = ./mu.a ./platform.a
 .PHONY: mu-exec clean
 
 mu-exec: $(OBJS)
-	echo $(CXX) -o mu-exec $(CPPFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS)
 	@$(CXX) -o mu-exec $(CPPFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS)
 	@rm $(OBJS)
 

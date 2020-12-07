@@ -102,7 +102,7 @@ void Apply(Frame* fp) {
 
   std::vector<TagPtr> argv;
   Cons::MapC(
-      fp->env, [&argv](Env*, Type::TagPtr form) { argv.push_back(form); },
+      fp->env, [&argv](Env*, TagPtr form) { argv.push_back(form); },
       fp->argv[1]);
 
   fp->value = Function::Funcall(fp->env, func, argv);

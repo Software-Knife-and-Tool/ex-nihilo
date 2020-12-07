@@ -279,7 +279,7 @@ TagPtr CompileSpecial(Env* env, TagPtr form) {
   return kSpecMap.at(symbol)(env, form);
 }
 
-}  // namespace
+} /* anonymous namespace */
 
 /** * special operator predicate **/
 bool IsSpecOp(Env* env, TagPtr symbol) {
@@ -344,5 +344,5 @@ TagPtr Compile(Env* env, TagPtr form) {
   return rval;
 }
 
-}  // namespace core
+} /* namespace core */
 } /* namespace libmu */

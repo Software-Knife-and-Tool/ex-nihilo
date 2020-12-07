@@ -53,7 +53,7 @@ class Struct : public Type {
   }
 
   /** * view of struct object **/
-  static Type::TagPtr ViewOf(Env* env, TagPtr strct) {
+  static TagPtr ViewOf(Env* env, TagPtr strct) {
     assert(IsType(strct));
 
     auto view = std::vector<TagPtr>{Symbol::Keyword("struct"), strct,

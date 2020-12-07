@@ -42,7 +42,7 @@ void Exception::GcMark(Env* env, TagPtr exception) {
 }
 
 /** * make view of exception **/
-Type::TagPtr Exception::ViewOf(Env* env, TagPtr ex) {
+TagPtr Exception::ViewOf(Env* env, TagPtr ex) {
   assert(IsType(ex));
 
   auto view = std::vector<TagPtr>{Symbol::Keyword("except"),

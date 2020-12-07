@@ -27,7 +27,7 @@
 namespace libmu {
 
 /** * view of string object **/
-Type::TagPtr String::ViewOf(Env* env, TagPtr string) {
+TagPtr String::ViewOf(Env* env, TagPtr string) {
   assert(IsType(string));
 
   auto view = std::vector<TagPtr>{

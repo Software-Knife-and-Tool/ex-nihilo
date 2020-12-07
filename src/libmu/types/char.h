@@ -20,6 +20,8 @@
 
 namespace libmu {
 
+using TagPtr = Type::TagPtr;
+
 /** * character type class **/
 class Char : public Type {
  public: /* TagPtr */

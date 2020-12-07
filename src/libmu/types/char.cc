@@ -24,7 +24,7 @@
 namespace libmu {
 
 /** * view of char object **/
-Type::TagPtr Char::ViewOf(Env* env, TagPtr ch) {
+TagPtr Char::ViewOf(Env* env, TagPtr ch) {
   assert(IsType(ch));
 
   auto view = std::vector<TagPtr>{Symbol::Keyword("char"), ch,

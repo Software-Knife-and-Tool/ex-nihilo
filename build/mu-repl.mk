@@ -19,7 +19,6 @@ LIBS = ./mu.a ./platform.a
 .PHONY: mu-repl clean
 
 mu-repl: $(OBJS)
-	echo $(CXX) -o mu-repl $(CPPFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS)
 	@$(CXX) -o mu-repl $(CPPFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS)
 	@rm $(OBJS)
 

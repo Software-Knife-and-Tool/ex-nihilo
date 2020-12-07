@@ -22,6 +22,8 @@
 
 namespace libmu {
 
+using TagPtr = Type::TagPtr;
+
 /** * cons type class **/
 class Cons : public Type {
  private:
