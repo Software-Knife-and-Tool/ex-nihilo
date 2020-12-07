@@ -200,20 +200,19 @@ bool ReadWSUntilEof(Env* env, TagPtr stream) {
 
 /** * read form **/
 TagPtr ReadForm(Env* env, TagPtr stream_designator) {
-  TagPtr ch;
   TagPtr rval;
 
   auto stream = Stream::StreamDesignator(env, stream_designator);
 
   if (!ReadWSUntilEof(env, stream)) return Type::NIL;
 
-  ch = Stream::ReadByte(env, stream);
-  auto ch_ = Char(Fixnum::Int64Of(ch)).tag_;
+  auto ch = Stream::ReadByte(env, stream);
 
   /* macro character expander */
-  if (env->readtable_.count(ch_) > 0)
-    return Function::Funcall(env, env->readtable_[ch_],
-                             std::vector<TagPtr>{stream, ch_});
+  auto chm = Char(Fixnum::Int64Of(ch)).tag_;
+  if (env->readtable_.count(chm) > 0)
+    return Function::Funcall(env, env->readtable_[chm],
+                             std::vector<TagPtr>{stream, chm});
 
   switch (MapSyntaxChar(ch)) {
     case SYNTAX_CHAR::COMMENT:
@@ -309,7 +308,7 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
       break;
     default: { /* unadorned atom */
       Stream::UnReadByte(ch, stream);
-      std::string atom = ParseAtom(env, stream);
+      auto atom = ParseAtom(env, stream);
       rval = ParseNumber(env, atom);
       if (Type::Null(rval)) rval = Symbol::ParseSymbol(env, atom, true);
       break;
