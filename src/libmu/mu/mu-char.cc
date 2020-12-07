@@ -30,18 +30,5 @@ void IsChar(Frame* fp) {
   fp->value = Type::GenBool(Char::IsType(fp->argv[0]), fp->argv[0]);
 }
 
-/** * mu function (char object) => chat **/
-void CharCoerce(Frame* fp) {
-  auto ch = fp->argv[0];
-
-  if (Char::IsType(ch))
-    fp->value = ch;
-  else if (Fixnum::IsType(ch))
-    fp->value = Char(Fixnum::Uint64Of(ch)).tag_;
-  else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "cannot be coerced to char (char)", ch);
-}
-
 } /* namespace mu */
 } /* namespace libmu */

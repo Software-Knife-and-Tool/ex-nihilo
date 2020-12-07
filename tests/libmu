@@ -12,7 +12,6 @@
 (car :nil),:nil
 (cdr '(1 2 3)),(2 3)
 (cdr :nil),:nil
-(char 97),a
 (charp #\\a),a
 (charp 1),:nil
 (cons 1 '(2)),(1 2)
@@ -27,7 +26,6 @@
 (eq :t :t),:t
 (null (eq apply .apply)),:nil
 (eval 1),1
-(fixnum #\\a),97
 (fixnum* -2 3),-6
 (fixnum* 2 3),6
 (fixnum+ -1 2),1
@@ -40,7 +38,6 @@
 (fixnum< 3 2),:nil
 (fixnump 1),1
 (fixnump :t),:nil
-(float 1),1.000000
 (float* -0.1 0.2),-0.020000
 (float* 0.1 0.2),0.020000
 (float+ -3.0 2.0),-1.000000
@@ -60,7 +57,6 @@
 (null (functionp .letq)),:nil
 (null (functionp .print)),:nil
 (null (functionp .return)),:nil
-(null (functionp .vector)),:nil
 (null (functionp :t)),:t
 (null (functionp accept-socket-stream)),:nil
 (null (functionp acos)),:nil
@@ -89,7 +85,6 @@
 (null (functionp find-in-ns)),:nil
 (null (functionp find-ns)),:nil
 (null (functionp find-symbol)),:nil
-(null (functionp fixnum)),:nil
 (null (functionp fixnum*)),:nil
 (null (functionp fixnum+)),:nil
 (null (functionp fixnum+)),:nil
@@ -97,7 +92,6 @@
 (null (functionp fixnum/)),:nil
 (null (functionp fixnum<)),:nil
 (null (functionp fixnump)),:nil
-(null (functionp float)),:nil
 (null (functionp float*)),:nil
 (null (functionp float+)),:nil
 (null (functionp float-)),:nil
@@ -138,7 +132,7 @@
 (null (functionp nth)),:nil
 (null (functionp nthcdr)),:nil
 (null (functionp null)),:nil
-(null (functionp open-function-stream)),:nil
+(null (functionp open-stream)),:nil
 (null (functionp open-input-file)),:nil
 (null (functionp open-input-string)),:nil
 (null (functionp open-output-file)),:nil
@@ -239,8 +233,6 @@
 (vec-ref #(:float 1.0 2.0 3.0) 1),2.000000
 (vec-ref #(:t 'a 2 3.0) 1),2
 (vec-type #(:t a b c)),:t
-(vector :fixnum '(1 2 3)),#(:fixnum 1 2 3)
-(vector :fixnum '(1 2 3)),#(:fixnum 1 2 3)
 (null (vectorp #(:char #\\a #\\a #\\a))),:nil
 (null (vectorp #(:fixnum 1 2 3))),:nil
 (null (vectorp #(:float 1.0 2.0 3.0))),:nil

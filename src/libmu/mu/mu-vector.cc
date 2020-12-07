@@ -129,21 +129,5 @@ void VectorMapC(Frame* fp) {
   fp->value = vector;
 }
 
-/** * (vector type list) => vector **/
-void MakeVector(Frame* fp) {
-  auto type = fp->argv[0];
-  auto list = fp->argv[1];
-
-  if (!Symbol::IsType(type))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
-                     type);
-
-  if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
-                     list);
-
-  fp->value = Vector::ListToVector(fp->env, type, list);
-}
-
 } /* namespace mu */
 } /* namespace libmu */
