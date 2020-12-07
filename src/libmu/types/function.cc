@@ -70,7 +70,7 @@ void Function::CheckArity(Env* env, TagPtr fn,
 }
 
 /** * make view of function **/
-Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
+TagPtr Function::ViewOf(Env* env, TagPtr fn) {
   assert(IsType(fn));
 
   /* think: add context */
@@ -87,8 +87,7 @@ Type::TagPtr Function::ViewOf(Env* env, TagPtr fn) {
 }
 
 /** * call function with argument vector **/
-Type::TagPtr Function::Funcall(Env* env, TagPtr fn,
-                               const std::vector<TagPtr>& argv) {
+TagPtr Function::Funcall(Env* env, TagPtr fn, const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
   size_t nargs = arity_nreqs(fn) + (arity_rest(fn) ? 1 : 0);

@@ -58,8 +58,8 @@ void SystemTime(Frame* fp) {
 
   Platform::SystemTime(ts);
 
-  fp->value = Cons::List(fp->env, std::vector<Type::TagPtr>{
-                                      Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
+  fp->value = Cons::List(
+      fp->env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
 }
 
 /** *  (runtime) => list **/
@@ -68,8 +68,8 @@ void RunTime(Frame* fp) {
 
   Platform::ProcessTime(ts);
 
-  fp->value = Cons::List(fp->env, std::vector<Type::TagPtr>{
-                                      Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
+  fp->value = Cons::List(
+      fp->env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
 }
 
 /** *  (exit fixnum) never returns **/

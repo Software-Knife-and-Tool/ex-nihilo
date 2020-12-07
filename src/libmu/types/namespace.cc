@@ -42,7 +42,7 @@ void Namespace::GcMark(Env* env, TagPtr ns) {
 }
 
 /** * view of namespace object **/
-Type::TagPtr Namespace::ViewOf(Env* env, TagPtr ns) {
+TagPtr Namespace::ViewOf(Env* env, TagPtr ns) {
   assert(IsType(ns));
 
   auto view =
@@ -66,7 +66,7 @@ TagPtr Namespace::FindSymbol(Env* env, TagPtr ns, TagPtr str) {
 }
 
 /** * intern extern symbol in namespace **/
-Type::TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
+TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
   assert(IsType(ns));
   assert(String::IsType(name));
 
@@ -79,7 +79,7 @@ Type::TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
 }
 
 /** * intern symbol in namespace **/
-Type::TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
+TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
   assert(IsType(ns));
   assert(String::IsType(name));
 
@@ -93,7 +93,7 @@ Type::TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
 }
 
 /** * extern symbol in namespace **/
-Type::TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
+TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
   assert(IsType(ns));
   assert(String::IsType(name));
 
@@ -107,7 +107,7 @@ Type::TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
 }
 
 /** * namespace symbols **/
-Type::TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
+TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
   assert(IsType(ns));
 
   auto syms = Untag<Layout>(ns)->externs;
@@ -121,7 +121,7 @@ Type::TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
 }
 
 /** evict namespace to heap **/
-Type::TagPtr Namespace::Evict(Env* env, const char* src) {
+TagPtr Namespace::Evict(Env* env, const char* src) {
   auto np = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE, src);
 
   *np = namespace_;

@@ -55,7 +55,7 @@ static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
     {Type::T, SYS_CLASS::T},
     {Symbol::Keyword("vector"), SYS_CLASS::VECTOR}};
 
-}  // namespace
+} /* namespace */
 
 /** * is type a class symbol? **/
 bool Type::IsClassSymbol(TagPtr type_sym) {

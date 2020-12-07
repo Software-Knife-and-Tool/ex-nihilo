@@ -173,7 +173,7 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
 }
 
 /** * evict symbol to the heap **/
-Type::TagPtr Symbol::Evict(Env* env, const char* src) {
+TagPtr Symbol::Evict(Env* env, const char* src) {
   auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL, src);
 
   assert(Null(symbol_.ns) || Env::InHeap(env, symbol_.ns));

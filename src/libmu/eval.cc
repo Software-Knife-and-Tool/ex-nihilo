@@ -41,11 +41,8 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = Type::TagPtr;
-using SYS_CLASS = Type::SYS_CLASS;
-
 /** * apply function to argument list **/
-Type::TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
+TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
   assert(Function::IsType(fn));
   assert(Cons::IsList(args));
 
@@ -57,7 +54,7 @@ Type::TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
 }
 
 /** * evaluate form in environment **/
-Type::TagPtr Eval(Env* env, TagPtr form) {
+TagPtr Eval(Env* env, TagPtr form) {
   TagPtr rval;
 
   switch (Type::TypeOf(form)) {

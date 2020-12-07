@@ -55,7 +55,7 @@ Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
          hp < reinterpret_cast<uint64_t>(alloc_);
          hp += Size(*reinterpret_cast<HeapInfo*>(hp))) {
       hinfo = *reinterpret_cast<HeapInfo*>(hp);
-      // install a size delta check here
+      /* install a size delta check here */
       if (tag == SysClass(hinfo) && Size(hinfo) >= (nbytes + 8) &&
           RefBits(hinfo) == 0) {
         *reinterpret_cast<HeapInfo*>(hp) = RefBits(hinfo, 1);

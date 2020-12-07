@@ -175,7 +175,7 @@ TagPtr ParseNumber(Env* env, const std::string& str) {
   return number;
 }
 
-}  // namespace
+} /* anonymous namespace */
 
 /** * absorb whitespace until eof **/
 bool ReadWSUntilEof(Env* env, TagPtr stream) {
@@ -329,5 +329,5 @@ TagPtr Read(Env* env, TagPtr stream_designator) {
              : ReadForm(env, Stream::StreamDesignator(env, stream));
 }
 
-}  // namespace core
+} /* namespace core */
 } /* namespace libmu */

@@ -30,7 +30,7 @@
 namespace libmu {
 
 /** * view of float object **/
-Type::TagPtr Float::ViewOf(Env* env, TagPtr flt) {
+TagPtr Float::ViewOf(Env* env, TagPtr flt) {
   assert(IsType(flt));
 
   auto view = std::vector<TagPtr>{

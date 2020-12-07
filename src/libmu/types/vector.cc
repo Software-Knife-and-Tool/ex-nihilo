@@ -31,7 +31,7 @@
 namespace libmu {
 
 /** * view of vector object **/
-Type::TagPtr Vector::ViewOf(Env* env, TagPtr vector) {
+TagPtr Vector::ViewOf(Env* env, TagPtr vector) {
   assert(IsType(vector));
 
   auto view =

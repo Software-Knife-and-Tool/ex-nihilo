@@ -32,10 +32,9 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
-
 namespace {
 
-Type::TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
+TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
   expandedf = false;
 
   if (!Cons::IsType(form)) return form;
@@ -69,7 +68,7 @@ void Macro::GcMark(Env* env, TagPtr macro) {
 }
 
 /** * make view of macro **/
-Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
+TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
   assert(IsType(macro));
 
   auto fn = func(macro);
@@ -89,7 +88,7 @@ Type::TagPtr Macro::ViewOf(Env* env, TagPtr macro) {
 }
 
 /** * macro-function predicate **/
-Type::TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
+TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
   assert(Symbol::IsType(macsym));
 
   auto macfn = Symbol::value(core::Compile(env, macsym));
@@ -98,7 +97,7 @@ Type::TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
 }
 
 /** * expand macro call until it isn't **/
-Type::TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
+TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
   bool expandedf;
   auto expanded = form;
 

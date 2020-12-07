@@ -51,7 +51,7 @@ void Stream::GcMark(Env* env, TagPtr stream) {
 }
 
 /** * view of struct object **/
-Type::TagPtr Stream::ViewOf(Env* env, TagPtr stream) {
+TagPtr Stream::ViewOf(Env* env, TagPtr stream) {
   assert(IsType(stream));
 
   auto view = std::vector<TagPtr>{
@@ -165,7 +165,7 @@ TagPtr Stream::Close(TagPtr stream) {
   return T;
 }
 
-Type::TagPtr Stream::Evict(Env* env, const char* src) {
+TagPtr Stream::Evict(Env* env, const char* src) {
   auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM, src);
 
   *sp = stream_;

@@ -38,7 +38,7 @@ void Cons::GcMark(Env* env, TagPtr ptr) {
 }
 
 /** * view of cons object **/
-Type::TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
+TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
   assert(IsType(cons));
 
   auto view = std::vector<TagPtr>{Symbol::Keyword("cons"), cons,
@@ -49,7 +49,7 @@ Type::TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
 }
 
 /** * mapcar :func list **/
-Type::TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
+TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
   assert(IsList(list));
 
@@ -65,8 +65,8 @@ Type::TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
 }
 
 /** * mapcar implementation-function list **/
-Type::TagPtr Cons::MapCar(Env* env, std::function<TagPtr(Env*, TagPtr)> fn,
-                          TagPtr list) {
+TagPtr Cons::MapCar(Env* env, std::function<TagPtr(Env*, TagPtr)> fn,
+                    TagPtr list) {
   assert(IsList(list));
 
   if (Null(list)) return NIL;
@@ -103,7 +103,7 @@ void Cons::MapC(Env* env, std::function<void(Env*, TagPtr)> fn, TagPtr list) {
 }
 
 /** * maplist function list **/
-Type::TagPtr Cons::MapList(Env* env, TagPtr func, TagPtr list) {
+TagPtr Cons::MapList(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
   assert(IsList(list));
 
@@ -132,7 +132,7 @@ void Cons::MapL(Env* env, TagPtr func, TagPtr list) {
 }
 
 /** * make a list from a std::vector **/
-Type::TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
+TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
   if (src.size() == 0) return NIL;
 
   TagPtr rlist = NIL;
@@ -144,7 +144,7 @@ Type::TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
 }
 
 /** * make a dotted list from a std::vector<TagPtr> **/
-Type::TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
+TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
   if (src.size() == 0) return NIL;
 
   TagPtr rlist = Cons(src[src.size() - 2], src[src.size() - 1])
@@ -158,7 +158,7 @@ Type::TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
 }
 
 /** * nth element of list **/
-Type::TagPtr Cons::Nth(TagPtr list, size_t index) {
+TagPtr Cons::Nth(TagPtr list, size_t index) {
   assert(IsList(list));
 
   TagPtr nth = NIL;
@@ -173,7 +173,7 @@ Type::TagPtr Cons::Nth(TagPtr list, size_t index) {
 }
 
 /** * nth sublist of list **/
-Type::TagPtr Cons::NthCdr(TagPtr list, size_t index) {
+TagPtr Cons::NthCdr(TagPtr list, size_t index) {
   assert(IsList(list));
 
   if (index == 0) return list;

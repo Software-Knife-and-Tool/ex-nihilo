@@ -39,9 +39,6 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = Type::TagPtr;
-using SYS_CLASS = Type::SYS_CLASS;
-
 /** * print std::string to stream **/
 void PrintStdString(Env* env, const std::string& str, TagPtr strm, bool esc) {
   auto stream = Stream::StreamDesignator(env, strm);
@@ -97,5 +94,5 @@ void Terpri(Env* env, TagPtr stream) {
         false);
 }
 
-}  // namespace core
+} /* namespace core */
 } /* namespace libmu */
