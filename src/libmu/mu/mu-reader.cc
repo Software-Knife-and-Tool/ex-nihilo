@@ -36,8 +36,10 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * mu function (read stream) => object **/
-void Read(Env::Frame* fp) {
+void Read(Frame* fp) {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
   if (!Stream::IsType(stream))
@@ -52,7 +54,7 @@ void Read(Env::Frame* fp) {
 }
 
 /** * mu function (set-macro-character char function) => object **/
-void SetMacroChar(Env::Frame* fp) {
+void SetMacroChar(Frame* fp) {
   auto macro_char = fp->argv[0];
   auto reader = fp->argv[1];
 

@@ -26,18 +26,20 @@
 namespace libmu {
 namespace mu {
 
-/** * mu function (null object) => bool **/
-void Null(Env::Frame* fp) {
+using Frame = Env::Frame;
+
+/** * (null object) => bool **/
+void Null(Frame* fp) {
   fp->value = Type::Null(fp->argv[0]) ? Type::T : Type::NIL;
 }
 
-/** * mu function (consp vector) => bool **/
-void IsCons(Env::Frame* fp) {
+/** * (consp vector) => generalized bool **/
+void IsCons(Frame* fp) {
   fp->value = Type::GenBool(Cons::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (.mapcar function list) => list **/
-void MapCar(Env::Frame* fp) {
+void MapCar(Frame* fp) {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -52,8 +54,8 @@ void MapCar(Env::Frame* fp) {
   fp->value = Type::Null(list) ? Type::NIL : Cons::MapCar(fp->env, func, list);
 }
 
-/** *  (mapc function list) => list **/
-void MapC(Env::Frame* fp) {
+/** * (mapc function list) => list **/
+void MapC(Frame* fp) {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -69,8 +71,8 @@ void MapC(Env::Frame* fp) {
   fp->value = list;
 }
 
-/** *  (maplist function list) => list **/
-void MapList(Env::Frame* fp) {
+/** * (maplist function list) => list **/
+void MapList(Frame* fp) {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -85,8 +87,8 @@ void MapList(Env::Frame* fp) {
   fp->value = Type::Null(list) ? Type::NIL : Cons::MapList(fp->env, func, list);
 }
 
-/** *  (mapl function list)) => list **/
-void MapL(Env::Frame* fp) {
+/** * (mapl function list)) => list **/
+void MapL(Frame* fp) {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -102,8 +104,8 @@ void MapL(Env::Frame* fp) {
   fp->value = list;
 }
 
-/** *  (list-length list) => fixnum**/
-void ListLength(Env::Frame* fp) {
+/** * (list-length list) => fixnum**/
+void ListLength(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
@@ -113,13 +115,13 @@ void ListLength(Env::Frame* fp) {
   fp->value = Fixnum(Cons::Length(fp->env, list)).tag_;
 }
 
-/** *  (cons object object) => cons **/
-void MakeCons(Env::Frame* fp) {
+/** * (cons object object) => cons **/
+void MakeCons(Frame* fp) {
   fp->value = Cons(fp->argv[0], fp->argv[1]).Evict(fp->env, "cons:cons");
 }
 
-/** *  (car list) => object **/
-void Car(Env::Frame* fp) {
+/** * (car list) => object **/
+void Car(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
@@ -129,7 +131,7 @@ void Car(Env::Frame* fp) {
 }
 
 /** *  (cdr list) => object **/
-void Cdr(Env::Frame* fp) {
+void Cdr(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
@@ -138,8 +140,8 @@ void Cdr(Env::Frame* fp) {
   fp->value = Cons::cdr(list);
 }
 
-/** *  (nth fixnum list) => object **/
-void Nth(Env::Frame* fp) {
+/** * (nth fixnum list) => object **/
+void Nth(Frame* fp) {
   auto nth = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -155,8 +157,8 @@ void Nth(Env::Frame* fp) {
   fp->value = Cons::Nth(list, Fixnum::Uint64Of(nth));
 }
 
-/** *  (nthcdr fixnum list) => object **/
-void Nthcdr(Env::Frame* fp) {
+/** * (nthcdr fixnum list) => object **/
+void Nthcdr(Frame* fp) {
   auto nth = fp->argv[0];
   auto list = fp->argv[1];
 

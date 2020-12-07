@@ -23,13 +23,15 @@
 namespace libmu {
 namespace mu {
 
+using Frame = Env::Frame;
+
 /** * mu function (struct? obj) => bool **/
-void IsStruct(Env::Frame* fp) {
+void IsStruct(Frame* fp) {
   fp->value = Type::GenBool(Struct::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * mu function (struct keyword vector) => object **/
-void MakeStruct(Env::Frame* fp) {
+void MakeStruct(Frame* fp) {
   auto name = fp->argv[0];
   auto values = fp->argv[1];
 
@@ -45,7 +47,7 @@ void MakeStruct(Env::Frame* fp) {
 }
 
 /** * implements (struct-type struct) => symbol **/
-void StructType(Env::Frame* fp) {
+void StructType(Frame* fp) {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
@@ -56,7 +58,7 @@ void StructType(Env::Frame* fp) {
 }
 
 /** * mu function (struct-values struct) => vector */
-void StructValues(Env::Frame* fp) {
+void StructValues(Frame* fp) {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
