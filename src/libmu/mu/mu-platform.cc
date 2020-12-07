@@ -36,24 +36,22 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** *  (stack-trace) => :nil **/
-void StackTrace(Frame* fp) {
+void StackTrace(Env::Frame* fp) {
   // stackTrace(fp->env);
 
   fp->value = Type::NIL;
 }
 
 /** *  (stack-gc) => :nil **/
-void StackInspect(Frame* fp) {
+void StackInspect(Env::Frame* fp) {
   // stackInspect(fp->env);
 
   fp->value = Type::NIL;
 }
 
 /** *  (systime => list **/
-void SystemTime(Frame* fp) {
+void SystemTime(Env::Frame* fp) {
   unsigned long ts[2];
 
   Platform::SystemTime(ts);
@@ -63,7 +61,7 @@ void SystemTime(Frame* fp) {
 }
 
 /** *  (runtime) => list **/
-void RunTime(Frame* fp) {
+void RunTime(Env::Frame* fp) {
   unsigned long ts[2];
 
   Platform::ProcessTime(ts);
@@ -73,7 +71,7 @@ void RunTime(Frame* fp) {
 }
 
 /** *  (exit fixnum) never returns **/
-void Exit(Frame* fp) {
+void Exit(Env::Frame* fp) {
   auto rc = fp->argv[0];
 
   if (!Fixnum::IsType(rc))
@@ -83,7 +81,7 @@ void Exit(Frame* fp) {
 }
 
 /** *  (system string) **/
-void System(Frame* fp) {
+void System(Env::Frame* fp) {
   auto cmd = fp->argv[0];
 
   if (!String::IsType(cmd))
@@ -94,7 +92,7 @@ void System(Frame* fp) {
 }
 
 /** * (system-env string) **/
-void SystemEnv(Frame* fp) {
+void SystemEnv(Env::Frame* fp) {
   auto env = Platform::Environment();
   auto vars = std::vector<TagPtr>{};
 
@@ -114,7 +112,7 @@ void SystemEnv(Frame* fp) {
 }
 
 /** * (invoke fixnum string) => string **/
-void Invoke(Frame* fp) {
+void Invoke(Env::Frame* fp) {
   auto fn = fp->argv[0];
   auto arg = fp->argv[1];
 

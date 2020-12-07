@@ -27,15 +27,13 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
-/** * (namespace? object) => bool  **/
-void IsNamespace(Frame* fp) {
-  fp->value = Type::BoolOf(Namespace::IsType(fp->argv[0]));
+/** * (namespacep object) => bool  **/
+void IsNamespace(Env::Frame* fp) {
+  fp->value = Type::GenBool(Namespace::IsType(fp->argv[0]), fp->argv[0]);
 }
 
 /** * (find-ns name) => namespace **/
-void FindNamespace(Frame* fp) {
+void FindNamespace(Env::Frame* fp) {
   auto name = fp->argv[0];
 
   if (!String::IsType(name))
@@ -46,7 +44,7 @@ void FindNamespace(Frame* fp) {
 }
 
 /** * (name-ns namespace) => string **/
-void NameOfNamespace(Frame* fp) {
+void NameOfNamespace(Env::Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
@@ -57,7 +55,7 @@ void NameOfNamespace(Frame* fp) {
 }
 
 /** * (name-ns namespace) => string **/
-void ImportOfNamespace(Frame* fp) {
+void ImportOfNamespace(Env::Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
@@ -68,7 +66,7 @@ void ImportOfNamespace(Frame* fp) {
 }
 
 /** * (ns name) => namespace **/
-void MakeNamespace(Frame* fp) {
+void MakeNamespace(Env::Frame* fp) {
   auto name = fp->argv[0];
   auto import = fp->argv[1];
 
@@ -83,7 +81,7 @@ void MakeNamespace(Frame* fp) {
 }
 
 /** * (ns-symbols namespace) => list **/
-void NamespaceSymbols(Frame* fp) {
+void NamespaceSymbols(Env::Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
@@ -103,7 +101,7 @@ void NamespaceSymbols(Frame* fp) {
 }
 
 /** * (in-ns ns) => ns **/
-void SetNamespace(Frame* fp) {
+void SetNamespace(Env::Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
@@ -114,10 +112,10 @@ void SetNamespace(Frame* fp) {
 }
 
 /** * (ns-current ns) => ns **/
-void GetNamespace(Frame* fp) { fp->value = fp->env->namespace_; }
+void GetNamespace(Env::Frame* fp) { fp->value = fp->env->namespace_; }
 
 /** * (find-symbol ns symbol) => symbol **/
-void FindSymbolNamespace(Frame* fp) {
+void FindSymbolNamespace(Env::Frame* fp) {
   auto ns = fp->argv[0];
   auto name = fp->argv[1];
 
@@ -133,7 +131,7 @@ void FindSymbolNamespace(Frame* fp) {
 }
 
 /** * (find-in-ns ns :intern|:extern string) => symbol **/
-void FindInNamespace(Frame* fp) {
+void FindInNamespace(Env::Frame* fp) {
   auto ns = fp->argv[0];
   auto type = fp->argv[1];
   auto name = fp->argv[2];
@@ -156,7 +154,7 @@ void FindInNamespace(Frame* fp) {
 }
 
 /** * (intern ns keyword symbol value) => symbol **/
-void InternNamespace(Frame* fp) {
+void InternNamespace(Env::Frame* fp) {
   auto ns = fp->argv[0];
   auto type = fp->argv[1];
   auto name = fp->argv[2];

@@ -21,11 +21,11 @@
 (bool (macro-function 'unless)),:t
 (bool (macro-function 'when)),:t
 (cond (:t)),:t
-(functionp append),:t
-(functionp bool),:t
-(functionp gensym),:t
-(functionp identity),:t
-(functionp list),:t
-(functionp list*),:t
-(functionp listp),:t
-(functionp vector),:t
+(null (functionp append)),:nil
+(null (functionp bool)),:nil
+(null (functionp gensym)),:nil
+(null (functionp identity)),:nil
+(null (functionp list)),:nil
+(null (functionp list*)),:nil
+(null (functionp listp)),:nil
+(null (functionp vector)),:nil

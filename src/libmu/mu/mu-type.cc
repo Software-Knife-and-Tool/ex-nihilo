@@ -34,10 +34,8 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
 /** * (type-of object) => symbol **/
-void TypeOff(Frame* fp) {
+void TypeOf(Env::Frame* fp) {
   auto obj = fp->argv[0];
 
   fp->value = Struct::IsType(obj) ? Struct::stype(obj)
@@ -45,23 +43,23 @@ void TypeOff(Frame* fp) {
 }
 
 /** * (eq object object) => bool **/
-void Eq(Frame* fp) {
-  fp->value = Type::BoolOf(Type::Eq(fp->argv[0], fp->argv[1]));
+void Eq(Env::Frame* fp) {
+  fp->value = Type::GenBool(Type::Eq(fp->argv[0], fp->argv[1]), fp->argv[0]);
 }
 
 /** * (special-operator? form) => bool **/
-void IsSpecOp(Frame* fp) {
+void IsSpecOp(Env::Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "special-operator?", symbol);
 
-  fp->value = Type::BoolOf(core::IsSpecOp(fp->env, symbol));
+  fp->value = Type::GenBool(core::IsSpecOp(fp->env, symbol), symbol);
 }
 
 /** * (make-view object) => vector **/
-void MakeView(Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
+void MakeView(Env::Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
 
 } /* namespace mu */
 } /* namespace libmu */
