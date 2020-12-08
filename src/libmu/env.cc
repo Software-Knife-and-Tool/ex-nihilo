@@ -226,14 +226,13 @@ TagPtr RunTime(Env* env) {
 }
 
 TagPtr Namespaces(Env* env) {
-  std::vector<TagPtr>nslist;
-  
-  for (auto ns : env->namespaces_)
-    nslist.push_back(ns.second);
+  std::vector<TagPtr> nslist;
+
+  for (auto ns : env->namespaces_) nslist.push_back(ns.second);
 
   return Cons::List(env, nslist);
 }
-  
+
 } /* anonymous namespace */
 
 /** * garbage collection **/
@@ -260,13 +259,10 @@ TagPtr Env::LastFrame(Env* env) {
 
 /** * env view **/
 TagPtr Env::EnvView(Env* env) {
-  auto view = std::vector<TagPtr>{Symbol::Keyword("env"),
-    env->namespace_,
-    Namespaces(env),
-    RunTime(env),
-    SystemTime(env),
-    EnvStack(env)};
-                                  
+  auto view = std::vector<TagPtr>{Symbol::Keyword("env"), env->namespace_,
+                                  Namespaces(env),        RunTime(env),
+                                  SystemTime(env),        EnvStack(env)};
+
   return Vector(env, view).tag_;
 }
 
