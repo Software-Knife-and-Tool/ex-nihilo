@@ -5,7 +5,6 @@
 ((:lambda ())),:nil
 (.apply fixnum+ '(1 2)),3
 (:defsym list1 (:lambda (:rest lists) lists)),list1
-(:defsym list1 (:lambda (:rest lists) lists)),list1
 (boundp 'foo),:nil
 (boundp :nil),:t
 (car '(1 2 3)),1
@@ -31,8 +30,8 @@
 (fixnum+ 1 2),3
 (fixnum- 1 2),-1
 (fixnum- 2 1),1
-(fixnum/ 2 3),0
-(fixnum/ 3 2),1
+(truncate 2 3),(0 . 2)
+(truncate 3 2),(1 . 1)
 (fixnum< 2 3),2
 (fixnum< 3 2),:nil
 (fixnump 1),1
@@ -86,7 +85,6 @@
 (null (functionp fixnum+)),:nil
 (null (functionp fixnum+)),:nil
 (null (functionp fixnum-)),:nil
-(null (functionp fixnum/)),:nil
 (null (functionp fixnum<)),:nil
 (null (functionp fixnump)),:nil
 (null (functionp float*)),:nil
@@ -118,7 +116,6 @@
 (null (functionp mapcar)),:nil
 (null (functionp mapl)),:nil
 (null (functionp maplist)),:nil
-(null (functionp mod)),:nil
 (null (functionp mu.apply)),:nil
 (null (functionp namespacep)),:nil
 (null (functionp ns)),:nil
@@ -161,6 +158,7 @@
 (null (functionp tan)),:nil
 (null (functionp terpri)),:nil
 (null (functionp trampoline)),:nil
+(null (functionp truncate)),:nil
 (null (functionp type-of)),:nil
 (null (functionp unread-char)),:nil
 (null (functionp vector-length)),:nil
@@ -184,10 +182,6 @@
 (logor 4 2),6
 (macroexpand 123),123
 (make-symbol "abc"),abc
-(mod -1 1),0
-(mod 2 2),0
-(mod 2 3),2
-(mod 3 2),1
 (null (namespacep :t)),:t
 (nth 0 '(1 2 3)),1
 (nthcdr 0 '(1 2 3)),(1 2 3)

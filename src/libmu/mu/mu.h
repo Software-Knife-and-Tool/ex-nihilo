@@ -21,6 +21,8 @@ namespace mu {
 
 using Frame = Env::Frame;
 
+void Truncate(Frame*);
+
 void AcceptSocketStream(Frame*);
 void Acos(Frame*);
 void Apply(Frame*);
@@ -41,7 +43,6 @@ void Exp(Frame*);
 void FindInNamespace(Frame*);
 void FindSymbolNamespace(Frame*);
 void FixAdd(Frame*);
-void FixDiv(Frame*);
 void FixLessThan(Frame*);
 void FixMul(Frame*);
 void FixSub(Frame*);
@@ -100,7 +101,6 @@ void MapC(Frame*);
 void MapCar(Frame*);
 void MapL(Frame*);
 void MapList(Frame*);
-void Mod(Frame*);
 void NameOfNamespace(Frame*);
 void NamespaceSymbols(Frame*);
 void Nth(Frame*);
