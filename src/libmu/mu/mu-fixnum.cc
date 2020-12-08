@@ -92,98 +92,30 @@ void FixLessThan(Frame* fp) {
   fp->value = Type::GenBool(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1), fx0);
 }
 
-/** * (ceiling fixnum fixnum) => (fixnum . fixnum) **/
-void Ceiling(Frame* fp) {
-  auto fx0 = fp->argv[0];
-  auto fx1 = fp->argv[1];
-
-  if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
-                     fx0);
-
-  if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
-                     fx1);
-
-  if (Fixnum::Uint64Of(fx1) == 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
-                     "fixnum/", fx1);
-
-  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
-}
-
-/** * (floor fixnum fixnum) => (fixnum . fixnum) **/
-void Floor(Frame* fp) {
-  auto fx0 = fp->argv[0];
-  auto fx1 = fp->argv[1];
-
-  if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
-                     fx0);
-
-  if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
-                     fx1);
-
-  if (Fixnum::Uint64Of(fx1) == 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
-                     "fixnum/", fx1);
-
-  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
-}
-
-/** * (round fixnum fixnum) => (fixnum . fixnum) **/
-void Round(Frame* fp) {
-  auto fx0 = fp->argv[0];
-  auto fx1 = fp->argv[1];
-
-  if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
-                     fx0);
-
-  if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
-                     fx1);
-
-  if (Fixnum::Uint64Of(fx1) == 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
-                     "fixnum/", fx1);
-
-  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
-}
-
 /** * (truncate fixnum fixnum) => (fixnum . fixnum) **/
 void Truncate(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
   if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "truncate",
                      fx0);
 
   if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "truncate",
                      fx1);
 
   if (Fixnum::Uint64Of(fx1) == 0)
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
-                     "fixnum/", fx1);
+                     "truncate", fx1);
 
-  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
-}
+  auto ifx0 = Fixnum::Int64Of(fx0);
+  auto ifx1 = Fixnum::Int64Of(fx1);
+  auto quot = ifx0 < ifx1 ? 0 : ifx0 / ifx1;
+  auto rem = quot == 0 ? ifx0 : ifx0 - (ifx1 * quot);
 
-/** * (mod fixnum fixnum) => fixnum **/
-void Mod(Frame* fp) {
-  auto fx0 = fp->argv[0];
-  auto fx1 = fp->argv[1];
-
-  if (!Fixnum::IsType(fx0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "mod", fx0);
-
-  if (!Fixnum::IsType(fx1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "mod", fx1);
-
-  fp->value = Fixnum(Fixnum::Uint64Of(fx0) % Fixnum::Uint64Of(fx1)).tag_;
+  fp->value =
+      Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "truncate");
 }
 
 /** * (logand fixnum fixnum) => fixnum **/
