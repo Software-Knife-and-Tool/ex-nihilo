@@ -73,17 +73,17 @@ void System(Frame* fp) {
   fp->value = Fixnum(Platform::System(String::StdStringOf(cmd))).tag_;
 }
 
-/** * (invoke fixnum string) => string **/
+/** * (.invoke fixnum string) => string **/
 void Invoke(Frame* fp) {
   auto fn = fp->argv[0];
   auto arg = fp->argv[1];
 
   if (!Fixnum::IsType(fn))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "%invoke",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".invoke",
                      fn);
 
   if (!String::IsType(arg))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "%invoke",
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".invoke",
                      arg);
 
   fp->value = String(fp->env, Platform::Invoke(Fixnum::Uint64Of(fn),
