@@ -16,15 +16,25 @@
 
 #include <algorithm>
 #include <cassert>
+#include <functional>
 #include <iostream>
+#include <memory>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
+#include "libmu/compiler.h"
+#include "libmu/env.h"
+#include "libmu/eval.h"
+#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
 
 #include "libmu/types/char.h"
+#include "libmu/types/cons.h"
+#include "libmu/types/stream.h"
 #include "libmu/types/string.h"
 #include "libmu/types/symbol.h"
 #include "libmu/types/vector.h"
@@ -156,6 +166,8 @@ class Namespace : public Type {
   static TagPtr FindSymbol(Env*, TagPtr, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);
 
+  static void Print(Env*, TagPtr, TagPtr, bool);
+  
  public: /* object model */
   TagPtr Evict(Env*, const char*);
 

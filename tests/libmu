@@ -21,7 +21,6 @@
 (cos 60.0),0.500000
 (eq #\\p #\\p),p
 (null (eq .apply mu.apply)),:nil
-(eq :t (symbol-value (intern (find-ns "mu") :extern  "t" :t))),:t
 (eq :t :nil),:nil
 (eq :t :t),:t
 (null (eq apply .apply)),:nil
@@ -73,8 +72,7 @@
 (null (functionp cons)),:nil
 (null (functionp consp)),:nil
 (null (functionp cos)),:nil
-(null (functionp env-stack)),:nil
-(null (functionp env-stack-depth)),:nil
+(null (functionp env)),:nil
 (null (functionp eofp)),:nil
 (null (functionp eq)),:nil
 (null (functionp eval)),:nil
@@ -83,7 +81,6 @@
 (null (functionp exit)),:nil
 (null (functionp exp)),:nil
 (null (functionp find-in-ns)),:nil
-(null (functionp find-ns)),:nil
 (null (functionp find-symbol)),:nil
 (null (functionp fixnum*)),:nil
 (null (functionp fixnum+)),:nil
@@ -145,7 +142,6 @@
 (null (functionp read)),:nil
 (null (functionp read-byte)),:nil
 (null (functionp read-char)),:nil
-(null (functionp runtime)),:nil
 (null (functionp set-macro-character)),:nil
 (null (functionp sin)),:nil
 (null (functionp special-operatorp)),:nil
@@ -162,8 +158,6 @@
 (null (functionp symbol-value)),:nil
 (null (functionp symbolp)),:nil
 (null (functionp system)),:nil
-(null (functionp system-env)),:nil
-(null (functionp systime)),:nil
 (null (functionp tan)),:nil
 (null (functionp terpri)),:nil
 (null (functionp trampoline)),:nil
@@ -194,11 +188,7 @@
 (mod 2 2),0
 (mod 2 3),2
 (mod 3 2),1
-(null (namespacep (find-ns "foo"))),:t
-(null (namespacep (find-ns "mu"))),:nil
-(null (namespacep (ns "foo" (find-ns "mu")))),:nil
 (null (namespacep :t)),:t
-(ns-name (find-ns "")),mu
 (nth 0 '(1 2 3)),1
 (nthcdr 0 '(1 2 3)),(1 2 3)
 (null :nil),:t
@@ -221,8 +211,6 @@
 (tan 45.0),1.000000
 (trampoline (:lambda () 0)),0
 (type-of "foo"),:string
-(type-of (car (runtime))),:fixnum
-(type-of (car (systime))),:fixnum
 (type-of load),:func
 (type-of macroexpand),:func
 (vector-length "abc"),3

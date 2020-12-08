@@ -52,26 +52,6 @@ void StackInspect(Frame* fp) {
   fp->value = Type::NIL;
 }
 
-/** *  (systime => list **/
-void SystemTime(Frame* fp) {
-  unsigned long ts[2];
-
-  Platform::SystemTime(ts);
-
-  fp->value = Cons::List(
-      fp->env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
-}
-
-/** *  (runtime) => list **/
-void RunTime(Frame* fp) {
-  unsigned long ts[2];
-
-  Platform::ProcessTime(ts);
-
-  fp->value = Cons::List(
-      fp->env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
-}
-
 /** *  (exit fixnum) never returns **/
 void Exit(Frame* fp) {
   auto rc = fp->argv[0];
@@ -91,26 +71,6 @@ void System(Frame* fp) {
                      "is not a string (system)", cmd);
 
   fp->value = Fixnum(Platform::System(String::StdStringOf(cmd))).tag_;
-}
-
-/** * (system-env string) **/
-void SystemEnv(Frame* fp) {
-  auto env = Platform::Environment();
-  auto vars = std::vector<TagPtr>{};
-
-  for (auto ep = env; *ep != NULL; ep++) {
-    auto env_var = std::string(*ep);
-    auto eq = strchr(*ep, '=');
-
-    assert(eq != NULL);
-
-    auto name = String(fp->env, env_var.substr(0, eq - *ep)).tag_;
-    auto value = String(fp->env, env_var.substr(eq - *ep + 1)).tag_;
-
-    vars.push_back(Cons(name, value).Evict(fp->env, "mu-platform:system-env"));
-  }
-
-  fp->value = Cons::List(fp->env, vars);
 }
 
 /** * (invoke fixnum string) => string **/

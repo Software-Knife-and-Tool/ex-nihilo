@@ -23,6 +23,7 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
+#include "libmu/types/address.h"
 #include "libmu/types/char.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/exception.h"
@@ -30,6 +31,7 @@
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
 #include "libmu/types/macro.h"
+#include "libmu/types/namespace.h"
 #include "libmu/types/stream.h"
 #include "libmu/types/string.h"
 #include "libmu/types/struct.h"
@@ -76,6 +78,7 @@ void Print(Env* env, TagPtr object, TagPtr str, bool esc) {
                {SYS_CLASS::FLOAT, Float::Print},
                {SYS_CLASS::FUNCTION, Function::Print},
                {SYS_CLASS::MACRO, Macro::Print},
+               {SYS_CLASS::NAMESPACE, Namespace::Print},
                {SYS_CLASS::STRING, String::Print},
                {SYS_CLASS::SYMBOL, Symbol::Print},
                {SYS_CLASS::VECTOR, Vector::Print}};

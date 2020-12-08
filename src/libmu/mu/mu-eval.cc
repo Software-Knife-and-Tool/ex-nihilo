@@ -44,48 +44,8 @@ void Eval(Frame* fp) {
   fp->value = core::Eval(fp->env, core::Compile(fp->env, fp->argv[0]));
 }
 
-/** * (.env-stack-depth object) => fixnum **/
-void EnvStackDepth(Frame* fp) {
-  fp->value = Fixnum(fp->env->frames_.size() - 1).tag_;
-}
-
-/** * (.env-stack) => list **/
-void EnvStack(Frame* fp) {
-  auto offset = fp->argv[0];
-  auto take = fp->argv[1];
-
-  if (!(Fixnum::IsType(offset)))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "is not a fixnum (env-stack)", offset);
-
-  if (!(Fixnum::IsType(take)))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "is not a fixnum (env-stack)", take);
-
-  std::vector<TagPtr> stack;
-
-  auto n = Fixnum::Int64Of(take);
-
-  for (auto fp : fp->env->frames_) {
-    std::vector<TagPtr> frame;
-    std::vector<TagPtr> args;
-
-    if (n-- == 0) break;
-
-    frame.push_back(Symbol::Keyword("frame"));
-    frame.push_back(fp->func);
-    frame.push_back(Fixnum(fp->nargs).tag_);
-
-    for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
-
-    frame.push_back(Cons::List(fp->env, args));
-    frame.push_back(fp->frame_id);
-
-    stack.push_back(Vector(fp->env, frame).tag_);
-  }
-
-  fp->value = Cons::List(fp->env, stack);
-}
+/** * (.env) => vector **/
+void EnvView(Frame* fp) { fp->value = Env::EnvView(fp->env); }
 
 /** * (apply func list) => object **/
 void Apply(Frame* fp) {
