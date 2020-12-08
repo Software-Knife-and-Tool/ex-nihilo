@@ -20,7 +20,12 @@ namespace libmu {
 namespace mu {
 
 using Frame = Env::Frame;
-
+  
+void Ceiling(Frame*);
+void Floor(Frame*);
+void Round(Frame*);
+void Truncate(Frame*);
+  
 void AcceptSocketStream(Frame*);
 void Acos(Frame*);
 void Apply(Frame*);
@@ -41,7 +46,6 @@ void Exp(Frame*);
 void FindInNamespace(Frame*);
 void FindSymbolNamespace(Frame*);
 void FixAdd(Frame*);
-void FixDiv(Frame*);
 void FixLessThan(Frame*);
 void FixMul(Frame*);
 void FixSub(Frame*);

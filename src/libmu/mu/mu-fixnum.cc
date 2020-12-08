@@ -25,12 +25,12 @@ namespace mu {
 
 using Frame = Env::Frame;
 
-/** * mu function (fixnum? fixnum) => bool **/
+/** * (fixnum? fixnum) => bool **/
 void IsFixnum(Frame* fp) {
   fp->value = Type::GenBool(Fixnum::IsType(fp->argv[0]), fp->argv[0]);
 }
 
-/** * mu function (fixnum+ fixnum fixnum) => fixnum **/
+/** * (fixnum+ fixnum fixnum) => fixnum **/
 void FixAdd(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
@@ -46,7 +46,7 @@ void FixAdd(Frame* fp) {
   fp->value = Fixnum(Fixnum::Int64Of(fx0) + Fixnum::Int64Of(fx1)).tag_;
 }
 
-/** * mu function (fixnum- fixnum fixnum) => fixnum **/
+/** * (fixnum- fixnum fixnum) => fixnum **/
 void FixSub(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
@@ -61,7 +61,7 @@ void FixSub(Frame* fp) {
   fp->value = Fixnum(Fixnum::Int64Of(fx0) - Fixnum::Int64Of(fx1)).tag_;
 }
 
-/** * mu function (fixnum* fixnum fixnum) => fixnum **/
+/** * (fixnum* fixnum fixnum) => fixnum **/
 void FixMul(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
@@ -76,7 +76,7 @@ void FixMul(Frame* fp) {
   fp->value = Fixnum(Fixnum::Int64Of(fx0) * Fixnum::Int64Of(fx1)).tag_;
 }
 
-/** * mu function (fixnum< fixnum fixnum) => bool **/
+/** * (fixnum< fixnum fixnum) => bool **/
 void FixLessThan(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
@@ -92,8 +92,8 @@ void FixLessThan(Frame* fp) {
   fp->value = Type::GenBool(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1), fx0);
 }
 
-/** * mu function (fixnum/ fixnum fixnum) => fixnum**/
-void FixDiv(Frame* fp) {
+/** * (ceiling fixnum fixnum) => (fixnum . fixnum) **/
+void Ceiling(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -112,7 +112,67 @@ void FixDiv(Frame* fp) {
   fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
 }
 
-/** * mu function (mod fixnum fixnum) => fixnum **/
+/** * (floor fixnum fixnum) => (fixnum . fixnum) **/
+void Floor(Frame* fp) {
+  auto fx0 = fp->argv[0];
+  auto fx1 = fp->argv[1];
+
+  if (!Fixnum::IsType(fx0))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx0);
+
+  if (!Fixnum::IsType(fx1))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx1);
+
+  if (Fixnum::Uint64Of(fx1) == 0)
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
+                     "fixnum/", fx1);
+
+  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
+}
+
+/** * (round fixnum fixnum) => (fixnum . fixnum) **/
+void Round(Frame* fp) {
+  auto fx0 = fp->argv[0];
+  auto fx1 = fp->argv[1];
+
+  if (!Fixnum::IsType(fx0))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx0);
+
+  if (!Fixnum::IsType(fx1))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx1);
+
+  if (Fixnum::Uint64Of(fx1) == 0)
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
+                     "fixnum/", fx1);
+
+  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
+}
+
+/** * (truncate fixnum fixnum) => (fixnum . fixnum) **/
+void Truncate(Frame* fp) {
+  auto fx0 = fp->argv[0];
+  auto fx1 = fp->argv[1];
+
+  if (!Fixnum::IsType(fx0))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx0);
+
+  if (!Fixnum::IsType(fx1))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum/",
+                     fx1);
+
+  if (Fixnum::Uint64Of(fx1) == 0)
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
+                     "fixnum/", fx1);
+
+  fp->value = Fixnum(Fixnum::Int64Of(fx0) / Fixnum::Int64Of(fx1)).tag_;
+}
+
+/** * (mod fixnum fixnum) => fixnum **/
 void Mod(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
@@ -126,7 +186,7 @@ void Mod(Frame* fp) {
   fp->value = Fixnum(Fixnum::Uint64Of(fx0) % Fixnum::Uint64Of(fx1)).tag_;
 }
 
-/** * mu function (logand fixnum fixnum) => fixnum **/
+/** * (logand fixnum fixnum) => fixnum **/
 void Logand(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
@@ -142,7 +202,7 @@ void Logand(Frame* fp) {
   fp->value = Fixnum(Fixnum::Uint64Of(fx0) & Fixnum::Uint64Of(fx1)).tag_;
 }
 
-/** * mu function (logor fixnum fixnum) => fixnum **/
+/** * (logor fixnum fixnum) => fixnum **/
 void Logor(Frame* fp) {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
