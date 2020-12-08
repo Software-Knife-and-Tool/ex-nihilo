@@ -118,6 +118,35 @@ void Truncate(Frame* fp) {
       Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "truncate");
 }
 
+/** * (floor fixnum fixnum) => (fixnum . fixnum) **/
+void Floor(Frame* fp) {
+  auto number = fp->argv[0];
+  auto divisor = fp->argv[1];
+
+  /* quotient * divisor + remainder = number */
+  
+  if (!Fixnum::IsType(number))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "floor",
+                     number);
+
+  if (!Fixnum::IsType(divisor))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "floor",
+                     divisor);
+
+  if (Fixnum::Uint64Of(divisor) == 0)
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::DIVISION_BY_ZERO,
+                     "floor", divisor);
+
+  auto nx = Fixnum::Int64Of(number);
+  auto dx = Fixnum::Int64Of(divisor);
+
+  auto rem = nx - (nx / dx) * dx;
+  auto quot = (nx - rem) / dx;
+      
+  fp->value =
+      Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "floor");
+}
+
 /** * (logand fixnum fixnum) => fixnum **/
 void Logand(Frame* fp) {
   auto fx0 = fp->argv[0];
