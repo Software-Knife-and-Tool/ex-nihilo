@@ -167,7 +167,7 @@ class Namespace : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
   static void Print(Env*, TagPtr, TagPtr, bool);
-  
+
  public: /* object model */
   TagPtr Evict(Env*, const char*);
 

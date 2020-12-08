@@ -44,7 +44,8 @@ class Stream : public Type {
 
  public: /* TagPtr */
   static constexpr bool IsType(TagPtr ptr) {
-    return IsExtended(ptr) && heap::Heap::SysClass(ptr) == Type::SYS_CLASS::STREAM;
+    return IsExtended(ptr) &&
+           heap::Heap::SysClass(ptr) == Type::SYS_CLASS::STREAM;
   }
 
   static bool IsFunction(TagPtr);
