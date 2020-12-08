@@ -130,6 +130,25 @@ TagPtr Namespace::Evict(Env* env, const char* src) {
   return tag_;
 }
 
+void Namespace::Print(Env* env, TagPtr ns, TagPtr str, bool) {
+    assert(IsType(ns));
+    assert(Stream::IsType(str));
+
+    auto stream = Stream::StreamDesignator(env, str);
+
+    auto type = String::StdStringOf(
+        Symbol::name(Type::MapClassSymbol(Type::TypeOf(ns))));
+
+    auto name = String::StdStringOf(Namespace::name(ns));
+
+    std::stringstream hexs;
+
+    hexs << std::hex << Type::to_underlying(ns);
+    core::PrintStdString(env,
+                         "#<:" + type + " #x" + hexs.str() + " (" + name + ")>",
+                         stream, false);
+  }
+
 /** * allocate namespace **/
 Namespace::Namespace(TagPtr name, TagPtr import) : Type() {
   assert(String::IsType(name));

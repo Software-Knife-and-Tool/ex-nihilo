@@ -82,9 +82,9 @@ class Env {
 
  private:
   std::unordered_map<TagPtr, std::stack<Frame*>> framecache_;
-  std::map<std::string, TagPtr> namespaces_;
 
  public:
+  std::map<std::string, TagPtr> namespaces_;
   std::unique_ptr<heap::Heap> heap_; /* heap */
   Platform* platform_;               /* platform */
   std::vector<Frame*> frames_;       /* frame stack */
@@ -118,6 +118,8 @@ class Env {
 
   static TagPtr MapNamespace(Env*, std::string);
   static void AddNamespace(Env*, TagPtr);
+
+  static TagPtr EnvView(Env*);
 
   static bool InHeap(Env* env, TagPtr ptr) {
     return Type::IsImmediate(ptr) ? false

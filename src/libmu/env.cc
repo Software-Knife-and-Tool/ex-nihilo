@@ -67,7 +67,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"exceptionp", mu::IsException, 1},
     {"exit", mu::Exit, 1},
     {"exp", mu::Exp, 1},
-    {"find-ns", mu::FindNamespace, 1},
     {"find-symbol", mu::FindSymbolNamespace, 2},
     {"find-in-ns", mu::FindInNamespace, 3},
     {"fixnum*", mu::FixMul, 2},
@@ -123,7 +122,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"read", mu::Read, 1},
     {"read-byte", mu::ReadByte, 1},
     {"read-char", mu::ReadChar, 1},
-    {"runtime", mu::RunTime, 0},
     {"set-macro-character", mu::SetMacroChar, 2},
     {"sin", mu::Sine, 1},
     {"special-operatorp", mu::IsSpecOp, 1},
@@ -140,8 +138,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"symbol-value", mu::SymbolValue, 1},
     {"symbolp", mu::IsSymbol, 1},
     {"system", mu::System, 1},
-    {"system-env", mu::SystemEnv, 0},
-    {"systime", mu::SystemTime, 0},
     {"tan", mu::Tangent, 1},
     {"terpri", mu::Terpri, 1},
     {"trampoline", mu::Trampoline, 1},
@@ -157,8 +153,7 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
 static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"apply", mu::Apply, 2},
     {"block", mu::Block, 2},
-    {"env-stack", mu::EnvStack, 2},
-    {"env-stack-depth", mu::EnvStackDepth, 0},
+    {"env", mu::EnvView, 0},
     {"frame-ref", mu::FrameRef, 2},
     {"if", mu::TestIf, 3},
     {"length", mu::ListLength, 1},
@@ -177,7 +172,7 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"vector-type", mu::VectorType, 1}};
 
 /** * make vector of frame **/
-TagPtr FrameToVector(Env* env, Frame* fp) {
+TagPtr FrameView(Env* env, Frame* fp) {
   auto args = std::vector<TagPtr>();
 
   for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
@@ -190,6 +185,55 @@ TagPtr FrameToVector(Env* env, Frame* fp) {
   return Vector(env, frame).tag_;
 }
 
+TagPtr EnvStack(Env* env) {
+  std::vector<TagPtr> stack;
+
+  for (auto fp : env->frames_) {
+    std::vector<TagPtr> frame;
+    std::vector<TagPtr> args;
+
+    frame.push_back(Symbol::Keyword("frame"));
+    frame.push_back(fp->func);
+    frame.push_back(Fixnum(fp->nargs).tag_);
+
+    for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
+
+    frame.push_back(Cons::List(fp->env, args));
+    frame.push_back(fp->frame_id);
+
+    stack.push_back(Vector(fp->env, frame).tag_);
+  }
+
+  return Cons::List(env, stack);
+}
+
+TagPtr SystemTime(Env* env) {
+  unsigned long ts[2];
+
+  Platform::SystemTime(ts);
+
+  return Cons::List(
+      env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
+}
+
+TagPtr RunTime(Env* env) {
+  unsigned long ts[2];
+
+  Platform::ProcessTime(ts);
+
+  return Cons::List(
+      env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
+}
+
+TagPtr Namespaces(Env* env) {
+  std::vector<TagPtr>nslist;
+  
+  for (auto ns : env->namespaces_)
+    nslist.push_back(ns.second);
+
+  return Cons::List(env, nslist);
+}
+  
 } /* anonymous namespace */
 
 /** * garbage collection **/
@@ -211,7 +255,19 @@ int Env::Gc(Env* env) {
 /** grab last frame **/
 TagPtr Env::LastFrame(Env* env) {
   return env->frames_.empty() ? Type::NIL
-                              : FrameToVector(env, env->frames_.front());
+                              : FrameView(env, env->frames_.front());
+}
+
+/** * env view **/
+TagPtr Env::EnvView(Env* env) {
+  auto view = std::vector<TagPtr>{Symbol::Keyword("env"),
+    env->namespace_,
+    Namespaces(env),
+    RunTime(env),
+    SystemTime(env),
+    EnvStack(env)};
+                                  
+  return Vector(env, view).tag_;
 }
 
 /** * garbage collection **/
@@ -256,7 +312,6 @@ TagPtr Env::ViewOf(Env* env, TagPtr object) {
                {SYS_CLASS::VECTOR, Vector::ViewOf}};
 
   auto view = kViewMap.count(Type::TypeOf(object)) != 0;
-
   return view ? kViewMap.at(Type::TypeOf(object))(env, object) : Type::NIL;
 }
 

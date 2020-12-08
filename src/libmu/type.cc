@@ -52,7 +52,7 @@ static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("string"), SYS_CLASS::STRING},
     {Symbol::Keyword("struct"), SYS_CLASS::STRUCT},
     {Symbol::Keyword("symbol"), SYS_CLASS::SYMBOL},
-    {Type::T, SYS_CLASS::T},
+    {Symbol::Keyword("t"), SYS_CLASS::T},
     {Symbol::Keyword("vector"), SYS_CLASS::VECTOR}};
 
 } /* namespace */
@@ -89,7 +89,7 @@ TagPtr Type::MapClassSymbol(SYS_CLASS sys_class) {
       {SYS_CLASS::STRING, Symbol::Keyword("string")},
       {SYS_CLASS::STRUCT, Symbol::Keyword("struct")},
       {SYS_CLASS::SYMBOL, Symbol::Keyword("symbol")},
-      {SYS_CLASS::T, Type::T},
+      {SYS_CLASS::T, Symbol::Keyword("t")},
       {SYS_CLASS::VECTOR, Symbol::Keyword("vector")}};
 
   assert(kTypeMap.count(sys_class));

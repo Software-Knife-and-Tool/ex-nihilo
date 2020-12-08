@@ -34,17 +34,6 @@ void IsNamespace(Frame* fp) {
   fp->value = Type::GenBool(Namespace::IsType(fp->argv[0]), fp->argv[0]);
 }
 
-/** * (find-ns name) => namespace **/
-void FindNamespace(Frame* fp) {
-  auto name = fp->argv[0];
-
-  if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-ns",
-                     name);
-
-  fp->value = Env::MapNamespace(fp->env, String::StdStringOf(name));
-}
-
 /** * (name-ns namespace) => string **/
 void NameOfNamespace(Frame* fp) {
   auto ns = fp->argv[0];

@@ -11,8 +11,8 @@
  **  address.h: library address object
  **
  **/
-#if !defined(_LIBMU_TYPES_CODE_H_)
-#define _LIBMU_TYPES_CODE_H_
+#if !defined(_LIBMU_TYPES_ADDRESS_H_)
+#define _LIBMU_TYPES_ADDRESS_H_
 
 #include <cassert>
 #include <functional>
@@ -23,6 +23,9 @@
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
+
+#include "libmu/types/fixnum.h"
+#include "libmu/types/symbol.h"
 
 namespace libmu {
 
@@ -56,4 +59,4 @@ class Address : public Type {
 
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_CODE_H_ */
+#endif /* _LIBMU_TYPES_ADDRESS_H_ */
