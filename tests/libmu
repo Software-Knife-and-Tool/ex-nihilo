@@ -19,10 +19,8 @@
 (consp 1),:nil
 (cos 60.0),0.500000
 (eq #\\p #\\p),p
-(null (eq .apply mu.apply)),:nil
 (eq :t :nil),:nil
 (eq :t :t),:t
-(null (eq apply .apply)),:nil
 (eval 1),1
 (fixnum* -2 3),-6
 (fixnum* 2 3),6
@@ -30,8 +28,6 @@
 (fixnum+ 1 2),3
 (fixnum- 1 2),-1
 (fixnum- 2 1),1
-(truncate 2 3),(0 . 2)
-(truncate 3 2),(1 . 1)
 (fixnum< 2 3),2
 (fixnum< 3 2),:nil
 (fixnump 1),1
@@ -48,6 +44,23 @@
 (float< 3.0 2.0),:nil
 (floatp 1.0),1.000000
 (floatp :t),:nil
+(floor 2 3),(0 . 2)
+(floor 3 2),(1 . 1)
+(get-output-stream-string (open-output-string "")),
+(keywordp 'foo),:nil
+(keywordp :keyp),:keyp
+(length '(1 2 3)),3
+(length :nil),0
+(log 10.0),2.302585
+(log10 1000.0),3.000000
+(logand 3 1),1
+(logor 4 2),6
+(macroexpand 123),123
+(make-symbol "abc"),abc
+(nth 0 '(1 2 3)),1
+(nthcdr 0 '(1 2 3)),(1 2 3)
+(null (eq .apply mu.apply)),:nil
+(null (eq apply .apply)),:nil
 (null (functionp .apply)),:nil
 (null (functionp .block)),:nil
 (null (functionp .frame-ref)),:nil
@@ -93,6 +106,7 @@
 (null (functionp float/)),:nil
 (null (functionp float<)),:nil
 (null (functionp floatp)),:nil
+(null (functionp floor)),:nil
 (null (functionp functionp)),:nil
 (null (functionp gc)),:nil
 (null (functionp get-output-stream-string)),:nil
@@ -126,13 +140,13 @@
 (null (functionp nth)),:nil
 (null (functionp nthcdr)),:nil
 (null (functionp null)),:nil
-(null (functionp open-stream)),:nil
 (null (functionp open-input-file)),:nil
 (null (functionp open-input-string)),:nil
 (null (functionp open-output-file)),:nil
 (null (functionp open-output-string)),:nil
 (null (functionp open-socket-server)),:nil
 (null (functionp open-socket-stream)),:nil
+(null (functionp open-stream)),:nil
 (null (functionp pow)),:nil
 (null (functionp raise)),:nil
 (null (functionp raise-exception)),:nil
@@ -143,8 +157,6 @@
 (null (functionp sin)),:nil
 (null (functionp special-operatorp)),:nil
 (null (functionp sqrt)),:nil
-(null (functionp stack-inspect)),:nil
-(null (functionp stack-trace)),:nil
 (null (functionp streamp)),:nil
 (null (functionp struct)),:nil
 (null (functionp struct-slots)),:nil
@@ -171,20 +183,17 @@
 (null (functionp with-exception)),:nil
 (null (functionp write-byte)),:nil
 (null (functionp write-char)),:nil
-(get-output-stream-string (open-output-string "")),
-(keywordp 'foo),:nil
-(keywordp :keyp),:keyp
-(length '(1 2 3)),3
-(length :nil),0
-(log 10.0),2.302585
-(log10 1000.0),3.000000
-(logand 3 1),1
-(logor 4 2),6
-(macroexpand 123),123
-(make-symbol "abc"),abc
 (null (namespacep :t)),:t
-(nth 0 '(1 2 3)),1
-(nthcdr 0 '(1 2 3)),(1 2 3)
+(null (special-operatorp 'foo)),:t
+(null (special-operatorp :defsym)),:nil
+(null (streamp error-output)),:nil
+(null (streamp standard-input)),:nil
+(null (streamp standard-output)),:nil
+(null (vectorp #(:char #\\a #\\a #\\a))),:nil
+(null (vectorp #(:fixnum 1 2 3))),:nil
+(null (vectorp #(:float 1.0 2.0 3.0))),:nil
+(null (vectorp #(:t 1 'a 3))),:nil
+(null (vectorp :nil)),:t
 (null :nil),:t
 (null :t),:nil
 (pow 7.0 3.0),343.000000
@@ -193,17 +202,14 @@
 (print 123 :nil :t),123123
 (read (open-input-string "'f")),(:quote f)
 (sin 30.0),0.500000
-(null (special-operatorp 'foo)),:t
-(null (special-operatorp :defsym)),:nil
 (sqrt 2.0),1.414214
-(null (streamp error-output)),:nil
-(null (streamp standard-input)),:nil
-(null (streamp standard-output)),:nil
 (symbol-name 'foo),foo
 (symbol-value :nil),:nil
 (symbolp :t),:t
 (tan 45.0),1.000000
 (trampoline (:lambda () 0)),0
+(truncate 2 3),(0 . 2)
+(truncate 3 2),(1 . 1)
 (type-of "foo"),:string
 (type-of load),:func
 (type-of macroexpand),:func
@@ -215,11 +221,6 @@
 (vector-ref #(:float 1.0 2.0 3.0) 1),2.000000
 (vector-ref #(:t 'a 2 3.0) 1),2
 (vector-type #(:t a b c)),:t
-(null (vectorp #(:char #\\a #\\a #\\a))),:nil
-(null (vectorp #(:fixnum 1 2 3))),:nil
-(null (vectorp #(:float 1.0 2.0 3.0))),:nil
-(null (vectorp #(:t 1 'a 3))),:nil
-(null (vectorp :nil)),:t
 (write-char #\\a standard-output),aa
 :nil,:nil
 :t,:t

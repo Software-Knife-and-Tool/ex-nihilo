@@ -38,20 +38,6 @@ namespace mu {
 
 using Frame = Env::Frame;
 
-/** *  (stack-trace) => :nil **/
-void StackTrace(Frame* fp) {
-  // stackTrace(fp->env);
-
-  fp->value = Type::NIL;
-}
-
-/** *  (stack-gc) => :nil **/
-void StackInspect(Frame* fp) {
-  // stackInspect(fp->env);
-
-  fp->value = Type::NIL;
-}
-
 /** *  (exit fixnum) never returns **/
 void Exit(Frame* fp) {
   auto rc = fp->argv[0];
@@ -68,7 +54,7 @@ void System(Frame* fp) {
 
   if (!String::IsType(cmd))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "is not a string (system)", cmd);
+                     "is not a string (.system)", cmd);
 
   fp->value = Fixnum(Platform::System(String::StdStringOf(cmd))).tag_;
 }

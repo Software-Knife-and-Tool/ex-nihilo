@@ -69,6 +69,7 @@
     (error "is not a symbol (recur)" fn))))
 
 ;;; let*
+;;; think: can this use recur?
 (:defsym let* (:macro (bindl :rest body)
    (let ((fnc (:lambda (fn bindl body)
            (mu:if (cdr bindl)
@@ -77,6 +78,7 @@
      (fnc fnc bindl body))))
 
 ;;; and/or macros
+;;; think: can these use recur?
 (:defsym and (:macro (:rest forms)
   (let ((andf (:lambda (fn forms)
            (mu:if (cdr forms)
