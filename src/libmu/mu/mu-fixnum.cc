@@ -124,7 +124,7 @@ void Floor(Frame* fp) {
   auto divisor = fp->argv[1];
 
   /* quotient * divisor + remainder = number */
-  
+
   if (!Fixnum::IsType(number))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "floor",
                      number);
@@ -142,9 +142,8 @@ void Floor(Frame* fp) {
 
   auto rem = nx - (nx / dx) * dx;
   auto quot = (nx - rem) / dx;
-      
-  fp->value =
-      Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "floor");
+
+  fp->value = Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "floor");
 }
 
 /** * (logand fixnum fixnum) => fixnum **/
