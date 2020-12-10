@@ -1,7 +1,7 @@
 ;;;
 ;;; mu forms
 ;;;
-(:defsym .version "0.0.20")
+(:defsym .version "0.0.21")
 
 ;;; too damn handy
 (:defsym identity (:lambda (t) t))
@@ -15,21 +15,14 @@
   (null (eq (consp ptr) (null ptr)))))
 
 ;;; conditional
-#|
-  (list (list 'mu.if
-         test-expr
-         (list :lambda () t-expr)
-         (list :lambda () f-expr)))))
-|#
-
-(:defsym mu:if (:macro (test t f)
+(:defsym if (:macro (test t f)
   (list (list (list (list :lambda () (list 'eq :nil test)))
         (list :lambda () f)
         (list :lambda () t)))))
 
 ;;; list*
 (:defsym list* (:lambda (:rest args)
-  (mu:if (cdr args)
+  (if (cdr args)
     (cons (car args) (apply list* (cdr args)))
     (car args))))
 
@@ -60,8 +53,8 @@
 ;;; internal recursive functions
 ;;; think: this requires mutable lexicals
 (:defsym mu.recur (:macro (fn lambda :rest body)
-  (mu:if (symbolp fn)
-    (mu:if (listp lambda)
+  (if (symbolp fn)
+    (if (listp lambda)
       (let ((g (gensym)))
         (list 'let                            
           (list (list g (list :lambda (list fn)
@@ -75,7 +68,7 @@
 ;;; think: can this use recur?
 (:defsym let* (:macro (bindl :rest body)
    (let ((fnc (:lambda (fn bindl body)
-           (mu:if (cdr bindl)
+           (if (cdr bindl)
              (list 'let (list (car bindl)) (fn fn (cdr bindl) body))
              (list* 'let (list (car bindl)) body)))))
      (fnc fnc bindl body))))
@@ -84,26 +77,26 @@
 ;;; think: can these use recur?
 (:defsym and (:macro (:rest forms)
   (let ((andf (:lambda (fn forms)
-           (mu:if (cdr forms)
-             (list 'mu:if (car forms) (fn fn (cdr forms)) :nil)
+           (if (cdr forms)
+             (list 'if (car forms) (fn fn (cdr forms)) :nil)
              (car forms)))))
-    (mu:if forms (andf andf forms) :t))))
+    (if forms (andf andf forms) :t))))
 
 (:defsym or (:macro (:rest forms)
   (let* ((value (gensym))
          (orf (:lambda (fn forms)                               
-           (mu:if (null (cdr forms))
+           (if (null (cdr forms))
              (car forms)
              (list 'let (list (list value (car forms)))
                    (list 'mu:if value value (fn fn (cdr forms))))))))
-    (mu:if forms (orf orf forms) :nil))))
+    (if forms (orf orf forms) :nil))))
 
 ;;; when/unless macros
 (:defsym when (:macro (test :rest forms)
-  (list 'mu:if test (list* 'progn forms) :nil)))
+  (list 'if test (list* 'progn forms) :nil)))
 
 (:defsym unless (:macro (test :rest forms)
-  (list 'mu:if test :nil (list* 'progn forms))))
+  (list 'if test :nil (list* 'progn forms))))
 
 ;;; block/return macros
 (:defsym mu:block (:macro (tag :rest body)
@@ -139,44 +132,27 @@
            (and forms
              (let ((clause (car forms))
                    (result (gensym)))
-               (mu:if (consp clause)
-                 (mu:if (cdr clause)
-                        (list 'mu:if (car clause)
+               (if (consp clause)
+                 (if (cdr clause)
+                        (list 'if (car clause)
                               (list* 'progn (cdr clause))
                               (clauses (cdr forms)))
                         (list 'let (list (list result (car clause)))
-                              (list 'mu:if result result (clauses (cdr forms)))))
+                              (list 'if result result (clauses (cdr forms)))))
                  (raise "illegal clause (cond)" forms))))))
         (and forms (clauses forms)))))
-
-;;; defun (now with added recursion)
-(:defsym defun (:macro (fn lambda :rest body)
-  (unless (symbolp fn) (error "is not a symbol (defun)" fn))
-  (unless (listp lambda) (error "is not a list (defun)" lambda))
-  (list :defsym fn (list* 'mu.recur fn lambda body))))
-
-;;; defconstant
-(:defsym defconstant (:macro (name form)
-  (unless (symbolp name) (error "is not a symbol (defun)" name))
-  (list :defsym name form)))
-
-;;; defmacro
-(:defsym defmacro (:macro (name lambda :rest body)
-  (unless (symbolp name) (error "is not a symbol (defun)" name))
-  (unless (listp lambda) (error "is not a list (defun)" lambda))
-  (list :defsym name (list* :macro lambda body))))
 
 ;;; foldl/foldr
 (:defsym mu.foldl (:lambda (fold-fn fold-init fold-list)
   (letf ((fold (acc listf)
-           (mu:if (null listf)
+           (if (null listf)
              acc
              (fold (fold-fn acc (car listf)) (cdr listf)))))
     (fold fold-init fold-list))))
 
 (:defsym mu.foldr (:lambda (fold-fn fold-init fold-list)
    (letf ((fold (listf)
-            (mu:if (null listf)
+            (if (null listf)
               fold-init
               (fold-fn (car listf) (fold (cdr listf))))))
      (fold fold-list))))
@@ -184,7 +160,7 @@
 ;;; append
 (:defsym append (:lambda (:rest lists)
   (mu.foldr (:lambda (el acc)
-           (mu:if (listp el)
+           (if (listp el)
                (mu.foldr (:lambda (el acc) (cons el acc)) acc el)
              el))
          ()

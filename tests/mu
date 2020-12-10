@@ -2,24 +2,21 @@
 (append '(1 2 3) '(a b c) '(x y z)),(1 2 3 a b c x y z)
 (append ()),:nil
 (append),:nil
+(cond (:t)),:t
 (null (macro-function 'and)),:nil
 (null (macro-function 'cond)),:nil
-(null (macro-function 'defconstant)),:nil
-(null (macro-function 'defmacro)),:nil
-(null (macro-function 'defun)),:nil
+(null (macro-function 'if)),:nil
 (null (macro-function 'let)),:nil
 (null (macro-function 'let*)),:nil
 (null (macro-function 'letf)),:nil
 (null (macro-function 'letf*)),:nil
 (null (macro-function 'mu:block)),:nil
-(null (macro-function 'mu:if)),:nil
 (null (macro-function 'mu:return)),:nil
 (null (macro-function 'mu:return-from)),:nil
 (null (macro-function 'or)),:nil
 (null (macro-function 'progn)),:nil
 (null (macro-function 'unless)),:nil
 (null (macro-function 'when)),:nil
-(cond (:t)),:t
 (null (functionp append)),:nil
 (null (functionp null)),:nil
 (null (functionp gensym)),:nil

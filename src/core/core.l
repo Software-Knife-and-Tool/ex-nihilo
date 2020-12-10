@@ -2,6 +2,23 @@
 ;;; core forms
 ;;;
 
+;;; defun (now with added recursion)
+(:defsym defun (:macro (fn lambda :rest body)
+  (unless (symbolp fn) (error "is not a symbol (defun)" fn))
+  (unless (listp lambda) (error "is not a list (defun)" lambda))
+  (list :defsym fn (list* 'mu.recur fn lambda body))))
+
+;;; defconstant
+(:defsym defconstant (:macro (name form)
+  (unless (symbolp name) (error "is not a symbol (defun)" name))
+  (list :defsym name form)))
+
+;;; defmacro
+(:defsym defmacro (:macro (name lambda :rest body)
+  (unless (symbolp name) (error "is not a symbol (defun)" name))
+  (unless (listp lambda) (error "is not a list (defun)" lambda))
+  (list :defsym name (list* :macro lambda body))))
+
 ;;; evenp fixnum
 (defun evenp (fx)
   (unless (fixnump fx) (raise "is not a fixnum (evenp)" fx))
