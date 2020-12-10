@@ -39,7 +39,7 @@ using Frame = Env::Frame;
 
 /** * mu function (stream? form) => bool **/
 void IsStream(Frame* fp) {
-  fp->value = Type::GenBool(Stream::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Stream::IsType(fp->argv[0]));
 }
 
 /** * mu function (eof? stream) **/
@@ -50,7 +50,7 @@ void IsEof(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eof?)",
                      fp->argv[0]);
 
-  fp->value = Type::GenBool(Stream::IsEof(stream), stream);
+  fp->value = Type::Bool(Stream::IsEof(stream));
 }
 
 /** * (read-char stream) => char **/

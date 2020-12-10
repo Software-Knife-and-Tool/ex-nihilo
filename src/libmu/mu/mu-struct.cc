@@ -27,7 +27,7 @@ using Frame = Env::Frame;
 
 /** * mu function (struct? obj) => bool **/
 void IsStruct(Frame* fp) {
-  fp->value = Type::GenBool(Struct::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Struct::IsType(fp->argv[0]));
 }
 
 /** * mu function (struct keyword vector) => object **/

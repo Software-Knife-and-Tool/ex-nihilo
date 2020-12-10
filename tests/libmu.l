@@ -49,7 +49,6 @@
 (functionp .apply)
 (functionp .block)
 (functionp .frame-ref)
-(functionp .if)
 (functionp .letq)
 (functionp .return)
 (functionp .vector)

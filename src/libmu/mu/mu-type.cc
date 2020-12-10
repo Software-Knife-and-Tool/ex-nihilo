@@ -46,7 +46,7 @@ void TypeOf(Frame* fp) {
 
 /** * (eq object object) => bool **/
 void Eq(Frame* fp) {
-  fp->value = Type::GenBool(Type::Eq(fp->argv[0], fp->argv[1]), fp->argv[0]);
+  fp->value = Type::Bool(Type::Eq(fp->argv[0], fp->argv[1]));
 }
 
 /** * (special-operator? form) => bool **/
@@ -57,7 +57,7 @@ void IsSpecOp(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "special-operator?", symbol);
 
-  fp->value = Type::GenBool(core::IsSpecOp(fp->env, symbol), symbol);
+  fp->value = Type::Bool(core::IsSpecOp(fp->env, symbol));
 }
 
 /** * (make-view object) => vector **/

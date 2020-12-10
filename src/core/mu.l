@@ -1,28 +1,31 @@
 ;;;
 ;;; mu forms
 ;;;
-(:defsym .version "0.0.19")
+(:defsym .version "0.0.20")
 
-;;; identity
-(:defsym identity (:lambda (a) a))
+;;; too damn handy
+(:defsym identity (:lambda (t) t))
 
-;;; list
+;;; lists
+(:defsym null (:lambda (t) (eq :nil t)))
+
 (:defsym list (:lambda (:rest args) args))
 
-;;; conditional
-(:defsym mu:if (:macro (test-expr t-expr f-expr)
-  (list (list 'mu.if
-              test-expr
-              (list :lambda () t-expr)
-              (list :lambda () f-expr)))))
-
-;;; predicates
 (:defsym listp (:lambda (ptr)
-  (mu:if (consp ptr) ptr (null ptr))))
+  (null (eq (consp ptr) (null ptr)))))
 
-;;; bool coerce
-(:defsym bool (:lambda (ptr)
-  (mu:if (null ptr) ptr :t)))
+;;; conditional
+#|
+  (list (list 'mu.if
+         test-expr
+         (list :lambda () t-expr)
+         (list :lambda () f-expr)))))
+|#
+
+(:defsym mu:if (:macro (test t f)
+  (list (list (list (list :lambda () (list 'eq :nil test)))
+        (list :lambda () f)
+        (list :lambda () t)))))
 
 ;;; list*
 (:defsym list* (:lambda (:rest args)

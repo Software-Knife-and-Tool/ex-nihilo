@@ -5,4 +5,4 @@
 
 tests:
 	@./run-tests libmu
-	@./run-tests mu "-l ../src/mu.l"
+	@./run-tests mu "-l ../src/core/mu.l"

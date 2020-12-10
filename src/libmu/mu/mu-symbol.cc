@@ -67,17 +67,17 @@ void SymbolNamespace(Frame* fp) {
 
 /** * (symbol? object) => bool **/
 void IsSymbol(Frame* fp) {
-  fp->value = Type::GenBool(Symbol::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Symbol::IsType(fp->argv[0]));
 }
 
 /** * (keyword? object) => bool **/
 void IsKeyword(Frame* fp) {
-  fp->value = Type::GenBool(Symbol::IsKeyword(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Symbol::IsKeyword(fp->argv[0]));
 }
 
 /** * (bound? symbol) => bool **/
 void IsBound(Frame* fp) {
-  fp->value = Type::GenBool(Symbol::IsBound(fp->argv[0]), Type::T);
+  fp->value = Type::Bool(Symbol::IsBound(fp->argv[0]));
 }
 
 /** * (uninterned-symbol string) => symbol **/
