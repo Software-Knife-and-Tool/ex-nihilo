@@ -16,6 +16,7 @@
 #include <cassert>
 #include <functional>
 #include <map>
+#include <utility>
 
 #include "libmu/env.h"
 #include "libmu/print.h"
@@ -93,10 +94,12 @@ TagPtr ParseLambda(Env* env, TagPtr lambda) {
 }
 
 /** * is this symbol in the lexical environment? **/
-bool InLexicalEnv(Env* env, TagPtr sym, TagPtr* lambda, size_t* nth) {
+std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
-  if (Symbol::IsKeyword(sym)) return false;
+  auto nope = std::pair<TagPtr, size_t>{Type::NIL, 0};
+  
+  if (Symbol::IsKeyword(sym)) return nope;
 
   std::vector<TagPtr>::reverse_iterator it;
   for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {
@@ -106,15 +109,12 @@ bool InLexicalEnv(Env* env, TagPtr sym, TagPtr* lambda, size_t* nth) {
     assert(Cons::IsList(lexicals));
 
     for (size_t i = 0; i < Cons::Length(env, lexicals); ++i) {
-      if (Type::Eq(sym, Cons::Nth(lexicals, i))) {
-        *lambda = *it;
-        *nth = i;
-        return true;
-      }
+      if (Type::Eq(sym, Cons::Nth(lexicals, i)))
+        return std::pair<TagPtr, size_t>{*it, i};
     }
   }
 
-  return false;
+  return nope;
 }
 
 /** * compile a lexical symbol */
@@ -320,11 +320,11 @@ TagPtr Compile(Env* env, TagPtr form) {
           break;
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
           TagPtr lfn;
-          size_t nth;
 
-          if (InLexicalEnv(env, fn, &lfn, &nth))
+          std::tie(lfn, std::ignore) = InLexicalEnv(env, fn);
+          if (Function::IsType(lfn))
             rval = CompileList(env, form);
-          else if (!Type::Null(Macro::MacroFunction(env, fn)))
+          else if (Function::IsType(Macro::MacroFunction(env, fn)))
             rval = Compile(env, Macro::MacroExpand(env, form));
           else if (IsSpecOp(env, fn))
             rval = CompileSpecial(env, form);
@@ -344,10 +344,12 @@ TagPtr Compile(Env* env, TagPtr form) {
       break;
     }
     case SYS_CLASS::SYMBOL: {
-      auto fn = Type::NIL;
+      TagPtr fn;
       size_t nth;
 
-      rval = (InLexicalEnv(env, form, &fn, &nth))
+      std::tie<TagPtr, size_t>(fn, nth) = InLexicalEnv(env, form);
+        
+      rval = Function::IsType(fn)
                  ? Compile(env, CompileLexical(env, fn, nth))
                  : form;
       break;
