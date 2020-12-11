@@ -134,7 +134,6 @@ class Type {
     ADDRESS,
     BYTE,
     CHAR,
-    CODE,
     CONS,
     EXCEPTION,
     FIXNUM,
