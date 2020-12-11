@@ -147,7 +147,6 @@ TagPtr CompileLambda(Env* env, TagPtr form) {
 
   if (Function::arity(fn)) env->lexenv_.push_back(fn);
 
-  /* think: this is ugly */
   Function::form(fn, Cons(lambda, CompileList(env, Cons::cdr(form)))
                          .Evict(env, "compiler::compile-lambda"));
 

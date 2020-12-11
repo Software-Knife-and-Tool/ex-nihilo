@@ -3,9 +3,6 @@
 ;;;
 (:defsym .version "0.0.21")
 
-;;; too damn handy
-(:defsym identity (:lambda (t) t))
-
 ;;; lists
 (:defsym null (:lambda (t) (eq :nil t)))
 
@@ -14,11 +11,22 @@
 (:defsym listp (:lambda (ptr)
   (null (eq (consp ptr) (null ptr)))))
 
+;;; block/return macros
+(:defsym mu:block (:macro (tag :rest body)
+  (list 'mu.block tag (list* :lambda () body))))
+
+(:defsym mu:return-from (:macro (tag value)
+  (list 'mu.return tag value)))
+
+(:defsym mu:return (:macro (value)
+  (list 'mu.return :nil value)))
+
 ;;; conditional
 (:defsym if (:macro (test t f)
   (list (list (list (list :lambda () (list 'eq :nil test)))
         (list :lambda () f)
         (list :lambda () t)))))
+
 
 ;;; list*
 (:defsym list* (:lambda (:rest args)
@@ -26,7 +34,7 @@
     (cons (car args) (apply list* (cdr args)))
     (car args))))
 
-;;; progn/let/let*/macrolet
+;;; progn/let/let*/letf/letf*/macrolet
 (:defsym progn (:macro (:rest body)
   (list (list* :lambda () body))))
 
@@ -40,7 +48,15 @@
      (list* :macro (mapcar car bindl) body)
        (list* (mapcar (:lambda (vl) (nth 1 vl)) bindl)))))
 
+;;; when/unless macros
+(:defsym when (:macro (test :rest forms)
+  (list 'if test (list* 'progn forms) :nil)))
+
+(:defsym unless (:macro (test :rest forms)
+  (list 'if test :nil (list* 'progn forms))))
+
 ;;; gensym
+;;; think: this requires mutable lexicals
 (:defsym gensym
    (let ((gensym-counter 0))
      #'(:lambda ()
@@ -50,7 +66,7 @@
           (print gensym-counter name :nil)
           (make-symbol (get-output-stream-string name))))))
 
-;;; internal recursive functions
+;;; lexical bindings
 ;;; think: this requires mutable lexicals
 (:defsym mu.recur (:macro (fn lambda :rest body)
   (if (symbolp fn)
@@ -64,51 +80,7 @@
         (error "is not a list (recur)" lambda))
     (error "is not a symbol (recur)" fn))))
 
-;;; let*
-;;; think: can this use recur?
-(:defsym let* (:macro (bindl :rest body)
-   (let ((fnc (:lambda (fn bindl body)
-           (if (cdr bindl)
-             (list 'let (list (car bindl)) (fn fn (cdr bindl) body))
-             (list* 'let (list (car bindl)) body)))))
-     (fnc fnc bindl body))))
-
-;;; and/or macros
-;;; think: can these use recur?
-(:defsym and (:macro (:rest forms)
-  (let ((andf (:lambda (fn forms)
-           (if (cdr forms)
-             (list 'if (car forms) (fn fn (cdr forms)) :nil)
-             (car forms)))))
-    (if forms (andf andf forms) :t))))
-
-(:defsym or (:macro (:rest forms)
-  (let* ((value (gensym))
-         (orf (:lambda (fn forms)                               
-           (if (null (cdr forms))
-             (car forms)
-             (list 'let (list (list value (car forms)))
-                   (list 'mu:if value value (fn fn (cdr forms))))))))
-    (if forms (orf orf forms) :nil))))
-
-;;; when/unless macros
-(:defsym when (:macro (test :rest forms)
-  (list 'if test (list* 'progn forms) :nil)))
-
-(:defsym unless (:macro (test :rest forms)
-  (list 'if test :nil (list* 'progn forms))))
-
-;;; block/return macros
-(:defsym mu:block (:macro (tag :rest body)
-  (list 'mu.block tag (list* :lambda () body))))
-
-(:defsym mu:return-from (:macro (tag value)
-  (list 'mu.return tag value)))
-
-(:defsym mu:return (:macro (value)
-  (list 'mu.return :nil value)))
-
-;;; letf - recursively defined lexical functions
+;;; letf - recursive serial lexical functions
 (:defsym letf (:macro (bindl :rest body)
   (list* 'let
     (mapcar
@@ -117,14 +89,39 @@
       bindl)
     body)))
 
-;;; letf* - recursively defined lexical functions
-(:defsym letf* (:macro (bindl :rest body)
+;;; letf* - recursive parallel lexical functions
+(:defsym letf* (:macro (bindings :rest body)
   (list* 'let*
     (mapcar
      (:lambda (phrase)
         (list (car phrase) (list* 'mu.recur phrase)))
-      bindl)
+      bindings)
     body)))
+
+;;; let*
+(:defsym let* (:macro (bindings :rest body)
+   (letf ((bindfn (bindings body)
+           (if (cdr bindings)
+             (list 'let (list (car bindings)) (bindfn (cdr bindings) body))
+             (list* 'let (list (car bindings)) body)))))
+     (bindfn bindings body)))
+
+;;; and/or
+(:defsym and (:macro (:rest forms)
+  (letf ((andf (forms)
+           (if (cdr forms)
+             (list 'if (car forms) (andf (cdr forms)) :nil)
+             (car forms))))
+    (if forms (andf forms) :t))))
+
+(:defsym or (:macro (:rest forms)
+   (let ((value (gensym)))
+     (letf ((orf (forms)
+              (if (null (cdr forms))
+                 (car forms)
+                 (list 'let (list (list value (car forms)))
+                   (list 'mu:if value value (orf (cdr forms))))))))
+       (if forms (orf forms) :nil))))
 
 ;;; cond
 (:defsym cond (:macro (:rest forms)
