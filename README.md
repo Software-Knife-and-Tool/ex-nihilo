@@ -1,2 +1,2 @@
-# core-ex-nihilo
+# ex-nihilo
 canon mu redesign
