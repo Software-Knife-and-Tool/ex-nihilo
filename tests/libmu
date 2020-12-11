@@ -3,7 +3,7 @@
 #(:float),#(:float)
 #(:t),#(:t)
 ((:lambda ())),:nil
-(.apply fixnum+ '(1 2)),3
+(apply fixnum+ '(1 2)),3
 (:defsym list1 (:lambda (:rest lists) lists)),list1
 (boundp 'foo),:nil
 (boundp :nil),:t
@@ -59,14 +59,13 @@
 (make-symbol "abc"),abc
 (nth 0 '(1 2 3)),1
 (nthcdr 0 '(1 2 3)),(1 2 3)
-(eq .apply mu.apply),:t
-(eq apply .apply),:t
-(functionp .apply),:t
-(functionp .block),:t
-(functionp .frame-ref),:t
-(functionp .letq),:t
-(functionp .print),:t
-(functionp .return),:t
+(eq apply mu::apply),:t
+(functionp mu::apply),:t
+(functionp mu::block),:t
+(functionp mu::frame-ref),:t
+(functionp mu::letq),:t
+(functionp mu::print),:t
+(functionp mu::return),:t
 (functionp :t),:nil
 (functionp accept-socket-stream),:t
 (functionp acos),:t
@@ -129,7 +128,7 @@
 (functionp mapcar)),:t
 (functionp mapl)),:t
 (functionp maplist)),:t
-(functionp mu.apply)),:t
+(functionp mu::apply)),:t
 (functionp namespacep)),:t
 (functionp ns),:t
 (functionp ns-current),:t
@@ -213,7 +212,7 @@
 (vector-length "abc"),3
 (vector-length #(:t 1 2 3)),3
 (vector-map (:lambda (n) (fixnum+ 1 n)) #(:fixnum 1 2 3)),#(:fixnum 2 3 4)
-(vector-mapc (:lambda (n) (.print n :nil :nil)) #(:fixnum 1 2 3)),123#(:fixnum 1 2 3)
+(vector-mapc (:lambda (n) (print n :nil :nil)) #(:fixnum 1 2 3)),123#(:fixnum 1 2 3)
 (vector-ref #(:fixnum 1 2 3) 1),2
 (vector-ref #(:float 1.0 2.0 3.0) 1),2.000000
 (vector-ref #(:t 'a 2 3.0) 1),2

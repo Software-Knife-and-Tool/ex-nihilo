@@ -33,8 +33,8 @@ namespace libmu {
 namespace {
 
 /** * parse symbol namespace designator **/
-TagPtr NamespaceOf(Env* env, const std::string& symbol, char sep) {
-  auto cpos = symbol.find_last_of(sep);
+  TagPtr NamespaceOf(Env* env, const std::string& symbol, const std::string &sep) {
+  auto cpos = symbol.find(sep);
   TagPtr ns;
 
   if (cpos < symbol.size()) {
@@ -52,10 +52,10 @@ TagPtr NamespaceOf(Env* env, const std::string& symbol, char sep) {
 }
 
 /** * parse symbol name string **/
-TagPtr NameOf(Env* env, const std::string& symbol, char sep) {
-  auto cpos = symbol.find_last_of(sep);
+  TagPtr NameOf(Env* env, const std::string& symbol, const std::string& sep) {
+  auto cpos = symbol.find(sep);
 
-  return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + 1) : symbol)
+  return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + sep.length()) : symbol)
       .tag_;
 }
 
@@ -147,14 +147,14 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
     auto key = string;
     rval = Symbol::Keyword(key.erase(0, 1));
   } else {
-    auto ext_ns = NamespaceOf(env, string, ':');
-    auto int_ns = NamespaceOf(env, string, '.');
-
+    auto int_ns = NamespaceOf(env, string, "::");
+    auto ext_ns = NamespaceOf(env, string, ":");
+    
     if (intern) {
-      if (!Null(ext_ns))
-        rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ':'));
-      else if (!Null(int_ns))
-        rval = Namespace::InternInNs(env, int_ns, NameOf(env, string, '.'));
+      if (!Null(int_ns))
+        rval = Namespace::InternInNs(env, int_ns, NameOf(env, string, "::"));
+      else if (!Null(ext_ns))
+        rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ":"));
       else {
         auto name = String(env, string).tag_;
         rval = Namespace::FindInNsInterns(env, env->namespace_, name);
