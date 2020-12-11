@@ -31,7 +31,7 @@ using Frame = Env::Frame;
 
 /** * mu function (vector? form) => bool**/
 void IsVector(Frame* fp) {
-  fp->value = Type::GenBool(Vector::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Vector::IsType(fp->argv[0]));
 }
 
 /** * mu function (svref vector) => object **/
@@ -129,5 +129,21 @@ void VectorMapC(Frame* fp) {
   fp->value = vector;
 }
 
+/** * (vector type list) => vector **/
+void Vector(Frame* fp) {
+  auto type = fp->argv[0];
+  auto list = fp->argv[1];
+
+  if (!Symbol::IsType(type))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
+                     type);
+
+  if (!Cons::IsList(list))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
+                     list);
+
+  fp->value = Vector::ListToVector(fp->env, type, list);
+}
+  
 } /* namespace mu */
 } /* namespace libmu */

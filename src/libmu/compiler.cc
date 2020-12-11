@@ -147,7 +147,6 @@ TagPtr CompileLambda(Env* env, TagPtr form) {
 
   if (Function::arity(fn)) env->lexenv_.push_back(fn);
 
-  /* think: this is ugly */
   Function::form(fn, Cons(lambda, CompileList(env, Cons::cdr(form)))
                          .Evict(env, "compiler::compile-lambda"));
 
@@ -255,10 +254,25 @@ TagPtr DefQuote(Env* env, TagPtr form) {
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":quote: argument count(1)", form);
 
-  auto args = Cons::cdr(form);
-  auto quoted = Cons::Nth(args, 1);
+  return form;
+}
 
-  return Cons::List(env, std::vector<TagPtr>{Symbol::Keyword("quote"), quoted});
+/** * (:t object object) **/
+TagPtr DefT(Env* env, TagPtr form) {
+  if (Cons::Length(env, form) != 3)
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     ":t: argument count(1)", form);
+
+  return form;
+}
+
+/** * (:nil object object) **/
+TagPtr DefNil(Env* env, TagPtr form) {
+  if (Cons::Length(env, form) != 3)
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     ":nil: argument count(1)", form);
+
+  return form;
 }
 
 /** * map keyword to handler **/
@@ -267,7 +281,9 @@ static const std::map<TagPtr, std::function<TagPtr(Env*, TagPtr)>> kSpecMap{
     {Symbol::Keyword("lambda"), DefLambda},
     {Symbol::Keyword("letq"), DefLetq},
     {Symbol::Keyword("macro"), DefMacro},
-    {Symbol::Keyword("quote"), DefQuote}};
+    {Symbol::Keyword("quote"), DefQuote},
+    {Symbol::Keyword("t"), DefT},
+    {Symbol::Keyword("nil"), DefNil}};
 
 /** * compile a special form **/
 TagPtr CompileSpecial(Env* env, TagPtr form) {

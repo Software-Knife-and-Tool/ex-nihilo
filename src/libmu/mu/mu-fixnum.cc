@@ -27,7 +27,7 @@ using Frame = Env::Frame;
 
 /** * (fixnum? fixnum) => bool **/
 void IsFixnum(Frame* fp) {
-  fp->value = Type::GenBool(Fixnum::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Fixnum::IsType(fp->argv[0]));
 }
 
 /** * (fixnum+ fixnum fixnum) => fixnum **/
@@ -89,7 +89,7 @@ void FixLessThan(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "fixnum<",
                      fx1);
 
-  fp->value = Type::GenBool(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1), fx0);
+  fp->value = Type::Bool(Fixnum::Int64Of(fx0) < Fixnum::Int64Of(fx1));
 }
 
 /** * (truncate fixnum fixnum) => (fixnum . fixnum) **/

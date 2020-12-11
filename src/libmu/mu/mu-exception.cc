@@ -28,7 +28,7 @@ using Frame = Env::Frame;
 
 /** * mu function (exception? object) => bool **/
 void IsException(Frame* fp) {
-  fp->value = Type::GenBool(Exception::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Exception::IsType(fp->argv[0]));
 }
 
 /** * mu function (raise string object) never returns **/

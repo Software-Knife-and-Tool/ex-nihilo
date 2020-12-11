@@ -27,7 +27,7 @@ using Frame = Env::Frame;
 
 /** * mu function (char? object) => bool */
 void IsChar(Frame* fp) {
-  fp->value = Type::GenBool(Char::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Char::IsType(fp->argv[0]));
 }
 
 } /* namespace mu */

@@ -34,7 +34,7 @@ using Frame = Env::Frame;
 
 /** * (function? object) => bool **/
 void IsFunction(Frame* fp) {
-  fp->value = Type::GenBool(Function::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Function::IsType(fp->argv[0]));
 }
 
 /** * (trampoline thunk) => object **/
@@ -133,11 +133,6 @@ void Letq(Frame* fp) {
   lfp->argv[Fixnum::Uint64Of(offset)] = value;
 
   fp->value = value;
-}
-
-/** * mu function (testif test function function) => object **/
-void TestIf(Frame* fp) {
-  fp->value = Type::Null(fp->argv[0]) ? fp->argv[2] : fp->argv[1];
 }
 
 } /* namespace mu */

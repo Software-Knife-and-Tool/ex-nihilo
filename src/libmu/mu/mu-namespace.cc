@@ -31,7 +31,7 @@ using Frame = Env::Frame;
 
 /** * (namespacep object) => bool  **/
 void IsNamespace(Frame* fp) {
-  fp->value = Type::GenBool(Namespace::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Namespace::IsType(fp->argv[0]));
 }
 
 /** * (name-ns namespace) => string **/

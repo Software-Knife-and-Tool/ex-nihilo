@@ -1,30 +1,25 @@
-((identity fixnum+) 1 2),3
 (append '(1 2 3) '(a b c) '(x y z) 'f),(1 2 3 a b c x y z . f)
 (append '(1 2 3) '(a b c) '(x y z)),(1 2 3 a b c x y z)
 (append ()),:nil
 (append),:nil
-(bool (macro-function 'and)),:t
-(bool (macro-function 'cond)),:t
-(bool (macro-function 'defconstant)),:t
-(bool (macro-function 'defmacro)),:t
-(bool (macro-function 'defun)),:t
-(bool (macro-function 'let)),:t
-(bool (macro-function 'let*)),:t
-(bool (macro-function 'letf)),:t
-(bool (macro-function 'letf*)),:t
-(bool (macro-function 'mu:block)),:t
-(bool (macro-function 'mu:if)),:t
-(bool (macro-function 'mu:return)),:t
-(bool (macro-function 'mu:return-from)),:t
-(bool (macro-function 'or)),:t
-(bool (macro-function 'progn)),:t
-(bool (macro-function 'unless)),:t
-(bool (macro-function 'when)),:t
 (cond (:t)),:t
+(null (macro-function 'and)),:nil
+(null (macro-function 'cond)),:nil
+(null (macro-function 'if)),:nil
+(null (macro-function 'let)),:nil
+(null (macro-function 'let*)),:nil
+(null (macro-function 'letf)),:nil
+(null (macro-function 'letf*)),:nil
+(null (macro-function 'mu:block)),:nil
+(null (macro-function 'mu:return)),:nil
+(null (macro-function 'mu:return-from)),:nil
+(null (macro-function 'or)),:nil
+(null (macro-function 'progn)),:nil
+(null (macro-function 'unless)),:nil
+(null (macro-function 'when)),:nil
 (null (functionp append)),:nil
-(null (functionp bool)),:nil
+(null (functionp null)),:nil
 (null (functionp gensym)),:nil
-(null (functionp identity)),:nil
 (null (functionp list)),:nil
 (null (functionp list*)),:nil
 (null (functionp listp)),:nil

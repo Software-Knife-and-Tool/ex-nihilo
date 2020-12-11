@@ -28,7 +28,7 @@ using Frame = Env::Frame;
 
 /** * (float? object) => bool **/
 void IsFloat(Frame* fp) {
-  fp->value = Type::GenBool(Float::IsType(fp->argv[0]), fp->argv[0]);
+  fp->value = Type::Bool(Float::IsType(fp->argv[0]));
 }
 
 /** * (float+ float float) => float **/
@@ -107,7 +107,7 @@ void FloatLessThan(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<",
                      fl1);
 
-  fp->value = Type::GenBool(Float::FloatOf(fl0) < Float::FloatOf(fl1), fl0);
+  fp->value = Type::Bool(Float::FloatOf(fl0) < Float::FloatOf(fl1));
 }
 
 /** * (sqrt float) => float **/
