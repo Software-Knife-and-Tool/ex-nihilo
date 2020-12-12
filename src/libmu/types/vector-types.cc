@@ -28,6 +28,32 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace {
+
+template <typename T, typename S>
+static auto VMap(Env* env, TagPtr func, TagPtr vector) {
+  assert(Function::IsType(func));
+  assert(Vector::IsType(vector));
+
+  std::vector<S> vlist;
+  Vector::vector_iter<S> iter(vector);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    vlist.push_back(T::VSpecOf(
+        Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_})));
+  return Vector(env, vlist).tag_;
+}
+
+template <typename T, typename S>
+static void VMapC(Env* env, TagPtr func, TagPtr vector) {
+  assert(Function::IsType(func));
+  assert(Vector::IsType(vector));
+
+  Vector::vector_iter<S> iter(vector);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    (void)Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_});
+}
+
+}  // namespace
 
 /** * map a function onto a vector **/
 TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
@@ -35,45 +61,16 @@ TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
   assert(Vector::IsType(vector));
 
   switch (Type::MapSymbolClass(Vector::VecType(vector))) {
-    case SYS_CLASS::T: {
-      std::vector<TagPtr> vlist;
-      Vector::vector_iter<TagPtr> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        vlist.push_back(Function::Funcall(env, func, std::vector<TagPtr>{*it}));
-      return Vector(env, vlist).tag_;
-    }
-    case SYS_CLASS::FLOAT: {
-      std::vector<float> vlist;
-      Vector::vector_iter<float> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        vlist.push_back(Float::FloatOf(Function::Funcall(
-            env, func, std::vector<TagPtr>{Float(*it).tag_})));
-      return Vector(env, vlist).tag_;
-    }
-    case SYS_CLASS::FIXNUM: {
-      std::vector<int64_t> vlist;
-      Vector::vector_iter<int64_t> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        vlist.push_back(Fixnum::Int64Of(Function::Funcall(
-            env, func, std::vector<TagPtr>{Fixnum(*it).tag_})));
-      return Vector(env, vlist).tag_;
-    }
-    case SYS_CLASS::CHAR: {
-      std::string vlist;
-      Vector::vector_iter<char> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        vlist.push_back(static_cast<char>(Char::Uint8Of(Function::Funcall(
-            env, func, std::vector<TagPtr>{Char(*it).tag_}))));
-      return Vector(env, vlist).tag_;
-    }
-    case SYS_CLASS::BYTE: {
-      std::vector<uint8_t> vlist;
-      Vector::vector_iter<uint8_t> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        vlist.push_back(static_cast<uint8_t>(Fixnum::Uint64Of(Function::Funcall(
-            env, func, std::vector<TagPtr>{Fixnum(*it).tag_}))));
-      return Vector(env, vlist).tag_;
-    }
+    case SYS_CLASS::T:
+      return VMap<Vector, TagPtr>(env, func, vector);
+    case SYS_CLASS::FLOAT:
+      return VMap<Float, float>(env, func, vector);
+    case SYS_CLASS::FIXNUM:
+      return VMap<Fixnum, int64_t>(env, func, vector);
+    case SYS_CLASS::CHAR:
+      // return VMap<Char, char>(env, func, vector);
+    case SYS_CLASS::BYTE:
+      // return VMap<Char, char>(env, func, vector);
     default:
       assert(!"vector type botch");
   }
@@ -85,39 +82,16 @@ void Vector::MapC(Env* env, TagPtr func, TagPtr vector) {
   assert(Vector::IsType(vector));
 
   switch (Type::MapSymbolClass(Vector::VecType(vector))) {
-    case SYS_CLASS::T: {
-      Vector::vector_iter<TagPtr> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        (void)Function::Funcall(env, func, std::vector<TagPtr>{*it});
-      break;
-    }
-    case SYS_CLASS::FLOAT: {
-      Vector::vector_iter<float> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        (void)Function::Funcall(env, func,
-                                std::vector<TagPtr>{Float(*it).tag_});
-      break;
-    }
-    case SYS_CLASS::FIXNUM: {
-      Vector::vector_iter<int64_t> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        (void)Function::Funcall(env, func,
-                                std::vector<TagPtr>{Fixnum(*it).tag_});
-      break;
-    }
-    case SYS_CLASS::CHAR: {
-      Vector::vector_iter<char> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        (void)Function::Funcall(env, func, std::vector<TagPtr>{Char(*it).tag_});
-      break;
-    }
-    case SYS_CLASS::BYTE: {
-      Vector::vector_iter<uint8_t> iter(vector);
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-        (void)Function::Funcall(env, func,
-                                std::vector<TagPtr>{Fixnum(*it).tag_});
-      break;
-    }
+    case SYS_CLASS::T:
+      return VMapC<Vector, TagPtr>(env, func, vector);
+    case SYS_CLASS::FLOAT:
+      return VMapC<Float, float>(env, func, vector);
+    case SYS_CLASS::FIXNUM:
+      return VMapC<Fixnum, uint64_t>(env, func, vector);
+    case SYS_CLASS::CHAR:
+      return VMapC<Char, char>(env, func, vector);
+    case SYS_CLASS::BYTE:
+      return VMapC<Fixnum, uint8_t>(env, func, vector);
     default:
       assert(!"vector type botch");
   }
@@ -129,7 +103,7 @@ TagPtr Vector::ListToVector(Env* env, TagPtr vectype, TagPtr list) {
 
   auto vtype = Type::MapSymbolClass(vectype);
 
-  /** * #(:type) returns empty typed vector */
+  /* #(:type) returns empty typed vector */
   if (Null(list)) switch (vtype) {
       case SYS_CLASS::T:
         return Vector(env, std::vector<TagPtr>()).tag_;

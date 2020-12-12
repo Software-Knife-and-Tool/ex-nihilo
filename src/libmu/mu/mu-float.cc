@@ -27,9 +27,7 @@ namespace mu {
 using Frame = Env::Frame;
 
 /** * (float? object) => bool **/
-void IsFloat(Frame* fp) {
-  fp->value = Type::Bool(Float::IsType(fp->argv[0]));
-}
+void IsFloat(Frame* fp) { fp->value = Type::Bool(Float::IsType(fp->argv[0])); }
 
 /** * (float+ float float) => float **/
 void FloatAdd(Frame* fp) {

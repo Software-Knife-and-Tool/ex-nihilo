@@ -41,6 +41,7 @@ class Fixnum : public Type {
     return static_cast<uint64_t>((static_cast<uint64_t>(fx) >> 2));
   }
 
+  static float VSpecOf(TagPtr fx) { return Int64Of(fx); }
   static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr ViewOf(Env*, TagPtr);
 

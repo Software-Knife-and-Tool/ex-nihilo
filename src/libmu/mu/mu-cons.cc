@@ -29,9 +29,7 @@ namespace mu {
 using Frame = Env::Frame;
 
 /** * (consp vector) => generalized bool **/
-void IsCons(Frame* fp) {
-  fp->value = Type::Bool(Cons::IsType(fp->argv[0]));
-}
+void IsCons(Frame* fp) { fp->value = Type::Bool(Cons::IsType(fp->argv[0])); }
 
 /** * (.mapcar function list) => list **/
 void MapCar(Frame* fp) {

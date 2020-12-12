@@ -97,9 +97,9 @@ TagPtr ParseLambda(Env* env, TagPtr lambda) {
 std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
-  auto nope = std::pair<TagPtr, size_t>{Type::NIL, 0};
-  
-  if (Symbol::IsKeyword(sym)) return nope;
+  auto notfound = std::pair<TagPtr, size_t>{Type::NIL, 0};
+
+  if (Symbol::IsKeyword(sym)) return notfound;
 
   std::vector<TagPtr>::reverse_iterator it;
   for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {
@@ -114,7 +114,7 @@ std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
     }
   }
 
-  return nope;
+  return notfound;
 }
 
 /** * compile a lexical symbol */
@@ -348,10 +348,9 @@ TagPtr Compile(Env* env, TagPtr form) {
       size_t nth;
 
       std::tie<TagPtr, size_t>(fn, nth) = InLexicalEnv(env, form);
-        
-      rval = Function::IsType(fn)
-                 ? Compile(env, CompileLexical(env, fn, nth))
-                 : form;
+
+      rval = Function::IsType(fn) ? Compile(env, CompileLexical(env, fn, nth))
+                                  : form;
       break;
     }
     default: /* constant */
