@@ -174,7 +174,7 @@ class Type {
   TagPtr tag_; /* tagged pointer for type constructors */
 
   virtual TagPtr Evict(Env*, const char*) = 0;
-
+  
 }; /* class Type */
 
 } /* namespace libmu */

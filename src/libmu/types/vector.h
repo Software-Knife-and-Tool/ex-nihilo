@@ -104,6 +104,7 @@ class Vector : public Type {
  public: /* object model */
   TagPtr Evict(Env*, const char*) { return tag_; }
 
+  explicit Vector(TagPtr t) : Type() { tag_ = t; }
   explicit Vector(Env*, std::string);          /* string */
   explicit Vector(Env*, std::vector<TagPtr>);  /* general */
   explicit Vector(Env*, std::vector<float>);   /* float */
