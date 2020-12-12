@@ -77,7 +77,9 @@ TagPtr ParseLambda(Env* env, TagPtr lambda) {
         lexicals.push_back(symbol);
       };
 
-  Cons::MapC(env, parse, lambda);
+  Cons::cons_iter<TagPtr> iter(lambda);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    parse(env, it->car);
 
   if (has_rest && Type::Null(restsym))
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
@@ -129,10 +131,13 @@ TagPtr CompileLexical(Env* env, TagPtr fn, size_t nth) {
 
 /** * compile a list of forms **/
 TagPtr CompileList(Env* env, TagPtr list) {
-  assert(Cons::IsList(list));
+  std::vector<TagPtr> vlist;
+  Cons::cons_iter<TagPtr> iter(list);
 
-  return Cons::MapCar(
-      env, [](Env* env, TagPtr form) { return Compile(env, form); }, list);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    vlist.push_back(Compile(env, it->car));
+
+  return Cons::List(env, vlist);
 }
 
 /** * compile function definition **/

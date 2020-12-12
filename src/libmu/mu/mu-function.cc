@@ -61,34 +61,29 @@ void Closure(Frame* fp) {
   if (!Type::Null(Function::env(fn))) {
     std::vector<Frame*> context{};
 
-    Cons::MapC(
-        fp->env,
-        [fp, &context](Env*, TagPtr fn) {
-          auto offset = 0;
-          auto lambda = Cons::car(Function::form(fn));
-          /* think: this all has to be wildly wrong */
-          auto rest = Function::arity(fn) < 0;
-          ;
-          size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
-          auto args =
-              new TagPtr[nargs]; /* think: does this need to be freed? */
+    Cons::cons_iter<TagPtr> iter(Function::env(fn));
+    for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+      auto offset = 0;
+      auto lambda = Cons::car(Function::form(fn));
+      /* think: this all has to be wildly wrong */
+      auto rest = Function::arity(fn) < 0;
+      size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
 
-          /* think: check this, seems odd */
-          Cons::MapC(
-              fp->env,
-              [fp, fn, &offset, &args](Env*, TagPtr) {
-                auto lfp = fp->env->MapFrame(Function::frame_id(fn));
-                auto value = lfp->argv[offset];
+      auto args = new TagPtr[nargs]; /* think: does this need to be freed? */
 
-                args[offset] = value;
-                offset++;
-              },
-              Cons::car(lambda));
+      /* think: check this, seems odd */
+      Cons::cons_iter<TagPtr> iter(Cons::car(lambda));
+      for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+        auto lfp = fp->env->MapFrame(Function::frame_id(fn));
+        auto value = lfp->argv[offset];
 
-          context.push_back(
-              new Frame(fp->env, Function::frame_id(fn), fn, args, nargs));
-        },
-        Function::env(fn));
+        args[offset] = value;
+        offset++;
+      }
+
+      context.push_back(
+          new Frame(fp->env, Function::frame_id(fn), fn, args, nargs));
+    }
 
     Function::context(fn, context);
   }

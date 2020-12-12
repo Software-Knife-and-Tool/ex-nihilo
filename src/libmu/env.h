@@ -20,8 +20,8 @@
 
 #include "platform/platform.h"
 
-#include "libmu/type.h"
 #include "libmu/heap/heap.h"
+#include "libmu/type.h"
 #include "libmu/types/namespace.h"
 
 namespace libmu {
@@ -90,7 +90,6 @@ class Env {
   std::vector<TagPtr> lexenv_;       /* lexical symbols */
                                      /* syntax dispatch */
   std::unordered_map<TagPtr, TagPtr> readtable_;
-  TagPtr eval_;            /* eval function */
   TagPtr mu_;              /* mu namespace */
   TagPtr namespace_;       /* current namespace */
   TagPtr standard_input_;  /* standard input */

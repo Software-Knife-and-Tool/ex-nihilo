@@ -61,9 +61,9 @@ void Apply(Frame* fp) {
                      "is not a list (.apply)", args);
 
   std::vector<TagPtr> argv;
-  Cons::MapC(
-      fp->env, [&argv](Env*, TagPtr form) { argv.push_back(form); },
-      fp->argv[1]);
+  Cons::cons_iter<TagPtr> iter(args);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    argv.push_back(it->car);
 
   fp->value = Function::Funcall(fp->env, func, argv);
 }

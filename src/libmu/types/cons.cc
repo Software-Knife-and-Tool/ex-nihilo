@@ -65,18 +65,15 @@ TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
 }
 
 /** * mapc function list **/
-TagPtr Cons::MapC(Env* env, TagPtr func, TagPtr list) {
+void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
   assert(IsList(list));
 
   if (Null(list)) return;
 
-  TagPtr last;
-  
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    last = Function::Funcall(env, func, std::vector<TagPtr>{it->car});
-  return last;
+    (void)Function::Funcall(env, func, std::vector<TagPtr>{it->car});
 }
 
 /** * maplist function list **/

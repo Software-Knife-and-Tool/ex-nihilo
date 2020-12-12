@@ -57,9 +57,8 @@ class Cons : public Type {
   static TagPtr NthCdr(TagPtr, size_t);
   static size_t Length(Env*, TagPtr);
 
-  static TagPtr MapC(Env*, TagPtr, TagPtr);
+  static void MapC(Env*, TagPtr, TagPtr);
   static TagPtr MapCar(Env*, TagPtr, TagPtr);
-
   static void MapL(Env*, TagPtr, TagPtr);
   static TagPtr MapList(Env*, TagPtr, TagPtr);
 
