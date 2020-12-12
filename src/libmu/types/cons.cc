@@ -64,42 +64,19 @@ TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
   return Cons::List(env, vlist);
 }
 
-/** * mapcar implementation-function list **/
-TagPtr Cons::MapCar(Env* env, std::function<TagPtr(Env*, TagPtr)> fn,
-                    TagPtr list) {
-  assert(IsList(list));
-
-  if (Null(list)) return NIL;
-
-  std::vector<TagPtr> vlist;
-  cons_iter<TagPtr> iter(list);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    vlist.push_back(fn(env, it->car));
-
-  return Cons::List(env, vlist);
-}
-
 /** * mapc function list **/
-void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
+TagPtr Cons::MapC(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
   assert(IsList(list));
 
   if (Null(list)) return;
 
+  TagPtr last;
+  
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)Function::Funcall(env, func, std::vector<TagPtr>{it->car});
-}
-
-/** * mapc kernel-function list **/
-void Cons::MapC(Env* env, std::function<void(Env*, TagPtr)> fn, TagPtr list) {
-  assert(IsList(list));
-
-  if (Null(list)) return;
-
-  cons_iter<TagPtr> iter(list);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)fn(env, it->car);
+    last = Function::Funcall(env, func, std::vector<TagPtr>{it->car});
+  return last;
 }
 
 /** * maplist function list **/

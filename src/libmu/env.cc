@@ -361,6 +361,9 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this, "env:int-fn"));
   }
+
+  eval_ = Symbol::value(Namespace::FindInNsExterns(this, "eval"));
+  assert(Function::IsType(eval_));
 }
 
 } /* namespace libmu */

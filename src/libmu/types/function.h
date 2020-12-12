@@ -162,12 +162,11 @@ class Function : public Type {
 
   static void CallFrame(Env::Frame* fp) {
     fp->value = NIL;
-    if (Null(core(fp->func))) {
-      Cons::MapC(
-          fp->env,
-          [fp](Env* env, TagPtr form) { fp->value = core::Eval(env, form); },
-          Cons::cdr(Function::form(fp->func)));
-    } else
+    if (Null(core(fp->func)))
+      fp->value = Cons::MapC(fp->env,
+                            fp->env->eval_,
+                            Cons::cdr(Function::form(fp->func)));
+    else
       Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
   }
 

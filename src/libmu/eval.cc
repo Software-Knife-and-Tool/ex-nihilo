@@ -80,11 +80,7 @@ TagPtr Eval(Env* env, TagPtr form) {
                              "(eval)", fn);
           break;
         case SYS_CLASS::FUNCTION: /* function object */
-          rval = Apply(
-              env, fn,
-              Cons::MapCar(
-                  env, [](Env* env, TagPtr form) { return Eval(env, form); },
-                  Cons::cdr(form)));
+          rval = Apply(env, fn, Cons::MapCar(env, env.eval_, Cons::cdr(form)));
           break;
         default:
           Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)",
