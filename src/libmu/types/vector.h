@@ -105,6 +105,7 @@ class Vector : public Type {
   TagPtr Evict(Env*, const char*) { return tag_; }
 
   static constexpr TagPtr VSpecOf(TagPtr t) { return t; }
+
   explicit Vector(TagPtr t) : Type() { tag_ = t; }
 
   explicit Vector(Env*, std::string); /* string */
