@@ -50,8 +50,7 @@ static void VMapC(Env* env, TagPtr func, TagPtr vector) {
   std::vector<S> vlist;
   Vector::vector_iter<S> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)Function::Funcall(env, func,
-                            std::vector<TagPtr>{T(*it).tag_});
+    (void)Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_});
 }
 
 } /* anynoymous namespace */
