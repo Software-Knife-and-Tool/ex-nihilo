@@ -35,6 +35,7 @@ class Char : public Type {
     return static_cast<uint8_t>(ImmediateData(ptr));
   }
 
+  static float VSpecOf(TagPtr ch) { return Uint8Of(ch); }
   static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr Read(Env*, TagPtr);
   static TagPtr ViewOf(Env*, TagPtr);

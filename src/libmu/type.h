@@ -155,9 +155,7 @@ class Type {
   static TagPtr MapClassSymbol(SYS_CLASS);
   static SYS_CLASS MapSymbolClass(TagPtr);
 
-  static constexpr TagPtr Bool(bool test) {
-    return test ? T : NIL;
-  }
+  static constexpr TagPtr Bool(bool test) { return test ? T : NIL; }
 
   static constexpr bool IsImmediate(TagPtr ptr) {
     return TagOf(ptr) == TAG::IMMEDIATE;
@@ -174,7 +172,7 @@ class Type {
   TagPtr tag_; /* tagged pointer for type constructors */
 
   virtual TagPtr Evict(Env*, const char*) = 0;
-  
+
 }; /* class Type */
 
 } /* namespace libmu */

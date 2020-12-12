@@ -98,7 +98,7 @@ std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
   auto notfound = std::pair<TagPtr, size_t>{Type::NIL, 0};
-  
+
   if (Symbol::IsKeyword(sym)) return notfound;
 
   std::vector<TagPtr>::reverse_iterator it;
@@ -348,10 +348,9 @@ TagPtr Compile(Env* env, TagPtr form) {
       size_t nth;
 
       std::tie<TagPtr, size_t>(fn, nth) = InLexicalEnv(env, form);
-        
-      rval = Function::IsType(fn)
-                 ? Compile(env, CompileLexical(env, fn, nth))
-                 : form;
+
+      rval = Function::IsType(fn) ? Compile(env, CompileLexical(env, fn, nth))
+                                  : form;
       break;
     }
     default: /* constant */

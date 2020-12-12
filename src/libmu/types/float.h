@@ -38,6 +38,7 @@ class Float : public Type {
     return buf;
   }
 
+  static float VSpecOf(TagPtr fl) { return FloatOf(fl); }
   static void Print(Env*, TagPtr, TagPtr, bool);
   static TagPtr ViewOf(Env*, TagPtr);
 

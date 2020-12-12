@@ -31,14 +31,15 @@ namespace libmu {
 namespace {
 
 template <typename T, typename S>
-static auto VMap(Env* env, std::function<S(TagPtr)> specfn, TagPtr func, TagPtr vector) {
+static auto VMap(Env* env, TagPtr func, TagPtr vector) {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
   std::vector<S> vlist;
   Vector::vector_iter<S> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    vlist.push_back(specfn(Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_})));
+    vlist.push_back(T::VSpecOf(
+        Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_})));
   return Vector(env, vlist).tag_;
 }
 
@@ -46,13 +47,13 @@ template <typename T, typename S>
 static void VMapC(Env* env, TagPtr func, TagPtr vector) {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
-  
+
   Vector::vector_iter<S> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     (void)Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_});
 }
 
-} /* anynoymous namespace */
+}  // namespace
 
 /** * map a function onto a vector **/
 TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
@@ -61,18 +62,15 @@ TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
 
   switch (Type::MapSymbolClass(Vector::VecType(vector))) {
     case SYS_CLASS::T:
-      return VMap<Vector, TagPtr>(env,
-                                  [](TagPtr e) { return e; },
-                                  func,
-                                  vector);
+      return VMap<Vector, TagPtr>(env, func, vector);
     case SYS_CLASS::FLOAT:
-      return VMap<Float, float>(env, Float::FloatOf, func, vector);
+      return VMap<Float, float>(env, func, vector);
     case SYS_CLASS::FIXNUM:
-      return VMap<Fixnum, int64_t>(env, Fixnum::Int64Of, func, vector);
+      return VMap<Fixnum, int64_t>(env, func, vector);
     case SYS_CLASS::CHAR:
-      return VMap<Char, char>(env, Char::Uint80f, func, vector);
+      // return VMap<Char, char>(env, func, vector);
     case SYS_CLASS::BYTE:
-      return VMap<Char, char>(env, Char::Uint80f, func, vector);
+      // return VMap<Char, char>(env, func, vector);
     default:
       assert(!"vector type botch");
   }
@@ -106,8 +104,7 @@ TagPtr Vector::ListToVector(Env* env, TagPtr vectype, TagPtr list) {
   auto vtype = Type::MapSymbolClass(vectype);
 
   /* #(:type) returns empty typed vector */
-  if (Null(list))
-    switch (vtype) {
+  if (Null(list)) switch (vtype) {
       case SYS_CLASS::T:
         return Vector(env, std::vector<TagPtr>()).tag_;
       case SYS_CLASS::FLOAT:

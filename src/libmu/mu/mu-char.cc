@@ -26,9 +26,7 @@ namespace mu {
 using Frame = Env::Frame;
 
 /** * mu function (char? object) => bool */
-void IsChar(Frame* fp) {
-  fp->value = Type::Bool(Char::IsType(fp->argv[0]));
-}
+void IsChar(Frame* fp) { fp->value = Type::Bool(Char::IsType(fp->argv[0])); }
 
 } /* namespace mu */
 } /* namespace libmu */

@@ -33,7 +33,8 @@ namespace libmu {
 namespace {
 
 /** * parse symbol namespace designator **/
-  TagPtr NamespaceOf(Env* env, const std::string& symbol, const std::string &sep) {
+TagPtr NamespaceOf(Env* env, const std::string& symbol,
+                   const std::string& sep) {
   auto cpos = symbol.find(sep);
   TagPtr ns;
 
@@ -52,10 +53,11 @@ namespace {
 }
 
 /** * parse symbol name string **/
-  TagPtr NameOf(Env* env, const std::string& symbol, const std::string& sep) {
+TagPtr NameOf(Env* env, const std::string& symbol, const std::string& sep) {
   auto cpos = symbol.find(sep);
 
-  return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + sep.length()) : symbol)
+  return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + sep.length())
+                                            : symbol)
       .tag_;
 }
 
@@ -149,7 +151,7 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
   } else {
     auto int_ns = NamespaceOf(env, string, "::");
     auto ext_ns = NamespaceOf(env, string, ":");
-    
+
     if (intern) {
       if (!Null(int_ns))
         rval = Namespace::InternInNs(env, int_ns, NameOf(env, string, "::"));

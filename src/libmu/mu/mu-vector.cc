@@ -144,6 +144,6 @@ void Vector(Frame* fp) {
 
   fp->value = Vector::ListToVector(fp->env, type, list);
 }
-  
+
 } /* namespace mu */
 } /* namespace libmu */
