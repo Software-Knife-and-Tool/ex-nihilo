@@ -53,7 +53,22 @@ static void VMapC(Env* env, TagPtr func, TagPtr vector) {
     (void)Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_});
 }
 
-}  // namespace
+template <typename T, typename S>
+static TagPtr VList(Env* env, std::function<bool(TagPtr)> isType, TagPtr list) {
+  std::vector<S> vec;
+
+  Cons::cons_iter<TagPtr> iter(list);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+    auto form = it->car;
+    if (!isType(form))
+      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                       "type mismatch in vector initialization", form);
+    vec.push_back(T::VSpecOf(form));
+  }
+  return Vector(env, vec).tag_;
+}
+
+} /* anonymous namespace */
 
 /** * map a function onto a vector **/
 TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
@@ -68,9 +83,9 @@ TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
     case SYS_CLASS::FIXNUM:
       return VMap<Fixnum, int64_t>(env, func, vector);
     case SYS_CLASS::CHAR:
-      // return VMap<Char, char>(env, func, vector);
+      return VMap<Char, char>(env, func, vector);
     case SYS_CLASS::BYTE:
-      // return VMap<Char, char>(env, func, vector);
+      return VMap<Fixnum, uint8_t>(env, func, vector);
     default:
       assert(!"vector type botch");
   }
@@ -103,76 +118,18 @@ TagPtr Vector::ListToVector(Env* env, TagPtr vectype, TagPtr list) {
 
   auto vtype = Type::MapSymbolClass(vectype);
 
-  /* #(:type) returns empty typed vector */
-  if (Null(list)) switch (vtype) {
-      case SYS_CLASS::T:
-        return Vector(env, std::vector<TagPtr>()).tag_;
-      case SYS_CLASS::FLOAT:
-        return Vector(env, std::vector<float>()).tag_;
-      case SYS_CLASS::FIXNUM:
-        return Vector(env, std::vector<int64_t>()).tag_;
-      case SYS_CLASS::BYTE:
-        return Vector(env, std::vector<uint8_t>()).tag_;
-      case SYS_CLASS::CHAR:
-        return Vector(env, std::string()).tag_;
-      default:
-        assert(!"vector type botch");
-    }
-
-  std::vector<TagPtr> vlistT;
-  std::vector<float> vlistFloat;
-  std::vector<int64_t> vlistFixnum;
-  std::vector<uint8_t> vlistByte;
-  std::string vlistChar;
-
-  Cons::cons_iter<TagPtr> iter(list);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-    auto form = it->car;
-
-    switch (vtype) {
-      case SYS_CLASS::T:
-        vlistT.push_back(form);
-        break;
-      case SYS_CLASS::FLOAT:
-        if (!Float::IsType(form))
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                           "type mismatch in vector initialization", form);
-        vlistFloat.push_back(Float::FloatOf(form));
-        break;
-      case SYS_CLASS::FIXNUM:
-        if (!Fixnum::IsType(form))
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                           "type mismatch in vector initialization", form);
-        vlistFixnum.push_back(Fixnum::Int64Of(form));
-        break;
-      case SYS_CLASS::CHAR:
-        if (!Char::IsType(form))
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                           "type mismatch in vector initialization", form);
-        vlistChar.push_back(static_cast<char>(Char::Uint8Of(form)));
-        break;
-      case SYS_CLASS::BYTE:
-        if (!Fixnum::IsByte(form))
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                           "type mismatch in vector initialization", form);
-        vlistByte.push_back(static_cast<uint8_t>(Fixnum::Uint64Of(form)));
-        break;
-      default:
-        assert(!"vector type botch");
-    }
-  }
-
   switch (vtype) {
     case SYS_CLASS::T:
-      return Vector(env, vlistT).tag_;
+      return VList<Vector, TagPtr>(
+          env, [](TagPtr) { return true; }, list);
     case SYS_CLASS::FLOAT:
-      return Vector(env, vlistFloat).tag_;
+      return VList<Float, float>(env, Float::IsType, list);
     case SYS_CLASS::FIXNUM:
-      return Vector(env, vlistFixnum).tag_;
+      return VList<Fixnum, int64_t>(env, Fixnum::IsType, list);
     case SYS_CLASS::BYTE:
-      return Vector(env, vlistByte).tag_;
+      return VList<Fixnum, uint8_t>(env, Fixnum::IsType, list);
     case SYS_CLASS::CHAR:
-      return Vector(env, vlistChar).tag_;
+      return VList<Char, char>(env, Char::IsType, list);
     default:
       assert(!"vector type botch");
   }
