@@ -50,6 +50,7 @@ class Cons : public Type {
   static constexpr bool IsType(TagPtr ptr) { return TagOf(ptr) == TAG::CONS; }
   static constexpr bool IsList(TagPtr ptr) { return IsType(ptr) || Null(ptr); }
 
+  static void ListToVec(TagPtr, std::vector<TagPtr>&);
   static TagPtr List(Env*, const std::vector<TagPtr>&);
   static TagPtr ListDot(Env*, const std::vector<TagPtr>&);
 

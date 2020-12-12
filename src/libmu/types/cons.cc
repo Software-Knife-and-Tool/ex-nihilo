@@ -48,6 +48,15 @@ TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
   return Vector(env, view).tag_;
 }
 
+/** * listToVec list vector ref **/
+void Cons::ListToVec(TagPtr list, std::vector<TagPtr>& vec) {
+  assert(IsList(list));
+  
+  cons_iter<TagPtr> iter(list);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    vec.push_back(it->car);
+}
+  
 /** * mapcar :func list **/
 TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));

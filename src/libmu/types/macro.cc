@@ -48,9 +48,7 @@ TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
   if (Type::Null(macfn)) return form;
 
   std::vector<TagPtr> argv;
-  Cons::cons_iter<TagPtr> iter(Cons::cdr(form));
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    argv.push_back(it->car);
+  Cons::ListToVec(Cons::cdr(form), argv);
 
   expandedf = true;
 

@@ -47,9 +47,7 @@ TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
   assert(Cons::IsList(args));
 
   std::vector<TagPtr> argv;
-  Cons::cons_iter<TagPtr> iter(args);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    argv.push_back(it->car);
+  Cons::ListToVec(args, argv);
 
   return Function::Funcall(env, fn, argv);
 }
