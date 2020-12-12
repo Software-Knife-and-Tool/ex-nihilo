@@ -42,16 +42,18 @@ static auto VMap(Env* env, TagPtr func, TagPtr vector) {
   return Vector(env, vlist).tag_;
 }
 
-template <typename V>
+template <typename T, typename S>
 static void VMapC(Env* env, TagPtr func, TagPtr vector) {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
-  std::vector<V> vlist;
-  Vector::vector_iter<V> iter(vector);
+  std::vector<S> vlist;
+  Vector::vector_iter<S> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)Function::Funcall(env, func, *it);
+    (void)Function::Funcall(env, func,
+                            std::vector<TagPtr>{T(*it).tag_});
 }
+
 } /* anynoymous namespace */
 
 /** * map a function onto a vector **/
@@ -64,15 +66,13 @@ TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
       return VMap<Vector, TagPtr>(env, func, vector);
     }
     case SYS_CLASS::FLOAT: {
-      return VMap<Float, float>(env, func, vector);
-      /*
+      // return VMap<Float, float>(env, func, vector);
       std::vector<float> vlist;
       Vector::vector_iter<float> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
         vlist.push_back(Float::FloatOf(Function::Funcall(
             env, func, std::vector<TagPtr>{Float(*it).tag_})));
       return Vector(env, vlist).tag_;
-      */
     }
     case SYS_CLASS::FIXNUM: {
       std::vector<int64_t> vlist;
@@ -110,9 +110,12 @@ void Vector::MapC(Env* env, TagPtr func, TagPtr vector) {
 
   switch (Type::MapSymbolClass(Vector::VecType(vector))) {
     case SYS_CLASS::T: {
+      return VMapC<Vector, TagPtr>(env, func, vector);
+      /*
       Vector::vector_iter<TagPtr> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
         (void)Function::Funcall(env, func, std::vector<TagPtr>{*it});
+      */
       break;
     }
     case SYS_CLASS::FLOAT: {
