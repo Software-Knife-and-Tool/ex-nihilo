@@ -120,16 +120,6 @@ std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
   return notfound;
 }
 
-/** * compile a lexical symbol */
-TagPtr CompileLexical(Env* env, TagPtr fn, size_t nth) {
-  assert(Function::IsType(fn));
-
-  return Cons::List(env, std::vector<TagPtr>{
-                             Namespace::FindInInterns(
-                                 env, env->mu_, String(env, "frame-ref").tag_),
-                             Function::frame_id(fn), Fixnum(nth).tag_});
-}
-
 /** * compile a list of forms **/
 TagPtr CompileList(Env* env, TagPtr list) {
   std::vector<TagPtr> vlist;
@@ -350,12 +340,21 @@ TagPtr Compile(Env* env, TagPtr form) {
     }
     case SYS_CLASS::SYMBOL: {
       TagPtr fn;
-      size_t nth;
+      size_t offset;
 
-      std::tie<TagPtr, size_t>(fn, nth) = InLexicalEnv(env, form);
+      std::tie<TagPtr, size_t>(fn, offset) = InLexicalEnv(env, form);
 
-      rval = Function::IsType(fn) ? Compile(env, CompileLexical(env, fn, nth))
-                                  : form;
+      rval =
+          Function::IsType(fn)
+              ? Compile(
+                    env,
+                    Cons::List(
+                        env,
+                        std::vector<TagPtr>{
+                            Namespace::FindInInterns(
+                                env, env->mu_, String(env, "frame-ref").tag_),
+                            Function::frame_id(fn), Fixnum(offset).tag_}))
+              : form;
       break;
     }
     default: /* constant */

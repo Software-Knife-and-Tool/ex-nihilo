@@ -69,22 +69,16 @@ void Closure(Frame* fp) {
 
     Cons::cons_iter<Type::TagPtr> iter(Function::env(fn));
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+      auto fn = it->car;
       auto offset = 0;
       auto lambda = Cons::car(Function::form(fn));
-      /* think: this all has to be wildly wrong */
-      auto rest = Function::arity(fn) < 0;
-      size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
+      size_t nargs = Function::arity(fn); /* think: rest args? */
+      auto args = new Type::TagPtr[nargs];
+      auto frame = fp->env->MapFrame(Function::frame_id(fn));
 
-      auto args =
-          new Type::TagPtr[nargs]; /* think: does this need to be freed? */
-
-      /* think: check this, seems odd */
       Cons::cons_iter<Type::TagPtr> iter(Cons::car(lambda));
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-        auto lfp = fp->env->MapFrame(Function::frame_id(fn));
-        auto value = lfp->argv[offset];
-
-        args[offset] = value;
+        args[offset] = frame->argv[offset];
         offset++;
       }
 
@@ -116,7 +110,7 @@ void FrameRef(Frame* fp) {
   fp->value = lfp->argv[Fixnum::Uint64Of(offset)];
 }
 
-/** * (%letq frame-id offset value) => value **/
+/** * (letq frame-id offset value) => value **/
 void Letq(Frame* fp) {
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];
