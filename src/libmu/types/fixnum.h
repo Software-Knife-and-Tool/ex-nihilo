@@ -19,6 +19,7 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
 /** * fixnum type class **/
 class Fixnum : public Type {
@@ -53,6 +54,7 @@ class Fixnum : public Type {
   }
 };
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_FIXNUM_H_ */

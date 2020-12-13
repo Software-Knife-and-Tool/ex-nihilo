@@ -28,6 +28,7 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
+namespace core {
 
 /** * garbage collect the namespace **/
 void Namespace::GcMark(Env* env, TagPtr ns) {
@@ -58,7 +59,7 @@ TagPtr Namespace::FindSymbol(Env* env, TagPtr ns, TagPtr str) {
   assert(String::IsType(str));
 
   for (; !Type::Null(ns); ns = Namespace::import(ns)) {
-    auto sym = Namespace::FindInNsExterns(env, ns, str);
+    auto sym = Namespace::FindInExterns(env, ns, str);
     if (!Type::Null(sym)) return sym;
   }
 
@@ -84,7 +85,7 @@ TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
   assert(String::IsType(name));
 
   auto key = static_cast<TagPtr>(hash_id(name));
-  auto sym = FindInNsInterns(env, ns, name);
+  auto sym = FindInInterns(env, ns, name);
 
   return Type::Null(sym)
              ? Insert(Untag<Layout>(ns)->interns, key,
@@ -98,7 +99,7 @@ TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
   assert(String::IsType(name));
 
   auto key = static_cast<TagPtr>(hash_id(name));
-  auto sym = FindInNsExterns(env, ns, name);
+  auto sym = FindInExterns(env, ns, name);
 
   return Type::Null(sym)
              ? Insert(Untag<Layout>(ns)->externs, key,
@@ -162,4 +163,5 @@ Namespace::Namespace(TagPtr name, TagPtr import) : Type() {
   tag_ = Entag(reinterpret_cast<void*>(&namespace_), TAG::EXTEND);
 }
 
+} /* namespace core */
 } /* namespace libmu */

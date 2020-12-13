@@ -32,6 +32,7 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
@@ -106,4 +107,5 @@ TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
   return expanded;
 }
 
+} /* namespace core */
 } /* namespace libmu */

@@ -19,9 +19,7 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
-
-void Truncate(Frame*);
+using Frame = core::Env::Frame;
 
 void AcceptSocketStream(Frame*);
 void Acos(Frame*);
@@ -131,10 +129,11 @@ void System(Frame*);
 void Tangent(Frame*);
 void Terpri(Frame*);
 void Trampoline(Frame*);
+void Truncate(Frame*);
 void TypeOf(Frame*);
 void UnReadChar(Frame*);
 void UninternedSymbol(Frame*);
-void Vector(Frame*);
+void VectorCons(Frame*);
 void VectorLength(Frame*);
 void VectorMap(Frame*);
 void VectorMapC(Frame*);

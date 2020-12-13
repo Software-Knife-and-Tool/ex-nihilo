@@ -21,8 +21,9 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
-using TagPtr = Type::TagPtr;
+using TagPtr = core::Type::TagPtr;
 
 /** * cons type class **/
 class Cons : public Type {
@@ -115,6 +116,7 @@ class Cons : public Type {
 
 }; /* class Cons */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_CONS_H_ */

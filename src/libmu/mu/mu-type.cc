@@ -34,14 +34,17 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (type-of object) => symbol **/
 void TypeOf(Frame* fp) {
   auto obj = fp->argv[0];
 
-  fp->value = Struct::IsType(obj) ? Struct::stype(obj)
-                                  : Type::MapClassSymbol(Type::TypeOf(obj));
+  fp->value = core::Struct::IsType(obj)
+                  ? core::Struct::stype(obj)
+                  : Type::MapClassSymbol(Type::TypeOf(obj));
 }
 
 /** * (eq object object) => bool **/
@@ -53,7 +56,7 @@ void Eq(Frame* fp) {
 void IsSpecOp(Frame* fp) {
   auto symbol = fp->argv[0];
 
-  if (!Symbol::IsType(symbol))
+  if (!core::Symbol::IsType(symbol))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "special-operator?", symbol);
 
@@ -61,7 +64,9 @@ void IsSpecOp(Frame* fp) {
 }
 
 /** * (make-view object) => vector **/
-void MakeView(Frame* fp) { fp->value = Env::ViewOf(fp->env, fp->argv[0]); }
+void MakeView(Frame* fp) {
+  fp->value = core::Env::ViewOf(fp->env, fp->argv[0]);
+}
 
 } /* namespace mu */
 } /* namespace libmu */

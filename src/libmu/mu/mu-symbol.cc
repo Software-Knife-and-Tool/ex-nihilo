@@ -26,7 +26,11 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using String = core::String;
+using Symbol = core::Symbol;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (symbol-value symbol) => object **/
 void SymbolValue(Frame* fp) {

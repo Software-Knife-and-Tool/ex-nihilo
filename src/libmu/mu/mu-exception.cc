@@ -24,7 +24,12 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Cons = core::Cons;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Function = core::Function;
+using Symbol = core::Symbol;
+using Type = core::Type;
 
 /** * mu function (exception? object) => bool **/
 void IsException(Frame* fp) {
@@ -36,12 +41,12 @@ void IsException(Frame* fp) {
   auto reason = fp->argv[0];
   auto object = fp->argv[1];
 
-  if (!String::IsType(reason))
+  if (!core::String::IsType(reason))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "error",
                      reason);
 
   Exception::Raise(fp->env, Exception::EXCEPT_CLASS::SIMPLE_ERROR,
-                   String::StdStringOf(reason), object);
+                   core::String::StdStringOf(reason), object);
 }
 
 /** * (raise-exception exception) **/
@@ -65,11 +70,11 @@ void MakeException(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "exception",
                      tag);
 
-  if (!String::IsType(reason))
+  if (!core::String::IsType(reason))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "exception",
                      reason);
 
-  fp->value = Exception(tag, Env::LastFrame(fp->env), source, reason)
+  fp->value = Exception(tag, core::Env::LastFrame(fp->env), source, reason)
                   .Evict(fp->env, "mu-exception:make");
 }
 
@@ -86,17 +91,17 @@ void WithException(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "with-exception", handler);
 
-  TagPtr value;
+  Type::TagPtr value;
 
   int nframes = fp->env->frames_.size();
 
   try {
-    value = Function::Funcall(fp->env, thunk, std::vector<TagPtr>{});
-  } catch (TagPtr ex) {
+    value = Function::Funcall(fp->env, thunk, std::vector<Type::TagPtr>{});
+  } catch (Type::TagPtr ex) {
     for (auto i = fp->env->frames_.size() - nframes; i != 0; --i)
       fp->env->frames_.pop_back();
 
-    value = Function::Funcall(fp->env, handler, std::vector<TagPtr>{ex});
+    value = Function::Funcall(fp->env, handler, std::vector<Type::TagPtr>{ex});
   } catch (...) {
     assert(!"unexpected throw from libmu");
   }
@@ -119,8 +124,8 @@ void Block(Frame* fp) {
 
   try {
     fp->value =
-        core::Eval(fp->env, Cons::List(fp->env, std::vector<TagPtr>{fn}));
-  } catch (TagPtr ex) {
+        core::Eval(fp->env, Cons::List(fp->env, std::vector<Type::TagPtr>{fn}));
+  } catch (Type::TagPtr ex) {
     if (Cons::IsType(ex) && Type::Eq(tag, Cons::car(ex)))
       fp->value = Cons::cdr(ex);
     else

@@ -22,6 +22,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 
 /** * view of char object **/
 TagPtr Char::ViewOf(Env* env, TagPtr ch) {
@@ -110,4 +111,5 @@ TagPtr Char::Read(Env* env, TagPtr stream) {
   return value;
 }
 
+} /* namespace core */
 } /* namespace libmu */

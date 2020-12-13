@@ -30,7 +30,12 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Cons = core::Cons;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Function = core::Function;
+using Type = core::Type;
 
 /** * (function? object) => bool **/
 void IsFunction(Frame* fp) {
@@ -46,7 +51,8 @@ void Trampoline(Frame* fp) {
                      fp->value);
 
   do {
-    fp->value = Function::Funcall(fp->env, fp->value, std::vector<TagPtr>{});
+    fp->value =
+        Function::Funcall(fp->env, fp->value, std::vector<Type::TagPtr>{});
   } while (Function::IsType(fp->value));
 }
 
@@ -61,7 +67,7 @@ void Closure(Frame* fp) {
   if (!Type::Null(Function::env(fn))) {
     std::vector<Frame*> context{};
 
-    Cons::cons_iter<TagPtr> iter(Function::env(fn));
+    Cons::cons_iter<Type::TagPtr> iter(Function::env(fn));
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       auto offset = 0;
       auto lambda = Cons::car(Function::form(fn));
@@ -69,10 +75,11 @@ void Closure(Frame* fp) {
       auto rest = Function::arity(fn) < 0;
       size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
 
-      auto args = new TagPtr[nargs]; /* think: does this need to be freed? */
+      auto args =
+          new Type::TagPtr[nargs]; /* think: does this need to be freed? */
 
       /* think: check this, seems odd */
-      Cons::cons_iter<TagPtr> iter(Cons::car(lambda));
+      Cons::cons_iter<Type::TagPtr> iter(Cons::car(lambda));
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         auto lfp = fp->env->MapFrame(Function::frame_id(fn));
         auto value = lfp->argv[offset];

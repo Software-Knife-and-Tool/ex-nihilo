@@ -33,6 +33,7 @@
 namespace libmu {
 namespace core {
 namespace {
+
 /** * parse lambda list **/
 TagPtr ParseLambda(Env* env, TagPtr lambda) {
   assert(Cons::IsList(lambda));
@@ -124,7 +125,7 @@ TagPtr CompileLexical(Env* env, TagPtr fn, size_t nth) {
   assert(Function::IsType(fn));
 
   return Cons::List(env, std::vector<TagPtr>{
-                             Namespace::FindInNsInterns(
+                             Namespace::FindInInterns(
                                  env, env->mu_, String(env, "frame-ref").tag_),
                              Function::frame_id(fn), Fixnum(nth).tag_});
 }
@@ -244,8 +245,7 @@ TagPtr DefLetq(Env* env, TagPtr form) {
   if (!Cons::IsList(lsym))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":letq", lsym);
 
-  auto letq =
-      Namespace::FindInNsInterns(env, env->mu_, String(env, "letq").tag_);
+  auto letq = Namespace::FindInInterns(env, env->mu_, String(env, "letq").tag_);
   assert(!Type::Null(letq));
 
   return Cons::List(

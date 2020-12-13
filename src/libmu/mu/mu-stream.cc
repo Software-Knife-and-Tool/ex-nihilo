@@ -35,7 +35,14 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Char = core::Char;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Platform = core::Platform;
+using Stream = core::Stream;
+using String = core::String;
+using Type = core::Type;
 
 /** * mu function (stream? form) => bool **/
 void IsStream(Frame* fp) {
@@ -66,8 +73,8 @@ void ReadChar(Frame* fp) {
                      fp->argv[0]);
 
   if (Stream::IsFunction(stream)) {
-    auto ch =
-        Function::Funcall(fp->env, Stream::func(stream), std::vector<TagPtr>{});
+    auto ch = core::Function::Funcall(fp->env, Stream::func(stream),
+                                      std::vector<Type::TagPtr>{});
 
     if (!Char::IsType(ch))
       Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -115,8 +122,8 @@ void ReadByte(Frame* fp) {
                      fp->argv[0]);
 
   if (Stream::IsFunction(stream)) {
-    auto byte =
-        Function::Funcall(fp->env, Stream::func(stream), std::vector<TagPtr>{});
+    auto byte = core::Function::Funcall(fp->env, Stream::func(stream),
+                                        std::vector<Type::TagPtr>{});
 
     if (!Fixnum::IsType(byte) || Fixnum::Int64Of(byte) < 0 ||
         Fixnum::Int64Of(byte) > 255)
@@ -247,7 +254,7 @@ void SocketServerStream(Frame* fp) {
 void FunctionStream(Frame* fp) {
   auto fn = fp->argv[0];
 
-  if (!Function::IsType(fn))
+  if (!core::Function::IsType(fn))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "argument must be a function (open-function-stream)", fn);
 
@@ -314,7 +321,7 @@ void Load(Frame* fp) {
                      "argument must be a filespec (load)", filespec);
 
   switch (Type::TypeOf(filespec)) {
-    case SYS_CLASS::STREAM: {
+    case Type::SYS_CLASS::STREAM: {
       auto sp = Type::Untag<Stream::Layout>(filespec);
       while (!Platform::IsEof(sp->stream))
         core::Eval(fp->env,
@@ -322,7 +329,7 @@ void Load(Frame* fp) {
 
       break;
     }
-    case SYS_CLASS::STRING: {
+    case Type::SYS_CLASS::STRING: {
       auto istream =
           Stream::MakeInputFile(fp->env, String::StdStringOf(filespec));
 

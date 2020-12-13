@@ -40,6 +40,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 
 /** * namespace type class **/
 class Namespace : public Type {
@@ -121,7 +122,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace externs **/
-  static TagPtr FindInNsExterns(Env*, TagPtr ns, TagPtr str) {
+  static TagPtr FindInExterns(Env*, TagPtr ns, TagPtr str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -133,7 +134,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace interns **/
-  static TagPtr FindInNsInterns(Env*, TagPtr ns, TagPtr str) {
+  static TagPtr FindInInterns(Env*, TagPtr ns, TagPtr str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -145,17 +146,17 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace externs **/
-  static TagPtr FindInNsExterns(Env* env, TagPtr ns, std::string str) {
+  static TagPtr FindInExterns(Env* env, TagPtr ns, std::string str) {
     assert(IsType(ns));
 
-    return FindInNsExterns(env, ns, String(env, str).tag_);
+    return FindInExterns(env, ns, String(env, str).tag_);
   }
 
   /** * find symbol in namespace interns **/
-  static TagPtr FindInNsInterns(Env* env, TagPtr ns, std::string str) {
+  static TagPtr FindInInterns(Env* env, TagPtr ns, std::string str) {
     assert(IsType(ns));
 
-    return FindInNsInterns(env, ns, String(env, str).tag_);
+    return FindInInterns(env, ns, String(env, str).tag_);
   }
 
   static TagPtr Symbols(Env*, TagPtr);
@@ -174,6 +175,7 @@ class Namespace : public Type {
   explicit Namespace(TagPtr, TagPtr);
 }; /* class Namespace */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_NAMESPACE_H_ */

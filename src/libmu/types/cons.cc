@@ -25,6 +25,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 
 /** * garbage collection **/
 void Cons::GcMark(Env* env, TagPtr ptr) {
@@ -276,4 +277,5 @@ Cons::Cons(TagPtr car, TagPtr cdr) : Type() {
   tag_ = Entag(reinterpret_cast<void*>(&cons_), TAG::CONS);
 }
 
+} /* namespace core */
 } /* namespace libmu */

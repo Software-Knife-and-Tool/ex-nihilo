@@ -23,7 +23,10 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Char = core::Char;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * mu function (char? object) => bool */
 void IsChar(Frame* fp) { fp->value = Type::Bool(Char::IsType(fp->argv[0])); }

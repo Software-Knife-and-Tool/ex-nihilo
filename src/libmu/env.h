@@ -25,6 +25,7 @@
 #include "libmu/types/namespace.h"
 
 namespace libmu {
+namespace core {
 
 using platform::Platform;
 
@@ -133,6 +134,7 @@ class Env {
 
 }; /* class Env */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_ENV_H_ */

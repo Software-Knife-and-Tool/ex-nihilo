@@ -35,8 +35,8 @@ class Env;
 
 using platform::Platform;
 
-using SYS_CLASS = Type::SYS_CLASS;
-using TagPtr = Type::TagPtr;
+using SYS_CLASS = core::Type::SYS_CLASS;
+using TagPtr = core::Type::TagPtr;
 
 class Heap {
  private:

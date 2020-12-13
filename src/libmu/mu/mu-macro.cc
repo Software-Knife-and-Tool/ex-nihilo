@@ -32,13 +32,16 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Macro = core::Macro;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (macro-function symbol) => function **/
 void MacroFunction(Frame* fp) {
   auto macsym = fp->argv[0];
 
-  if (!Symbol::IsType(macsym))
+  if (!core::Symbol::IsType(macsym))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "macro-function", macsym);
 

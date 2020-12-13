@@ -23,7 +23,10 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (fixnum? fixnum) => bool **/
 void IsFixnum(Frame* fp) {
@@ -114,8 +117,8 @@ void Truncate(Frame* fp) {
   auto quot = ifx0 < ifx1 ? 0 : ifx0 / ifx1;
   auto rem = quot == 0 ? ifx0 : ifx0 - (ifx1 * quot);
 
-  fp->value =
-      Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "truncate");
+  fp->value = core::Cons(Fixnum(quot).tag_, Fixnum(rem).tag_)
+                  .Evict(fp->env, "truncate");
 }
 
 /** * (floor fixnum fixnum) => (fixnum . fixnum) **/
@@ -143,7 +146,8 @@ void Floor(Frame* fp) {
   auto rem = nx - (nx / dx) * dx;
   auto quot = (nx - rem) / dx;
 
-  fp->value = Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "floor");
+  fp->value =
+      core::Cons(Fixnum(quot).tag_, Fixnum(rem).tag_).Evict(fp->env, "floor");
 }
 
 /** * (logand fixnum fixnum) => fixnum **/

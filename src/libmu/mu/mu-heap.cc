@@ -30,7 +30,10 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (gc bool) => fixnum **/
 void Gc(Frame* fp) {
@@ -45,7 +48,7 @@ void Gc(Frame* fp) {
                        "is not boolean (gc)", arg);
   }
 
-  fp->value = Fixnum(fp->env->Gc(fp->env)).tag_;
+  fp->value = core::Fixnum(fp->env->Gc(fp->env)).tag_;
 }
 
 /** * mu function (heap-log bool) => :nil **/
@@ -68,22 +71,23 @@ void HeapLog(Frame* fp) {
 void HeapInfo(Frame* fp) {
   auto type = fp->argv[0];
 
-  if (!Symbol::IsKeyword(type) || !Type::IsClassSymbol(type))
+  if (!core::Symbol::IsKeyword(type) || !Type::IsClassSymbol(type))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a system class keyword (heap-info)", type);
 
-  std::function<TagPtr(Type::SYS_CLASS, int)> type_vec =
+  std::function<Type::TagPtr(Type::SYS_CLASS, int)> type_vec =
       [fp](Type::SYS_CLASS sys_class, int size) {
-        return Vector(fp->env,
-                      std::vector<TagPtr>{
-                          Fixnum(-1).tag_, /* figure out per object size */
-                          Fixnum(size).tag_,
-                          Fixnum(fp->env->heap_->nalloc_->at(
-                                     static_cast<int>(sys_class)))
-                              .tag_,
-                          Fixnum(fp->env->heap_->nfree_->at(
-                                     static_cast<int>(sys_class)))
-                              .tag_})
+        return core::Vector(
+                   fp->env,
+                   std::vector<Type::TagPtr>{
+                       Fixnum(-1).tag_, /* figure out per object size */
+                       Fixnum(size).tag_,
+                       Fixnum(fp->env->heap_->nalloc_->at(
+                                  static_cast<int>(sys_class)))
+                           .tag_,
+                       Fixnum(fp->env->heap_->nfree_->at(
+                                  static_cast<int>(sys_class)))
+                           .tag_})
             .tag_;
       };
 
@@ -98,16 +102,17 @@ void HeapInfo(Frame* fp) {
       break;
     case Type::SYS_CLASS::T:
       fp->value =
-          Vector(fp->env,
-                 std::vector<TagPtr>{
-                     Fixnum(fp->env->heap_->size()).tag_,
-                     Fixnum(fp->env->heap_->alloc()).tag_,
-                     Fixnum(std::accumulate(fp->env->heap_->nalloc_->begin(),
-                                            fp->env->heap_->nalloc_->end(), 0))
-                         .tag_,
-                     Fixnum(std::accumulate(fp->env->heap_->nfree_->begin(),
-                                            fp->env->heap_->nfree_->end(), 0))
-                         .tag_})
+          core::Vector(
+              fp->env,
+              std::vector<Type::TagPtr>{
+                  Fixnum(fp->env->heap_->size()).tag_,
+                  Fixnum(fp->env->heap_->alloc()).tag_,
+                  Fixnum(std::accumulate(fp->env->heap_->nalloc_->begin(),
+                                         fp->env->heap_->nalloc_->end(), 0))
+                      .tag_,
+                  Fixnum(std::accumulate(fp->env->heap_->nfree_->begin(),
+                                         fp->env->heap_->nfree_->end(), 0))
+                      .tag_})
               .tag_;
       break;
     default:

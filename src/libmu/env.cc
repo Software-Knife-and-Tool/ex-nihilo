@@ -42,6 +42,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 /** * library extern core functions **/
@@ -161,7 +162,7 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"return", mu::Return, 2},
     {"print", mu::PrintEscape, 3},
     {"trampoline", mu::Trampoline, 1},
-    {"vector", mu::Vector, 2},
+    {"vector", mu::VectorCons, 2},
     {"vector-length", mu::VectorLength, 1},
     {"vector-map", mu::VectorMap, 2},
     {"vector-mapc", mu::VectorMapC, 2},
@@ -363,4 +364,5 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   }
 }
 
+} /* namespace core */
 } /* namespace libmu */

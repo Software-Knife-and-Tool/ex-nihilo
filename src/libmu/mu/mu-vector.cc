@@ -27,14 +27,18 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Type = core::Type;
+using Vector = core::Vector;
 
-/** * mu function (vector? form) => bool**/
+/** * (vector? form) => bool**/
 void IsVector(Frame* fp) {
   fp->value = Type::Bool(Vector::IsType(fp->argv[0]));
 }
 
-/** * mu function (svref vector) => object **/
+/** * (svref vector) => object **/
 void VectorRef(Frame* fp) {
   auto vector = fp->argv[0];
   auto index = fp->argv[1];
@@ -63,20 +67,20 @@ void VectorRef(Frame* fp) {
       fp->value = Fixnum(Vector::Ref<uint8_t>(vector, index)).tag_;
       break;
     case Type::SYS_CLASS::CHAR:
-      fp->value = Char(Vector::Ref<char>(vector, index)).tag_;
+      fp->value = core::Char(Vector::Ref<char>(vector, index)).tag_;
       break;
     case Type::SYS_CLASS::FLOAT:
-      fp->value = Float(Vector::Ref<float>(vector, index)).tag_;
+      fp->value = core::Float(Vector::Ref<float>(vector, index)).tag_;
       break;
     case Type::SYS_CLASS::T:
-      fp->value = Vector::Ref<TagPtr>(vector, index);
+      fp->value = Vector::Ref<Type::TagPtr>(vector, index);
       break;
     default:
       assert(!"vector type botch");
   }
 }
 
-/** * mu function (svlength vector) => fixnum **/
+/** * (svlength vector) => fixnum **/
 void VectorLength(Frame* fp) {
   auto vector = fp->argv[0];
 
@@ -87,7 +91,7 @@ void VectorLength(Frame* fp) {
   fp->value = Fixnum(Vector::Length(vector)).tag_;
 }
 
-/** * mu function (svtype vector) => symbol **/
+/** * (svtype vector) => symbol **/
 void VectorType(Frame* fp) {
   if (!Vector::IsType(fp->argv[0]))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svtype)",
@@ -96,12 +100,12 @@ void VectorType(Frame* fp) {
   fp->value = Vector::VecType(fp->argv[0]);
 }
 
-/** * mu function (svmap function vector) => vector **/
+/** * (vector-map function vector) => vector **/
 void VectorMap(Frame* fp) {
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
-  if (!Function::IsType(func))
+  if (!core::Function::IsType(func))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svmap",
                      func);
 
@@ -112,12 +116,12 @@ void VectorMap(Frame* fp) {
   fp->value = Vector::Map(fp->env, func, vector);
 }
 
-/** * mu function (svmapc function vector) => vector **/
+/** * (vector-mapc function vector) => vector **/
 void VectorMapC(Frame* fp) {
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
-  if (!Function::IsType(func))
+  if (!core::Function::IsType(func))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svmapc",
                      func);
 
@@ -130,15 +134,15 @@ void VectorMapC(Frame* fp) {
 }
 
 /** * (vector type list) => vector **/
-void Vector(Frame* fp) {
+void VectorCons(Frame* fp) {
   auto type = fp->argv[0];
   auto list = fp->argv[1];
 
-  if (!Symbol::IsType(type))
+  if (!core::Symbol::IsType(type))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
                      type);
 
-  if (!Cons::IsList(list))
+  if (!core::Cons::IsList(list))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
                      list);
 

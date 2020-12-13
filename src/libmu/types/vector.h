@@ -26,6 +26,7 @@
 #include "libmu/types/fixnum.h"
 
 namespace libmu {
+namespace core {
 
 using heap::Heap;
 
@@ -163,6 +164,7 @@ class Vector : public Type {
 
 }; /* class Vector */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* LIBMU_TYPES_VECTOR_H_ */

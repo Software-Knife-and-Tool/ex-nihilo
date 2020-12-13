@@ -23,6 +23,7 @@
 #include "libmu/types/cons.h"
 
 namespace libmu {
+namespace core {
 
 /** * struct type class **/
 class Struct : public Type {
@@ -85,6 +86,7 @@ class Struct : public Type {
 
 }; /* class Struct */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_STRUCT_H_ */

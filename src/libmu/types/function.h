@@ -30,6 +30,7 @@
 #include "libmu/types/cons.h"
 
 namespace libmu {
+namespace core {
 
 class Env;
 using Frame = Env::Frame;
@@ -237,6 +238,7 @@ class Function : public Type {
 
 }; /* class Function */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_FUNCTION_H_ */

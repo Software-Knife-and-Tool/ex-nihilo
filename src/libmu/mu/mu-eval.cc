@@ -37,7 +37,9 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (eval object) => object **/
 void Eval(Frame* fp) {
@@ -45,25 +47,25 @@ void Eval(Frame* fp) {
 }
 
 /** * (.env) => vector **/
-void EnvView(Frame* fp) { fp->value = Env::EnvView(fp->env); }
+void EnvView(Frame* fp) { fp->value = core::Env::EnvView(fp->env); }
 
 /** * (apply func list) => object **/
 void Apply(Frame* fp) {
   auto func = fp->argv[0];
   auto args = fp->argv[1];
 
-  if (!(Function::IsType(func)))
+  if (!(core::Function::IsType(func)))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a function (.apply)", func);
 
-  if (!(Cons::IsList(args)))
+  if (!(core::Cons::IsList(args)))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a list (.apply)", args);
 
-  std::vector<TagPtr> argv;
-  Cons::ListToVec(args, argv);
+  std::vector<Type::TagPtr> argv;
+  core::Cons::ListToVec(args, argv);
 
-  fp->value = Function::Funcall(fp->env, func, argv);
+  fp->value = core::Function::Funcall(fp->env, func, argv);
 }
 
 } /* namespace mu */

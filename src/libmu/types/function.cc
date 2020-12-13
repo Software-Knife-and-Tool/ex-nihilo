@@ -30,6 +30,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 
 /** * garbage collection **/
 void Function::GcMark(Env* ev, TagPtr fn) {
@@ -137,4 +138,5 @@ TagPtr Function::Funcall(Env* env, TagPtr fn, const std::vector<TagPtr>& argv) {
   return fp.value;
 }
 
+} /* namespace core */
 } /* namespace libmu */

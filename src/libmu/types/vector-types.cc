@@ -28,6 +28,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 template <typename T, typename S>
@@ -205,4 +206,5 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
   }
 }
 
+} /* namespace core */
 } /* namespace libmu */

@@ -33,7 +33,7 @@
 namespace libmu {
 namespace heap {
 
-using SYS_CLASS = Type::SYS_CLASS;
+using SYS_CLASS = core::Type::SYS_CLASS;
 
 /** * find free object **/
 Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
@@ -86,8 +86,8 @@ void* Heap::Alloc(size_t nbytes, SYS_CLASS tag, const char* src) {
     nalloc_->at(static_cast<int>(tag))++;
 
     if (logging_) {
-      auto name = Symbol::name(Type::MapClassSymbol(tag));
-      printf("heap log: %s %s\n", String::StdStringOf(name).c_str(), src);
+      auto name = core::Symbol::name(core::Type::MapClassSymbol(tag));
+      printf("heap log: %s %s\n", core::String::StdStringOf(name).c_str(), src);
     }
 
     return reinterpret_cast<void*>(halloc + sizeof(HeapInfo));
@@ -129,8 +129,9 @@ size_t Heap::room(SYS_CLASS tag) {
 
 /** * heap object marked? **/
 bool Heap::IsGcMarked(TagPtr ptr) {
-  if ((Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
-      (Type::TypeOf(ptr) != SYS_CLASS::FLOAT) && !Type::IsImmediate(ptr)) {
+  if ((core::Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
+      (core::Type::TypeOf(ptr) != SYS_CLASS::FLOAT) &&
+      !core::Type::IsImmediate(ptr)) {
     auto hinfo = GetHeapInfo(ptr);
 
     return RefBits(*hinfo) == 0 ? false : true;
@@ -141,8 +142,9 @@ bool Heap::IsGcMarked(TagPtr ptr) {
 
 /** * mark heap object **/
 void Heap::GcMark(TagPtr ptr) {
-  if ((Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
-      (Type::TypeOf(ptr) != SYS_CLASS::FLOAT) && !Type::IsImmediate(ptr)) {
+  if ((core::Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
+      (core::Type::TypeOf(ptr) != SYS_CLASS::FLOAT) &&
+      !core::Type::IsImmediate(ptr)) {
     auto hinfo = GetHeapInfo(ptr);
 
     *hinfo = RefBits(*hinfo, 1);
