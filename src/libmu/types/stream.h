@@ -27,6 +27,7 @@
 #include "libmu/heap/heap.h"
 
 namespace libmu {
+namespace core {
 
 using platform::Platform;
 
@@ -111,6 +112,7 @@ class Stream : public Type {
 
 }; /* class Stream */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_STREAM_H_ */

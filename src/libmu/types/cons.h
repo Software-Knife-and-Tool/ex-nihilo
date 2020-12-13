@@ -21,8 +21,9 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
-using TagPtr = Type::TagPtr;
+using TagPtr = core::Type::TagPtr;
 
 /** * cons type class **/
 class Cons : public Type {
@@ -50,6 +51,7 @@ class Cons : public Type {
   static constexpr bool IsType(TagPtr ptr) { return TagOf(ptr) == TAG::CONS; }
   static constexpr bool IsList(TagPtr ptr) { return IsType(ptr) || Null(ptr); }
 
+  static void ListToVec(TagPtr, std::vector<TagPtr>&);
   static TagPtr List(Env*, const std::vector<TagPtr>&);
   static TagPtr ListDot(Env*, const std::vector<TagPtr>&);
 
@@ -57,12 +59,8 @@ class Cons : public Type {
   static TagPtr NthCdr(TagPtr, size_t);
   static size_t Length(Env*, TagPtr);
 
-  static void MapC(Env*, std::function<void(Env*, TagPtr)>, TagPtr);
   static void MapC(Env*, TagPtr, TagPtr);
-
-  static TagPtr MapCar(Env*, std::function<TagPtr(Env*, TagPtr)>, TagPtr);
   static TagPtr MapCar(Env*, TagPtr, TagPtr);
-
   static void MapL(Env*, TagPtr, TagPtr);
   static TagPtr MapList(Env*, TagPtr, TagPtr);
 
@@ -118,6 +116,7 @@ class Cons : public Type {
 
 }; /* class Cons */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_CONS_H_ */

@@ -19,8 +19,9 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
-using TagPtr = Type::TagPtr;
+using TagPtr = core::Type::TagPtr;
 
 /** * character type class **/
 class Char : public Type {
@@ -49,6 +50,7 @@ class Char : public Type {
 
 }; /* class Char */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_CHAR_H_ */

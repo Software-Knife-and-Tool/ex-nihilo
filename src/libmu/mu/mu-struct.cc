@@ -23,7 +23,10 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Struct = core::Struct;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * mu function (struct? obj) => bool **/
 void IsStruct(Frame* fp) {
@@ -35,11 +38,11 @@ void MakeStruct(Frame* fp) {
   auto name = fp->argv[0];
   auto values = fp->argv[1];
 
-  if (!Symbol::IsKeyword(name))
+  if (!core::Symbol::IsKeyword(name))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
                      name);
 
-  if (!Cons::IsList(values))
+  if (!core::Cons::IsList(values))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
                      values);
 

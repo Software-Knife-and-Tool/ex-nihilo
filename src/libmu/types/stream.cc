@@ -35,6 +35,7 @@
 #include "libmu/types/namespace.h"
 
 namespace libmu {
+namespace core {
 
 /** * function stream? **/
 bool Stream::IsFunction(TagPtr ptr) {
@@ -190,4 +191,5 @@ Stream::Stream(TagPtr fn) : Type() {
   tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);
 }
 
+} /* namespace core */
 } /* namespace libmu */

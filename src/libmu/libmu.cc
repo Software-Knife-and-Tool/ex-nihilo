@@ -38,21 +38,24 @@
 namespace libmu {
 namespace api {
 
+using Type = core::Type;
+using Env = core::Env;
+
 /** * constants interface **/
-void* t() { return (void*)libmu::Type::T; }
-void* nil() { return (void*)libmu::Type::NIL; }
+void* t() { return (void*)Type::T; }
+void* nil() { return (void*)Type::NIL; }
 const char* version() { return "0.0.21"; }
 
 /** * read_stdin interface **/
 void* read_stream(void* env, void* stream) {
-  return (void*)Type::ToAddress(
-      core::Read((Env*)env, Type::Entag(stream, Type::TAG::ADDRESS)));
+  return (void*)core::Type::ToAddress(
+      core::Read((Env*)env, core::Type::Entag(stream, Type::TAG::ADDRESS)));
 }
 
 /** * read interface **/
 void* read_cstr(void* env, const char* src) {
-  return (void*)libmu::Type::ToAddress(libmu::core::Read(
-      (libmu::Env*)env, libmu::Stream::MakeInputString((libmu::Env*)env, src)));
+  return (void*)Type::ToAddress(
+      core::Read((Env*)env, core::Stream::MakeInputString((Env*)env, src)));
 }
 
 /** * read interface **/
@@ -62,19 +65,17 @@ void* read_string(void* env, std::string src) {
 
 /** * princ/prin1 interface **/
 void print(void* env, void* ptr, void* stream, bool esc) {
-  core::Print((libmu::Env*)env,
-              libmu::Type::Entag(ptr, libmu::Type::TAG::ADDRESS),
-              libmu::Type::Entag(stream, libmu::Type::TAG::ADDRESS), esc);
+  core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS),
+              Type::Entag(stream, Type::TAG::ADDRESS), esc);
 }
 
 /** * print to a cstring **/
 const char* print_cstr(void* env, void* ptr, bool esc) {
-  auto stream = libmu::Stream::MakeOutputString((libmu::Env*)env, "");
+  auto stream = core::Stream::MakeOutputString((Env*)env, "");
 
-  core::Print((libmu::Env*)env,
-              libmu::Type::Entag(ptr, libmu::Type::TAG::ADDRESS), stream, esc);
+  core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS), stream, esc);
 
-  auto sp = libmu::Type::Untag<libmu::Stream::Layout>(stream);
+  auto sp = Type::Untag<core::Stream::Layout>(stream);
 
   auto cp = Platform::GetStdString(sp->stream);
   auto cstr = new char[strlen(cp.c_str()) + 1];
@@ -84,29 +85,29 @@ const char* print_cstr(void* env, void* ptr, bool esc) {
 
 /** * print end of line **/
 void terpri(void* env, void* stream) {
-  core::Terpri((libmu::Env*)env, Type::Entag(stream, Type::TAG::ADDRESS));
+  core::Terpri((Env*)env, Type::Entag(stream, Type::TAG::ADDRESS));
 }
 
 /** * catch library throws **/
 void withException(void* env, std::function<void(void*)> fn) {
   try {
     fn(env);
-  } catch (libmu::TagPtr exception) {
-    auto std_error = libmu::Symbol::value(((libmu::Env*)env)->standard_error_);
-    auto tag = libmu::Exception::tag(exception);
-    auto source = libmu::Exception::source(exception);
-    auto reason = libmu::Exception::reason(exception);
-    auto frame = libmu::Exception::frame(exception);
+  } catch (Type::TagPtr exception) {
+    auto std_error = core::Symbol::value(((Env*)env)->standard_error_);
+    auto tag = core::Exception::tag(exception);
+    auto source = core::Exception::source(exception);
+    auto reason = core::Exception::reason(exception);
+    auto frame = core::Exception::frame(exception);
 
-    core::PrintStdString((libmu::Env*)env, "exception: ", std_error, false);
-    core::Print((libmu::Env*)env, tag, std_error, false);
-    core::PrintStdString((libmu::Env*)env, " ", std_error, false);
-    core::Print((libmu::Env*)env, source, std_error, false);
-    core::PrintStdString((libmu::Env*)env, " ", std_error, false);
-    core::Print((libmu::Env*)env, reason, std_error, false);
-    core::PrintStdString((libmu::Env*)env, " on frame ", std_error, false);
-    core::Print((libmu::Env*)env, frame, std_error, false);
-    core::Terpri((libmu::Env*)env, std_error);
+    core::PrintStdString((Env*)env, "exception: ", std_error, false);
+    core::Print((Env*)env, tag, std_error, false);
+    core::PrintStdString((Env*)env, " ", std_error, false);
+    core::Print((Env*)env, source, std_error, false);
+    core::PrintStdString((Env*)env, " ", std_error, false);
+    core::Print((Env*)env, reason, std_error, false);
+    core::PrintStdString((Env*)env, " on frame ", std_error, false);
+    core::Print((Env*)env, frame, std_error, false);
+    core::Terpri((Env*)env, std_error);
   } catch (...) {
     printf("unexpected throw from library");
     exit(-1);
@@ -116,9 +117,8 @@ void withException(void* env, std::function<void(void*)> fn) {
 /** * eval **/
 void* eval(void* env, void* form) {
   return reinterpret_cast<void*>(core::Eval(
-      (libmu::Env*)env,
-      core::Compile((libmu::Env*)env,
-                    libmu::Type::Entag(form, libmu::Type::TAG::ADDRESS))));
+      (Env*)env,
+      core::Compile((Env*)env, Type::Entag(form, Type::TAG::ADDRESS))));
 }
 
 /** * env - allocate an environment **/

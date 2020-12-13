@@ -36,7 +36,10 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Stream = core::Stream;
+using Type = core::Type;
 
 /** * mu function (read stream) => object **/
 void Read(Frame* fp) {
@@ -58,11 +61,11 @@ void SetMacroChar(Frame* fp) {
   auto macro_char = fp->argv[0];
   auto reader = fp->argv[1];
 
-  if (!Char::IsType(macro_char))
+  if (!core::Char::IsType(macro_char))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "(set-macro-character)", macro_char);
 
-  if (!Function::IsType(reader))
+  if (!core::Function::IsType(reader))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "(set-macro-character)", reader);
 

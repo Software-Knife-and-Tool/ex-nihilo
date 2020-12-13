@@ -27,6 +27,7 @@
 #include "libmu/types/function.h"
 
 namespace libmu {
+namespace core {
 
 /** * macro class type **/
 class Macro : public Type {
@@ -89,6 +90,7 @@ class Macro : public Type {
   }
 }; /* class Macro */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_MACRO_H_ */

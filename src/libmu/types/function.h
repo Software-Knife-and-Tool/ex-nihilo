@@ -30,6 +30,7 @@
 #include "libmu/types/cons.h"
 
 namespace libmu {
+namespace core {
 
 class Env;
 using Frame = Env::Frame;
@@ -163,10 +164,9 @@ class Function : public Type {
   static void CallFrame(Env::Frame* fp) {
     fp->value = NIL;
     if (Null(core(fp->func))) {
-      Cons::MapC(
-          fp->env,
-          [fp](Env* env, TagPtr form) { fp->value = core::Eval(env, form); },
-          Cons::cdr(Function::form(fp->func)));
+      Cons::cons_iter<TagPtr> iter(Cons::cdr(Function::form(fp->func)));
+      for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+        fp->value = core::Eval(fp->env, it->car);
     } else
       Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
   }
@@ -238,6 +238,7 @@ class Function : public Type {
 
 }; /* class Function */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_FUNCTION_H_ */

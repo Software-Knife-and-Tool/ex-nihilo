@@ -25,6 +25,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 
 /** * garbage collection **/
 void Cons::GcMark(Env* env, TagPtr ptr) {
@@ -48,6 +49,15 @@ TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
   return Vector(env, view).tag_;
 }
 
+/** * listToVec list vector ref **/
+void Cons::ListToVec(TagPtr list, std::vector<TagPtr>& vec) {
+  assert(IsList(list));
+
+  cons_iter<TagPtr> iter(list);
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    vec.push_back(it->car);
+}
+
 /** * mapcar :func list **/
 TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
@@ -64,21 +74,6 @@ TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
   return Cons::List(env, vlist);
 }
 
-/** * mapcar implementation-function list **/
-TagPtr Cons::MapCar(Env* env, std::function<TagPtr(Env*, TagPtr)> fn,
-                    TagPtr list) {
-  assert(IsList(list));
-
-  if (Null(list)) return NIL;
-
-  std::vector<TagPtr> vlist;
-  cons_iter<TagPtr> iter(list);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    vlist.push_back(fn(env, it->car));
-
-  return Cons::List(env, vlist);
-}
-
 /** * mapc function list **/
 void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
   assert(Function::IsType(func));
@@ -89,17 +84,6 @@ void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
   cons_iter<TagPtr> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     (void)Function::Funcall(env, func, std::vector<TagPtr>{it->car});
-}
-
-/** * mapc kernel-function list **/
-void Cons::MapC(Env* env, std::function<void(Env*, TagPtr)> fn, TagPtr list) {
-  assert(IsList(list));
-
-  if (Null(list)) return;
-
-  cons_iter<TagPtr> iter(list);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)fn(env, it->car);
 }
 
 /** * maplist function list **/
@@ -293,4 +277,5 @@ Cons::Cons(TagPtr car, TagPtr cdr) : Type() {
   tag_ = Entag(reinterpret_cast<void*>(&cons_), TAG::CONS);
 }
 
+} /* namespace core */
 } /* namespace libmu */

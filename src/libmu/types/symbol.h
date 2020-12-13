@@ -23,6 +23,7 @@
 #include "libmu/types/string.h"
 
 namespace libmu {
+namespace core {
 
 class Env;
 
@@ -110,6 +111,7 @@ class Symbol : public Type {
   explicit Symbol(TagPtr, TagPtr);
 };
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_SYMBOL_H_ */

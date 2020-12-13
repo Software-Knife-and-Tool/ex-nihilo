@@ -27,6 +27,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 
 /** * view of fixnum object **/
 TagPtr Fixnum::ViewOf(Env* env, TagPtr fix) {
@@ -49,4 +50,5 @@ void Fixnum::Print(Env* env, TagPtr fixnum, TagPtr stream, bool) {
   core::PrintStdString(env, str.str(), stream, false);
 }
 
+} /* namespace core */
 } /* namespace libmu */

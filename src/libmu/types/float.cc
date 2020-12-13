@@ -28,6 +28,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 
 /** * view of float object **/
 TagPtr Float::ViewOf(Env* env, TagPtr flt) {
@@ -51,4 +52,5 @@ void Float::Print(Env* env, TagPtr lfloat, TagPtr stream, bool) {
   core::PrintStdString(env, str.str(), stream, false);
 }
 
+} /* namespace core */
 } /* namespace libmu */

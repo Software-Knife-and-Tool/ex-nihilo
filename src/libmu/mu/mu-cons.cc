@@ -26,7 +26,12 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Cons = core::Cons;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Function = core::Function;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (consp vector) => generalized bool **/
 void IsCons(Frame* fp) { fp->value = Type::Bool(Cons::IsType(fp->argv[0])); }

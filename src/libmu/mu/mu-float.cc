@@ -24,7 +24,10 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Float = core::Float;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (float? object) => bool **/
 void IsFloat(Frame* fp) { fp->value = Type::Bool(Float::IsType(fp->argv[0])); }

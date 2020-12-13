@@ -47,8 +47,7 @@ TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
   assert(Cons::IsList(args));
 
   std::vector<TagPtr> argv;
-  Cons::MapC(
-      env, [&argv](Env*, TagPtr form) { argv.push_back(form); }, args);
+  Cons::ListToVec(args, argv);
 
   return Function::Funcall(env, fn, argv);
 }
@@ -79,13 +78,14 @@ TagPtr Eval(Env* env, TagPtr form) {
             Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
                              "(eval)", fn);
           break;
-        case SYS_CLASS::FUNCTION: /* function object */
-          rval = Apply(
-              env, fn,
-              Cons::MapCar(
-                  env, [](Env* env, TagPtr form) { return Eval(env, form); },
-                  Cons::cdr(form)));
+        case SYS_CLASS::FUNCTION: { /* function object */
+          std::vector<TagPtr> vlist;
+          Cons::cons_iter<TagPtr> iter(Cons::cdr(form));
+          for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+            vlist.push_back({Eval(env, it->car)});
+          rval = Apply(env, fn, Cons::List(env, vlist));
           break;
+        }
         default:
           Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)",
                            fn);

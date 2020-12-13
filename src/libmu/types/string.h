@@ -26,6 +26,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 
 class Env;
 
@@ -76,6 +77,7 @@ class String : public Vector {
   explicit String(Env* env, std::string str) : Vector(env, str) {}
 };
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_STRING_H_ */

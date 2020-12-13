@@ -28,6 +28,7 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
+namespace core {
 
 /** * address class type **/
 class Address : public Type {
@@ -57,6 +58,7 @@ class Address : public Type {
 
 }; /* class Address */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_ADDRESS_H_ */

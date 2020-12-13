@@ -27,7 +27,12 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Namespace = core::Namespace;
+using String = core::String;
+using Symbol = core::Symbol;
+using Type = core::Type;
 
 /** * (namespacep object) => bool  **/
 void IsNamespace(Frame* fp) {
@@ -68,7 +73,7 @@ void MakeNamespace(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns", name);
 
   fp->value = Namespace(name, import).Evict(fp->env, "mu-namespace:make");
-  Env::AddNamespace(fp->env, fp->value);
+  core::Env::AddNamespace(fp->env, fp->value);
 }
 
 /** * (ns-symbols namespace) => list **/
@@ -79,15 +84,16 @@ void NamespaceSymbols(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-symbols",
                      ns);
 
-  std::vector<TagPtr> interns;
+  std::vector<Type::TagPtr> interns;
 
   for (auto map : Namespace::interns(ns)) interns.push_back(map.second);
 
-  std::vector<TagPtr> externs;
+  std::vector<Type::TagPtr> externs;
 
   for (auto map : Namespace::externs(ns)) externs.push_back(map.second);
 
-  fp->value = Cons(Cons::List(fp->env, externs), Cons::List(fp->env, interns))
+  fp->value = core::Cons(core::Cons::List(fp->env, externs),
+                         core::Cons::List(fp->env, interns))
                   .Evict(fp->env, "mu-namespace:symbols");
 }
 
@@ -136,9 +142,9 @@ void FindInNamespace(Frame* fp) {
                      name);
 
   if (Type::Eq(Symbol::Keyword("intern"), type)) {
-    fp->value = Namespace::FindInNsInterns(fp->env, ns, name);
+    fp->value = Namespace::FindInInterns(fp->env, ns, name);
   } else if (Type::Eq(Symbol::Keyword("extern"), type)) {
-    fp->value = Namespace::FindInNsExterns(fp->env, ns, name);
+    fp->value = Namespace::FindInExterns(fp->env, ns, name);
   } else
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
                      name);

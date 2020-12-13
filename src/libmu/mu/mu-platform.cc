@@ -36,7 +36,12 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Platform = core::Platform;
+using String = core::String;
+using Type = core::Type;
 
 /** *  (exit fixnum) never returns **/
 void Exit(Frame* fp) {

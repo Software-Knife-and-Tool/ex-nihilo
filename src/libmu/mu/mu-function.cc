@@ -30,7 +30,12 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Cons = core::Cons;
+using Exception = core::Exception;
+using Fixnum = core::Fixnum;
+using Frame = core::Env::Frame;
+using Function = core::Function;
+using Type = core::Type;
 
 /** * (function? object) => bool **/
 void IsFunction(Frame* fp) {
@@ -46,7 +51,8 @@ void Trampoline(Frame* fp) {
                      fp->value);
 
   do {
-    fp->value = Function::Funcall(fp->env, fp->value, std::vector<TagPtr>{});
+    fp->value =
+        Function::Funcall(fp->env, fp->value, std::vector<Type::TagPtr>{});
   } while (Function::IsType(fp->value));
 }
 
@@ -61,34 +67,24 @@ void Closure(Frame* fp) {
   if (!Type::Null(Function::env(fn))) {
     std::vector<Frame*> context{};
 
-    Cons::MapC(
-        fp->env,
-        [fp, &context](Env*, TagPtr fn) {
-          auto offset = 0;
-          auto lambda = Cons::car(Function::form(fn));
-          /* think: this all has to be wildly wrong */
-          auto rest = Function::arity(fn) < 0;
-          ;
-          size_t nargs = abs(Function::arity(fn)) + (rest ? 1 : 0);
-          auto args =
-              new TagPtr[nargs]; /* think: does this need to be freed? */
+    Cons::cons_iter<Type::TagPtr> iter(Function::env(fn));
+    for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+      auto fn = it->car;
+      auto offset = 0;
+      auto lambda = Cons::car(Function::form(fn));
+      size_t nargs = Function::arity(fn); /* think: rest args? */
+      auto args = new Type::TagPtr[nargs];
+      auto frame = fp->env->MapFrame(Function::frame_id(fn));
 
-          /* think: check this, seems odd */
-          Cons::MapC(
-              fp->env,
-              [fp, fn, &offset, &args](Env*, TagPtr) {
-                auto lfp = fp->env->MapFrame(Function::frame_id(fn));
-                auto value = lfp->argv[offset];
+      Cons::cons_iter<Type::TagPtr> iter(Cons::car(lambda));
+      for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+        args[offset] = frame->argv[offset];
+        offset++;
+      }
 
-                args[offset] = value;
-                offset++;
-              },
-              Cons::car(lambda));
-
-          context.push_back(
-              new Frame(fp->env, Function::frame_id(fn), fn, args, nargs));
-        },
-        Function::env(fn));
+      context.push_back(
+          new Frame(fp->env, Function::frame_id(fn), fn, args, nargs));
+    }
 
     Function::context(fn, context);
   }
@@ -114,7 +110,7 @@ void FrameRef(Frame* fp) {
   fp->value = lfp->argv[Fixnum::Uint64Of(offset)];
 }
 
-/** * (%letq frame-id offset value) => value **/
+/** * (letq frame-id offset value) => value **/
 void Letq(Frame* fp) {
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];

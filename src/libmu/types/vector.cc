@@ -29,6 +29,7 @@
 #include "libmu/types/stream.h"
 
 namespace libmu {
+namespace core {
 
 /** * view of vector object **/
 TagPtr Vector::ViewOf(Env* env, TagPtr vector) {
@@ -158,4 +159,5 @@ TagPtr Vector::Read(Env* env, TagPtr stream) {
   return ListToVector(env, vectype, Cons::Read(env, stream));
 }
 
+} /* namespace core */
 } /* namespace libmu */

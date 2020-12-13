@@ -38,7 +38,9 @@
 namespace libmu {
 namespace mu {
 
-using Frame = Env::Frame;
+using Exception = core::Exception;
+using Frame = core::Env::Frame;
+using Type = core::Type;
 
 /** * (print object stream) => object **/
 void PrintEscape(Frame* fp) {
@@ -46,7 +48,7 @@ void PrintEscape(Frame* fp) {
   auto stream = fp->argv[1];
   auto escape = fp->argv[2];
 
-  if (!Stream::IsStreamDesignator(stream))
+  if (!core::Stream::IsStreamDesignator(stream))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "print",
                      stream);
 
@@ -59,7 +61,7 @@ void PrintEscape(Frame* fp) {
 void Terpri(Frame* fp) {
   auto stream = fp->argv[0];
 
-  if (!Stream::IsStreamDesignator(stream))
+  if (!core::Stream::IsStreamDesignator(stream))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "terpri",
                      stream);
 

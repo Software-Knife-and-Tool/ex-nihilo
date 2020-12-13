@@ -20,6 +20,7 @@
 #include "libmu/type.h"
 
 namespace libmu {
+namespace core {
 
 /** * float type class **/
 class Float : public Type {
@@ -54,6 +55,7 @@ class Float : public Type {
   }
 };
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_FLOAT_H_ */

@@ -30,6 +30,7 @@
 #include "libmu/types/string.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 /** * parse symbol namespace designator **/
@@ -159,7 +160,7 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
         rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ":"));
       else {
         auto name = String(env, string).tag_;
-        rval = Namespace::FindInNsInterns(env, env->namespace_, name);
+        rval = Namespace::FindInInterns(env, env->namespace_, name);
         if (Null(rval)) rval = Namespace::Intern(env, env->namespace_, name);
       }
     } else if (Null(ext_ns) && Null(int_ns)) {
@@ -199,4 +200,5 @@ Symbol::Symbol(TagPtr ns, TagPtr name) {
   tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
 }
 
+} /* namespace core */
 } /* namespace libmu */

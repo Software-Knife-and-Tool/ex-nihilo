@@ -24,6 +24,7 @@
 #include "libmu/types/cons.h"
 
 namespace libmu {
+namespace core {
 
 /** * exception type class **/
 class Exception : public Type {
@@ -120,6 +121,7 @@ class Exception : public Type {
   }
 };
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPES_EXCEPTION_H_ */

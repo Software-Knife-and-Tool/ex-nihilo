@@ -68,7 +68,7 @@
 
 ;;; lexical bindings
 ;;; think: this requires mutable lexicals
-(:defsym mu.recur (:macro (fn lambda :rest body)
+(:defsym recur (:macro (fn lambda :rest body)
   (if (symbolp fn)
     (if (listp lambda)
       (let ((g (gensym)))
@@ -85,7 +85,7 @@
   (list* 'let
     (mapcar
      (:lambda (phrase)
-        (list (car phrase) (list* 'mu.recur phrase)))
+        (list (car phrase) (list* 'recur phrase)))
       bindl)
     body)))
 
@@ -94,7 +94,7 @@
   (list* 'let*
     (mapcar
      (:lambda (phrase)
-        (list (car phrase) (list* 'mu.recur phrase)))
+        (list (car phrase) (list* 'recur phrase)))
       bindings)
     body)))
 
@@ -103,8 +103,8 @@
    (letf ((bindfn (bindings body)
            (if (cdr bindings)
              (list 'let (list (car bindings)) (bindfn (cdr bindings) body))
-             (list* 'let (list (car bindings)) body)))))
-     (bindfn bindings body)))
+             (list* 'let (list (car bindings)) body))))
+     (bindfn bindings body))))
 
 ;;; and/or
 (:defsym and (:macro (:rest forms)

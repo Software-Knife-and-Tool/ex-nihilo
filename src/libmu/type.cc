@@ -35,6 +35,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
@@ -55,7 +56,7 @@ static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("t"), SYS_CLASS::T},
     {Symbol::Keyword("vector"), SYS_CLASS::VECTOR}};
 
-} /* namespace */
+} /* anonymous namespace */
 
 /** * is type a class symbol? **/
 bool Type::IsClassSymbol(TagPtr type_sym) {
@@ -126,4 +127,5 @@ SYS_CLASS Type::TypeOf(TagPtr ptr) {
   return el->second;
 }
 
+} /* namespace core */
 } /* namespace libmu */

@@ -24,6 +24,7 @@
 #include <vector>
 
 namespace libmu {
+namespace core {
 
 class Env;
 
@@ -175,6 +176,7 @@ class Type {
 
 }; /* class Type */
 
+} /* namespace core */
 } /* namespace libmu */
 
 #endif /* _LIBMU_TYPE_H_ */

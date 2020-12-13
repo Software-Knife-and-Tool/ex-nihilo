@@ -8,7 +8,7 @@
 
 /********
  **
- **  string.cc: library string object
+ **  string.cc: library string type
  **
  **/
 #include "libmu/types/string.h"
@@ -25,6 +25,7 @@
 #include "libmu/types/vector.h"
 
 namespace libmu {
+namespace core {
 
 /** * view of string object **/
 TagPtr String::ViewOf(Env* env, TagPtr string) {
@@ -83,4 +84,5 @@ TagPtr String::Read(Env* env, TagPtr stream) {
   return String(env, str).tag_;
 }
 
+} /* namespace core */
 } /* namespace libmu */

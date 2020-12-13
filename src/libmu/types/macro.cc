@@ -32,6 +32,7 @@
 #include "libmu/types/symbol.h"
 
 namespace libmu {
+namespace core {
 namespace {
 
 TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
@@ -48,9 +49,7 @@ TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
   if (Type::Null(macfn)) return form;
 
   std::vector<TagPtr> argv;
-  Cons::MapC(
-      env, [&argv](Env*, Type::TagPtr form) { argv.push_back(form); },
-      Cons::cdr(form));
+  Cons::ListToVec(Cons::cdr(form), argv);
 
   expandedf = true;
 
@@ -101,11 +100,11 @@ TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
   bool expandedf;
   auto expanded = form;
 
-  do
-    expanded = MacroExpand1(env, expanded, expandedf);
+  do expanded = MacroExpand1(env, expanded, expandedf);
   while (expandedf);
 
   return expanded;
 }
 
+} /* namespace core */
 } /* namespace libmu */

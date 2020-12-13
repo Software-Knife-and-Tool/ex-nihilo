@@ -25,6 +25,7 @@
 #include "libmu/types/namespace.h"
 
 namespace libmu {
+namespace core {
 
 using TagPtr = Type::TagPtr;
 
@@ -105,4 +106,5 @@ void Exception::Raise(Env* env, EXCEPT_CLASS ctype, const std::string& reason,
       .Evict(env, "exception:reason");
 }
 
+} /* namespace core */
 } /* namespace libmu */
