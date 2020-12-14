@@ -140,14 +140,14 @@
         (and forms (clauses forms)))))
 
 ;;; foldl/foldr
-(:defsym mu.foldl (:lambda (fold-fn fold-init fold-list)
+(:defsym foldl (:lambda (fold-fn fold-init fold-list)
   (letf ((fold (acc listf)
            (if (null listf)
              acc
              (fold (fold-fn acc (car listf)) (cdr listf)))))
     (fold fold-init fold-list))))
 
-(:defsym mu.foldr (:lambda (fold-fn fold-init fold-list)
+(:defsym foldr (:lambda (fold-fn fold-init fold-list)
    (letf ((fold (listf)
             (if (null listf)
               fold-init
@@ -197,7 +197,7 @@
 
 ;;; append
 (:defsym append (:lambda (:rest lists)
-  (mu.foldr (:lambda (el acc)
+  (foldr (:lambda (el acc)
            (if (listp el)
                (mu.foldr (:lambda (el acc) (cons el acc)) acc el)
              el))
