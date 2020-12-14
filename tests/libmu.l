@@ -52,6 +52,7 @@
 (functionp mu::return)
 (functionp mu::vector)
 (functionp :t)
+(functionp accept-socket-stream)
 (functionp acons)
 (functionp apply)
 (functionp asin)
