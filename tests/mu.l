@@ -23,3 +23,8 @@
 (functionp list)
 (functionp list*)
 (functionp listp)
+(functionp string)
+(functionp string=)
+(functionp stringp)
+(functionp vector-to-list)
+(functionp accept-socket-stream)
