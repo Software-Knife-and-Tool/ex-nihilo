@@ -2,6 +2,8 @@
 ;;; core forms
 ;;;
 
+(:defsym identity (:lambda (a) a))
+
 ;;; defun/defconstant/defmacro/lambda/letrec (now with added recursion)
 (:defsym defun (:macro (fn lambda :rest body)
   (unless (symbolp fn) (error "is not a symbol (defun)" fn))
@@ -72,7 +74,7 @@
                  (eq (mu::vector-length x) (mu::vector-length y))
                  (eql (vector-to-list x) (vector-to-list y))))
            ((consp x)
-            (and (eq (list-length x) (list-length y))
+            (and (eq (length x) (length y))
                  (eql (car x) (car y))
                  (eql (cdr x) (cdr y))))
            (:t :nil)))))
@@ -121,7 +123,7 @@
     (mu::vector-mapc
      (:lambda (el) (:letq lst (cons el lst)))
      vector)
-    (mu::foldl (:lambda (x r) (cons r x)) () lst)))
+    (foldl (:lambda (x r) (cons r x)) () lst)))
 
 ;;; assq/pairlis/acons
 (defun assq (item alist)
@@ -135,7 +137,7 @@
 (defun pairlis (keys data)
   (unless (consp keys) (raise "is not a proper list (pairlis)" keys))
   (unless (consp data) (raise "is not a proper list (pairlis)" data))
-  (unless (eq (list-length keys) (list-length data))
+  (unless (eq (length keys) (length data))
     (raise "unequal lengths (pairlis)" :nil))
   (letf ((zip (l1 l2)
               (if (or (null l1) (null l2))
@@ -207,9 +209,9 @@
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
                 lists))))
-       (let ((mapc (:lambda (rfn cdr-list)
+       (let ((mc (:lambda (rfn cdr-list)
                (mu::apply fn (map-cars cdr-list)))))
-         (mapc mapc (map-cdrs lists)))))
+         (mc mc (map-cdrs lists)))))
     (car lists))
 
 ;;; maplist
@@ -228,12 +230,12 @@
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
                 lists))))
-      (let ((mapc (:lambda (rfn cdr-list)
+      (let ((mc (:lambda (rfn cdr-list)
               (let ((argl (map-cars cdr-list)))
                 (if (null argl)
                   :nil               
                   (cons (fn argl) (rfn rfn (mu::mapcar cdr cdr-list))))))))
-         (mapc mapc (map-cdrs lists))))))
+         (mc mc (map-cdrs lists))))))
 
 ;;; check-type form type string
 (defmacro check-type (form type reason)
@@ -272,7 +274,7 @@
                    (if (eq fix 0)
                        "0"
                      (progn (radixf fix)
-                            (get-output-string-stream out))))))))
+                            (get-output-stream-string out))))))))
 
     (letf ((loop (args)
                    (let ((ch (read-char fmt)))
@@ -280,7 +282,7 @@
                       ((null ch)
                        (if stream
                            dest
-                         (get-output-string-stream dest)))
+                         (get-output-stream-string dest)))
                       ((eq ch #\~)
                        (let ((dir (read-char fmt)))
                          (cond
@@ -308,7 +310,7 @@
 
 ;;; room
 (defun room (:rest args)
-  (unless (fixnum< (list-length args) 2) (raise "one optional argument (room)" args))
+  (unless (fixnum< (length args) 2) (raise "one optional argument (room)" args))
   (let* ((opt (car args))
          (type-info (heap-info :t))
          (size (mu::vector-ref type-info 0))
@@ -388,10 +390,10 @@
   (let* ((slot-def-alist
           ;; parse slot definitions and make an alist from them
           ;; (slot-name init-value type)
-          (mu::foldl
+          (foldl
            (:lambda (acc def)
               (unless (listp def) (raise "slot definition is not a list (defstruct)" def))
-              (unless (eq (list-length def) 3) (raise "malformed slot definition (defstruct)" def))
+              (unless (eq (length def) 3) (raise "malformed slot definition (defstruct)" def))
               (unless (symbolp (nth 0 def)) (raise "slot name is not a symbol (defstruct)" (nth 0 def)))
               (unless (keywordp (nth 2 def)) (raise "slot type is not a keyword (defstruct)" (nth 2 def)))
               (acons (nth 0 def) (cdr def) acc))
@@ -399,47 +401,47 @@
             struct-slot-defs))
 
          ;; struct constructor function definition
-         ;; (:defcon make-{struct-name} (struct :{struct-name} (slot-values values-list)))
+         ;; (:defsym make-{struct-name} (struct :{struct-name} (slot-values values-list)))
          (constructor
            (let ((slot-values #'(:lambda (values) ;; function that returns a slot value alist
                    ;; values '(slot-name slot-value ...)
                    ;; if slot-name is in the values list, bind it to eval'd slot-value
                    ;; if not, bind it to eval'd init value from slot-def-alist
-                   (when (oddp (list-length values))
+                   (when (logand (length values) 1)
                      (raise "ill-formed struct initializer (defstruct)" values))
                    (let ((values-alist
-                           (mu::foldl
+                           (foldl
                              (:lambda (acc acons) (if (null acons) acc (cons acons acc)))
                              ()
                              (mu::maplist
                               (:lambda (cdr)
-                                (when (evenp (list-length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
+                                (when (evenp (length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
                               values))))
                      (mu::mapcar
                       (:lambda (def)
                         (let ((value (assq (car def) values-alist)))
                           (cons (car def) (eval (if (null value) (nth 0 (cdr def)) value)))))
                       slot-def-alist)))))
-                (list :defcon (read (open-input-string (fmt :nil "make-~A" (symbol-name struct-name))))
+                (list :defsym (read (open-input-string (fmt :nil "make-~A" (symbol-name struct-name))))
                   (list :macro (list :rest 'inits)
                     (list 'struct (keyword (symbol-name struct-name)) (list slot-values 'inits))))))
 
          ;; struct predicate function definition
-         ;; (:defcon {struct-name}p (closure (:lambda (struct) (eq (struct-type struct) :{struct-name}))))
+         ;; (:defsym {struct-name}p (closure (:lambda (struct) (eq (struct-type struct) :{struct-name}))))
          (predicate
-          (list :defcon (read (open-input-string (fmt :nil "~Ap" struct-name)))
+          (list :defsym (read (open-input-string (fmt :nil "~Ap" struct-name)))
                 (list 'closure (list :lambda
                       (list 'st)
                       (list 'eq (list 'struct-type 'st)
                             (list 'keyword (list symbol-name struct-name)))))))
 
          ;; list of reader function definitions
-         ;; (:defcon {struct-name}-{slot-name}
+         ;; (:defsym {struct-name}-{slot-name}
          ;;   (closure (:lambda (struct) (assq {struct-name} (struct-values struct)) ...)))
          (readers
            (mu::mapcar
              (:lambda (def)      
-               (list :defcon
+               (list :defsym
                  (read (open-input-string (fmt :nil "~A-~A" struct-name (car def))))
                  (list 'closure (list :lambda
                    (list 'st)
@@ -459,8 +461,8 @@
            (body-vstream (open-output-string ""))
            (body-string
             (progn (mu::print body body-stream :t)
-                   (mu::print (vector-to-list (get-output-string-stream body-stream)) body-vstream :t)
-                   (read (open-input-string (get-output-string-stream body-vstream))))))
+                   (mu::print (vector-to-list (get-output-stream-string body-stream)) body-vstream :t)
+                   (read (open-input-string (get-output-stream-string body-vstream))))))
       (list 'let (list (list '%namespace% ns))
             (list 'mu::mapc 'eval
                   (list 'read (list 'open-input-string

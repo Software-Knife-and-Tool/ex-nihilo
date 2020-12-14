@@ -14,10 +14,10 @@
 (functionp sequencep),:t
 (functionp string=),:t
 (functionp string),:t
-(mapc (:lambda (a b) (princ (cons a b) :nil)) '(1 2 3) '(a b c)),(1 . a)(2 . b)(3 . c)(1 2 3)
-(mapcar car '((1 a) (2 b) (3 c))),((1 a) (2 b) (3 c))
-(mapl (:lambda (el) (princ el :nil)) '((1 2 3 4) (1 2) (1 2 3))),((1 2 3 4) (1 2) (1 2 3))((1 2) (1 2 3))((1 2 3))((1 2 3 4) (1 2) (1 2 3))
-(maplist append '(1 2 3 4) '(1 2) '(1 2 3)),((1 2 3 4 1 2 1 2 3) (2 3 4 2 2 3))
+(mu:mapc (:lambda (a b) (print (cons a b) :nil :nil)) '(1 2 3) '(a b c)),(1 . a)(2 . b)(3 . c)(1 2 3)
+(mu:mapcar car '((1 a) (2 b) (3 c))),((1 a) (2 b) (3 c))
+(mu:mapl (:lambda (el) (print el :nil :nil)) '((1 2 3 4) (1 2) (1 2 3))),((1 2 3 4) (1 2) (1 2 3))((1 2) (1 2 3))((1 2 3))((1 2 3 4) (1 2) (1 2 3))
+(mu:maplist append '(1 2 3 4) '(1 2) '(1 2 3)),((1 2 3 4 1 2 1 2 3) (2 3 4 2 2 3))
 (defstruct test (a 0 :fixnum) (b 1 :fixnum)),test
 (string= "123" "123"),:t
 (string= "123" "abc"),:nil
@@ -27,5 +27,5 @@
 (null (macro-function 'letrec)),:nil
 (null (macro-function 'time)),:nil
 (null (macro-function 'typecase)),:nil
-(nul (macro-function 'with-ns)),:nil
+(null (macro-function 'with-ns)),:nil
 (while :nil :t),:nil
