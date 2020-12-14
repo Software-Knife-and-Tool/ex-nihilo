@@ -27,13 +27,13 @@ namespace core {
 TagPtr Compile(Env*, TagPtr);
 bool IsSpecOp(Env*, TagPtr);
 
-constexpr TagPtr lexicals(TagPtr lambda) {
+constexpr auto lexicals(TagPtr lambda) {
   assert(Cons::IsList(lambda));
 
   return Cons::car(lambda);
 }
 
-constexpr TagPtr restsym(TagPtr lambda) {
+constexpr auto restsym(TagPtr lambda) {
   assert(Cons::IsList(lambda));
 
   return Cons::cdr(lambda);

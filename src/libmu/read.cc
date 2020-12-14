@@ -43,7 +43,7 @@ namespace core {
 namespace {
 
 /** * read #<:type fixnum attr-list> syntax **/
-TagPtr ReadBroketSyntax(Env* env, TagPtr stream) {
+auto ReadBroketSyntax(Env* env, TagPtr stream) {
   assert(Stream::IsType(stream));
 
   auto type = ReadForm(env, stream);
@@ -87,7 +87,7 @@ TagPtr ReadBroketSyntax(Env* env, TagPtr stream) {
 }
 
 /** * read atom **/
-std::string ParseAtom(Env* env, TagPtr stream) {
+auto Atom(Env* env, TagPtr stream) {
   assert(Stream::IsType(stream));
 
   std::string string;
@@ -114,10 +114,10 @@ std::string ParseAtom(Env* env, TagPtr stream) {
 }
 
 /** * read radixed fixnum from stream **/
-TagPtr RadixFixnum(Env* env, int radix, TagPtr stream) {
+auto RadixFixnum(Env* env, int radix, TagPtr stream) {
   assert(Stream::IsType(stream));
 
-  std::string str = ParseAtom(env, stream);
+  std::string str = Atom(env, stream);
   auto number = Type::NIL;
 
   try {
@@ -145,7 +145,7 @@ TagPtr RadixFixnum(Env* env, int radix, TagPtr stream) {
 }
 
 /** * parse a numeric std::string **/
-TagPtr ParseNumber(Env* env, const std::string& str) {
+auto Number(Env* env, const std::string& str) {
   auto number = Type::NIL;
 
   try {
@@ -268,8 +268,8 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
             break;
           }
           case SYNTAX_CHAR::COLON: { /* uninterned symbol */
-            std::string atom = ParseAtom(env, stream);
-            rval = ParseNumber(env, atom);
+            std::string atom = Atom(env, stream);
+            rval = Number(env, atom);
             if (!Type::Null(rval))
               Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
                                "uninterned symbol", String(env, atom).tag_);
@@ -308,8 +308,8 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
       break;
     default: { /* unadorned atom */
       Stream::UnReadByte(ch, stream);
-      auto atom = ParseAtom(env, stream);
-      rval = ParseNumber(env, atom);
+      auto atom = Atom(env, stream);
+      rval = Number(env, atom);
       if (Type::Null(rval)) rval = Symbol::ParseSymbol(env, atom, true);
       break;
     }

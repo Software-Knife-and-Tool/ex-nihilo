@@ -85,8 +85,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"functionp", mu::IsFunction, 1},
     {"gc", mu::Gc, 1},
     {"get-output-stream-string", mu::GetStringStream, 1},
-    {"heap-info", mu::HeapInfo, 1},
-    {"heap-log", mu::HeapLog, 1},
     {"in-ns", mu::SetNamespace, 1},
     {"intern", mu::InternNamespace, 4},
     {"invoke", mu::Invoke, 2},
@@ -102,7 +100,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"make-symbol", mu::UninternedSymbol, 1},
     {"namespacep", mu::IsNamespace, 1},
     {"ns", mu::MakeNamespace, 2},
-    {"ns-current", mu::GetNamespace, 0},
     {"ns-import", mu::ImportOfNamespace, 1},
     {"ns-name", mu::NameOfNamespace, 1},
     {"ns-symbols", mu::NamespaceSymbols, 1},
@@ -137,7 +134,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"system", mu::System, 1},
     {"tan", mu::Tangent, 1},
     {"terpri", mu::Terpri, 1},
-    {"trampoline", mu::Trampoline, 1},
     {"truncate", mu::Truncate, 2},
     {"type-of", mu::TypeOf, 1},
     {"unread-char", mu::UnReadChar, 2},
@@ -152,6 +148,8 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"apply", mu::Apply, 2},
     {"block", mu::Block, 2},
     {"env", mu::EnvView, 0},
+    {"heap-info", mu::HeapInfo, 1},
+    {"heap-log", mu::HeapLog, 1},
     {"frame-ref", mu::FrameRef, 2},
     {"length", mu::ListLength, 1},
     {"letq", mu::Letq, 3},
@@ -170,7 +168,7 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"vector-type", mu::VectorType, 1}};
 
 /** * make vector of frame **/
-TagPtr FrameView(Env* env, Frame* fp) {
+auto FrameView(Env* env, Frame* fp) {
   auto args = std::vector<TagPtr>();
 
   for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
@@ -183,7 +181,8 @@ TagPtr FrameView(Env* env, Frame* fp) {
   return Vector(env, frame).tag_;
 }
 
-TagPtr EnvStack(Env* env) {
+/** * make vector of env stack **/
+auto EnvStack(Env* env) {
   std::vector<TagPtr> stack;
 
   for (auto fp : env->frames_) {
@@ -205,7 +204,8 @@ TagPtr EnvStack(Env* env) {
   return Cons::List(env, stack);
 }
 
-TagPtr SystemTime(Env* env) {
+/** * system time **/
+auto SystemTime(Env* env) {
   unsigned long ts[2];
 
   Platform::SystemTime(ts);
@@ -214,7 +214,8 @@ TagPtr SystemTime(Env* env) {
       env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
 }
 
-TagPtr RunTime(Env* env) {
+/** * run time **/
+auto RunTime(Env* env) {
   unsigned long ts[2];
 
   Platform::ProcessTime(ts);
@@ -223,7 +224,8 @@ TagPtr RunTime(Env* env) {
       env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
 }
 
-TagPtr Namespaces(Env* env) {
+/** * make list of namespaces **/
+auto Namespaces(Env* env) {
   std::vector<TagPtr> nslist;
 
   for (auto ns : env->namespaces_) nslist.push_back(ns.second);
@@ -234,7 +236,7 @@ TagPtr Namespaces(Env* env) {
 } /* anonymous namespace */
 
 /** * garbage collection **/
-int Env::Gc(Env* env) {
+size_t Env::Gc(Env* env) {
   env->heap_->ClearRefBits();
 
   for (auto ns : env->namespaces_) GcMark(env, ns.second);

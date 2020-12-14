@@ -37,7 +37,7 @@ class Address : public Type {
     return TagOf(ptr) == TAG::ADDRESS;
   }
 
-  static TagPtr ViewOf(Env* env, TagPtr addr) {
+  static auto ViewOf(Env* env, TagPtr addr) {
     assert(IsType(addr));
 
     auto view = std::vector<TagPtr>{

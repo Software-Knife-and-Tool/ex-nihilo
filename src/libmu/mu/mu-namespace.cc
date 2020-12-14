@@ -108,9 +108,6 @@ void SetNamespace(Frame* fp) {
   fp->value = ns;
 }
 
-/** * (ns-current ns) => ns **/
-void GetNamespace(Frame* fp) { fp->value = fp->env->namespace_; }
-
 /** * (find-symbol ns symbol) => symbol **/
 void FindSymbolNamespace(Frame* fp) {
   auto ns = fp->argv[0];
