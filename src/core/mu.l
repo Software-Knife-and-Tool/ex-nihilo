@@ -154,47 +154,6 @@
               (fold-fn (car listf) (fold (cdr listf))))))
      (fold fold-list))))
 
-;;; string accessor
-(:defsym schar (:lambda (string index)
-  (vector-ref string index)))
-
-;;; stringp - string predicate
-(:defsym stringp (:lambda (object)
-  (and (vectorp object) (eq (vector-type object) :char))))
-
-;;; string - string coercion
-(:defsym string (:lambda (object)
-  (cond
-   ((stringp object) object)
-   ; ((charp object) (fmt :nil "~A" object))
-   ((symbolp object) (symbol-name object))
-   (:t (raise "illegal conversion (string)" object)))))
-
-;;; string= - string comparison
-(:defsym string= (:lambda (str1 str2)
-  (unless (stringp str1) (raise "is not a string (string=)" str1))
-  (unless (stringp str2) (raise "is not a string (string=)" str2))
-  (when (eq (vector-length str1) (vector-length str2))
-    (block :nil
-      (let ((nth 0)
-            (len (vector-length str1)))
-        (letf ((inc ()
-           (cond
-            ((eq nth len) :t)
-            ((eq (vector-ref str1 nth) (vector-ref str2 nth))
-             (:letq nth (fixnum+ 1 nth))
-             inc)
-            (:t :nil))))
-              (trampoline inc)))))))
-
-;;; vector-to-list - make a list from vector
-(:defsym vector-to-list (:lambda (vector)
-  (let ((lst :nil))
-    (vector-mapc
-     (:lambda (el) (:letq lst (cons el lst)))
-     vector)
-    (foldl (:lambda (x r) (cons r x)) () lst))))
-
 ;;; append
 (:defsym append (:lambda (:rest lists)
   (mu.foldr (:lambda (el acc)

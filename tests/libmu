@@ -129,7 +129,7 @@
 (functionp mapl)),:t
 (functionp maplist)),:t
 (functionp mu::apply)),:t
-(functionp namespacep),:t
+(functionp namespacep)),:t
 (functionp ns),:t
 (functionp ns-import),:t
 (functionp ns-name),:t
