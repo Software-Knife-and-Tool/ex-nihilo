@@ -1,2 +1,2 @@
-# ex-nihilo
+# gyre
 canon mu redesign
