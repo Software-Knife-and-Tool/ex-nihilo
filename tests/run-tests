@@ -2,11 +2,14 @@
 EXEC=../build/mu-exec
 TMP=/var/tmp
 
+args=("$@")
+opts=("${args[@]:1}")
+
 function run () {
     echo "$2" > $TMP/expect.$$
 
-    $EXEC $3 -e "$1" > $TMP/result.$$ 2>&1
-
+    $EXEC ${opts[@]} -e "$1" > $TMP/result.$$ 2>&1
+    
     if [ $? -eq 0 ]
     then
 	echo -n $1 "," $2 ">" `cat $TMP/result.$$` "-- "

@@ -118,7 +118,7 @@ void Block(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a symbol (.block)", tag);
 
-  if (!Function::IsType(fn))
+  if (!core::IsSpecOp(fp->env, fn) && !Function::IsType(fn))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a function (.block)", fn);
 
