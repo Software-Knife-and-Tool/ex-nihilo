@@ -158,7 +158,7 @@
 (:defsym append (:lambda (:rest lists)
   (foldr (:lambda (el acc)
            (if (listp el)
-               (mu.foldr (:lambda (el acc) (cons el acc)) acc el)
+               (foldr (:lambda (el acc) (cons el acc)) acc el)
              el))
          ()
          lists)))
