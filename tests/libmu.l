@@ -117,7 +117,6 @@
 (functionp mu::apply)
 (functionp namespacep)
 (functionp ns)
-(functionp ns-current)
 (functionp ns-import)
 (functionp ns-name)
 (functionp ns-symbols)

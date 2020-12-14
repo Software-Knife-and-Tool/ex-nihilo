@@ -45,7 +45,7 @@ static auto VMap(Env* env, TagPtr func, TagPtr vector) {
 }
 
 template <typename T, typename S>
-static void VMapC(Env* env, TagPtr func, TagPtr vector) {
+static auto VMapC(Env* env, TagPtr func, TagPtr vector) {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
@@ -55,7 +55,7 @@ static void VMapC(Env* env, TagPtr func, TagPtr vector) {
 }
 
 template <typename T, typename S>
-static TagPtr VList(Env* env, std::function<bool(TagPtr)> isType, TagPtr list) {
+static auto VList(Env* env, std::function<bool(TagPtr)> isType, TagPtr list) {
   std::vector<S> vec;
 
   Cons::cons_iter<TagPtr> iter(list);

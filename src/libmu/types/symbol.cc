@@ -34,8 +34,7 @@ namespace core {
 namespace {
 
 /** * parse symbol namespace designator **/
-TagPtr NamespaceOf(Env* env, const std::string& symbol,
-                   const std::string& sep) {
+auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep) {
   auto cpos = symbol.find(sep);
   TagPtr ns;
 
@@ -54,7 +53,7 @@ TagPtr NamespaceOf(Env* env, const std::string& symbol,
 }
 
 /** * parse symbol name string **/
-TagPtr NameOf(Env* env, const std::string& symbol, const std::string& sep) {
+auto NameOf(Env* env, const std::string& symbol, const std::string& sep) {
   auto cpos = symbol.find(sep);
 
   return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + sep.length())

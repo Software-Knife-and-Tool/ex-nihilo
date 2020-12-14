@@ -37,7 +37,7 @@ using SYS_CLASS = core::Type::SYS_CLASS;
 
 /** * find free object **/
 Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
-  if (nfree_->at(static_cast<int>(tag)) != 0) {
+  if (nfree_->at(static_cast<size_t>(tag)) != 0) {
     HeapInfo hinfo;
 
     if (tag == SYS_CLASS::CONS && conses_ != nullptr) {
@@ -47,7 +47,7 @@ Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
       *conses_ = RefBits(*conses_, 1);
       conses_ = hi[1];
 
-      nfree_->at(static_cast<int>(tag))--;
+      nfree_->at(static_cast<size_t>(tag))--;
       return cp;
     }
 
@@ -59,7 +59,7 @@ Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
       if (tag == SysClass(hinfo) && Size(hinfo) >= (nbytes + 8) &&
           RefBits(hinfo) == 0) {
         *reinterpret_cast<HeapInfo*>(hp) = RefBits(hinfo, 1);
-        nfree_->at(static_cast<int>(tag))--;
+        nfree_->at(static_cast<size_t>(tag))--;
         return reinterpret_cast<HeapInfo*>(hp);
       }
     }
@@ -83,7 +83,7 @@ void* Heap::Alloc(size_t nbytes, SYS_CLASS tag, const char* src) {
     *reinterpret_cast<HeapInfo*>(halloc) = MakeHeapInfo(nalloc, tag);
 
     nobjects_++;
-    nalloc_->at(static_cast<int>(tag))++;
+    nalloc_->at(static_cast<size_t>(tag))++;
 
     if (logging_) {
       auto name = core::Symbol::name(core::Type::MapClassSymbol(tag));
@@ -180,7 +180,7 @@ size_t Heap::Gc() {
        hp += Size(*reinterpret_cast<HeapInfo*>(hp))) {
     hinfo = *reinterpret_cast<HeapInfo*>(hp);
     if (RefBits(hinfo) == 0) {
-      nfree_->at(static_cast<int>(SysClass(hinfo)))++;
+      nfree_->at(static_cast<size_t>(SysClass(hinfo)))++;
       if (SysClass(hinfo) == SYS_CLASS::CONS) {
         auto hi = reinterpret_cast<HeapInfo**>(hp);
 

@@ -34,70 +34,8 @@ namespace libmu {
 namespace core {
 namespace {
 
-/** * parse lambda list **/
-TagPtr ParseLambda(Env* env, TagPtr lambda) {
-  assert(Cons::IsList(lambda));
-
-  std::vector<TagPtr> lexicals;
-
-  auto restsym = Type::NIL;
-  auto has_rest = false;
-
-  std::function<void(Env*, TagPtr)> parse =
-      [&lexicals, lambda, &restsym, &has_rest](Env* env, TagPtr symbol) {
-        if (!Symbol::IsType(symbol))
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                           "non-symbol in lambda list (parse-lambda)", lambda);
-
-        if (Type::Eq(Symbol::Keyword("rest"), symbol)) {
-          if (has_rest)
-            Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                             "multiple rest clauses (parse-lambda)", lambda);
-          has_rest = true;
-          return;
-        }
-
-        if (Symbol::IsKeyword(symbol))
-          Exception::Raise(
-              env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-              "keyword cannot be used as a lexical variable (parse-lambda)",
-              lambda);
-
-        auto el = std::find_if(
-            lexicals.begin(), lexicals.end(), [restsym, symbol](TagPtr sym) {
-              return Type::Eq(symbol, sym) || Type::Eq(symbol, restsym);
-            });
-
-        if (el != lexicals.end())
-          Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                           "duplicate symbol in lambda list (parse-lambda)",
-                           lambda);
-
-        if (has_rest) restsym = symbol;
-
-        lexicals.push_back(symbol);
-      };
-
-  Cons::cons_iter<TagPtr> iter(lambda);
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    parse(env, it->car);
-
-  if (has_rest && Type::Null(restsym))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                     "early end of lambda list (parse-lambda)", lambda);
-
-  if (lexicals.size() != (Cons::Length(env, lambda) - has_rest))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
-                     ":rest should terminate lambda list (parse-lambda)",
-                     lambda);
-
-  /** * ((lexicals...) . restsym) */
-  return Cons(Cons::List(env, lexicals), restsym)
-      .Evict(env, "lambda:parse-lambda");
-}
-
 /** * is this symbol in the lexical environment? **/
-std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
+auto LexicalEnv(Env* env, TagPtr sym) {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
   auto notfound = std::pair<TagPtr, size_t>{Type::NIL, 0};
@@ -121,7 +59,7 @@ std::pair<TagPtr, size_t> InLexicalEnv(Env* env, TagPtr sym) {
 }
 
 /** * compile a list of forms **/
-TagPtr CompileList(Env* env, TagPtr list) {
+auto List(Env* env, TagPtr list) {
   std::vector<TagPtr> vlist;
   Cons::cons_iter<TagPtr> iter(list);
 
@@ -131,11 +69,75 @@ TagPtr CompileList(Env* env, TagPtr list) {
   return Cons::List(env, vlist);
 }
 
-/** * compile function definition **/
-TagPtr CompileLambda(Env* env, TagPtr form) {
+/** * compile lambda definition **/
+auto Lambda(Env* env, TagPtr form) {
   assert(Cons::IsList(form));
 
-  auto lambda = ParseLambda(env, Cons::car(form));
+  std::function<TagPtr(Env*, TagPtr)> parse_lambda = [](Env* env,
+                                                        TagPtr lambda) {
+    std::vector<TagPtr> lexicals;
+
+    auto restsym = Type::NIL;
+    auto has_rest = false;
+
+    std::function<void(Env*, TagPtr)> parse =
+        [&lexicals, lambda, &restsym, &has_rest](Env* env, TagPtr symbol) {
+          if (!Symbol::IsType(symbol))
+            Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                             "non-symbol in lambda list (parse-lambda)",
+                             lambda);
+
+          if (Type::Eq(Symbol::Keyword("rest"), symbol)) {
+            if (has_rest)
+              Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                               "multiple rest clauses (parse-lambda)", lambda);
+            has_rest = true;
+            return;
+          }
+
+          if (Symbol::IsKeyword(symbol))
+            Exception::Raise(
+                env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                "keyword cannot be used as a lexical variable (parse-lambda)",
+                lambda);
+
+          auto el = std::find_if(
+              lexicals.begin(), lexicals.end(), [restsym, symbol](TagPtr sym) {
+                return Type::Eq(symbol, sym) || Type::Eq(symbol, restsym);
+              });
+
+          if (el != lexicals.end())
+            Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                             "duplicate symbol in lambda list (parse-lambda)",
+                             lambda);
+
+          if (has_rest) restsym = symbol;
+
+          lexicals.push_back(symbol);
+        };
+
+    Cons::cons_iter<TagPtr> iter(lambda);
+    for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+      parse(env, it->car);
+
+    if (has_rest && Type::Null(restsym))
+      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                       "early end of lambda list (parse-lambda)", lambda);
+
+    if (lexicals.size() != (Cons::Length(env, lambda) - has_rest))
+      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+                       ":rest should terminate lambda list (parse-lambda)",
+                       lambda);
+
+    /* think: return pair */
+    // return std::pair<TagPtr, size_t>{Type::NIL, 0};
+
+    /** * ((lexicals...) . restsym) */
+    return Cons(Cons::List(env, lexicals), restsym)
+        .Evict(env, "lambda:parse-lambda");
+  };
+
+  auto lambda = parse_lambda(env, Cons::car(form));
 
   auto fn = Function(env, Type::NIL, std::vector<Frame*>{}, lambda,
                      Cons(lambda, Type::NIL).tag_)
@@ -143,7 +145,7 @@ TagPtr CompileLambda(Env* env, TagPtr form) {
 
   if (Function::arity(fn)) env->lexenv_.push_back(fn);
 
-  Function::form(fn, Cons(lambda, CompileList(env, Cons::cdr(form)))
+  Function::form(fn, Cons(lambda, List(env, Cons::cdr(form)))
                          .Evict(env, "compiler::compile-lambda"));
 
   if (Function::arity(fn)) env->lexenv_.pop_back();
@@ -152,7 +154,7 @@ TagPtr CompileLambda(Env* env, TagPtr form) {
 }
 
 /** * (:defsym symbol form) **/
-TagPtr DefConstant(Env* env, TagPtr form) {
+auto DefSymbol(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 3)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":defsym: argument count(2)", form);
@@ -182,7 +184,7 @@ TagPtr DefConstant(Env* env, TagPtr form) {
 }
 
 /** * (:lambda list . body) **/
-TagPtr DefLambda(Env* env, TagPtr form) {
+auto DefLambda(Env* env, TagPtr form) {
   if (Cons::Length(env, form) == 1)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":lambda: argument count(1*)", form);
@@ -196,11 +198,11 @@ TagPtr DefLambda(Env* env, TagPtr form) {
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
-  return CompileLambda(env, args);
+  return Lambda(env, args);
 }
 
 /** * (:macro list . body) **/
-TagPtr DefMacro(Env* env, TagPtr form) {
+auto DefMacro(Env* env, TagPtr form) {
   if (Cons::Length(env, form) == 1)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":macro: argument count(1*)", form);
@@ -214,11 +216,11 @@ TagPtr DefMacro(Env* env, TagPtr form) {
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
-  return Macro(CompileLambda(env, args)).Evict(env, "macro");
+  return Macro(Lambda(env, args)).Evict(env, "macro");
 }
 
 /** * (:letq symbol expr) **/
-TagPtr DefLetq(Env* env, TagPtr form) {
+auto Letq(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 3)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":letq: argument count(2)", form);
@@ -244,7 +246,7 @@ TagPtr DefLetq(Env* env, TagPtr form) {
 }
 
 /** * (:quote object) **/
-TagPtr DefQuote(Env* env, TagPtr form) {
+auto Quote(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 2)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":quote: argument count(1)", form);
@@ -253,7 +255,7 @@ TagPtr DefQuote(Env* env, TagPtr form) {
 }
 
 /** * (:t object object) **/
-TagPtr DefT(Env* env, TagPtr form) {
+auto T(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 3)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":t: argument count(1)", form);
@@ -262,7 +264,7 @@ TagPtr DefT(Env* env, TagPtr form) {
 }
 
 /** * (:nil object object) **/
-TagPtr DefNil(Env* env, TagPtr form) {
+TagPtr Nil(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 3)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":nil: argument count(1)", form);
@@ -272,23 +274,13 @@ TagPtr DefNil(Env* env, TagPtr form) {
 
 /** * map keyword to handler **/
 static const std::map<TagPtr, std::function<TagPtr(Env*, TagPtr)>> kSpecMap{
-    {Symbol::Keyword("defsym"), DefConstant},
+    {Symbol::Keyword("defsym"), DefSymbol},
     {Symbol::Keyword("lambda"), DefLambda},
-    {Symbol::Keyword("letq"), DefLetq},
+    {Symbol::Keyword("letq"), Letq},
     {Symbol::Keyword("macro"), DefMacro},
-    {Symbol::Keyword("quote"), DefQuote},
-    {Symbol::Keyword("t"), DefT},
-    {Symbol::Keyword("nil"), DefNil}};
-
-/** * compile a special form **/
-TagPtr CompileSpecial(Env* env, TagPtr form) {
-  assert(Cons::IsList(form));
-
-  auto symbol = Cons::car(form);
-  assert(IsSpecOp(env, symbol));
-
-  return kSpecMap.at(symbol)(env, form);
-}
+    {Symbol::Keyword("quote"), Quote},
+    {Symbol::Keyword("t"), T},
+    {Symbol::Keyword("nil"), Nil}};
 
 } /* anonymous namespace */
 
@@ -311,25 +303,25 @@ TagPtr Compile(Env* env, TagPtr form) {
 
       switch (Type::TypeOf(fn)) {
         case SYS_CLASS::CONS: /* fn is list form */
-          rval = CompileList(env, form);
+          rval = List(env, form);
           break;
         case SYS_CLASS::SYMBOL: { /* funcall/macro call/special call */
           TagPtr lfn;
 
-          std::tie(lfn, std::ignore) = InLexicalEnv(env, fn);
+          std::tie(lfn, std::ignore) = LexicalEnv(env, fn);
           if (Function::IsType(lfn))
-            rval = CompileList(env, form);
+            rval = List(env, form);
           else if (Function::IsType(Macro::MacroFunction(env, fn)))
             rval = Compile(env, Macro::MacroExpand(env, form));
           else if (IsSpecOp(env, fn))
-            rval = CompileSpecial(env, form);
+            rval = kSpecMap.at(fn)(env, form);
           else
-            rval = CompileList(env, form);
+            rval = List(env, form);
 
           break;
         }
         case SYS_CLASS::FUNCTION: /* function */
-          rval = CompileList(env, form);
+          rval = List(env, form);
           break;
         default:
           Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -342,7 +334,7 @@ TagPtr Compile(Env* env, TagPtr form) {
       TagPtr fn;
       size_t offset;
 
-      std::tie<TagPtr, size_t>(fn, offset) = InLexicalEnv(env, form);
+      std::tie<TagPtr, size_t>(fn, offset) = LexicalEnv(env, form);
 
       rval =
           Function::IsType(fn)

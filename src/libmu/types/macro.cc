@@ -35,7 +35,10 @@ namespace libmu {
 namespace core {
 namespace {
 
-TagPtr MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
+auto MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
+  /* think: return pair */
+  // return std::pair<TagPtr, size_t>{Type::NIL, 0};
+
   expandedf = false;
 
   if (!Cons::IsType(form)) return form;
