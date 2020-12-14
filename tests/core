@@ -1,0 +1,31 @@
+(constantp ''a),:t
+(constantp '(1 2 3)),:nil
+(constantp 'a),:nil
+(constantp 1),:t
+(functionp (lambda ())),:t
+(constantp :nil),:t
+(functionp acons),:t
+(functionp assq),:t
+(functionp constantp),:t
+(functionp eql),:t
+(functionp fmt),:t
+(functionp pairlis),:t
+(functionp room),:t
+(functionp sequencep),:t
+(functionp string=),:t
+(functionp string),:t
+(mapc (:lambda (a b) (princ (cons a b) :nil)) '(1 2 3) '(a b c)),(1 . a)(2 . b)(3 . c)(1 2 3)
+(mapcar car '((1 a) (2 b) (3 c))),((1 a) (2 b) (3 c))
+(mapl (:lambda (el) (princ el :nil)) '((1 2 3 4) (1 2) (1 2 3))),((1 2 3 4) (1 2) (1 2 3))((1 2) (1 2 3))((1 2 3))((1 2 3 4) (1 2) (1 2 3))
+(maplist append '(1 2 3 4) '(1 2) '(1 2 3)),((1 2 3 4 1 2 1 2 3) (2 3 4 2 2 3))
+(defstruct test (a 0 :fixnum) (b 1 :fixnum)),test
+(string= "123" "123"),:t
+(string= "123" "abc"),:nil
+(null (macro-function 'check-type)),:nil
+(null (macro-function 'lambda)),:nil
+(null (macro-function 'defstruct)),:nil
+(null (macro-function 'letrec)),:nil
+(null (macro-function 'time)),:nil
+(null (macro-function 'typecase)),:nil
+(nul (macro-function 'with-ns)),:nil
+(while :nil :t),:nil

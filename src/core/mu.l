@@ -120,8 +120,8 @@
               (if (null (cdr forms))
                  (car forms)
                  (list 'let (list (list value (car forms)))
-                   (list 'mu:if value value (orf (cdr forms))))))))
-       (if forms (orf forms) :nil))))
+                   (list 'mu:if value value (orf (cdr forms)))))))
+       (if forms (orf forms) ())))))
 
 ;;; cond
 (:defsym cond (:macro (:rest forms)

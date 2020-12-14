@@ -169,7 +169,7 @@
 (functionp truncate),:t
 (functionp type-of),:t
 (functionp unread-char),:t
-(functionp vector),:t
+(functionp list-to-vector),:t
 (functionp vector-length),:t
 (functionp vector-map),:t
 (functionp vector-mapc),:t
