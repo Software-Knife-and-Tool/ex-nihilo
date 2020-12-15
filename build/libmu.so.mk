@@ -1,14 +1,10 @@
 #
-# mu.so makefile
+# libmu.so makefile
 #
 .PHONY: clean libmu.so
 
-libmu.so: mu.a platform.a
-	@$(AR) x platform.a
-	@for i in *.o; do 		\
-	    mv $$i platform-$$i;	\
-	done
-	@$(AR) x mu.a
+libmu.so: libmu.a
+	@$(AR) x libmu.a
 	@$(CXX) -shared *.o -o libmu.so
 	@rm -f *.o *__.SYMDEF*
 

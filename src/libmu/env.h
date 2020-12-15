@@ -18,7 +18,7 @@
 #include <memory>
 #include <stack>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/heap/heap.h"
 #include "libmu/type.h"

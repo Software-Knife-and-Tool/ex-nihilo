@@ -13,7 +13,7 @@ OBJS =  \
 
 vpath %.cc ../src/mu-repl
 
-LIBS = ./mu.a ./platform.a
+LIBS = ./libmu.a
 
 # .SILENT: $(OBJS)
 .PHONY: mu-repl clean

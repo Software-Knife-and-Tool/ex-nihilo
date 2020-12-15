@@ -20,7 +20,7 @@
 
 #include <cassert>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/env.h"
 

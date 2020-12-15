@@ -24,7 +24,7 @@
 #include <string>
 #include <utility>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/type.h"
 

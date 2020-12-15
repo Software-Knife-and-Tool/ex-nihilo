@@ -18,7 +18,7 @@
 #include <cassert>
 #include <functional>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/compiler.h"
 #include "libmu/heap/heap.h"

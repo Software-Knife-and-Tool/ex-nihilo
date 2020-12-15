@@ -20,9 +20,9 @@
 #include <functional>
 #include <memory>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
-using platform::Platform;
+using libmu::platform::Platform;
 
 namespace libmu {
 namespace api {

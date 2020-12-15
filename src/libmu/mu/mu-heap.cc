@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/print.h"
 #include "libmu/type.h"

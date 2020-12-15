@@ -40,11 +40,11 @@
 #include <sstream>
 #include <string>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/libmu.h"
 
-using platform::Platform;
+using libmu::platform::Platform;
 
 void exec(Platform *platform, int) {
 
