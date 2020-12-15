@@ -60,11 +60,11 @@
 (:defsym gensym
    (let ((gensym-counter 0))
      #'(:lambda ()
-        (let ((name (open-output-string "")))
-          (:letq gensym-counter (fixnum+ 1 gensym-counter))
-          (print "GENSYM-" name :nil)
-          (print gensym-counter name :nil)
-          (make-symbol (get-output-stream-string name))))))
+          (let ((name (open-output-string "")))
+            (:letq gensym-counter (fixnum+ 1 gensym-counter))
+            (print "GENSYM-" name :nil)
+            (print gensym-counter name :nil)
+            (make-symbol (get-output-stream-string name))))))
 
 ;;; lexical bindings
 ;;; think: this requires mutable lexicals

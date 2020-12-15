@@ -25,7 +25,7 @@ namespace libmu {
 namespace core {
 
 TagPtr Compile(Env*, TagPtr);
-bool IsSpecOp(Env*, TagPtr);
+bool IsSpecOp(TagPtr);
 
 constexpr auto lexicals(TagPtr lambda) {
   assert(Cons::IsList(lambda));

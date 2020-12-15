@@ -58,9 +58,9 @@ void IsSpecOp(Frame* fp) {
 
   if (!core::Symbol::IsType(symbol))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "special-operator?", symbol);
+                     "special-operatorp", symbol);
 
-  fp->value = Type::Bool(core::IsSpecOp(fp->env, symbol));
+  fp->value = Type::Bool(core::IsSpecOp(symbol));
 }
 
 /** * (make-view object) => vector **/
