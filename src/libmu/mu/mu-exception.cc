@@ -116,16 +116,17 @@ void Block(Frame* fp) {
 
   if (!Symbol::IsType(tag))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "is not a symbol (.block)", tag);
+                     "is not a symbol (::block)", tag);
 
-  if (!core::IsSpecOp(fp->env, fn) && !Function::IsType(fn))
+  if (!core::IsSpecOp(fn) && !Function::IsType(fn))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "is not a function (.block)", fn);
+                     "is not a function (::block)", fn);
 
   try {
     fp->value =
         core::Eval(fp->env, Cons::List(fp->env, std::vector<Type::TagPtr>{fn}));
-  } catch (Type::TagPtr ex) {
+  } catch (
+      Type::TagPtr ex) { /* think: don't we need a specific return condition? */
     if (Cons::IsType(ex) && Type::Eq(tag, Cons::car(ex)))
       fp->value = Cons::cdr(ex);
     else

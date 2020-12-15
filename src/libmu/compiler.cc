@@ -285,11 +285,7 @@ static const std::map<TagPtr, std::function<TagPtr(Env*, TagPtr)>> kSpecMap{
 } /* anonymous namespace */
 
 /** * special operator predicate **/
-bool IsSpecOp(Env* env, TagPtr symbol) {
-  if (!Symbol::IsType(symbol))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "special-operatorp: is not a symbol", symbol);
-
+bool IsSpecOp(TagPtr symbol) {
   return Symbol::IsKeyword(symbol) && (kSpecMap.count(symbol) != 0);
 }
 
@@ -313,7 +309,7 @@ TagPtr Compile(Env* env, TagPtr form) {
             rval = List(env, form);
           else if (Function::IsType(Macro::MacroFunction(env, fn)))
             rval = Compile(env, Macro::MacroExpand(env, form));
-          else if (IsSpecOp(env, fn))
+          else if (IsSpecOp(fn))
             rval = kSpecMap.at(fn)(env, form);
           else
             rval = List(env, form);
