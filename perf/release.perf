@@ -1,0 +1,17 @@
+gc: 0.029221 -39642
+canon:mapc: 0.014315 663
+canon:mapcar: 0.013714 813
+mu.foldl: 0.006280 307
+mu.foldr: 0.006670 408
+mu.mapcar: 0.000302 105
+mu.mapc: 0.000299 55
+core.acons: 0.000306 200
+core.constantp: 0.000172 152
+core.eql: 0.003042 2024
+core.pairp: 0.000177 152
+core.sequencep: 0.000186 152
+core.schar: 0.000134 152
+core.stringp: 0.000134 152
+core.string=: 0.000252 152
+core.vector: 0.000745 1080
+core.vector-to-list: 0.001312 1664
