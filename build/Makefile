@@ -12,7 +12,7 @@ DMAKEFLAGS = CXX="$(CXX)" AR="$(AR)" CXXFLAGS="$(DCXXFLAGS)"
 PMAKEFLAGS = CXX="$(CXX)" AR="$(AR)" CXXFLAGS="$(PCXXFLAGS)"
 RMAKEFLAGS = CXX="$(CXX)" AR="$(AR)" CXXFLAGS="$(RCXXFLAGS)"
 
-MAKES = mu.mk platform.mk libmu.so.mk mu-exec.mk mu-repl.mk
+MAKES = libmu.mk libmu.so.mk mu-exec.mk mu-repl.mk
 
 .PHONY: commit install format xref release debug profile clean
 

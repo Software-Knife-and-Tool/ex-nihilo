@@ -1,5 +1,5 @@
 #
-# mu.a makefile
+# libmu.a makefile
 #
 CXX      = $(CXX)
 AR       = $(AR)
@@ -46,22 +46,27 @@ OBJS =  \
     mu-struct.o        \
     mu-symbol.o        \
     mu-type.o          \
-    mu-vector.o  
+    mu-vector.o        \
+    platform-ffi.o     \
+    platform-stream.o  \
+    platform-task.o    \
+    platform.o	       \
 
 vpath %.cc ../src/libmu
 vpath %.cc ../src/libmu/heap
 vpath %.cc ../src/libmu/mu
+vpath %.cc ../src/libmu/platform
 vpath %.cc ../src/libmu/special
 vpath %.cc ../src/libmu/types
 
 # .SILENT: $(OBJS)
-.PHONY: release debug profile clean mu.a
+.PHONY: release debug profile clean libmu.a
 
 libmu.a: $(OBJS)
-	@$(AR) cr mu.a $(OBJS)
+	@$(AR) cr libmu.a $(OBJS)
 	@rm -f $(OBJS)
 
-release debug profile: mu.a
+release debug profile: libmu.a
 
 clean:
-	@rm -rf mu.a $(OBJS)
+	@rm -rf libmu.a $(OBJS)

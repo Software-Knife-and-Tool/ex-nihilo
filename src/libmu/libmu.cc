@@ -18,7 +18,7 @@
 #include <functional>
 #include <memory>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/compiler.h"
 #include "libmu/env.h"

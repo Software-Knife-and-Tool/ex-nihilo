@@ -19,7 +19,7 @@
 #include <string>
 #include <typeinfo>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/env.h"
 #include "libmu/type.h"

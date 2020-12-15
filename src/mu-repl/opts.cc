@@ -39,9 +39,9 @@
 
 #include <getopt.h>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
-using platform::Platform;
+using libmu::platform::Platform;
 
 void make_opts(Platform *platform, int argc, char **argv, const char *flags) {
   int opt;

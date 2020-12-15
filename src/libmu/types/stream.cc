@@ -18,7 +18,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/env.h"
 #include "libmu/eval.h"

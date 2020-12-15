@@ -36,15 +36,15 @@
  **  main.cc: posix main
  **
  **/
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
-using platform::Platform;
+using libmu::platform::Platform;
 
 extern void repl(Platform *, int);
 extern void make_opts(Platform *, int, char **, const char *);
 
 int main(int argc, char **argv) {
-  Platform *platform = new platform::Platform();
+  Platform *platform = new Platform();
 
   make_opts(platform, argc, argv, "vhe:q:l:");
   repl(platform, argc);

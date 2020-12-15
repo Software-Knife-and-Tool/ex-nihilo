@@ -17,7 +17,7 @@
 #include <map>
 #include <vector>
 
-#include "platform/platform.h"
+#include "libmu/platform/platform.h"
 
 #include "libmu/print.h"
 #include "libmu/read.h"
