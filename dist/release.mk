@@ -2,8 +2,8 @@
 # posix release makefile
 #
 BUILD = ../build
-GYRE = ../src/gyre/gyre
-CORE = ../src/gyre/core
+GYRE = ../src/gyre
+CORE = ../src/core
 DEST = gyre
 LIBMU = ../src/libmu
 
@@ -21,6 +21,7 @@ release:
 	@install -d $(DEST)/src
 	@install -d $(DEST)/src/gyre
 	@install -d $(DEST)/src/core
+	@install -m 755 ../dist/core.sh $(DEST)/bin/core
 	@install -m 755 ../dist/gyre.sh $(DEST)/bin/gyre
 	@install -m 755 ../dist/mu.sh $(DEST)/bin/mu
 	@install -m 755 $(BUILD)/mu-repl $(DEST)/bin

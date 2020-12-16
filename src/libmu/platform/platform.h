@@ -30,7 +30,7 @@ namespace libmu {
 namespace platform {
 
 class Platform {
-public: /* options */
+ public: /* options */
   typedef std::pair<const std::string, const std::string> OptMap;
   typedef std::list<OptMap>::iterator OptMapPtr;
 
@@ -70,11 +70,11 @@ public: /* options */
   static std::string name(OptMap el) { return el.first; }
   static std::string value(OptMap el) { return el.second; }
 
-public: /* persistance */
+ public: /* persistance */
   static const int PAGESIZE = 4096;
   static const char *MapPages(unsigned, const char *);
 
-public: /* streams */
+ public: /* streams */
   typedef int64_t StreamId;
   static const StreamId STREAM_ERROR = -1;
 
@@ -107,17 +107,17 @@ public: /* streams */
   static int UnReadByte(int, StreamId);
   static void WriteByte(int, StreamId);
 
-public: /* time */
+ public: /* time */
   static void SystemTime(unsigned long *);
   static void ProcessTime(unsigned long *);
 
-public: /* tasks */
+ public: /* tasks */
   static void TaskCreate();
   static void TaskKill();
 
-public: /* threads */
-public: /* generalize conditions */
-public: /* generalize ffi */
+ public: /* threads */
+ public: /* generalize conditions */
+ public: /* generalize ffi */
   static char **Environment();
   static int System(const std::string);
   static std::string Invoke(uint64_t, std::string);

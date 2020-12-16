@@ -26,8 +26,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "libmu/platform/platform.h"
 #include "libmu/platform/platform-stream.h"
+#include "libmu/platform/platform.h"
 
 namespace libmu {
 namespace platform {
@@ -55,13 +55,13 @@ bool Platform::IsEof(StreamId stream) {
 
   if (sp->flags & STREAM_STD) {
     switch (sp->u.stdstream) {
-    case STDIN:
-      return feof(stdin);
-      break;
-    default:
-      assert(false);
-      return -1;
-      break;
+      case STDIN:
+        return feof(stdin);
+        break;
+      default:
+        assert(false);
+        return -1;
+        break;
     }
   }
 
@@ -79,8 +79,7 @@ std::string Platform::GetStdString(StreamId stream) {
 void Platform::Flush(StreamId stream) {
   auto sp = StructOfStreamId(stream);
 
-  if ((sp->flags & STREAM_STD) && (sp->flags & STREAM_OUTPUT))
-    fflush(stdout);
+  if ((sp->flags & STREAM_STD) && (sp->flags & STREAM_OUTPUT)) fflush(stdout);
 }
 
 void Platform::WriteByte(int ch, Platform::StreamId stream) {
@@ -93,15 +92,15 @@ void Platform::WriteByte(int ch, Platform::StreamId stream) {
       sp->u.sstream->str(sp->u.sstream->str() + (char)ch);
     } else if (sp->flags & STREAM_STD) {
       switch (sp->u.stdstream) {
-      case STDOUT:
-        putc(ch, stdout);
-        break;
-      case STDERR:
-        putc(ch, stderr);
-        break;
-      case STDIN:
-        assert(false);
-        break;
+        case STDOUT:
+          putc(ch, stdout);
+          break;
+        case STDERR:
+          putc(ch, stderr);
+          break;
+        case STDIN:
+          assert(false);
+          break;
       }
     } else if (sp->flags & STREAM_IOS) {
       sp->u.ostream->put(ch);
@@ -117,8 +116,7 @@ int Platform::ReadByte(Platform::StreamId stream) {
 
   assert(sp->flags & STREAM_INPUT || sp->flags & STREAM_STRING);
 
-  if (sp->flags & STREAM_CLOSED)
-    return -1;
+  if (sp->flags & STREAM_CLOSED) return -1;
 
   if (sp->flags & STREAM_STRING) {
     ch = sp->u.sstream->get();
@@ -127,13 +125,13 @@ int Platform::ReadByte(Platform::StreamId stream) {
     }
   } else if (sp->flags & STREAM_STD) {
     switch (sp->u.stdstream) {
-    case STDIN:
-      ch = getc(stdin);
-      break;
-    default:
-      assert(false);
-      return -1;
-      break;
+      case STDIN:
+        ch = getc(stdin);
+        break;
+      default:
+        assert(false);
+        return -1;
+        break;
     }
   } else if (sp->flags & STREAM_IOS) {
     ch = sp->u.istream->get();
@@ -144,8 +142,7 @@ int Platform::ReadByte(Platform::StreamId stream) {
     assert(false);
   }
 
-  if (ch == 0x4)
-    return -1;
+  if (ch == 0x4) return -1;
 
   return ch;
 }
@@ -163,13 +160,13 @@ int Platform::UnReadByte(int ch, Platform::StreamId stream) {
     sp->u.sstream->putback(ch);
   } else if (sp->flags & STREAM_STD) {
     switch (sp->u.stdstream) {
-    case STDIN:
-      return ungetc(ch, stdin);
-      break;
-    default:
-      assert(false);
-      return -1;
-      break;
+      case STDIN:
+        return ungetc(ch, stdin);
+        break;
+      default:
+        assert(false);
+        return -1;
+        break;
     }
   } else if (sp->flags & STREAM_IOS) {
     sp->u.istream->putback(ch);
@@ -239,15 +236,15 @@ Platform::StreamId Platform::OpenStandardStream(Platform::STD_STREAM stream) {
   auto sp = new Stream();
 
   switch (stream) {
-  case Platform::STD_STREAM::STDIN:
-    sp->flags = STREAM_STD | STREAM_INPUT;
-    sp->u.stdstream = stream;
-    break;
-  case Platform::STD_STREAM::STDOUT: /* fall through */
-  case Platform::STD_STREAM::STDERR:
-    sp->flags = STREAM_STD | STREAM_OUTPUT;
-    sp->u.stdstream = stream;
-    break;
+    case Platform::STD_STREAM::STDIN:
+      sp->flags = STREAM_STD | STREAM_INPUT;
+      sp->u.stdstream = stream;
+      break;
+    case Platform::STD_STREAM::STDOUT: /* fall through */
+    case Platform::STD_STREAM::STDERR:
+      sp->flags = STREAM_STD | STREAM_OUTPUT;
+      sp->u.stdstream = stream;
+      break;
   }
 
   return StreamIdOf(sp);
@@ -320,8 +317,7 @@ Platform::StreamId Platform::OpenClientSocketStream(int ipaddr, int port) {
 Platform::StreamId Platform::ConnectSocketStream(Platform::StreamId) {
   auto socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-  if (socket_fd < 0)
-    return STREAM_ERROR;
+  if (socket_fd < 0) return STREAM_ERROR;
 
 #if 0
     int sock = 0, valread;

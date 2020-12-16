@@ -87,7 +87,6 @@ char **Platform::Environment() { return environ; }
 
 /** * platform invoke **/
 std::string Platform::Invoke(uint64_t fnp, std::string arg) {
-
   /* I ought to be slapped for this */
   std::string (*fn)(std::string) = (std::string(*)(std::string))(fnp);
 

@@ -28,6 +28,5 @@
 #include "libmu/platform/platform.h"
 
 namespace libmu {
-namespace platform {
-} /* namespace platform */
+namespace platform {} /* namespace platform */
 } /* namespace libmu */

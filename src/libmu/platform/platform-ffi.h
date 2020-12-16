@@ -27,7 +27,7 @@ namespace libmu {
 namespace platform {
 
 class Ffi {
-public:
+ public:
   typedef std::pair<std::string, int (*)(const std::vector<std::string> &)>
       FfiDesc;
 };
