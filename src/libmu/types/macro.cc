@@ -103,7 +103,8 @@ TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
   bool expandedf;
   auto expanded = form;
 
-  do expanded = MacroExpand1(env, expanded, expandedf);
+  do
+    expanded = MacroExpand1(env, expanded, expandedf);
   while (expandedf);
 
   return expanded;

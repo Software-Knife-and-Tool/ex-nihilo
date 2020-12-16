@@ -26,7 +26,7 @@ namespace libmu {
 namespace platform {
 
 class Task {
-public:
+ public:
   Heap *heap_;
 
   Task() {}

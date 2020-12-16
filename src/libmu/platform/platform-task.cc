@@ -24,7 +24,7 @@
 
 namespace libmu {
 namespace platform {
-  
+
 void Platform::TaskCreate() {}
 void Platform::TaskKill() {}
 
