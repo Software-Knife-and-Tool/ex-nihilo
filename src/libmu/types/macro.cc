@@ -35,28 +35,24 @@ namespace libmu {
 namespace core {
 namespace {
 
-auto MacroExpand1(Env* env, TagPtr form, bool& expandedf) {
-  /* think: return pair */
-  // return std::pair<TagPtr, size_t>{Type::NIL, 0};
+auto MacroExpand1(Env* env, TagPtr form) {
+  auto not_expanded = std::pair<bool, TagPtr>{false, form};
 
-  expandedf = false;
-
-  if (!Cons::IsType(form)) return form;
-
+  if (!Cons::IsType(form))
+    return not_expanded;
+  
   auto fn = Cons::car(form);
-
-  if (!Symbol::IsType(fn)) return form;
+  if (!Symbol::IsType(fn))
+    return not_expanded;
 
   auto macfn = Macro::MacroFunction(env, fn);
+  if (Type::Null(macfn))
+    return not_expanded;
 
-  if (Type::Null(macfn)) return form;
-
-  std::vector<TagPtr> argv;
+  std::vector<TagPtr> argv{};
   Cons::ListToVec(Cons::cdr(form), argv);
 
-  expandedf = true;
-
-  return Function::Funcall(env, macfn, argv);
+  return std::pair<bool, TagPtr>{true, Function::Funcall(env, macfn, argv)};
 }
 
 } /* anonymous namespace */
@@ -100,12 +96,12 @@ TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
 
 /** * expand macro call until it isn't **/
 TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
-  bool expandedf;
   auto expanded = form;
-
+  bool expandp;
+  
   do
-    expanded = MacroExpand1(env, expanded, expandedf);
-  while (expandedf);
+    std::tie<bool, TagPtr>(expandp, expanded) = MacroExpand1(env, expanded);
+  while (expandp);
 
   return expanded;
 }

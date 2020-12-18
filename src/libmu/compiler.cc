@@ -38,9 +38,9 @@ namespace {
 auto LexicalEnv(Env* env, TagPtr sym) {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
-  auto notfound = std::pair<TagPtr, size_t>{Type::NIL, 0};
+  auto not_found = std::pair<TagPtr, size_t>{Type::NIL, 0};
 
-  if (Symbol::IsKeyword(sym)) return notfound;
+  if (Symbol::IsKeyword(sym)) return not_found;
 
   std::vector<TagPtr>::reverse_iterator it;
   for (it = env->lexenv_.rbegin(); it != env->lexenv_.rend(); ++it) {
@@ -55,7 +55,7 @@ auto LexicalEnv(Env* env, TagPtr sym) {
     }
   }
 
-  return notfound;
+  return not_found;
 }
 
 /** * compile a list of forms **/
@@ -128,9 +128,6 @@ auto Lambda(Env* env, TagPtr form) {
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        ":rest should terminate lambda list (parse-lambda)",
                        lambda);
-
-    /* think: return pair */
-    // return std::pair<TagPtr, size_t>{Type::NIL, 0};
 
     /** * ((lexicals...) . restsym) */
     return Cons(Cons::List(env, lexicals), restsym)
