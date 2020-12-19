@@ -19,10 +19,6 @@
   (unless (listp lambda) (error "is not a list (defun)" lambda))
   (list :defsym name (list* :macro lambda body))))
 
-(:defsym lambda (:macro (args :rest body)
-  (unless (listp args) (raise "must be a list (lambda)" args))
-  (list* :lambda () body)))
-
 (:defsym letrec (:macro (bindl :rest body)
   (let ((names (mu::mapcar
                  (:lambda (phrase)

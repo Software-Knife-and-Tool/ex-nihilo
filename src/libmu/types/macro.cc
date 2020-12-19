@@ -38,16 +38,13 @@ namespace {
 auto MacroExpand1(Env* env, TagPtr form) {
   auto not_expanded = std::pair<bool, TagPtr>{false, form};
 
-  if (!Cons::IsType(form))
-    return not_expanded;
-  
+  if (!Cons::IsType(form)) return not_expanded;
+
   auto fn = Cons::car(form);
-  if (!Symbol::IsType(fn))
-    return not_expanded;
+  if (!Symbol::IsType(fn)) return not_expanded;
 
   auto macfn = Macro::MacroFunction(env, fn);
-  if (Type::Null(macfn))
-    return not_expanded;
+  if (Type::Null(macfn)) return not_expanded;
 
   std::vector<TagPtr> argv{};
   Cons::ListToVec(Cons::cdr(form), argv);
@@ -98,7 +95,7 @@ TagPtr Macro::MacroFunction(Env* env, TagPtr macsym) {
 TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
   auto expanded = form;
   bool expandp;
-  
+
   do
     std::tie<bool, TagPtr>(expandp, expanded) = MacroExpand1(env, expanded);
   while (expandp);
