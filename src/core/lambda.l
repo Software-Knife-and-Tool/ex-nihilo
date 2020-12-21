@@ -5,16 +5,12 @@
         (rest ()))
     (mu::mapl
      (:lambda (l)
-        (
-              (fmt :t "lambda-list: ~A~%" lex)
-              (unless (symbolp lex) (raise "non-symbol in lambda list" lex))
-              (cond
-               ((eq form :option) )
-               ((eq form :rest)
-
-
-                (fmt :t "rest sym seen~%")))
-   lambda-list)
+       (unless (symbolp lex) (raise "non-symbol in lambda list" lex))
+       (cond
+        ((eq form :option) )
+        ((eq form :rest)
+         (fmt :t "rest sym seen~%"))))
+     lambda-list)
   (mu::mapc
    (:lambda (e) (fmt :t "body: ~A~%" e))
    body)
