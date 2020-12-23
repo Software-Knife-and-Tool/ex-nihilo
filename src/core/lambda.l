@@ -1,3 +1,31 @@
+#|
+    A lambda-list has five parts, any or all of which may be empty:
+
+    Specifiers for the required parameters.
+        These are all the parameter specifiers up to the first lambda-list keyword;
+        if there is no such lambda-list keyword,
+            then all the specifiers are for required parameters.
+    Specifiers for optional parameters.
+        If the lambda-list keyword &optional is present,
+            the optional parameter specifiers are those following the
+            lambda-list keyword &optional up to the next lambda-list keyword
+            or the end of the list.
+     A specifier for a rest parameter.
+        The lambda-list keyword &rest, if present,
+            must be followed  by a single rest parameter specifier,
+            which in turn must be followed by another lambda-list keyword
+            or the end of the lambda-list.
+     Specifiers for keyword parameters.
+        If the lambda-list keyword &key is present,
+           all specifiers up to
+           the next lambda-list keyword or the end of the list are keyword
+           parameter specifiers. The keyword parameter specifiers may optionally
+           be followed by the lambda-list keyword &allow-other-keys.
+     Specifiers for aux variables. These are not really parameters.
+        If the lambda-list keyword &key is present,
+           all specifiers after it are auxiliary variable specifiers.
+|#
+
 (:defsym lambda (:macro (lambda-list :rest body)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
   (letf ((reqs (ll)
@@ -38,17 +66,14 @@
                     (cons optional ()))))))
          (restsym (ll)
            (cond
-             ((null ll) ())
-             ((null (eq 2 (length ll))) (raise "excess elements (lambda)" ll))
-             (:t
-              (let* ((key (nth 0 ll))
-                     (sym (nth 1 ll)))
-                (cond
-                 ((eq key :rest)
-                  (unless (keywordp key)
-                    (raise "missing :rest (lambda)" key))
-                  (cons :rest sym))
-                 (:t (raise "missing :rest (lambda)" key))))))))
+            ((null ll) ())
+            (:t (unless (eq 2 (length ll)) (raise "excess elements (lambda)" ll))
+                (let ((key (nth 0 ll)) (sym (nth 1 ll)))
+                  (unless (eq key :rest)
+                    (raise "illegal rest clause (lambda)" ll))
+                  (unless (and (symbolp sym) (null (keywordp sym)))
+                    (raise "illegal rest clause (lambda)" ll))
+                  (cons :rest sym))))))
 
         (let* ((requireds (reqs lambda-list))
                (optionals (opts (cdr requireds)))
@@ -56,7 +81,6 @@
           (fmt :t "~A reqs: ~A opts ~A rest ~A body ~A~%"
                lambda-list requireds optionals rest body)))
 
-  
   ()))
 
 (lambda ())
