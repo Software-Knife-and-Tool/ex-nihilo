@@ -1,34 +1,29 @@
 #|
-    A lambda-list has five parts, any or all of which may be empty:
+    A lambda-list has four parts, any or all of which may be empty:
 
     Specifiers for the required parameters.
         These are all the parameter specifiers up to the first lambda-list keyword;
-        if there is no such lambda-list keyword,
-            then all the specifiers are for required parameters.
+           if there is no such lambda-list keyword,
+           then all the specifiers are for required parameters.
     Specifiers for optional parameters.
-        If the lambda-list keyword &optional is present,
-            the optional parameter specifiers are those following the
-            lambda-list keyword &optional up to the next lambda-list keyword
-            or the end of the list.
-     A specifier for a rest parameter.
-        The lambda-list keyword &rest, if present,
-            must be followed  by a single rest parameter specifier,
-            which in turn must be followed by another lambda-list keyword
-            or the end of the lambda-list.
-     Specifiers for keyword parameters.
-        If the lambda-list keyword &key is present,
-           all specifiers up to
-           the next lambda-list keyword or the end of the list are keyword
-           parameter specifiers. The keyword parameter specifiers may optionally
-           be followed by the lambda-list keyword &allow-other-keys.
-     Specifiers for aux variables. These are not really parameters.
-        If the lambda-list keyword &key is present,
-           all specifiers after it are auxiliary variable specifiers.
+        If the lambda-list keyword :option is present,
+           the optional parameter specifiers are those following the
+           lambda-list keyword &optional up to the next lambda-list keyword
+           or the end of the list.
+    A specifier for a rest parameter.
+        The lambda-list keyword :rest, if present,
+           must be followed  by a single rest parameter specifier,
+           which in turn must be followed by another lambda-list keyword
+           or the end of the lambda-list.
+    Specifiers for keyword parameters.
+        If the lambda-list keyword :key is present,
+           all specifiers up to the next lambda-list keyword
+           or the end of the list are keyword parameter specifiers.
 |#
 
 (:defsym lambda (:macro (lambda-list :rest body)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
-  (letf ((reqs (ll)
+  (letf ((reqs (llist)
            (mu:block ()
              (let ((required ()))
                (mu::mapl
@@ -37,12 +32,12 @@
                      (when (keywordp sym) (mu:return (cons required l)))
                      (unless (symbolp sym) (raise "is not a symbol (lambda)" sym))
                      (:letq required (append required (list sym)))))
-                ll)
+                llist)
                (cons required ()))))
-         (opts (ll)
+         (opts (llist)
            (mu:block ()
              (cond
-              ((or (null (eq (car ll) :option)) (null ll)) (cons () ll))
+              ((or (null (eq (car llist) :option)) (null llist)) (cons () llist))
               (:t (let ((optional ()))
                     (mu::mapl
                      (:lambda (l)
@@ -62,25 +57,23 @@
                             (when (keywordp term)
                               (raise "is not a legal opt term (lambda)" term))
                             (:letq optional (append optional (list (list term ()))))))))
-                     (cdr ll))
+                     (cdr llist))
                     (cons optional ()))))))
-         (restsym (ll)
+         (rest (llist)
            (cond
-            ((null ll) ())
-            (:t (unless (eq 2 (length ll)) (raise "excess elements (lambda)" ll))
-                (let ((key (nth 0 ll)) (sym (nth 1 ll)))
-                  (unless (eq key :rest)
-                    (raise "illegal rest clause (lambda)" ll))
+            ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
+            (:t (unless (eq 2 (length llist))
+                  (raise "excess elements (lambda)" llist))
+                (let ((sym (nth 1 llist)))
                   (unless (and (symbolp sym) (null (keywordp sym)))
-                    (raise "illegal rest clause (lambda)" ll))
+                    (raise "illegal rest clause (lambda)" llist))
                   (cons :rest sym))))))
 
         (let* ((requireds (reqs lambda-list))
                (optionals (opts (cdr requireds)))
-               (rest (restsym (cdr optionals))))
+               (restsym (rest (cdr optionals))))
           (fmt :t "~A reqs: ~A opts ~A rest ~A body ~A~%"
-               lambda-list requireds optionals rest body)))
-
+               lambda-list requireds optionals restsym body)))
   ()))
 
 (lambda ())
