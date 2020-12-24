@@ -59,9 +59,9 @@
 
          (let* ((requireds (reqs lambda-list))
                 (optionals (opts (cdr requireds)))
-                (keys (keys (cdr optionals)))
-                (rest (rest (cdr keys))))
-           (list (car requireds) (car optionals) (car keys) rest)))))
+                (keywords (keys (cdr optionals)))
+                (rest-sym (rest (cdr keys))))
+           (list (car requireds) (car optionals) (car keywords) rest-sym)))))
 
 (:defsym lambda (:macro (lambda-list :rest body)
    (let* ((llist (parse-lambda lambda-list))
