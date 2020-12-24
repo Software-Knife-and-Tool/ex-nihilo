@@ -26,10 +26,10 @@
                       (when (keywordp term)
                         (raise "is not a legal term (lambda)" term))
                       (:letq terms (append terms (list (list term ()))))))))
-                (cdr llist))
+                llist)
                (cons terms ()))))
           (reqs (llist)
-           (mu:block ()
+            (mu:block ()
              (let ((required ()))
                (mu::mapl
                 (:lambda (l)
@@ -38,30 +38,31 @@
                      (unless (symbolp sym) (raise "is not a symbol (lambda)" sym))
                      (:letq required (append required (list sym)))))
                 llist)
+
                (cons required ()))))
-          (opts (llist)   
+          (opts (llist)
             (cond
              ((or (null (eq (car llist) :option)) (null llist)) (cons () llist))
-             (:t (inits llist))))
-          (keys (llist)   
+             (:t (inits (cdr llist)))))
+          (keys (llist)
             (cond
              ((or (null (eq (car llist) :key)) (null llist)) (cons () llist))
-             (:t (inits llist))))
+             (:t (inits (cdr llist)))))
           (rest (llist)
-             (cond
+            (cond
               ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
               (:t (unless (eq 2 (length llist))
                     (raise "excess elements (lambda)" llist))
                   (let ((sym (nth 1 llist)))
                     (unless (and (symbolp sym) (null (keywordp sym)))
                       (raise "illegal rest clause (lambda)" llist))
-                    (cons :rest sym))))))
+                    (cons sym (nthcdr 2 llist)))))))
 
          (let* ((requireds (reqs lambda-list))
                 (optionals (opts (cdr requireds)))
                 (keywords (keys (cdr optionals)))
-                (rest-sym (rest (cdr keys))))
-           (list (car requireds) (car optionals) (car keywords) rest-sym)))))
+                (rest (rest (cdr keywords))))
+           (list (car requireds) (car optionals) (car keywords) (car rest))))))
 
 (:defsym lambda (:macro (lambda-list :rest body)
    (let* ((llist (parse-lambda lambda-list))
@@ -69,7 +70,11 @@
           (opts (nth 1 llist))
           (keys (nth 2 llist))
           (rest (nth 3 llist)))
-     'stuff)))
+     (cond
+      ((null rest)
+       (fmt :t "lambda: ~A~%" (list* :lambda reqs body))
+       (list* :lambda reqs body))
+      (:t)))))
 
 #|
 (fmt :t "~A~%" (parse-lambda ()))
