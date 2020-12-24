@@ -89,6 +89,7 @@
           (rest (nth 3 llist)))
      'stuff)))
 
+#|
 (fmt :t "~A~%" (parse-lambda ()))
 (fmt :t "~A~%" (parse-lambda '(a b c)))
 
@@ -104,4 +105,4 @@
 (fmt :t "~A~%" (parse-lambda '(:option a (b 1) :rest rest)))
 
 (fmt :t "~A~%" (parse-lambda '(:rest a)))
-
+|#
