@@ -78,9 +78,7 @@
          (let* ((requireds (reqs lambda-list))
                 (optionals (opts (cdr requireds)))
                 (keys (keys (cdr optionals)))
-                (rest (rest (cdr keys))))`
-           (fmt :t "~A reqs: ~A opts ~A keys ~A rest ~A~%"
-                lambda-list (car requireds) (car optionals) (car keys) rest)
+                (rest (rest (cdr keys))))
            (list (car requireds) (car optionals) (car keys) rest)))))
 
 (:defsym lambda (:macro (lambda-list :rest body)
@@ -91,19 +89,19 @@
           (rest (nth 3 llist)))
      'stuff)))
 
-(parse-lambda ())
-(parse-lambda '(a b c))
+(fmt :t "~A~%" (parse-lambda ()))
+(fmt :t "~A~%" (parse-lambda '(a b c)))
 
-(parse-lambda '(a b c :option d e))
-(parse-lambda '(a b c :option d (e 1)))
+(fmt :t "~A~%" (parse-lambda '(a b c :option d e)))
+(fmt :t "~A~%" (parse-lambda '(a b c :option d (e 1))))
 
-(parse-lambda '(a b c :option e f :rest rest))
-(parse-lambda '(a b c :option e (f 5) :rest rest))
+(fmt :t "~A~%" (parse-lambda '(a b c :option e f :rest rest)))
+(fmt :t "~A~%" (parse-lambda '(a b c :option e (f 5) :rest rest)))
 
-(parse-lambda '(:option a b))
-(parse-lambda '(:option a (b 1)))
-(parse-lambda '(:option a b :rest rest))
-(parse-lambda '(:option a (b 1) :rest rest))
+(fmt :t "~A~%" (parse-lambda '(:option a b)))
+(fmt :t "~A~%" (parse-lambda '(:option a (b 1))))
+(fmt :t "~A~%" (parse-lambda '(:option a b :rest rest)))
+(fmt :t "~A~%" (parse-lambda '(:option a (b 1) :rest rest)))
 
-(parse-lambda '(:rest a))
+(fmt :t "~A~%" (parse-lambda '(:rest a)))
 
