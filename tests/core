@@ -2,7 +2,6 @@
 (constantp '(1 2 3)),:nil
 (constantp 'a),:nil
 (constantp 1),:t
-(functionp (lambda ())),:t
 (constantp :nil),:t
 (functionp acons),:t
 (functionp assq),:t
@@ -22,7 +21,6 @@
 (string= "123" "123"),:t
 (string= "123" "abc"),:nil
 (null (macro-function 'check-type)),:nil
-(null (macro-function 'lambda)),:nil
 (null (macro-function 'defstruct)),:nil
 (null (macro-function 'letrec)),:nil
 (null (macro-function 'time)),:nil

@@ -13,20 +13,19 @@
 
 ;;; block/return macros
 (:defsym mu:block (:macro (tag :rest body)
-  (list 'mu.block tag (list* :lambda () body))))
+  (list 'mu::block tag (list* :lambda () body))))
 
 (:defsym mu:return-from (:macro (tag value)
-  (list 'mu.return tag value)))
+  (list 'mu::return tag value)))
 
 (:defsym mu:return (:macro (value)
-  (list 'mu.return :nil value)))
+  (list 'mu::return :nil value)))
 
 ;;; conditional
 (:defsym if (:macro (test t f)
   (list (list (list (list :lambda () (list 'eq :nil test)))
         (list :lambda () f)
         (list :lambda () t)))))
-
 
 ;;; list*
 (:defsym list* (:lambda (:rest args)
