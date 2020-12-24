@@ -1,25 +1,7 @@
-#|
-    A lambda-list has four parts, any or all of which may be empty:
-
-    Specifiers for the required parameters.
-        These are all the parameter specifiers up to the first lambda-list keyword;
-           if there is no such lambda-list keyword,
-           then all the specifiers are for required parameters.
-    Specifiers for optional parameters.
-        If the lambda-list keyword :option is present,
-           the optional parameter specifiers are those following the
-           lambda-list keyword &optional up to the next lambda-list keyword
-           or the end of the list.
-    A specifier for a rest parameter.
-        The lambda-list keyword :rest, if present,
-           must be followed  by a single rest parameter specifier,
-           which in turn must be followed by another lambda-list keyword
-           or the end of the lambda-list.
-    Specifiers for keyword parameters.
-        If the lambda-list keyword :key is present,
-           all specifiers up to the next lambda-list keyword
-           or the end of the list are keyword parameter specifiers.
-|#
+;;;
+;;;    SPDX-License-Identifier: MIT
+;;;    Copyright (c) 2017-2020 James M. Putnam <putnamjm.design@gmail.com>
+;;;
 
 (:defsym parse-lambda (:lambda (lambda-list)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
