@@ -1,13 +1,13 @@
-# GYRE
+# Gyre
 
 ### The Gyre Programming Environment
 is a single address space system that targets x86_64 and Aarch64 POSIX[1] kernels. The *libmu* kernel is written in C++14, compiled with Clang (or gcc), and implements a kernel language that supports Lisp-style data types in a garbage collected environment.
 
 The implementation language, *mu*, is an immutable[0] namespaced *Lisp-1* that supports lexical bindings, macros, continuations[2], and closures. The *libmu* library uses 64 bit tagged data pointers and can accommodate an address space up to 61 bits[3].
 
-The programming environment is implemented by several libraries; *mu* which provides a porting layer for *canon*, which provides a Scheme/Lisp layer for applications. The gyre language provides syntax and functions familiar to the traditional Lisp programmer. *tools* provides a native code compiler and optimizer based on the *materia* *mu* runtime.
+The programming environment is implemented by several libraries; *mu* which provides a porting layer for *core*, which provides a Scheme/Lisp layer for applications. The *gyre* language provides syntax and functions familiar to the traditional Lisp programmer. *tools* provides a native code compiler and optimizer based on the *libmu* runtime.
 
-The gyre and *mu* repls can be used as a shell and the *libmu* library extends an API for  embedded applications. While highly influenced by ANSI Common Lisp, _materia_ borrows heavily from Scheme, Clojure, and the DIN Kernel Lisp specification as critiqued by Baker.
+The gyre and *mu* repls can be used as a shell and the *libmu* library extends an API for  embedded applications. While highly influenced by ANSI Common Lisp, *gyre* borrows heavily from Scheme, Clojure, and the DIN Kernel Lisp specification as critiqued by Baker.
 
 http://www.pipeline.com/~hbaker1/CritLisp.html
 
