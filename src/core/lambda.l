@@ -21,7 +21,7 @@
            or the end of the list are keyword parameter specifiers.
 |#
 
-(:defsym lambda (:macro (lambda-list :rest body)
+(:defsym parse-lambda (:lambda (lambda-list)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
   (letf* ((inits (llist)
            (let ((terms ()))
@@ -75,26 +75,31 @@
                     (raise "illegal rest clause (lambda)" llist))
                   (cons :rest sym))))))
 
-        (let* ((requireds (reqs lambda-list))
-               (optionals (opts (cdr requireds)))
-               (restsym (rest (cdr optionals))))
-          (fmt :t "~A reqs: ~A opts ~A rest ~A body ~A~%"
-               lambda-list requireds optionals restsym body)))
-  ()))
+       (let* ((requireds (reqs lambda-list))
+              (optionals (opts (cdr requireds)))
+              (keys (keys (cdr optionals)))
+              (rest (rest (cdr keys))))
+         (fmt :t "~A reqs: ~A opts ~A keys ~A rest ~A~%"
+              lambda-list (car requireds) (car optionals) (car keys) rest)
+         (list requireds optionals keys rest)))))
 
-(lambda ())
-(lambda (a b c) 1 2 3)
+(:defsym lambda (:macro (lambda-list :rest body)
+   (let ((llist (parse-lambda lambda-list)))
+     'stuff)))                       
 
-(lambda (a b c :option d e) 1 2 3)
-(lambda (a b c :option d (e 1)) 1 2 3)
+(parse-lambda ())
+(parse-lambda '(a b c))
 
-(lambda (a b c :option e f :rest rest) 1 2 3)
-(lambda (a b c :option e (f 5) :rest rest) 1 2 3)
+(parse-lambda '(a b c :option d e))
+(parse-lambda '(a b c :option d (e 1)))
 
-(lambda (:option a b) 1 2 3)
-(lambda (:option a (b 1)) 1 2 3)
-(lambda (:option a b :rest rest) 1 2 3)
-(lambda (:option a (b 1) :rest rest) 1 2 3)
+(parse-lambda '(a b c :option e f :rest rest))
+(parse-lambda '(a b c :option e (f 5) :rest rest))
 
-(lambda (:rest a) 1 2 3)
+(parse-lambda '(:option a b))
+(parse-lambda '(:option a (b 1)))
+(parse-lambda '(:option a b :rest rest))
+(parse-lambda '(:option a (b 1) :rest rest))
+
+(parse-lambda '(:rest a))
 
