@@ -65,27 +65,31 @@
             (cond
              ((or (null (eq (car llist) :key)) (null llist)) (cons () llist))
              (:t (inits llist))))
-         (rest (llist)
-           (cond
-            ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
-            (:t (unless (eq 2 (length llist))
-                  (raise "excess elements (lambda)" llist))
-                (let ((sym (nth 1 llist)))
-                  (unless (and (symbolp sym) (null (keywordp sym)))
-                    (raise "illegal rest clause (lambda)" llist))
-                  (cons :rest sym))))))
+          (rest (llist)
+             (cond
+              ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
+              (:t (unless (eq 2 (length llist))
+                    (raise "excess elements (lambda)" llist))
+                  (let ((sym (nth 1 llist)))
+                    (unless (and (symbolp sym) (null (keywordp sym)))
+                      (raise "illegal rest clause (lambda)" llist))
+                    (cons :rest sym))))))
 
-       (let* ((requireds (reqs lambda-list))
-              (optionals (opts (cdr requireds)))
-              (keys (keys (cdr optionals)))
-              (rest (rest (cdr keys))))
-         (fmt :t "~A reqs: ~A opts ~A keys ~A rest ~A~%"
-              lambda-list (car requireds) (car optionals) (car keys) rest)
-         (list requireds optionals keys rest)))))
+         (let* ((requireds (reqs lambda-list))
+                (optionals (opts (cdr requireds)))
+                (keys (keys (cdr optionals)))
+                (rest (rest (cdr keys))))`
+           (fmt :t "~A reqs: ~A opts ~A keys ~A rest ~A~%"
+                lambda-list (car requireds) (car optionals) (car keys) rest)
+           (list (car requireds) (car optionals) (car keys) rest)))))
 
 (:defsym lambda (:macro (lambda-list :rest body)
-   (let ((llist (parse-lambda lambda-list)))
-     'stuff)))                       
+   (let* ((llist (parse-lambda lambda-list))
+          (reqs (nth 0 llist))
+          (opts (nth 1 llist))
+          (keys (nth 2 llist))
+          (rest (nth 3 llist)))
+     'stuff)))
 
 (parse-lambda ())
 (parse-lambda '(a b c))
