@@ -14,6 +14,7 @@
 (:defsym list (:lambda (:rest args) args))
 
 (:defsym listp (:lambda (ptr)
+  ; ((null ptr) :t (consp ptr))))
   (null (eq (consp ptr) (null ptr)))))
 
 ;;; block/return macros

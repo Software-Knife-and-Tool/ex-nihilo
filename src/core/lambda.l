@@ -65,7 +65,7 @@
            (list (car requireds) (car optionals) (car keywords) (car rest))))))
 
 (:defsym lambda (:macro (lambda-list :rest body)
-   (let* ((llist (parse-lambda lambda-list))
+  (let* ((llist (parse-lambda lambda-list))
           (reqs (nth 0 llist))
           (opts (nth 1 llist))
           (keys (nth 2 llist))
