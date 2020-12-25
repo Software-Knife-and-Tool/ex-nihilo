@@ -1,4 +1,9 @@
 ;;;
+;;;    SPDX-License-Identifier: MIT
+;;;    Copyright (c) 2017-2020 James M. Putnam <putnamjm.design@gmail.com>
+;;;
+
+;;;
 ;;; core forms
 ;;;
 

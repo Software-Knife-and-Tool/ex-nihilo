@@ -71,9 +71,9 @@ TagPtr Eval(Env* env, TagPtr form) {
           if (Type::Eq(fn, Symbol::Keyword("quote")))
             rval = Cons::Nth(form, 1);
           else if (Type::Eq(fn, Symbol::Keyword("t")))
-            rval = Cons::Nth(form, 1);
+            rval = Eval(env, Cons::Nth(form, 1));
           else if (Type::Eq(fn, Symbol::Keyword("nil")))
-            rval = Cons::Nth(form, 2);
+            rval = Eval(env, Cons::Nth(form, 2));
           else
             Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
                              "(eval)", fn);

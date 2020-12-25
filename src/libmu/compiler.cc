@@ -261,7 +261,7 @@ auto T(Env* env, TagPtr form) {
 }
 
 /** * (:nil object object) **/
-TagPtr Nil(Env* env, TagPtr form) {
+auto Nil(Env* env, TagPtr form) {
   if (Cons::Length(env, form) != 3)
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      ":nil: argument count(1)", form);

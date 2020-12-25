@@ -1,4 +1,9 @@
 ;;;
+;;;    SPDX-License-Identifier: MIT
+;;;    Copyright (c) 2017-2020 James M. Putnam <putnamjm.design@gmail.com>
+;;;
+
+;;;
 ;;; mu forms
 ;;;
 (:defsym .version "0.0.21")
@@ -9,29 +14,12 @@
 (:defsym list (:lambda (:rest args) args))
 
 (:defsym listp (:lambda (ptr)
-  (null (eq (consp ptr) (null ptr)))))
+  ((consp ptr) :t (null ptr))))
 
-;;; block/return macros
-(:defsym mu:block (:macro (tag :rest body)
-  (list 'mu::block tag (list* :lambda () body))))
-
-(:defsym mu:return-from (:macro (tag value)
-  (list 'mu::return tag value)))
-
-(:defsym mu:return (:macro (value)
-  (list 'mu::return :nil value)))
-
-;;; conditional
-(:defsym if (:macro (test t f)
-  (list (list (list (list :lambda () (list 'eq :nil test)))
-        (list :lambda () f)
-        (list :lambda () t)))))
-
-;;; list*
 (:defsym list* (:lambda (:rest args)
-  (if (cdr args)
-    (cons (car args) (apply list* (cdr args)))
-    (car args))))
+  ((null (cdr args))
+   (car args)
+   (cons (car args) (apply list* (cdr args))))))
 
 ;;; progn/let/let*/letf/letf*/macrolet
 (:defsym progn (:macro (:rest body)
@@ -47,12 +35,46 @@
      (list* :macro (mapcar car bindl) body)
        (list* (mapcar (:lambda (vl) (nth 1 vl)) bindl)))))
 
+;;; letf - recursive serial lexical functions
+(:defsym letf (:macro (bindl :rest body)
+  (list* 'let
+    (mapcar
+     (:lambda (phrase)
+        (list (car phrase) (list* 'recur phrase)))
+      bindl)
+    body)))
+
+;;; letf* - recursive parallel lexical functions
+(:defsym letf* (:macro (bindings :rest body)
+  (list* 'let*
+    (mapcar
+     (:lambda (phrase)
+        (list (car phrase) (list* 'recur phrase)))
+      bindings)
+    body)))
+
+;;; block/return macros
+(:defsym mu:block (:macro (tag :rest body)
+  (list 'mu::block tag (list* :lambda () body))))
+
+(:defsym mu:return-from (:macro (tag value)
+  (list 'mu::return tag value)))
+
+(:defsym mu:return (:macro (value)
+  (list 'mu::return :nil value)))
+
+;;; conditional
+(:defsym if (:macro (test t f)
+  (list (list (list (list :lambda () (list 'eq () test)))
+        (list :lambda () f)
+        (list :lambda () t)))))
+                    
 ;;; when/unless macros
 (:defsym when (:macro (test :rest forms)
-  (list 'if test (list* 'progn forms) :nil)))
+  (list (list 'null test) :nil (list* 'progn forms))))
 
 (:defsym unless (:macro (test :rest forms)
-  (list 'if test :nil (list* 'progn forms))))
+  (list (list 'null test) (list* 'progn forms) :nil)))
 
 ;;; gensym
 ;;; think: this requires mutable lexicals
@@ -79,24 +101,6 @@
         (error "is not a list (recur)" lambda))
     (error "is not a symbol (recur)" fn))))
 
-;;; letf - recursive serial lexical functions
-(:defsym letf (:macro (bindl :rest body)
-  (list* 'let
-    (mapcar
-     (:lambda (phrase)
-        (list (car phrase) (list* 'recur phrase)))
-      bindl)
-    body)))
-
-;;; letf* - recursive parallel lexical functions
-(:defsym letf* (:macro (bindings :rest body)
-  (list* 'let*
-    (mapcar
-     (:lambda (phrase)
-        (list (car phrase) (list* 'recur phrase)))
-      bindings)
-    body)))
-
 ;;; let*
 (:defsym let* (:macro (bindings :rest body)
    (letf ((bindfn (bindings body)
@@ -109,7 +113,7 @@
 (:defsym and (:macro (:rest forms)
   (letf ((andf (forms)
            (if (cdr forms)
-             (list 'if (car forms) (andf (cdr forms)) :nil)
+             (list 'if (car forms) (andf (cdr forms)) ())
              (car forms))))
     (if forms (andf forms) :t))))
 
