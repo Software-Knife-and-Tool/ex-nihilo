@@ -6,8 +6,81 @@
 ;;;
 ;;; core forms
 ;;;
-
 (:defsym identity (:lambda (a) a))
+
+;;; lambda
+(:defsym parse-lambda (:lambda (lambda-list)
+  (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
+  (letf* ((inits (llist)
+           (let ((terms ()))
+             (mu:block ()
+               (mu::mapl
+                (:lambda (l)
+                  (let ((term (car l)) (rest (cdr l)))
+                    (when (keywordp term) (mu:return (cons terms l)))
+                    (unless (or (consp term) (symbolp term))
+                      (raise "is not an opt symbol or initializer (lambda)" term))
+                    (cond
+                     ((consp term)
+                      (unless (eq 2 (length term))
+                        (raise "is not a legal term (lambda)" term))
+                      (let ((sym (nth 0 term)) (value (nth 1 term)))
+                        (unless (and (symbolp sym) (null (keywordp sym)))
+                          (raise "is not a legal term (lambda)" term))
+                        (:letq terms (append terms (list term)))))
+                     ((symbolp term)
+                      (when (keywordp term)
+                        (raise "is not a legal term (lambda)" term))
+                      (:letq terms (append terms (list (list term ()))))))))
+                llist)
+               (cons terms ()))))
+          (reqs (llist)
+            (mu:block ()
+             (let ((required ()))
+               (mu::mapl
+                (:lambda (l)
+                  (let ((sym (car l)) (rest (cdr l)))
+                     (when (keywordp sym) (mu:return (cons required l)))
+                     (unless (symbolp sym) (raise "is not a symbol (lambda)" sym))
+                     (:letq required (append required (list sym)))))
+                llist)
+
+               (cons required ()))))
+          (opts (llist)
+            (cond
+             ((or (null (eq (car llist) :option)) (null llist)) (cons () llist))
+             (:t (inits (cdr llist)))))
+          (keys (llist)
+            (cond
+             ((or (null (eq (car llist) :key)) (null llist)) (cons () llist))
+             (:t (inits (cdr llist)))))
+          (rest (llist)
+            (cond
+              ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
+              (:t (unless (eq 2 (length llist))
+                    (raise "excess elements (lambda)" llist))
+                  (let ((sym (nth 1 llist)))
+                    (unless (and (symbolp sym) (null (keywordp sym)))
+                      (raise "illegal rest clause (lambda)" llist))
+                    (cons sym (nthcdr 2 llist)))))))
+
+         (let* ((requireds (reqs lambda-list))
+                (optionals (opts (cdr requireds)))
+                (keywords (keys (cdr optionals)))
+                (rest (rest (cdr keywords))))
+           (list (car requireds) (car optionals) (car keywords) (car rest))))))
+
+(:defsym lambda (:macro (lambda-list :rest body)
+  (let* ((llist (parse-lambda lambda-list))
+          (reqs (nth 0 llist))
+          (opts (nth 1 llist))
+          (keys (nth 2 llist))
+          (rest (nth 3 llist)))
+     (cond
+      ((null rest)
+       (fmt :t "lambda: ~A~%" (list* :lambda reqs body))
+       (list* :lambda reqs body))
+      (:t)))))
 
 ;;; defun/defconstant/defmacro/lambda/letrec (now with added recursion)
 (:defsym defun (:macro (fn lambda :rest body)
@@ -98,11 +171,12 @@
    (:t (raise "illegal conversion (string)" object))))
 
 ;;; string= - string comparison
+;;; block with no return?
 (defun string= (str1 str2)
   (unless (stringp str1) (raise "is not a string (string=)" str1))
   (unless (stringp str2) (raise "is not a string (string=)" str2))
   (when (eq (mu::vector-length str1) (mu::vector-length str2))
-    (block :nil
+    (mu:block :nil
       (let ((nth 0)
             (len (mu::vector-length str1)))
         (letf ((inc ()
@@ -129,9 +203,9 @@
 ;;; assq/pairlis/acons
 (defun assq (item alist)
   (unless (listp alist) (raise "is not a list (assq)" alist))
-  (block :nil
+  (mu:block :nil
      (mu::mapc (:lambda (pair)
-       (when (eq item (car pair)) (return (cdr pair))))
+       (when (eq item (car pair)) (mu:return (cdr pair))))
        alist)
      :nil))
 
@@ -153,12 +227,12 @@
 
 ;;; mapc
 (defun mu:mapc (fn :rest lists)
-  (block :nil
+  (mu:block :nil
     (let ((map-cars
            (:lambda (lists)
              (mu::mapcar
               (:lambda (lst)
-                 (when (null (car (car lst))) (return :nil))
+                 (when (null (car (car lst))) (mu:return :nil))
                  (car (car lst)))
               lists)))
           (map-cdrs
@@ -176,10 +250,10 @@
 (defun mu:mapcar (fn :rest lists)
   (let ((map-cars
          (:lambda (lists)
-            (block :nil
+            (mu:block :nil
               (mu::mapcar
                (:lambda (lst)
-                  (when (null (car (car lst))) (return :nil))
+                  (when (null (car (car lst))) (mu:return :nil))
                   (car (car lst)))
                lists))))
         (map-cdrs
@@ -197,12 +271,12 @@
 
 ;;; mapl
 (defun mu:mapl (fn :rest lists)
-  (block :nil
+  (mu:block :nil
     (let ((map-cars
             (:lambda (lists)
               (mu::mapcar
                 (:lambda (lst)
-                  (when (null (car lst)) (return :nil))
+                  (when (null (car lst)) (mu:return :nil))
                   (car lst))
                 lists)))
           (map-cdrs
@@ -217,15 +291,14 @@
 
 ;;; maplist
 (defun mu:maplist (fn :rest lists)
-  (block :nil
-    (let ((map-cars
-            (:lambda (lists)
-               (block :nil
-                 (mu::mapcar
-                   (:lambda (lst)
-                     (when (null (car lst)) (return :nil))
-                     (car lst))
-                   lists))))
+  (let ((map-cars
+         (:lambda (lists)
+            (mu:block :nil
+              (mu::mapcar
+               (:lambda (lst)
+                  (when (null (car lst)) (mu:return :nil))
+                  (car lst))
+               lists))))
           (map-cdrs
             (:lambda (lists)
               (mu::mapcar
@@ -236,7 +309,7 @@
                 (if (null argl)
                   :nil               
                   (cons (fn argl) (rfn rfn (mu::mapcar cdr cdr-list))))))))
-         (mc mc (map-cdrs lists))))))
+         (mc mc (map-cdrs lists)))))
 
 ;;; check-type form type string
 (defmacro check-type (form type reason)
