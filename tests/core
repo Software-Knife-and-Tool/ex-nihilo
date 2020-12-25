@@ -13,6 +13,16 @@
 (functionp sequencep),:t
 (functionp string=),:t
 (functionp string),:t
+(parse-lambda '(a b c)),((a b c) :nil :nil :nil)
+(parse-lambda '(a b c :option d e)),((a b c) ((d :nil) (e :nil)) :nil :nil)
+(parse-lambda '(a b c :option d (e 1))),((a b c) ((d :nil) (e 1)) :nil :nil)
+(parse-lambda '(a b c :option e f :rest rest)),((a b c) ((e :nil) (f :nil)) :nil rest)
+(parse-lambda '(a b c :option e (f 5) :rest rest)),((a b c) ((e :nil) (f 5)) :nil rest)
+(parse-lambda '(:option a b)),(:nil ((a :nil) (b :nil)) :nil :nil)
+(parse-lambda '(:option a (b 1))),(:nil ((a :nil) (b 1)) :nil :nil)
+(parse-lambda '(:option a b :rest rest)),(:nil ((a :nil) (b :nil)) :nil rest)
+(parse-lambda '(:option a (b 1) :rest rest)),(:nil ((a :nil) (b 1)) :nil rest)
+(parse-lambda '(:rest a)),(:nil :nil :nil a)
 (mu:mapc (:lambda (a b) (print (cons a b) :nil :nil)) '(1 2 3) '(a b c)),(1 . a)(2 . b)(3 . c)(1 2 3)
 (mu:mapcar car '((1 a) (2 b) (3 c))),((1 a) (2 b) (3 c))
 (mu:mapl (:lambda (el) (print el :nil :nil)) '((1 2 3 4) (1 2) (1 2 3))),((1 2 3 4) (1 2) (1 2 3))((1 2) (1 2 3))((1 2 3))((1 2 3 4) (1 2) (1 2 3))
