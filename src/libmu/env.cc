@@ -205,23 +205,21 @@ auto EnvStack(Env* env) {
 }
 
 /** * system time **/
-auto SystemTime(Env* env) {
+auto SystemTime(Env*) {
   unsigned long ts[2];
 
   Platform::SystemTime(ts);
-
-  return Cons::List(
-      env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
+  
+  return Fixnum(ts[0] * 1000000 + ts[1]).tag_;
 }
 
 /** * run time **/
-auto RunTime(Env* env) {
+auto RunTime(Env*) {
   unsigned long ts[2];
 
   Platform::ProcessTime(ts);
 
-  return Cons::List(
-      env, std::vector<TagPtr>{Fixnum(ts[0]).tag_, Fixnum(ts[1]).tag_});
+  return Fixnum(ts[0] * 1000000 + ts[1]).tag_;
 }
 
 /** * make list of namespaces **/

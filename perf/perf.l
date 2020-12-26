@@ -1,11 +1,7 @@
 ;;; time macro
 (defmacro perf-time (form)
-  (let ((now (:lambda ()
-         (let* ((now (runtime))
-           (sec (float (nth 0 now)))
-           (usec (float/ (float (nth 1 now)) 1000000.0)))
-           (float+ sec usec))))
-        (now-secs (gensym))
+  (let ((now (:lambda () (vector-ref (env-view) 3)))
+        (now-usecs (gensym))
         (start-time (gensym))
         (start-room (gensym))
         (stop-time (gensym))
@@ -14,30 +10,31 @@
         (stop-used (gensym))
         (result (gensym)))
     
-    (list 'let* (list (list now-secs now)
-                      (list start-room (list 'heap-info :t))
-                      (list start-time (list now-secs))
+    (list 'let* (list (list now-usecs (list now))
+                      (list start-room (list 'heap-view :t))
+                      (list start-time (list now))
                       (list result form)
-                      (list stop-time (list now-secs))
-                      (list stop-room (list 'heap-info :t))
+                      (list stop-time (list now))
+                      (list stop-room (list 'heap-view :t))
                       (list start-used
-                            (list 'fixnum- (list 'mu.vec-ref start-room 1)
-                                           (list 'mu.vec-ref start-room 3)))
+                            (list 'fixnum- (list 'vector-ref start-room 1)
+                                           (list 'vector-ref start-room 3)))
                       (list stop-used
-                            (list 'fixnum- (list 'mu.vec-ref stop-room 1)
-                                           (list 'mu.vec-ref stop-room 3))))
+                            (list 'fixnum- (list 'vector-ref stop-room 1)
+                                           (list 'vector-ref stop-room 3))))
 
-          (list 'cons (list 'float- stop-time start-time) (list 'fixnum- stop-used start-used)))))
+          (list 'cons (list 'fixnum- stop-time start-time) (list 'fixnum- stop-used start-used)))))
 
 ;;; report
 (defun perf-report (log)
-  (let* ((functions '("gc"
-                      "canon:mapc"
-                      "canon:mapcar"
-                      "mu.foldl"
-                      "mu.foldr"
-                      "mu.mapcar"
-                      "mu.mapc"
+  (let* ((functions '(
+                  ;;;    "gc"
+                  ;;;    "mu:mapc"
+                  ;;;    "mu:mapcar"
+                      "mu:foldl"
+                      "mu:foldr"
+                      "mu::mapcar"
+                      "mu::mapc"
                       "core.acons"
                       "core.constantp"
                       "core.eql"
@@ -58,19 +55,19 @@
   
              (let* ((logf (open-input-file log-temp))
                     (times (read logf))
-                    (ntimes (list-length times))
+                    (ntimes (length times))
                     (sums
-                     (mu.foldl
+                     (mu:foldl
                       (:lambda (acc el)
-                               (cons (float+ (car el) (car acc))
+                               (cons (fixnum+ (car el) (car acc))
                                      (fixnum+ (cdr el) (cdr acc))))
-                      (cons 0.0 0)
+                      (cons 0 0)
                       times)))
                (close logf)
                (system (fmt :nil "rm ~A" log-temp))
                (cons
-                (float/ (car sums) (float ntimes))
-                (fixnum/ (cdr sums) ntimes))))))
+                (car (truncate (car sums) 2500))
+                (car (truncate (cdr sums) 2500)))))))
          (stat (:lambda (which)
            (let*
                ((stats (rep log which))

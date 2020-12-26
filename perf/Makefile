@@ -13,25 +13,25 @@ help:
 release:
 	@rm -f $(TMP)/base.$$PPID.log
 	@for i in {0..2499}; do					\
-           canon -l perf.l 					\
+           core -l perf.l 					\
 		 -l core.l					\
 		 -l gc.l					\
 		 -l map.l 					\
 		 -q "(exit 0)" >> $(TMP)/base.$$PPID.log;	\
 	done
-	@canon -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(exit 0)" > release.perf
+	@core -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(exit 0)" > release.perf
 	@rm -f $(TMP)/base.$$PPID.log
 
 base:
 	@rm -f $(TMP)/base.$$PPID.log
 	@for i in {0..2499}; do					\
-           canon -l perf.l 					\
+           core -l perf.l 					\
 		 -l core.l					\
 		 -l gc.l					\
 		 -l map.l 					\
 		 -q "(exit 0)" >> $(TMP)/base.$$PPID.log;	\
 	done
-	@canon -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(exit 0)" > base.perf
+	@core -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(exit 0)" > base.perf
 	@rm -f $(TMP)/base.$$PPID.log
 
 diff:
