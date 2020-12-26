@@ -1,8 +1,8 @@
-(:defcon alist '((a . 0) (b . 1) (c . 2) (d . 3) (e . 4) (f . 5) (g . 6) (h . 7) (i . 8) (j . 9)))
-(:defcon avect #(:t (a . 0) (b . 1) (c . 2) (d . 3) (e . 4) (f . 5) (g . 6) (h . 7) (i . 8) (j . 9)))
+(:defsym alist '((a . 0) (b . 1) (c . 2) (d . 3) (e . 4) (f . 5) (g . 6) (h . 7) (i . 8) (j . 9)))
+(:defsym avect #(:t (a . 0) (b . 1) (c . 2) (d . 3) (e . 4) (f . 5) (g . 6) (h . 7) (i . 8) (j . 9)))
 
-(:defcon blist '(a b c d e f g h i j))
-(:defcon clist '(a b c d e f g h i z))
+(:defsym blist '(a b c d e f g h i j))
+(:defsym clist '(a b c d e f g h i z))
 
 (fmt :t "~A ;;; core.acons~%" (perf-time (acons 'z 10 alist)))
 ;;; (fmt :t "~A ;;; core.assq~%" (perf-time (assq 'j alist)))

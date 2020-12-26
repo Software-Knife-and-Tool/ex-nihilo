@@ -1,2 +1,2 @@
-(fmt :t "~A ;;; gc~%" (perf-time (gc :t)))
+;;; (fmt :t "~A ;;; gc~%" (perf-time (gc :t)))
 
