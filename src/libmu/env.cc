@@ -209,7 +209,7 @@ auto SystemTime(Env*) {
   unsigned long ts[2];
 
   Platform::SystemTime(ts);
-  
+
   return Fixnum(ts[0] * 1000000 + ts[1]).tag_;
 }
 
