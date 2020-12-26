@@ -171,22 +171,19 @@
    (:t (raise "illegal conversion (string)" object))))
 
 ;;; string= - string comparison
-;;; block with no return?
 (defun string= (str1 str2)
   (unless (stringp str1) (raise "is not a string (string=)" str1))
   (unless (stringp str2) (raise "is not a string (string=)" str2))
   (when (eq (mu::vector-length str1) (mu::vector-length str2))
-    (mu:block :nil
-      (let ((nth 0)
-            (len (mu::vector-length str1)))
-        (letf ((inc ()
-           (cond
-            ((eq nth len) :t)
-            ((eq (mu::vector-ref str1 nth) (mu::vector-ref str2 nth))
-             (:letq nth (fixnum+ 1 nth))
-             inc)
-            (:t :nil))))
-              (mu::trampoline inc))))))
+    (let ((nth 0) (len (mu::vector-length str1)))
+      (letf ((inc ()
+        (cond
+         ((eq nth len) :t)
+         ((eq (mu::vector-ref str1 nth) (mu::vector-ref str2 nth))
+          (:letq nth (fixnum+ 1 nth))
+          inc)
+         (:t :nil))))
+            (mu::trampoline inc)))))
 
 ;;; vector - coerce list to vector
 (defun vector (type :rest list)
@@ -227,7 +224,7 @@
 
 ;;; mapc
 (defun mu:mapc (fn :rest lists)
-  (mu:block :nil
+  (mu:block ()
     (let ((map-cars
            (:lambda (lists)
              (mu::mapcar
@@ -240,6 +237,7 @@
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
                 lists))))
+      
        (letf ((mcar (cdr-list)
                 (mu::apply fn (map-cars cdr-list))
                 (mcar (mu::mapcar cdr cdr-list))))
@@ -250,7 +248,7 @@
 (defun mu:mapcar (fn :rest lists)
   (let ((map-cars
          (:lambda (lists)
-            (mu:block :nil
+            (mu:block ()
               (mu::mapcar
                (:lambda (lst)
                   (when (null (car (car lst))) (mu:return :nil))
@@ -284,16 +282,18 @@
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
                 lists))))
-       (let ((mc (:lambda (rfn cdr-list)
-               (mu::apply fn (map-cars cdr-list)))))
-         (mc mc (map-cdrs lists)))))
-    (car lists))
+
+      (letf ((ml (cdr-list)
+               (mu::apply fn (map-cars cdr-list))))
+         (ml (map-cdrs lists)))))
+
+  (car lists))
 
 ;;; maplist
 (defun mu:maplist (fn :rest lists)
   (let ((map-cars
          (:lambda (lists)
-            (mu:block :nil
+            (mu:block ()
               (mu::mapcar
                (:lambda (lst)
                   (when (null (car lst)) (mu:return :nil))
@@ -304,12 +304,14 @@
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
                 lists))))
-      (let ((mc (:lambda (rfn cdr-list)
-              (let ((argl (map-cars cdr-list)))
-                (if (null argl)
-                  :nil               
-                  (cons (fn argl) (rfn rfn (mu::mapcar cdr cdr-list))))))))
-         (mc mc (map-cdrs lists)))))
+    
+    (letf ((mlist (cdr-list)
+             (let ((argl (map-cars cdr-list)))
+               (if (null argl)
+                   :nil
+                 (cons (mu::apply fn argl) (mlist (mu::mapcar cdr cdr-list)))))))
+;                 (mu::apply fn (mlist (mu::mapcar cdr cdr-list)))))))
+      (mlist (map-cdrs lists)))))
 
 ;;; check-type form type string
 (defmacro check-type (form type reason)
