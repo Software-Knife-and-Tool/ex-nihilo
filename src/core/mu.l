@@ -65,10 +65,8 @@
 
 ;;; conditional
 (:defsym if (:macro (test t f)
-  (list (list (list (list :lambda () (list 'eq () test)))
-        (list :lambda () f)
-        (list :lambda () t)))))
-                    
+  (list (list 'null test) f t)))
+
 ;;; when/unless macros
 (:defsym when (:macro (test :rest forms)
   (list (list 'null test) :nil (list* 'progn forms))))
@@ -159,10 +157,11 @@
 
 ;;; append
 (:defsym append (:lambda (:rest lists)
-  (foldr (:lambda (el acc)
-           (if (listp el)
-               (foldr (:lambda (el acc) (cons el acc)) acc el)
-             el))
-         ()
-         lists)))
+   (foldr
+    (:lambda (el acc)
+       (if (listp el)
+           (foldr (:lambda (el acc) (cons el acc)) acc el)
+         el))
+    ()
+    lists)))
 

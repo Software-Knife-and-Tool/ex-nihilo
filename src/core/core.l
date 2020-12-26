@@ -225,93 +225,79 @@
 ;;; mapc
 (defun mu:mapc (fn :rest lists)
   (mu:block ()
-    (let ((map-cars
-           (:lambda (lists)
-             (mu::mapcar
-              (:lambda (lst)
+    (letf* ((map-cars (lists)
+              (mu::mapcar
+               (:lambda (lst)
                  (when (null (car (car lst))) (mu:return :nil))
                  (car (car lst)))
-              lists)))
-          (map-cdrs
-            (:lambda (lists)
-              (mu::mapcar
+              lists))
+            (map-cdrs (lists)
+               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
-                lists))))
-      
-       (letf ((mcar (cdr-list)
-                (mu::apply fn (map-cars cdr-list))
-                (mcar (mu::mapcar cdr cdr-list))))
-             (mcar (map-cdrs lists)))))
+                lists))
+            (mcar (cdr-list)
+              (mu::apply fn (map-cars cdr-list))
+              (mcar (mu::mapcar cdr cdr-list))))
+       (mcar (map-cdrs lists))))
   (car lists))
 
 ;;; mapcar
 (defun mu:mapcar (fn :rest lists)
-  (let ((map-cars
-         (:lambda (lists)
+  (letf* ((map-cars (lists)
             (mu:block ()
               (mu::mapcar
                (:lambda (lst)
                   (when (null (car (car lst))) (mu:return :nil))
                   (car (car lst)))
-               lists))))
-        (map-cdrs
-         (:lambda (lists)
-            (mu::mapcar
-             (:lambda (lst) (mu::maplist identity lst))
-             lists))))
-
-    (letf ((mcar (cdr-list)
-      (let ((argl (map-cars cdr-list)))
-        (if (null argl)
-          :nil
-          (cons (fn argl) (mcar (mu::mapcar cdr cdr-list)))))))
-      (mcar (map-cdrs lists)))))
+               lists)))
+          (map-cdrs (lists)
+             (mu::mapcar
+              (:lambda (lst) (mu::maplist identity lst))
+              lists))
+          (mcar (cdr-list)
+            (let ((argl (map-cars cdr-list)))
+              (if (null argl)
+                  :nil
+                (cons (fn argl) (mcar (mu::mapcar cdr cdr-list)))))))
+      (mcar (map-cdrs lists))))
 
 ;;; mapl
 (defun mu:mapl (fn :rest lists)
   (mu:block :nil
-    (let ((map-cars
-            (:lambda (lists)
+    (letf* ((map-cars (lists)
               (mu::mapcar
                 (:lambda (lst)
                   (when (null (car lst)) (mu:return :nil))
                   (car lst))
-                lists)))
-          (map-cdrs
-            (:lambda (lists)
+                lists))
+            (map-cdrs (lists)
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
-                lists))))
-
-      (letf ((ml (cdr-list)
+                lists))
+            (ml (cdr-list)
                (mu::apply fn (map-cars cdr-list))))
-         (ml (map-cdrs lists)))))
-
+      (ml (map-cdrs lists))))
   (car lists))
 
 ;;; maplist
 (defun mu:maplist (fn :rest lists)
-  (let ((map-cars
-         (:lambda (lists)
+  (letf* ((map-cars (lists)
             (mu:block ()
               (mu::mapcar
                (:lambda (lst)
                   (when (null (car lst)) (mu:return :nil))
                   (car lst))
-               lists))))
-          (map-cdrs
-            (:lambda (lists)
+               lists)))
+          (map-cdrs (lists)
               (mu::mapcar
                 (:lambda (lst) (mu::maplist identity lst))
-                lists))))
-    
-    (letf ((mlist (cdr-list)
-             (let ((argl (map-cars cdr-list)))
-               (if (null argl)
-                   :nil
-                 (cons (mu::apply fn argl) (mlist (mu::mapcar cdr cdr-list)))))))
-;                 (mu::apply fn (mlist (mu::mapcar cdr cdr-list)))))))
-      (mlist (map-cdrs lists)))))
+                lists))
+          (mlist (cdr-list)
+            (let ((argl (map-cars cdr-list)))
+              (if (null argl)
+                  :nil
+                (cons (mu::apply fn argl) (mlist (mu::mapcar cdr cdr-list)))))))
+      (mlist (map-cdrs lists))))
 
 ;;; check-type form type string
 (defmacro check-type (form type reason)
@@ -353,36 +339,35 @@
                             (get-output-stream-string out))))))))
 
     (letf ((loop (args)
-                   (let ((ch (read-char fmt)))
-                     (cond
-                      ((null ch)
-                       (if stream
-                           dest
-                         (get-output-stream-string dest)))
-                      ((eq ch #\~)
-                       (let ((dir (read-char fmt)))
-                         (cond
-                          ((null dir) (raise "eof while processing directive" :nil) :nil)
-                          ((eq dir #\~) (write-char #\~ dest) (loop args))
-                          ((eq dir #\%) (terpri dest) (loop args))
-                          (:t (cond
-                               ((eq dir #\A) (mu::print (car args) dest :nil))
-                               ((eq dir #\C) (mu::print (car args) dest :nil))
-                               ((eq dir #\S) (mu::print (car args) dest :t))
-                               ((eq dir #\X) (let ((fix (car args)))
-                                               (check-type fix :fixnum "is not a fixnum (fmt)")
-                                               (mu::print (radix-string 16 fix) dest :nil)))
-                               ((eq dir #\D) (let ((fix (car args)))
-                                               (check-type fix :fixnum "is not a fixnum (fmt)")
-                                               (mu::print (radix-string 10 fix) dest :nil)))
-                               ((eq dir #\O) (let ((fix (car args)))
-                                               (check-type fix :fixnum "is not a fixnum (fmt)")
-                                               (mu::print (radix-string 8 fix) dest :nil)))
-                               ((eq dir #\W) (print-unreadable (car args) dest)))
-                              (loop (cdr args))))))
-                      (:t (write-char ch dest) (loop args))))))
-            
-           (loop args))))
+             (let ((ch (read-char fmt)))
+               (cond
+                ((null ch)
+                 (if stream
+                     dest
+                   (get-output-stream-string dest)))
+                ((eq ch #\~)
+                 (let ((dir (read-char fmt)))
+                   (cond
+                    ((null dir) (raise "eof while processing directive" :nil) :nil)
+                    ((eq dir #\~) (write-char #\~ dest) (loop args))
+                    ((eq dir #\%) (terpri dest) (loop args))
+                    (:t (cond
+                         ((eq dir #\A) (mu::print (car args) dest :nil))
+                         ((eq dir #\C) (mu::print (car args) dest :nil))
+                         ((eq dir #\S) (mu::print (car args) dest :t))
+                         ((eq dir #\X) (let ((fix (car args)))
+                                         (check-type fix :fixnum "is not a fixnum (fmt)")
+                                         (mu::print (radix-string 16 fix) dest :nil)))
+                         ((eq dir #\D) (let ((fix (car args)))
+                                         (check-type fix :fixnum "is not a fixnum (fmt)")
+                                         (mu::print (radix-string 10 fix) dest :nil)))
+                         ((eq dir #\O) (let ((fix (car args)))
+                                         (check-type fix :fixnum "is not a fixnum (fmt)")
+                                         (mu::print (radix-string 8 fix) dest :nil)))
+                         ((eq dir #\W) (print-unreadable (car args) dest)))
+                        (loop (cdr args))))))
+                (:t (write-char ch dest) (loop args))))))
+          (loop args))))
 
 ;;; room
 (defun room (:rest args)
@@ -393,7 +378,7 @@
          (nbytes (mu::vector-ref type-info 1))
          (nalloc (mu::vector-ref type-info 2))
          (nfree (mu::vector-ref type-info 3)))
-
+    
     (cond
      ((or (null args) (eq :default opt)) :t)
      ((eq opt :t)
