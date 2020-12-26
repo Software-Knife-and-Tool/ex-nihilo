@@ -25,7 +25,7 @@
 (parse-lambda '(:rest a)),(:nil :nil :nil a)
 (mu:mapc (:lambda (a b) (print (cons a b) :nil :nil)) '(1 2 3) '(a b c)),(1 . a)(2 . b)(3 . c)(1 2 3)
 (mu:mapcar car '((1 a) (2 b) (3 c))),((1 a) (2 b) (3 c))
-(mu:mapl (:lambda (el) (print el :nil :nil)) '((1 2 3 4) (1 2) (1 2 3))),((1 2 3 4) (1 2) (1 2 3))((1 2) (1 2 3))((1 2 3))((1 2 3 4) (1 2) (1 2 3))
+(mu:mapl (:lambda (el) el) '((1 2 3 4) (1 2) (1 2 3))),((1 2 3 4) (1 2) (1 2 3))
 (mu:maplist append '(1 2 3 4) '(1 2) '(1 2 3)),((1 2 3 4 1 2 1 2 3) (2 3 4 2 2 3))
 (defstruct test (a 0 :fixnum) (b 1 :fixnum)),test
 (string= "123" "123"),:t
