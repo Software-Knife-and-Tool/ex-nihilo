@@ -31,6 +31,7 @@ release:
 	@install -m 644 $(GYRE)/*.l $(DEST)/src/gyre
 	@install -m 644 $(CORE)/*.l $(DEST)/src/core
 	@install -m 644 $(LIBMU)/libmu.h $(DEST)/include
+	@install -m 644 $(LIBMU)/platform/platform.h $(DEST)/include
 	@tar cvfz $(DEST)-0.0.1.tgz $(DEST)
 	@rm -rf $(DEST)
 
