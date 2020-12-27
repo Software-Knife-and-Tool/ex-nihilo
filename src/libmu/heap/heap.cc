@@ -129,15 +129,12 @@ size_t Heap::room(SYS_CLASS tag) {
 
 /** * heap object marked? **/
 bool Heap::IsGcMarked(TagPtr ptr) {
-  if ((core::Type::TypeOf(ptr) != SYS_CLASS::FIXNUM) &&
-      (core::Type::TypeOf(ptr) != SYS_CLASS::FLOAT) &&
-      !core::Type::IsImmediate(ptr)) {
-    auto hinfo = GetHeapInfo(ptr);
+  if (core::Type::IsImmediate(ptr)) return false;
 
-    return RefBits(*hinfo) == 0 ? false : true;
-  }
+  auto hinfo = GetHeapInfo(ptr);
 
-  return false;
+  printf("IsGCMarked 0x%llx\n", ptr);
+  return RefBits(*hinfo) == 0 ? false : true;
 }
 
 /** * mark heap object **/

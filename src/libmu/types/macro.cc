@@ -96,8 +96,7 @@ TagPtr Macro::MacroExpand(Env* env, TagPtr form) {
   auto expanded = form;
   bool expandp;
 
-  do
-    std::tie<bool, TagPtr>(expandp, expanded) = MacroExpand1(env, expanded);
+  do std::tie<bool, TagPtr>(expandp, expanded) = MacroExpand1(env, expanded);
   while (expandp);
 
   return expanded;
