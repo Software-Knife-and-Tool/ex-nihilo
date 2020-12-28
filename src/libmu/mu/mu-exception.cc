@@ -75,7 +75,7 @@ void MakeException(Frame* fp) {
                      reason);
 
   fp->value = Exception(tag, core::Env::LastFrame(fp->env), source, reason)
-                  .Evict(fp->env, "mu-exception:make");
+                  .Evict(fp->env);
 }
 
 /** * (with-exception func func) **/
@@ -145,7 +145,7 @@ void Return(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a symbol (%return)", tag);
 
-  throw Cons(tag, value).Evict(fp->env, "mu-exception:return");
+  throw Cons(tag, value).Evict(fp->env);
 }
 
 } /* namespace mu */

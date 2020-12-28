@@ -106,7 +106,7 @@ class Symbol : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-  TagPtr Evict(Env*, const char*);
+  TagPtr Evict(Env*);
 
   explicit Symbol(TagPtr, TagPtr);
 };

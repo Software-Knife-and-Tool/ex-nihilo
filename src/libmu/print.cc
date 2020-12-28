@@ -93,7 +93,7 @@ void Print(Env* env, TagPtr object, TagPtr str, bool esc) {
 
 /** * print newline to stream **/
 void Terpri(Env* env, TagPtr stream) {
-  Print(env, Char('\n').Evict(env, ""), Stream::StreamDesignator(env, stream),
+  Print(env, Char('\n').Evict(env), Stream::StreamDesignator(env, stream),
         false);
 }
 

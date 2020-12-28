@@ -51,22 +51,6 @@ void Gc(Frame* fp) {
   fp->value = core::Fixnum(fp->env->Gc(fp->env)).tag_;
 }
 
-/** * mu function (heap-log bool) => :nil **/
-void HeapLog(Frame* fp) {
-  fp->value = fp->argv[0];
-
-  switch (fp->value) {
-    case Type::NIL:
-    case Type::T:
-      break;
-    default:
-      Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                       "is not boolean (heap-log)", fp->value);
-  }
-
-  fp->env->heap_->logging(Type::Null(fp->value) ? false : true);
-}
-
 /** * mu function (heap-info type) => vector **/
 void HeapInfo(Frame* fp) {
   auto type = fp->argv[0];

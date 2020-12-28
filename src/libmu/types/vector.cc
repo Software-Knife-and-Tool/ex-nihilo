@@ -69,9 +69,8 @@ void Vector::GcMark(Env* env, TagPtr vec) {
 
 /** * allocate a general vector from the heap **/
 Vector::Vector(Env* env, std::vector<TagPtr> src) {
-  auto vp =
-      env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(TagPtr)),
-                              SYS_CLASS::VECTOR, "vector:general");
+  auto vp = env->heap_alloc<Layout>(
+      sizeof(Layout) + (src.size() * sizeof(TagPtr)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::T;
   vp->length = src.size();
@@ -87,9 +86,8 @@ Vector::Vector(Env* env, std::string src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(src);
   } else {
-    auto vp =
-        env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(char)),
-                                SYS_CLASS::STRING, "vector:char");
+    auto vp = env->heap_alloc<Layout>(
+        sizeof(Layout) + (src.size() * sizeof(char)), SYS_CLASS::STRING);
 
     vp->type = SYS_CLASS::CHAR;
     vp->length = src.size();
@@ -103,9 +101,8 @@ Vector::Vector(Env* env, std::string src) {
 
 /** * allocate a byte vector from the heap **/
 Vector::Vector(Env* env, std::vector<uint8_t> src) {
-  auto vp =
-      env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(uint8_t)),
-                              SYS_CLASS::VECTOR, "vector:byte");
+  auto vp = env->heap_alloc<Layout>(
+      sizeof(Layout) + (src.size() * sizeof(uint8_t)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::BYTE;
   vp->length = src.size();
@@ -118,9 +115,8 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
 /** * allocate a fixnum vector from the heap **/
 Vector::Vector(Env* env, std::vector<int64_t> src) {
-  auto vp =
-      env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(int64_t)),
-                              SYS_CLASS::VECTOR, "vector:fixnum");
+  auto vp = env->heap_alloc<Layout>(
+      sizeof(Layout) + (src.size() * sizeof(int64_t)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::FIXNUM;
   vp->length = src.size();
@@ -133,9 +129,8 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
 /** * allocate a float vector from the heap **/
 Vector::Vector(Env* env, std::vector<float> src) {
-  auto vp =
-      env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(float)),
-                              SYS_CLASS::VECTOR, "vector:float");
+  auto vp = env->heap_alloc<Layout>(
+      sizeof(Layout) + (src.size() * sizeof(float)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::FLOAT;
   vp->length = src.size();

@@ -103,7 +103,7 @@ void Exception::Raise(Env* env, EXCEPT_CLASS ctype, const std::string& reason,
 
   throw Exception(ex.second, Env::LastFrame(env), source,
                   String(env, reason).tag_)
-      .Evict(env, "exception:reason");
+      .Evict(env);
 }
 
 } /* namespace core */

@@ -39,8 +39,8 @@ class Env {
  public:
   /** * allocate from heap **/
   template <typename T>
-  T* heap_alloc(size_t len, SYS_CLASS tag, const char* src) {
-    return reinterpret_cast<T*>(heap_->Alloc(len, tag, src));
+  T* heap_alloc(size_t len, SYS_CLASS tag) {
+    return reinterpret_cast<T*>(heap_->Alloc(len, tag));
   }
 
  public:

@@ -72,7 +72,7 @@ void MakeNamespace(Frame* fp) {
   if (!Namespace::IsType(import))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns", name);
 
-  fp->value = Namespace(name, import).Evict(fp->env, "mu-namespace:make");
+  fp->value = Namespace(name, import).Evict(fp->env);
   core::Env::AddNamespace(fp->env, fp->value);
 }
 
@@ -94,7 +94,7 @@ void NamespaceSymbols(Frame* fp) {
 
   fp->value = core::Cons(core::Cons::List(fp->env, externs),
                          core::Cons::List(fp->env, interns))
-                  .Evict(fp->env, "mu-namespace:symbols");
+                  .Evict(fp->env);
 }
 
 /** * (in-ns ns) => ns **/

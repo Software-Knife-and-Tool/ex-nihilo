@@ -115,7 +115,7 @@ void ListLength(Frame* fp) {
 
 /** * (cons object object) => cons **/
 void MakeCons(Frame* fp) {
-  fp->value = Cons(fp->argv[0], fp->argv[1]).Evict(fp->env, "cons:cons");
+  fp->value = Cons(fp->argv[0], fp->argv[1]).Evict(fp->env);
 }
 
 /** * (car list) => object **/

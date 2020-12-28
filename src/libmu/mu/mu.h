@@ -55,7 +55,6 @@ void FunctionStream(Frame*);
 void Gc(Frame*);
 void GetStringStream(Frame*);
 void HeapInfo(Frame*);
-void HeapLog(Frame*);
 void ImportOfNamespace(Frame*);
 void ImportOfNamespace(Frame*);
 void InFileStream(Frame*);

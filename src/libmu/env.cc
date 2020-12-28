@@ -91,7 +91,6 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"keyword", mu::MakeKeyword, 1},
     {"keywordp", mu::IsKeyword, 1},
     {"load", mu::Load, 1},
-    {"log", mu::Log, 1},
     {"log10", mu::Log10, 1},
     {"logand", mu::Logand, 2},
     {"logor", mu::Logor, 2},
@@ -150,7 +149,6 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
     {"env-view", mu::EnvView, 0},
     {"frame-ref", mu::FrameRef, 2},
     {"heap-view", mu::HeapInfo, 1},
-    {"heap-log", mu::HeapLog, 1},
     {"length", mu::ListLength, 1},
     {"letq", mu::Letq, 3},
     {"list-to-vector", mu::VectorCons, 2},
@@ -339,29 +337,29 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
 
   platform_ = platform;
   heap_ = std::make_unique<Heap>();
-  mu_ = Namespace(String(this, "mu").tag_, Type::NIL).Evict(this, "env:env");
+  mu_ = Namespace(String(this, "mu").tag_, Type::NIL).Evict(this);
   frame_id_ = 0;
   namespace_ = mu_;
   namespaces_["mu"] = mu_;
 
   standard_input_ = Symbol::Bind(
       Namespace::Intern(this, mu_, String(this, "standard-input").tag_),
-      Stream(stdin).Evict(this, "env:stdin"));
+      Stream(stdin).Evict(this));
   standard_output_ = Symbol::Bind(
       Namespace::Intern(this, mu_, String(this, "standard-output").tag_),
-      Stream(stdout).Evict(this, "env:stdout"));
+      Stream(stdout).Evict(this));
   standard_error_ = Symbol::Bind(
       Namespace::Intern(this, mu_, String(this, "error-output").tag_),
-      Stream(stderr).Evict(this, "env:stderr"));
+      Stream(stderr).Evict(this));
 
   for (auto& el : kExtFuncTab) {
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
-    (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this, "env:ext-fn"));
+    (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this));
   }
 
   for (auto& el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
-    (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this, "env:int-fn"));
+    (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this));
   }
 }
 

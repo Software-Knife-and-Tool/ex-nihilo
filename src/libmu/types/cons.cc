@@ -122,7 +122,7 @@ TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
   TagPtr rlist = NIL;
 
   for (auto nth = src.size(); nth; --nth)
-    rlist = Cons(src[nth - 1], rlist).Evict(env, "cons:list");
+    rlist = Cons(src[nth - 1], rlist).Evict(env);
 
   return rlist;
 }
@@ -131,12 +131,11 @@ TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
 TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
   if (src.size() == 0) return NIL;
 
-  TagPtr rlist = Cons(src[src.size() - 2], src[src.size() - 1])
-                     .Evict(env, "cons:list-dot.0");
+  TagPtr rlist = Cons(src[src.size() - 2], src[src.size() - 1]).Evict(env);
 
   if (src.size() > 2)
     for (auto nth = src.size() - 2; nth != 0; --nth)
-      rlist = Cons(src[nth - 1], rlist).Evict(env, "cons:list-dot.1");
+      rlist = Cons(src[nth - 1], rlist).Evict(env);
 
   return rlist;
 }
@@ -260,8 +259,8 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 }
 
 /** * evict cons to heap **/
-TagPtr Cons::Evict(Env* env, const char* src) {
-  auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS, src);
+TagPtr Cons::Evict(Env* env) {
+  auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS);
 
   *cp = cons_;
   tag_ = Entag(cp, TAG::CONS);

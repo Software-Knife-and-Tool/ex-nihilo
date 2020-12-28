@@ -46,7 +46,7 @@ void MakeStruct(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
                      values);
 
-  fp->value = Struct(name, values).Evict(fp->env, "struct:struct");
+  fp->value = Struct(name, values).Evict(fp->env);
 }
 
 /** * implements (struct-type struct) => symbol **/

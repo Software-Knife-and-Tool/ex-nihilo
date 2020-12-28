@@ -170,7 +170,7 @@ class Namespace : public Type {
   static void Print(Env*, TagPtr, TagPtr, bool);
 
  public: /* object model */
-  TagPtr Evict(Env*, const char*);
+  TagPtr Evict(Env*);
 
   explicit Namespace(TagPtr, TagPtr);
 }; /* class Namespace */

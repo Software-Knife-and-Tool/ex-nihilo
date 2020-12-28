@@ -11,7 +11,6 @@
  **  heap.h: libmu heap
  **
  **/
-
 #if !defined(_LIBMU_HEAP_HEAP_H_)
 #define _LIBMU_HEAP_HEAP_H_
 
@@ -47,7 +46,6 @@ class Heap {
   size_t npages_;        /* number of pages in the heap */
   char* uaddr_;          /* user virtual address */
   char* alloc_;          /* alloc barrier */
-  bool logging_;         /* logging enable */
   HeapInfo* conses_;     /* gc caching */
 
   /** * HeapInfo from TagPtr **/
@@ -117,12 +115,11 @@ class Heap {
 
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }
-  constexpr void logging(bool enable) { logging_ = enable; }
 
   /** * SYS_CLASS of TagPtr **/
   static SYS_CLASS SysClass(TagPtr ptr) { return SysClass(*GetHeapInfo(ptr)); }
 
-  void* Alloc(size_t, SYS_CLASS, const char*);
+  void* Alloc(size_t, SYS_CLASS);
 
   size_t Gc();
   bool IsGcMarked(TagPtr);

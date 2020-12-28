@@ -258,7 +258,7 @@ void FunctionStream(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "argument must be a function (open-function-stream)", fn);
 
-  fp->value = Stream(fn).Evict(fp->env, "mu-stream:function-stream");
+  fp->value = Stream(fn).Evict(fp->env);
 };
 
 /** * (accept-socket-stream stream) **/

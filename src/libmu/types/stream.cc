@@ -166,8 +166,8 @@ TagPtr Stream::Close(TagPtr stream) {
   return T;
 }
 
-TagPtr Stream::Evict(Env* env, const char* src) {
-  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM, src);
+TagPtr Stream::Evict(Env* env) {
+  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM);
 
   *sp = stream_;
   tag_ = Entag(sp, TAG::EXTEND);
