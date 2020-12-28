@@ -172,7 +172,7 @@ class Type {
  public:       /* object model */
   TagPtr tag_; /* tagged pointer for type constructors */
 
-  virtual TagPtr Evict(Env*, const char*) = 0;
+  virtual TagPtr Evict(Env*) = 0;
 
 }; /* class Type */
 

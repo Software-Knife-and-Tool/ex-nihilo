@@ -100,9 +100,8 @@ class Exception : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-  TagPtr Evict(Env* env, const char* src) {
-    auto ep =
-        env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::EXCEPTION, src);
+  TagPtr Evict(Env* env) {
+    auto ep = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::EXCEPTION);
 
     *ep = exception_;
     return Entag(ep, TAG::EXTEND);

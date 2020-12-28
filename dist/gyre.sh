@@ -1,5 +1,5 @@
 #! /bin/bash
-/usr/local/logica/bin/mu-repl                          \
+/usr/local/logica/bin/mu-exec                          \
     -l /usr/local/logica/canon/core/mu.l               \
     -q '(:defcon lib-base "/usr/local/logica")'        \
     -q '(load-once logica/canon "/canon/canon/lib.l")' \

@@ -72,8 +72,8 @@ class Macro : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-  TagPtr Evict(Env* env, const char* src) {
-    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::MACRO, src);
+  TagPtr Evict(Env* env) {
+    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::MACRO);
 
     *sp = macro_;
     tag_ = Entag(sp, TAG::EXTEND);

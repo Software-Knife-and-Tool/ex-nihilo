@@ -6,7 +6,6 @@
 *.so
 *.out
 build/mu-exec
-build/mu-repl
 dist/*.tgz
 TAGS*
 *.log

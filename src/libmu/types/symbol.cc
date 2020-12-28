@@ -164,7 +164,7 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
       }
     } else if (Null(ext_ns) && Null(int_ns)) {
       auto name = String(env, string).tag_;
-      rval = Symbol(NIL, name).Evict(env, "symbol:read");
+      rval = Symbol(NIL, name).Evict(env);
     } else
       Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                        "uninterned symbols may not be qualified (read)",
@@ -175,8 +175,8 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
 }
 
 /** * evict symbol to the heap **/
-TagPtr Symbol::Evict(Env* env, const char* src) {
-  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL, src);
+TagPtr Symbol::Evict(Env* env) {
+  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL);
 
   assert(Null(symbol_.ns) || Env::InHeap(env, symbol_.ns));
   assert(Type::IsImmediate(symbol_.name) || Env::InHeap(env, symbol_.name));

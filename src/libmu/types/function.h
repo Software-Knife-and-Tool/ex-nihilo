@@ -191,8 +191,8 @@ class Function : public Type {
   }
 
  public: /* object model */
-  TagPtr Evict(Env* env, const char* src) {
-    auto fp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::FUNCTION, src);
+  TagPtr Evict(Env* env) {
+    auto fp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::FUNCTION);
 
     *fp = function_;
     tag_ = Entag(fp, TAG::FUNCTION);

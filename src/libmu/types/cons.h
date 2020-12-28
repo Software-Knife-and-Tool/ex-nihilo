@@ -71,7 +71,7 @@ class Cons : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object */
-  TagPtr Evict(Env*, const char*);
+  TagPtr Evict(Env*);
 
   explicit Cons(TagPtr, TagPtr);
 

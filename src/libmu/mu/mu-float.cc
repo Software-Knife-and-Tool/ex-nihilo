@@ -179,7 +179,7 @@ void Exp(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(exp)",
                      scalar);
 
-  fp->value = Float(exp(Float::FloatOf(scalar))).Evict(fp->env, "mu-float:exp");
+  fp->value = Float(exp(Float::FloatOf(scalar))).Evict(fp->env);
 }
 
 /** * (log float) => float **/

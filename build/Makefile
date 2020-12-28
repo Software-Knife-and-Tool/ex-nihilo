@@ -12,7 +12,7 @@ DMAKEFLAGS = CXX="$(CXX)" AR="$(AR)" CXXFLAGS="$(DCXXFLAGS)"
 PMAKEFLAGS = CXX="$(CXX)" AR="$(AR)" CXXFLAGS="$(PCXXFLAGS)"
 RMAKEFLAGS = CXX="$(CXX)" AR="$(AR)" CXXFLAGS="$(RCXXFLAGS)"
 
-MAKES = libmu.mk libmu.so.mk mu-exec.mk mu-repl.mk
+MAKES = libmu.mk libmu.so.mk mu-exec.mk
 
 .PHONY: commit install format xref release debug profile clean
 
@@ -45,7 +45,6 @@ clean:
 	@rm -rf googletest
 
 format:
-	(cd ../src/libmu && clang-format -i *.h *.cc */*.h */*.cc)
-	(cd ../src/mu-exec && clang-format -i *.cc)
-	(cd ../src/mu-repl && clang-format -i *.cc)
+	@(cd ../src/libmu && clang-format -i *.h *.cc */*.h */*.cc)
+	@(cd ../src/mu-exec && clang-format -i *.cc)
 

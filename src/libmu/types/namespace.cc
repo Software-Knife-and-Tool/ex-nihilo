@@ -75,7 +75,7 @@ TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
   auto sym = FindSymbol(env, ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
-                                  Symbol(ns, name).Evict(env, "ns:intern"))
+                                  Symbol(ns, name).Evict(env))
                          : sym;
 }
 
@@ -87,10 +87,9 @@ TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
   auto key = static_cast<TagPtr>(hash_id(name));
   auto sym = FindInInterns(env, ns, name);
 
-  return Type::Null(sym)
-             ? Insert(Untag<Layout>(ns)->interns, key,
-                      Symbol(ns, name).Evict(env, "ns:intern-in-ns"))
-             : sym;
+  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
+                                  Symbol(ns, name).Evict(env))
+                         : sym;
 }
 
 /** * extern symbol in namespace **/
@@ -101,10 +100,9 @@ TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
   auto key = static_cast<TagPtr>(hash_id(name));
   auto sym = FindInExterns(env, ns, name);
 
-  return Type::Null(sym)
-             ? Insert(Untag<Layout>(ns)->externs, key,
-                      Symbol(ns, name).Evict(env, "ns:extern-in-ns"))
-             : sym;
+  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
+                                  Symbol(ns, name).Evict(env))
+                         : sym;
 }
 
 /** * namespace symbols **/
@@ -122,8 +120,8 @@ TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
 }
 
 /** evict namespace to heap **/
-TagPtr Namespace::Evict(Env* env, const char* src) {
-  auto np = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE, src);
+TagPtr Namespace::Evict(Env* env) {
+  auto np = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE);
 
   *np = namespace_;
   tag_ = Entag(np, TAG::EXTEND);

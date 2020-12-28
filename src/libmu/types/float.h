@@ -44,7 +44,7 @@ class Float : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-  TagPtr Evict(Env*, const char*) { return tag_; }
+  TagPtr Evict(Env*) { return tag_; }
 
   explicit Float(float fl) : Type() {
     uint64_t buf = 0;

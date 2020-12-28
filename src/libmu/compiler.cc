@@ -130,20 +130,18 @@ auto Lambda(Env* env, TagPtr form) {
                        lambda);
 
     /** * ((lexicals...) . restsym) */
-    return Cons(Cons::List(env, lexicals), restsym)
-        .Evict(env, "lambda:parse-lambda");
+    return Cons(Cons::List(env, lexicals), restsym).Evict(env);
   };
 
   auto lambda = parse_lambda(env, Cons::car(form));
 
   auto fn = Function(env, Type::NIL, std::vector<Frame*>{}, lambda,
                      Cons(lambda, Type::NIL).tag_)
-                .Evict(env, "compiler::compile-lambda");
+                .Evict(env);
 
   if (Function::arity(fn)) env->lexenv_.push_back(fn);
 
-  Function::form(fn, Cons(lambda, List(env, Cons::cdr(form)))
-                         .Evict(env, "compiler::compile-lambda"));
+  Function::form(fn, Cons(lambda, List(env, Cons::cdr(form))).Evict(env));
 
   if (Function::arity(fn)) env->lexenv_.pop_back();
 
@@ -213,7 +211,7 @@ auto DefMacro(Env* env, TagPtr form) {
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
 
-  return Macro(Lambda(env, args)).Evict(env, "macro");
+  return Macro(Lambda(env, args)).Evict(env);
 }
 
 /** * (:letq symbol expr) **/

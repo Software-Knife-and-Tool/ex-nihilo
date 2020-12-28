@@ -11,7 +11,7 @@ help:
 	@echo uninstall - remove gyre from $(ROOT)/$(BASE) (needs sudo)
 
 install:
-	@cat $(BASE)-0.0.1.tgz | (cd $(ROOT); tar xvfz -)
+	@cat $(BASE)-0.0.1.tgz | (cd $(ROOT); tar xfz -)
 
 uninstall:
 	@rm -rf $(ROOT)/$(BASE)

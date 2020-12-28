@@ -72,22 +72,19 @@ class Stream : public Type {
 
     if (stream == -1) return NIL;
 
-    return Stream(stream).Evict(env, "stream:make-input-file");
+    return Stream(stream).Evict(env);
   }
 
   static TagPtr MakeOutputFile(Env* env, std::string path) {
-    return Stream(Platform::OpenOutputFile(path))
-        .Evict(env, "stream:make-output-file");
+    return Stream(Platform::OpenOutputFile(path)).Evict(env);
   }
 
   static TagPtr MakeInputString(Env* env, std::string str) {
-    return Stream(Platform::OpenInputString(str))
-        .Evict(env, "stream:make-input-string");
+    return Stream(Platform::OpenInputString(str)).Evict(env);
   }
 
   static TagPtr MakeOutputString(Env* env, std::string init_string) {
-    return Stream(Platform::OpenOutputString(init_string))
-        .Evict(env, "stream:make-output-string");
+    return Stream(Platform::OpenOutputString(init_string)).Evict(env);
   }
 
   static TagPtr StreamDesignator(Env*, TagPtr);
@@ -105,7 +102,7 @@ class Stream : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-  TagPtr Evict(Env*, const char*);
+  TagPtr Evict(Env*);
 
   explicit Stream(Platform::StreamId);
   explicit Stream(TagPtr);

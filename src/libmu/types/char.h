@@ -42,7 +42,7 @@ class Char : public Type {
   static TagPtr ViewOf(Env*, TagPtr);
 
  public: /* object model */
-  TagPtr Evict(Env*, const char*) { return tag_; }
+  TagPtr Evict(Env*) { return tag_; }
 
   explicit Char(uint8_t ch) : Type() {
     tag_ = MakeImmediate(ch, 0, IMMEDIATE_CLASS::CHAR);

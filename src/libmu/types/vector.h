@@ -103,7 +103,7 @@ class Vector : public Type {
   static void Print(Env*, TagPtr, TagPtr, bool);
 
  public: /* object model */
-  TagPtr Evict(Env*, const char*) { return tag_; }
+  TagPtr Evict(Env*) { return tag_; }
 
   static constexpr TagPtr VSpecOf(TagPtr t) { return t; }
 

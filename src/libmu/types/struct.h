@@ -65,8 +65,8 @@ class Struct : public Type {
   }
 
  public: /* object model */
-  TagPtr Evict(Env* env, const char* src) {
-    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STRUCT, src);
+  TagPtr Evict(Env* env) {
+    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STRUCT);
 
     *sp = struct_;
     tag_ = Entag(sp, TAG::EXTEND);

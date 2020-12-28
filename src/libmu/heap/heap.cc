@@ -69,7 +69,7 @@ Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
 }
 
 /** * allocate heap object **/
-void* Heap::Alloc(size_t nbytes, SYS_CLASS tag, const char* src) {
+void* Heap::Alloc(size_t nbytes, SYS_CLASS tag) {
   auto fp = FindFree(nbytes, tag);
 
   if (fp == nullptr) {
@@ -84,11 +84,6 @@ void* Heap::Alloc(size_t nbytes, SYS_CLASS tag, const char* src) {
 
     nobjects_++;
     nalloc_->at(static_cast<size_t>(tag))++;
-
-    if (logging_) {
-      auto name = core::Symbol::name(core::Type::MapClassSymbol(tag));
-      printf("heap log: %s %s\n", core::String::StdStringOf(name).c_str(), src);
-    }
 
     return reinterpret_cast<void*>(halloc + sizeof(HeapInfo));
   } else {
@@ -200,7 +195,6 @@ Heap::Heap() {
   nfree_ = new std::vector<uint32_t>(256, 0);
   nalloc_ = new std::vector<uint32_t>(256, 0);
   filename_ = "";
-  logging_ = false;
 }
 
 } /* namespace heap */
