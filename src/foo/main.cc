@@ -15,14 +15,14 @@
 
 using libmu::platform::Platform;
 
-extern void repl(Platform *, int);
+extern void exec(Platform *, int);
 extern void make_opts(Platform *, int, char **, const char *);
 
 int main(int argc, char **argv) {
   Platform *platform = new Platform();
 
-  make_opts(platform, argc, argv, "vhe:q:l:");
-  repl(platform, argc);
+  make_opts(platform, argc, argv, "vhpe:q:l:");
+  exec(platform, argc);
 
   return 0;
 }

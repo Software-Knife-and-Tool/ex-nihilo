@@ -26,7 +26,6 @@ release:
 	@install -m 755 ../dist/core.sh $(DEST)/bin/core
 	@install -m 755 ../dist/gyre.sh $(DEST)/bin/gyre
 	@install -m 755 ../dist/mu.sh $(DEST)/bin/mu
-	@install -m 755 $(BUILD)/mu-repl $(DEST)/bin
 	@install -m 755 $(BUILD)/mu-exec $(DEST)/bin
 	@install -m 644 $(BUILD)/libmu.a $(DEST)/lib
 	@install -m 644 $(BUILD)/libmu.so $(DEST)/lib

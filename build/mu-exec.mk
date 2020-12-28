@@ -9,7 +9,7 @@ CPPFLAGS = -I ../src
 OBJS =  \
     main.o      \
     opts.o      \
-    exec.o
+    repl.o
 
 vpath %.cc ../src/mu-exec
 

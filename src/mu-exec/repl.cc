@@ -8,7 +8,7 @@
 
 /********
  **
- **  repl.cc: mu-repl repl
+ **  repl.cc: mu-exec repl
  **
  **/
 #include <iostream>
@@ -22,21 +22,23 @@
 using libmu::platform::Platform;
 
 void repl(Platform *platform, int) {
-
   auto env = libmu::api::env_default(platform);
 
   libmu::api::withException(env, [platform](void *env) {
+    auto repl = false;
+
     for (const Platform::OptMap &opt : *platform->options_) {
       switch (platform->name(opt)[0]) {
       case '?': /* fall through */
       case 'h': {
         const char *helpmsg =
-            "OVERVIEW: mu-repl - posix platform mu repl\n"
-            "USAGE: mu-repl [options] [src-file...]\n"
+            "OVERVIEW: mu-exec - posix platform mu repl\n"
+            "USAGE: mu-exec [options] [src-file...]\n"
             "\n"
             "OPTIONS:\n"
             "  -h                   print this message\n"
             "  -v                   print version string\n"
+            "  -i                   enter repl\n"
             "  -l SRCFILE           load SRCFILE in sequence\n"
             "  -e SEXPR             evaluate SEXPR and print result\n"
             "  -q SEXPR             evaluate SEXPR quietly\n"
@@ -48,6 +50,9 @@ void repl(Platform *platform, int) {
         }
         break;
       }
+      case 'i':
+        repl = true;
+        break;
       case 'l': {
         auto cmd = "(load \"" + platform->value(opt) + "\")";
         (void)libmu::api::eval(env, libmu::api::read_string(env, cmd));
@@ -75,18 +80,19 @@ void repl(Platform *platform, int) {
       auto cmd = "(load \"" + file + "\")";
       (void)libmu::api::eval(env, libmu::api::read_string(env, cmd));
     }
+
+    if (repl)
+      for (;;) {
+        libmu::api::withException(env, [](void *env) {
+          if (feof(stdin))
+            exit(0);
+
+          libmu::api::print(env,
+                            libmu::api::eval(env, libmu::api::read_stream(
+                                                      env, libmu::api::t())),
+                            libmu::api::nil(), false);
+          libmu::api::terpri(env, libmu::api::nil());
+        });
+      }
   });
-
-  for (;;) {
-    libmu::api::withException(env, [](void *env) {
-      if (feof(stdin))
-        exit(0);
-
-      libmu::api::print(
-          env,
-          libmu::api::eval(env, libmu::api::read_stream(env, libmu::api::t())),
-          libmu::api::nil(), false);
-      libmu::api::terpri(env, libmu::api::nil());
-    });
-  }
 }
