@@ -42,7 +42,7 @@ void Function::GcMark(Env* ev, TagPtr fn) {
     ev->GcMark(ev, form(fn));
     ev->GcMark(ev, name(fn));
     for (auto fp : context(fn)) {
-      for (size_t i = 0; i < fp->nargs; ++i) ev->GcMark(ev, fp->argv[i]);
+      Env::GcFrame(fp);
     }
   }
 }

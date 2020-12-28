@@ -234,17 +234,25 @@ auto Namespaces(Env* env) {
 } /* anonymous namespace */
 
 /** * garbage collection **/
+void Env::GcFrame(Frame* fp) {
+  GcMark(fp->env, fp->func);
+  for (size_t i = 0; i < fp->nargs; ++i) {
+    if ((unsigned long long)fp->argv[i] & 0xf000000000000000ULL)
+      printf("not-good 0x%llx\n", fp->argv[i]);
+
+    printf("%zu: function 0x%llx gc nargs %zu context 0x%llx 0x%llx\n", i,
+           fp->func, fp->nargs, fp, fp->argv[i]);
+
+    Env::GcMark(fp->env, fp->argv[i]);
+  }
+}
+
 size_t Env::Gc(Env* env) {
   env->heap_->ClearRefBits();
 
   for (auto ns : env->namespaces_) GcMark(env, ns.second);
-
   for (auto fn : env->lexenv_) GcMark(env, fn);
-
-  for (auto fp : env->frames_) {
-    GcMark(env, fp->func);
-    for (size_t i = 0; i < fp->nargs; ++i) GcMark(env, fp->argv[i]);
-  }
+  for (auto fp : env->frames_) GcFrame(fp);
 
   return env->heap_->Gc();
 }
