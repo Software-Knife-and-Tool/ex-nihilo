@@ -233,25 +233,13 @@ auto Namespaces(Env* env) {
 
 } /* anonymous namespace */
 
-/** * garbage collection **/
+/** * gc frame **/
 void Env::GcFrame(Frame* fp) {
   GcMark(fp->env, fp->func);
-  for (size_t i = 0; i < fp->nargs; ++i) {
-    if (!Address::IsType(fp->argv[i]) &&
-        ((unsigned long long)fp->argv[i] & 0xf000000000000000ULL)) {
-      printf("not-good 0x%llx\n", fp->argv[i]);
-      return;
-    }
-
-#if 0
-    printf("%zu: function 0x%llx gc nargs %zu context 0x%llx 0x%llx\n", i,
-           fp->func, fp->nargs, fp, fp->argv[i]);
-#endif
-    
-    Env::GcMark(fp->env, fp->argv[i]);
-  }
+  for (size_t i = 0; i < fp->nargs; ++i) Env::GcMark(fp->env, fp->argv[i]);
 }
 
+/** * gc environment **/
 size_t Env::Gc(Env* env) {
   env->heap_->ClearRefBits();
 

@@ -91,7 +91,7 @@ TagPtr Function::ViewOf(Env* env, TagPtr fn) {
 TagPtr Function::Funcall(Env* env, TagPtr fn, const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  size_t nargs = arity_nreqs(fn) + (arity_rest(fn) ? 1 : 0);
+  size_t nargs = arity_nreqs(fn) + ((arity_rest(fn) ? 1 : 0));
 
   CheckArity(env, fn, argv);
 
