@@ -233,18 +233,19 @@ auto Namespaces(Env* env) {
 
 } /* anonymous namespace */
 
-/** * garbage collection **/
+/** * gc frame **/
+void Env::GcFrame(Frame* fp) {
+  GcMark(fp->env, fp->func);
+  for (size_t i = 0; i < fp->nargs; ++i) Env::GcMark(fp->env, fp->argv[i]);
+}
+
+/** * gc environment **/
 size_t Env::Gc(Env* env) {
   env->heap_->ClearRefBits();
 
   for (auto ns : env->namespaces_) GcMark(env, ns.second);
-
   for (auto fn : env->lexenv_) GcMark(env, fn);
-
-  for (auto fp : env->frames_) {
-    GcMark(env, fp->func);
-    for (size_t i = 0; i < fp->nargs; ++i) GcMark(env, fp->argv[i]);
-  }
+  for (auto fp : env->frames_) GcFrame(fp);
 
   return env->heap_->Gc();
 }

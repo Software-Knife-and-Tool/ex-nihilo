@@ -42,7 +42,7 @@ void Function::GcMark(Env* ev, TagPtr fn) {
     ev->GcMark(ev, form(fn));
     ev->GcMark(ev, name(fn));
     for (auto fp : context(fn)) {
-      for (size_t i = 0; i < fp->nargs; ++i) ev->GcMark(ev, fp->argv[i]);
+      Env::GcFrame(fp);
     }
   }
 }
@@ -91,7 +91,7 @@ TagPtr Function::ViewOf(Env* env, TagPtr fn) {
 TagPtr Function::Funcall(Env* env, TagPtr fn, const std::vector<TagPtr>& argv) {
   assert(IsType(fn));
 
-  size_t nargs = arity_nreqs(fn) + (arity_rest(fn) ? 1 : 0);
+  size_t nargs = arity_nreqs(fn) + ((arity_rest(fn) ? 1 : 0));
 
   CheckArity(env, fn, argv);
 

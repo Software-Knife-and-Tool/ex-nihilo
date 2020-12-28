@@ -113,6 +113,7 @@ class Env {
 
  public: /* heap */
   static size_t Gc(Env*);
+  static void GcFrame(Frame*);
   static void GcMark(Env*, TagPtr);
 
   static TagPtr MapNamespace(Env*, std::string);

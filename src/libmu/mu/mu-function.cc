@@ -70,20 +70,14 @@ void Closure(Frame* fp) {
     Cons::cons_iter<Type::TagPtr> iter(Function::env(fn));
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       auto fn = it->car;
-      auto offset = 0;
-      auto lambda = Cons::car(Function::form(fn));
-      size_t nargs = Function::arity(fn); /* think: rest args? */
-      auto args = new Type::TagPtr[nargs];
       auto frame = fp->env->MapFrame(Function::frame_id(fn));
+      auto args = new Type::TagPtr[frame->nargs];
 
-      Cons::cons_iter<Type::TagPtr> iter(Cons::car(lambda));
-      for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-        args[offset] = frame->argv[offset];
-        offset++;
-      }
+      for (size_t i = 0; i < frame->nargs; ++i) args[i] = frame->argv[i];
 
-      context.push_back(
-          new Frame(fp->env, Function::frame_id(fn), fn, args, nargs));
+      auto nf =
+          new Frame(fp->env, Function::frame_id(fn), fn, args, frame->nargs);
+      context.push_back(nf);
     }
 
     Function::context(fn, context);

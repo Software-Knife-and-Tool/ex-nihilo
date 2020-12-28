@@ -17,6 +17,8 @@ release:
 	@install -d $(DEST)
 	@install -d $(DEST)/bin
 	@install -d $(DEST)/include
+	@install -d $(DEST)/include/libmu
+	@install -d $(DEST)/include/libmu/platform
 	@install -d $(DEST)/lib
 	@install -d $(DEST)/src
 	@install -d $(DEST)/src/gyre
@@ -30,8 +32,8 @@ release:
 	@install -m 644 $(BUILD)/libmu.so $(DEST)/lib
 	@install -m 644 $(GYRE)/*.l $(DEST)/src/gyre
 	@install -m 644 $(CORE)/*.l $(DEST)/src/core
-	@install -m 644 $(LIBMU)/libmu.h $(DEST)/include
-	@install -m 644 $(LIBMU)/platform/platform.h $(DEST)/include
+	@install -m 644 $(LIBMU)/libmu.h $(DEST)/include/libmu
+	@install -m 644 $(LIBMU)/platform/platform.h $(DEST)/include/libmu/platform
 	@tar cvfz $(DEST)-0.0.1.tgz $(DEST)
 	@rm -rf $(DEST)
 
