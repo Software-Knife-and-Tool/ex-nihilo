@@ -243,8 +243,10 @@ void Env::GcFrame(Frame* fp) {
       return;
     }
 
+#if 0
     printf("%zu: function 0x%llx gc nargs %zu context 0x%llx 0x%llx\n", i,
            fp->func, fp->nargs, fp, fp->argv[i]);
+#endif
     
     Env::GcMark(fp->env, fp->argv[i]);
   }
