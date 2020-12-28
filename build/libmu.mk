@@ -59,7 +59,7 @@ vpath %.cc ../src/libmu/platform
 vpath %.cc ../src/libmu/special
 vpath %.cc ../src/libmu/types
 
-# .SILENT: $(OBJS)
+.SILENT: $(OBJS)
 .PHONY: release debug profile clean libmu.a
 
 libmu.a: $(OBJS)

@@ -3,24 +3,27 @@
 #
 MAKE = make
 
-.PHONY: release format debug dist profile tests install uninstall clean perf-base perf perf-diff
+.PHONY: release format debug dist profile tests install
+.PHONY: uninstall clean perf-base perf perf-diff commit
 
 help:
 	@echo "---- build options"
 	@echo "debug - build debug"
 	@echo "profile - build profile"
 	@echo "release - build release"
+	@echo "clean - remove binaries"
 	@echo "---- release"
 	@echo "dist - build distribution for release"
 	@echo "install - install release (needs sudo)"
 	@echo "uninstall - uninstall release (needs sudo)"
+	@echo "commit - run all pre-commit functions"
 	@echo "--- pre-commit"
 	@echo "perf-base - base perf measurement"
 	@echo "perf - current perf measurement"
 	@echo "perf-diff - display difference between base and current"
 	@echo "format - format source"
-	@echo "tests - run tests"
-	@echo "clean - remove binaries"
+
+commit: perf-base format
 
 release:
 	@$(MAKE) -C build release --no-print-directory

@@ -15,7 +15,7 @@ vpath %.cc ../src/mu-exec
 
 LIBS = ./libmu.a
 
-# .SILENT: $(OBJS)
+.SILENT: $(OBJS)
 .PHONY: mu-exec clean
 
 mu-exec: $(OBJS)

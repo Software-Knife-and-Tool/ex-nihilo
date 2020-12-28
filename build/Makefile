@@ -45,7 +45,7 @@ clean:
 	@rm -rf googletest
 
 format:
-	(cd ../src/libmu && clang-format -i *.h *.cc */*.h */*.cc)
-	(cd ../src/mu-exec && clang-format -i *.cc)
-	(cd ../src/mu-repl && clang-format -i *.cc)
+	@(cd ../src/libmu && clang-format -i *.h *.cc */*.h */*.cc)
+	@(cd ../src/mu-exec && clang-format -i *.cc)
+	@(cd ../src/mu-repl && clang-format -i *.cc)
 

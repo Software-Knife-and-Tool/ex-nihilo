@@ -15,7 +15,7 @@ vpath %.cc ../src/mu-repl
 
 LIBS = ./libmu.a
 
-# .SILENT: $(OBJS)
+.SILENT: $(OBJS)
 .PHONY: mu-repl clean
 
 mu-repl: $(OBJS)
