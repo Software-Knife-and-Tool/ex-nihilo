@@ -109,7 +109,6 @@
 (functionp gc),:t
 (functionp get-output-stream-string),:t
 (functionp heap-view),:t
-(functionp heap-log),:t
 (functionp in-ns),:t
 (functionp intern),:t
 (functionp invoke),:t
