@@ -91,6 +91,7 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"keyword", mu::MakeKeyword, 1},
     {"keywordp", mu::IsKeyword, 1},
     {"load", mu::Load, 1},
+    {"log", mu::Log, 1},
     {"log10", mu::Log10, 1},
     {"logand", mu::Logand, 2},
     {"logor", mu::Logor, 2},

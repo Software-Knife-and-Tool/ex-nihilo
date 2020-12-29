@@ -94,7 +94,6 @@
 (functionp gc)
 (functionp get-output-stream-string)
 (functionp heap-view)
-(functionp heap-log)
 (functionp identity)
 (functionp in-ns)
 (functionp intern)
