@@ -28,4 +28,5 @@
  '(()
   foo
   (a b c d)
-  ((comma 123))))
+  ((comma 123))
+  ((comma-at 123))))
