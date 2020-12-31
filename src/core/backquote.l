@@ -4,15 +4,15 @@
 ;;;
 (:defsym parse-bq (:lambda (form)
    (letf ((bq (form)
-     (cons 'append                
+     (cons 'append
        (mu::mapcar
         (:lambda (el)
            (cond
             ((consp el)
              (let ((fn (car el)) (body (cdr el)))
                (cond
-                ((eq fn 'comma) (list 'list (car body)))
-                ((eq fn 'comma-at) body)
+                ((eq fn 'unquote) (list 'list (car body)))
+                ((eq fn 'unquote-splice) body)
                 (:t el))))
             (:t (parse-bq el))))
         form))))
@@ -28,5 +28,5 @@
  '(()
   foo
   (a b c d)
-  ((comma 123))
-  ((comma-at 123))))
+  ((unquote 123))
+  ((unquote-splice 123))))
