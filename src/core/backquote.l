@@ -12,7 +12,7 @@
              (and (consp form)
                   (eq :quasi (car form))
                   (consp (nth 1 form))
-                 (apply append (mu::mapcar parse-quasi (nth 1 form))))))
+                 (list* 'append (mu::mapcar parse-quasi (nth 1 form))))))
          (cond
           ((null form) form)
           ((unquote form))
