@@ -4,7 +4,7 @@
 ;;;
 (:defsym parse-bq (:lambda (form)
    (letf ((bq (form)
-     (cons 'list
+     (cons 'append
        (mu::mapcar
         (:lambda (el)
            (cond
@@ -15,8 +15,8 @@
                 ((eq fn 'unquote-splice)
                   (unless (listp form) (raise "unquote-splice: is not a list" form))
                   form)
-                (:t (list :quote el)))))
-            (:t (parse-bq el))))
+                (:t (list :quote (list el))))))
+            (:t (list :quote (list el)))))
         form))))
          (cond
           ((null form) form)
@@ -27,13 +27,11 @@
 (mu::mapc
  (:lambda (el)
     (fmt :t "~A -> ~A~%" el (parse-bq el)))
- '(()
-  foo
-  (a)
-  (a (+ 1 2) c)
-  (a (unquote (+ 1 2)) c)
-  ((unquote 123))
-  ((unquote-splice '(123)))))
+ '((a (+ 1 2) c)
+   (a (unquote (+ 1 2)) c)
+   (a (list 1 2) c)	
+   (a (unquote (list 1 2)) c)	
+   (a (unquote-splice (list 1 2)) c)))
 
 #|
 Backquote Syntax	Equivalent List-Building Code	Result
