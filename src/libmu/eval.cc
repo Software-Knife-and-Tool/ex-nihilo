@@ -42,19 +42,19 @@ namespace libmu {
 namespace core {
 
 /** * apply function to argument list **/
-TagPtr Apply(Env* env, TagPtr fn, TagPtr args) {
+auto Apply(Env* env, Tag fn, Tag args) -> Tag {
   assert(Function::IsType(fn));
   assert(Cons::IsList(args));
 
-  std::vector<TagPtr> argv;
+  std::vector<Tag> argv;
   Cons::ListToVec(args, argv);
 
   return Function::Funcall(env, fn, argv);
 }
 
 /** * evaluate form in environment **/
-TagPtr Eval(Env* env, TagPtr form) {
-  TagPtr rval;
+auto Eval(Env* env, Tag form) -> Tag {
+  Tag rval;
 
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::SYMBOL:
@@ -79,8 +79,8 @@ TagPtr Eval(Env* env, TagPtr form) {
                              "(eval)", fn);
           break;
         case SYS_CLASS::FUNCTION: { /* function object */
-          std::vector<TagPtr> vlist;
-          Cons::cons_iter<TagPtr> iter(Cons::cdr(form));
+          std::vector<Tag> vlist;
+          Cons::cons_iter<Tag> iter(Cons::cdr(form));
           for (auto it = iter.begin(); it != iter.end(); it = ++iter)
             vlist.push_back({Eval(env, it->car)});
           rval = Apply(env, fn, Cons::List(env, vlist));

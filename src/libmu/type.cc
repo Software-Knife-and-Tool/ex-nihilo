@@ -38,7 +38,7 @@ namespace libmu {
 namespace core {
 namespace {
 
-static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
+static const std::map<Tag, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("address"), SYS_CLASS::ADDRESS},
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
@@ -59,14 +59,14 @@ static const std::map<TagPtr, SYS_CLASS> kSymbolMap{
 } /* anonymous namespace */
 
 /** * is type a class symbol? **/
-bool Type::IsClassSymbol(TagPtr type_sym) {
+auto Type::IsClassSymbol(Tag type_sym) -> bool {
   assert(Symbol::IsKeyword(type_sym));
 
   return kSymbolMap.count(type_sym) != 0;
 }
 
 /** * type symbol map **/
-SYS_CLASS Type::MapSymbolClass(TagPtr type_sym) {
+auto Type::MapSymbolClass(Tag type_sym) -> SYS_CLASS {
   assert(Symbol::IsKeyword(type_sym));
   assert(kSymbolMap.count(type_sym));
 
@@ -74,8 +74,8 @@ SYS_CLASS Type::MapSymbolClass(TagPtr type_sym) {
 }
 
 /** * class symbol map */
-TagPtr Type::MapClassSymbol(SYS_CLASS sys_class) {
-  static const std::map<SYS_CLASS, TagPtr> kTypeMap{
+auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
+  static const std::map<SYS_CLASS, Tag> kTypeMap{
       {SYS_CLASS::ADDRESS, Symbol::Keyword("address")},
       {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
       {SYS_CLASS::CHAR, Symbol::Keyword("char")},
@@ -99,8 +99,8 @@ TagPtr Type::MapClassSymbol(SYS_CLASS sys_class) {
 }
 
 /** * type of tagged pointer **/
-SYS_CLASS Type::TypeOf(TagPtr ptr) {
-  static const std::vector<std::pair<bool (*)(TagPtr), SYS_CLASS>> kPredMap{
+auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
+  static const std::vector<std::pair<bool (*)(Tag), SYS_CLASS>> kPredMap{
       {Address::IsType, SYS_CLASS::ADDRESS},
       {Char::IsType, SYS_CLASS::CHAR},
       {Cons::IsType, SYS_CLASS::CONS},
@@ -116,11 +116,11 @@ SYS_CLASS Type::TypeOf(TagPtr ptr) {
       {Symbol::IsType, SYS_CLASS::SYMBOL},
       {Vector::IsType, SYS_CLASS::VECTOR}};
 
-  auto el = std::find_if(
-      kPredMap.begin(), kPredMap.end(),
-      [ptr](const std::pair<bool (*)(TagPtr), SYS_CLASS> predicate) {
-        return predicate.first(ptr);
-      });
+  auto el =
+      std::find_if(kPredMap.begin(), kPredMap.end(),
+                   [ptr](const std::pair<bool (*)(Tag), SYS_CLASS> predicate) {
+                     return predicate.first(ptr);
+                   });
 
   assert(el != kPredMap.end());
 

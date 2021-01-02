@@ -38,36 +38,36 @@ class Stream : public Type {
  public:
   typedef struct {
     Platform::StreamId stream;
-    TagPtr fn;
+    Tag fn;
   } Layout;
 
   Layout stream_;
 
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return IsExtended(ptr) &&
            heap::Heap::SysClass(ptr) == Type::SYS_CLASS::STREAM;
   }
 
-  static bool IsFunction(TagPtr);
+  static bool IsFunction(Tag);
 
-  static constexpr bool IsStreamDesignator(TagPtr ptr) {
+  static constexpr bool IsStreamDesignator(Tag ptr) {
     return Eq(ptr, T) || Eq(ptr, NIL) || IsType(ptr);
   }
 
-  static Platform::StreamId streamId(TagPtr stream) {
+  static Platform::StreamId streamId(Tag stream) {
     assert(IsType(stream));
 
     return Untag<Layout>(stream)->stream;
   }
 
-  static TagPtr func(TagPtr stream) {
+  static Tag func(Tag stream) {
     assert(IsType(stream));
 
     return Untag<Layout>(stream)->fn;
   }
 
-  static TagPtr MakeInputFile(Env* env, std::string path) {
+  static Tag MakeInputFile(Env* env, std::string path) {
     auto stream = Platform::OpenInputFile(path);
 
     if (stream == -1) return NIL;
@@ -75,37 +75,37 @@ class Stream : public Type {
     return Stream(stream).Evict(env);
   }
 
-  static TagPtr MakeOutputFile(Env* env, std::string path) {
+  static Tag MakeOutputFile(Env* env, std::string path) {
     return Stream(Platform::OpenOutputFile(path)).Evict(env);
   }
 
-  static TagPtr MakeInputString(Env* env, std::string str) {
+  static Tag MakeInputString(Env* env, std::string str) {
     return Stream(Platform::OpenInputString(str)).Evict(env);
   }
 
-  static TagPtr MakeOutputString(Env* env, std::string init_string) {
+  static Tag MakeOutputString(Env* env, std::string init_string) {
     return Stream(Platform::OpenOutputString(init_string)).Evict(env);
   }
 
-  static TagPtr StreamDesignator(Env*, TagPtr);
-  static TagPtr Close(TagPtr);
+  static Tag StreamDesignator(Env*, Tag);
+  static Tag Close(Tag);
 
-  static TagPtr ReadByte(Env*, TagPtr);
-  static TagPtr UnReadByte(TagPtr, TagPtr);
-  static void WriteByte(TagPtr, TagPtr);
+  static Tag ReadByte(Env*, Tag);
+  static Tag UnReadByte(Tag, Tag);
+  static void WriteByte(Tag, Tag);
 
-  static bool IsClosed(TagPtr);
-  static bool IsEof(TagPtr);
-  static void Flush(TagPtr);
+  static bool IsClosed(Tag);
+  static bool IsEof(Tag);
+  static void Flush(Tag);
 
-  static void GcMark(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static void GcMark(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  TagPtr Evict(Env*);
+  Tag Evict(Env*);
 
   explicit Stream(Platform::StreamId);
-  explicit Stream(TagPtr);
+  explicit Stream(Tag);
 
 }; /* class Stream */
 

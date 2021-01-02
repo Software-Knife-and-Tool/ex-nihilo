@@ -28,7 +28,7 @@ namespace libmu {
 namespace core {
 
 /** * garbage collection **/
-void Cons::GcMark(Env* env, TagPtr ptr) {
+auto Cons::GcMark(Env* env, Tag ptr) -> void {
   assert(IsType(ptr));
 
   if (!env->heap_->IsGcMarked(ptr)) {
@@ -39,87 +39,87 @@ void Cons::GcMark(Env* env, TagPtr ptr) {
 }
 
 /** * view of cons object **/
-TagPtr Cons::ViewOf(Env* env, TagPtr cons) {
+auto Cons::ViewOf(Env* env, Tag cons) -> Tag {
   assert(IsType(cons));
 
-  auto view = std::vector<TagPtr>{Symbol::Keyword("cons"), cons,
-                                  Fixnum(ToUint64(cons) >> 3).tag_, car(cons),
-                                  cdr(cons)};
+  auto view =
+      std::vector<Tag>{Symbol::Keyword("cons"), cons,
+                       Fixnum(ToUint64(cons) >> 3).tag_, car(cons), cdr(cons)};
 
   return Vector(env, view).tag_;
 }
 
-/** * listToVec list vector ref **/
-void Cons::ListToVec(TagPtr list, std::vector<TagPtr>& vec) {
+/** * listToVec list to vector **/
+auto Cons::ListToVec(Tag list, std::vector<Tag>& vec) -> void {
   assert(IsList(list));
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     vec.push_back(it->car);
 }
 
 /** * mapcar :func list **/
-TagPtr Cons::MapCar(Env* env, TagPtr func, TagPtr list) {
+auto Cons::MapCar(Env* env, Tag func, Tag list) -> Tag {
   assert(Function::IsType(func));
   assert(IsList(list));
 
   if (Null(list)) return NIL;
 
-  std::vector<TagPtr> vlist;
+  std::vector<Tag> vlist;
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    vlist.push_back(Function::Funcall(env, func, std::vector<TagPtr>{it->car}));
+    vlist.push_back(Function::Funcall(env, func, std::vector<Tag>{it->car}));
 
   return Cons::List(env, vlist);
 }
 
 /** * mapc function list **/
-void Cons::MapC(Env* env, TagPtr func, TagPtr list) {
+auto Cons::MapC(Env* env, Tag func, Tag list) -> void {
   assert(Function::IsType(func));
   assert(IsList(list));
 
   if (Null(list)) return;
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)Function::Funcall(env, func, std::vector<TagPtr>{it->car});
+    (void)Function::Funcall(env, func, std::vector<Tag>{it->car});
 }
 
 /** * maplist function list **/
-TagPtr Cons::MapList(Env* env, TagPtr func, TagPtr list) {
+auto Cons::MapList(Env* env, Tag func, Tag list) -> Tag {
   assert(Function::IsType(func));
   assert(IsList(list));
 
   if (Null(list)) return NIL;
 
-  std::vector<TagPtr> vlist;
-  cons_iter<TagPtr> iter(list);
+  std::vector<Tag> vlist;
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     vlist.push_back(Function::Funcall(
-        env, func, std::vector<TagPtr>{Type::Entag(it, TAG::CONS)}));
+        env, func, std::vector<Tag>{Type::Entag(it, TAG::CONS)}));
 
   return Cons::List(env, vlist);
 }
 
 /** * maplist :func list **/
-void Cons::MapL(Env* env, TagPtr func, TagPtr list) {
+auto Cons::MapL(Env* env, Tag func, Tag list) -> void {
   assert(Function::IsType(func));
   assert(IsList(list));
 
   if (Null(list)) return;
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     (void)Function::Funcall(env, func,
-                            std::vector<TagPtr>{Type::Entag(it, TAG::CONS)});
+                            std::vector<Tag>{Type::Entag(it, TAG::CONS)});
 }
 
 /** * make a list from a std::vector **/
-TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
+auto Cons::List(Env* env, const std::vector<Tag>& src) -> Tag {
   if (src.size() == 0) return NIL;
 
-  TagPtr rlist = NIL;
+  Tag rlist = NIL;
 
   for (auto nth = src.size(); nth; --nth)
     rlist = Cons(src[nth - 1], rlist).Evict(env);
@@ -127,11 +127,11 @@ TagPtr Cons::List(Env* env, const std::vector<TagPtr>& src) {
   return rlist;
 }
 
-/** * make a dotted list from a std::vector<TagPtr> **/
-TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
+/** * make a dotted list from a std::vector<Tag> **/
+auto Cons::ListDot(Env* env, const std::vector<Tag>& src) -> Tag {
   if (src.size() == 0) return NIL;
 
-  TagPtr rlist = Cons(src[src.size() - 2], src[src.size() - 1]).Evict(env);
+  Tag rlist = Cons(src[src.size() - 2], src[src.size() - 1]).Evict(env);
 
   if (src.size() > 2)
     for (auto nth = src.size() - 2; nth != 0; --nth)
@@ -141,12 +141,12 @@ TagPtr Cons::ListDot(Env* env, const std::vector<TagPtr>& src) {
 }
 
 /** * nth element of list **/
-TagPtr Cons::Nth(TagPtr list, size_t index) {
+auto Cons::Nth(Tag list, size_t index) -> Tag {
   assert(IsList(list));
 
-  TagPtr nth = NIL;
+  Tag nth = NIL;
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     nth = it->car;
     if (index-- == 0) break;
@@ -156,12 +156,12 @@ TagPtr Cons::Nth(TagPtr list, size_t index) {
 }
 
 /** * nth sublist of list **/
-TagPtr Cons::NthCdr(TagPtr list, size_t index) {
+auto Cons::NthCdr(Tag list, size_t index) -> Tag {
   assert(IsList(list));
 
   if (index == 0) return list;
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     if (--index == 0) return it->cdr;
 
@@ -169,14 +169,14 @@ TagPtr Cons::NthCdr(TagPtr list, size_t index) {
 }
 
 /** * list length **/
-size_t Cons::Length(Env* env, TagPtr list) {
+auto Cons::Length(Env* env, Tag list) -> size_t {
   assert(IsList(list));
 
   if (Null(list)) return 0;
 
   size_t len = 0;
 
-  cons_iter<TagPtr> iter(list);
+  cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     len++;
     if (!IsList(it->cdr))
@@ -188,7 +188,7 @@ size_t Cons::Length(Env* env, TagPtr list) {
 }
 
 /** * print list to stream **/
-void Cons::Print(Env* env, TagPtr cons, TagPtr stream, bool esc) {
+auto Cons::Print(Env* env, Tag cons, Tag stream, bool esc) -> void {
   assert(IsList(cons));
   assert(Stream::IsType(stream));
 
@@ -210,11 +210,11 @@ void Cons::Print(Env* env, TagPtr cons, TagPtr stream, bool esc) {
 }
 
 /** * list parser **/
-TagPtr Cons::Read(Env* env, TagPtr stream) {
+auto Cons::Read(Env* env, Tag stream) -> Tag {
   assert(Stream::IsType(stream));
 
-  std::vector<TagPtr> vlist;
-  TagPtr ch;
+  std::vector<Tag> vlist;
+  Tag ch;
 
   if (!core::ReadWSUntilEof(env, stream))
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
@@ -259,7 +259,7 @@ TagPtr Cons::Read(Env* env, TagPtr stream) {
 }
 
 /** * evict cons to heap **/
-TagPtr Cons::Evict(Env* env) {
+auto Cons::Evict(Env* env) -> Tag {
   auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS);
 
   *cp = cons_;
@@ -269,7 +269,7 @@ TagPtr Cons::Evict(Env* env) {
 }
 
 /** * allocate cons from the heap **/
-Cons::Cons(TagPtr car, TagPtr cdr) : Type() {
+Cons::Cons(Tag car, Tag cdr) : Type() {
   cons_.car = car;
   cons_.cdr = cdr;
 

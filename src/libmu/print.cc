@@ -42,7 +42,7 @@ namespace libmu {
 namespace core {
 
 /** * print std::string to stream **/
-void PrintStdString(Env* env, const std::string& str, TagPtr strm, bool esc) {
+void PrintStdString(Env* env, const std::string& str, Tag strm, bool esc) {
   auto stream = Stream::StreamDesignator(env, strm);
 
   auto dq = Char('"').tag_;
@@ -55,7 +55,7 @@ void PrintStdString(Env* env, const std::string& str, TagPtr strm, bool esc) {
 }
 
 /** * print object in broket syntax to stream **/
-void PrintAsBroket(Env* env, TagPtr object, TagPtr str) {
+void PrintAsBroket(Env* env, Tag object, Tag str) {
   auto stream = Stream::StreamDesignator(env, str);
 
   auto type = String::StdStringOf(
@@ -67,11 +67,10 @@ void PrintAsBroket(Env* env, TagPtr object, TagPtr str) {
 }
 
 /** * print object to stream **/
-void Print(Env* env, TagPtr object, TagPtr str, bool esc) {
+void Print(Env* env, Tag object, Tag str, bool esc) {
   auto stream = Stream::StreamDesignator(env, str);
 
-  static const std::map<SYS_CLASS,
-                        std::function<void(Env*, TagPtr, TagPtr, bool)>>
+  static const std::map<SYS_CLASS, std::function<void(Env*, Tag, Tag, bool)>>
       kPrinMap{{SYS_CLASS::CHAR, Char::Print},
                {SYS_CLASS::CONS, Cons::Print},
                {SYS_CLASS::FIXNUM, Fixnum::Print},
@@ -92,7 +91,7 @@ void Print(Env* env, TagPtr object, TagPtr str, bool esc) {
 }
 
 /** * print newline to stream **/
-void Terpri(Env* env, TagPtr stream) {
+void Terpri(Env* env, Tag stream) {
   Print(env, Char('\n').Evict(env), Stream::StreamDesignator(env, stream),
         false);
 }

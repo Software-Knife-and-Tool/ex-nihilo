@@ -34,9 +34,10 @@ namespace core {
 namespace {
 
 /** * parse symbol namespace designator **/
-auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep) {
+auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep)
+    -> Tag {
   auto cpos = symbol.find(sep);
-  TagPtr ns;
+  Tag ns;
 
   if (cpos < symbol.size()) {
     ns = Env::MapNamespace(env, symbol.substr(0, cpos));
@@ -53,7 +54,8 @@ auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep) {
 }
 
 /** * parse symbol name string **/
-auto NameOf(Env* env, const std::string& symbol, const std::string& sep) {
+auto NameOf(Env* env, const std::string& symbol, const std::string& sep)
+    -> Tag {
   auto cpos = symbol.find(sep);
 
   return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + sep.length())
@@ -64,21 +66,21 @@ auto NameOf(Env* env, const std::string& symbol, const std::string& sep) {
 } /* anonymous namespace */
 
 /** * view of symbol object **/
-TagPtr Symbol::ViewOf(Env* env, TagPtr symbol) {
+auto Symbol::ViewOf(Env* env, Tag symbol) -> Tag {
   assert(IsType(symbol));
 
-  auto view = std::vector<TagPtr>{Symbol::Keyword("symbol"),
-                                  symbol,
-                                  Fixnum(ToUint64(symbol) >> 3).tag_,
-                                  name(symbol),
-                                  ns(symbol),
-                                  value(symbol)};
+  auto view = std::vector<Tag>{Symbol::Keyword("symbol"),
+                               symbol,
+                               Fixnum(ToUint64(symbol) >> 3).tag_,
+                               name(symbol),
+                               ns(symbol),
+                               value(symbol)};
 
   return Vector(env, view).tag_;
 }
 
 /** * garbage collection **/
-void Symbol::GcMark(Env* env, TagPtr symbol) {
+auto Symbol::GcMark(Env* env, Tag symbol) -> void {
   assert(IsType(symbol));
 
   if (!IsKeyword(symbol) && !env->heap_->IsGcMarked(symbol)) {
@@ -89,7 +91,7 @@ void Symbol::GcMark(Env* env, TagPtr symbol) {
 }
 
 /** * set symbol namespace **/
-void Symbol::ns(TagPtr symbol, TagPtr ns) {
+auto Symbol::ns(Tag symbol, Tag ns) -> void {
   assert(IsType(symbol));
   assert(!IsKeyword(symbol));
   assert(Namespace::IsType(ns));
@@ -98,15 +100,15 @@ void Symbol::ns(TagPtr symbol, TagPtr ns) {
 }
 
 /** * is symbol bound to a value? */
-bool Symbol::IsBound(TagPtr sym) {
+auto Symbol::IsBound(Tag sym) -> bool {
   assert(IsType(sym));
 
   return IsKeyword(sym) ||
-         !Eq(value(sym), static_cast<TagPtr>(core::SYNTAX_CHAR::UNBOUND));
+         !Eq(value(sym), static_cast<Tag>(core::SYNTAX_CHAR::UNBOUND));
 }
 
 /** * print symbol to stream **/
-void Symbol::Print(Env* env, TagPtr sym, TagPtr stream, bool esc) {
+auto Symbol::Print(Env* env, Tag sym, Tag stream, bool esc) -> void {
   assert(IsType(sym));
   assert(Stream::IsType(stream));
 
@@ -123,15 +125,15 @@ void Symbol::Print(Env* env, TagPtr sym, TagPtr stream, bool esc) {
 }
 
 /** * parse symbol **/
-TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
-  TagPtr rval;
+auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
+  Tag rval;
 
   if (string.size() == 0)
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      "naked symbol syntax (read)", Type::NIL);
 
   if (string.size() == 1 && string[0] == '.')
-    return static_cast<TagPtr>(core::SYNTAX_CHAR::DOT);
+    return static_cast<Tag>(core::SYNTAX_CHAR::DOT);
 
   auto ch = string[0];
   auto keywdp = ch == ':';
@@ -175,7 +177,7 @@ TagPtr Symbol::ParseSymbol(Env* env, std::string string, bool intern) {
 }
 
 /** * evict symbol to the heap **/
-TagPtr Symbol::Evict(Env* env) {
+auto Symbol::Evict(Env* env) -> Tag {
   auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL);
 
   assert(Null(symbol_.ns) || Env::InHeap(env, symbol_.ns));
@@ -188,13 +190,13 @@ TagPtr Symbol::Evict(Env* env) {
 }
 
 /** * allocate an unbound symbol from the heap **/
-Symbol::Symbol(TagPtr ns, TagPtr name) {
+Symbol::Symbol(Tag ns, Tag name) {
   assert(String::IsType(name));
   assert(Namespace::IsType(ns) || Null(ns) || Eq(ns, T));
 
   symbol_.ns = ns;
   symbol_.name = name;
-  symbol_.value = static_cast<TagPtr>(core::SYNTAX_CHAR::UNBOUND);
+  symbol_.value = static_cast<Tag>(core::SYNTAX_CHAR::UNBOUND);
 
   tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
 }

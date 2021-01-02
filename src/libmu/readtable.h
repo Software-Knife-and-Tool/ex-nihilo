@@ -25,7 +25,7 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = Type::TagPtr;
+using Tag = Type::Tag;
 using IMMEDIATE_CLASS = Type::IMMEDIATE_CLASS;
 
 /** * readtable types **/
@@ -59,10 +59,10 @@ enum class SYNTAX_CHAR : uint64_t {
   VBAR = Type::ToUint64(Type::MakeImmediate('|', 0, IMMEDIATE_CLASS::CHAR))
 };
 
-bool SyntaxEq(TagPtr, SYNTAX_CHAR);
+bool SyntaxEq(Tag, SYNTAX_CHAR);
 
-SYNTAX_TYPE MapSyntaxType(TagPtr);
-SYNTAX_CHAR MapSyntaxChar(TagPtr);
+SYNTAX_TYPE MapSyntaxType(Tag);
+SYNTAX_CHAR MapSyntaxChar(Tag);
 
 } /* namespace core */
 } /* namespace libmu */

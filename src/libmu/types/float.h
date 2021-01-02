@@ -24,12 +24,12 @@ namespace core {
 
 /** * float type class **/
 class Float : public Type {
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return IsImmediate(ptr) && (ImmediateClass(ptr) == IMMEDIATE_CLASS::FLOAT);
   }
 
-  static float FloatOf(TagPtr fl) {
+  static float FloatOf(Tag fl) {
     assert(IsType(fl));
 
     float buf = 0.0;
@@ -39,12 +39,12 @@ class Float : public Type {
     return buf;
   }
 
-  static float VSpecOf(TagPtr fl) { return FloatOf(fl); }
-  static void Print(Env*, TagPtr, TagPtr, bool);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static float VSpecOf(Tag fl) { return FloatOf(fl); }
+  static void Print(Env*, Tag, Tag, bool);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  TagPtr Evict(Env*) { return tag_; }
+  Tag Evict(Env*) { return tag_; }
 
   explicit Float(float fl) : Type() {
     uint64_t buf = 0;

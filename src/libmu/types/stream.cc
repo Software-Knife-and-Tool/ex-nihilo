@@ -1,3 +1,4 @@
+
 /********
  **
  **  SPDX-License-Identifier: MIT
@@ -38,12 +39,12 @@ namespace libmu {
 namespace core {
 
 /** * function stream? **/
-bool Stream::IsFunction(TagPtr ptr) {
+auto Stream::IsFunction(Tag ptr) -> bool {
   return IsType(ptr) && Function::IsType(Untag<Layout>(ptr)->fn);
 }
 
 /** * garbage collection **/
-void Stream::GcMark(Env* env, TagPtr stream) {
+auto Stream::GcMark(Env* env, Tag stream) -> void {
   assert(IsType(stream));
 
   if (IsFunction(stream)) env->heap_->GcMark(func(stream));
@@ -52,10 +53,10 @@ void Stream::GcMark(Env* env, TagPtr stream) {
 }
 
 /** * view of struct object **/
-TagPtr Stream::ViewOf(Env* env, TagPtr stream) {
+auto Stream::ViewOf(Env* env, Tag stream) -> Tag {
   assert(IsType(stream));
 
-  auto view = std::vector<TagPtr>{
+  auto view = std::vector<Tag>{
       Symbol::Keyword("stream"), stream, Fixnum(ToUint64(stream) >> 3).tag_,
       Fixnum(streamId(stream)).tag_, Fixnum(ToUint64(func(stream))).tag_};
 
@@ -63,7 +64,7 @@ TagPtr Stream::ViewOf(Env* env, TagPtr stream) {
 }
 
 /** * stream eof predicate **/
-bool Stream::IsEof(TagPtr stream) {
+auto Stream::IsEof(Tag stream) -> bool {
   assert(Stream::IsType(stream));
 
   if (IsFunction(stream)) return false;
@@ -74,7 +75,7 @@ bool Stream::IsEof(TagPtr stream) {
 }
 
 /** * stream closed predicate **/
-bool Stream::IsClosed(TagPtr stream) {
+auto Stream::IsClosed(Tag stream) -> bool {
   assert(Stream::IsType(stream));
 
   if (IsFunction(stream)) return false;
@@ -84,8 +85,8 @@ bool Stream::IsClosed(TagPtr stream) {
   return (Platform::IsClosed(sp->stream)) ? true : false;
 }
 
-/** *  flush stream **/
-void Stream::Flush(TagPtr stream) {
+/** * flush stream **/
+auto Stream::Flush(Tag stream) -> void {
   assert(IsType(stream));
 
   if (IsFunction(stream)) return;
@@ -96,7 +97,7 @@ void Stream::Flush(TagPtr stream) {
 }
 
 /** * map stream designator onto a kernel stream **/
-TagPtr Stream::StreamDesignator(Env* env, TagPtr stream) {
+auto Stream::StreamDesignator(Env* env, Tag stream) -> Tag {
   switch (stream) {
     case T:
       stream = Symbol::value(env->standard_input_);
@@ -117,7 +118,7 @@ TagPtr Stream::StreamDesignator(Env* env, TagPtr stream) {
 }
 
 /** * unread char from stream **/
-TagPtr Stream::UnReadByte(TagPtr byte, TagPtr stream) {
+auto Stream::UnReadByte(Tag byte, Tag stream) -> Tag {
   assert(Stream::IsType(stream));
   assert(!Stream::IsFunction(stream));
   assert(Fixnum::IsType(byte));
@@ -129,7 +130,7 @@ TagPtr Stream::UnReadByte(TagPtr byte, TagPtr stream) {
 }
 
 /** * write byte to stream **/
-void Stream::WriteByte(TagPtr byte, TagPtr stream) {
+auto Stream::WriteByte(Tag byte, Tag stream) -> void {
   assert(Fixnum::IsType(byte));
   assert(!Stream::IsFunction(stream));
   assert(Stream::IsType(stream));
@@ -143,7 +144,7 @@ void Stream::WriteByte(TagPtr byte, TagPtr stream) {
 }
 
 /** * read byte from stream, returns a fixnum or nil **/
-TagPtr Stream::ReadByte(Env* env, TagPtr strm) {
+auto Stream::ReadByte(Env* env, Tag strm) -> Tag {
   auto stream = StreamDesignator(env, strm);
   assert(!Stream::IsFunction(stream));
 
@@ -156,7 +157,7 @@ TagPtr Stream::ReadByte(Env* env, TagPtr strm) {
 }
 
 /** * close stream **/
-TagPtr Stream::Close(TagPtr stream) {
+auto Stream::Close(Tag stream) -> Tag {
   assert(IsType(stream));
   assert(!Stream::IsFunction(stream));
 
@@ -166,7 +167,7 @@ TagPtr Stream::Close(TagPtr stream) {
   return T;
 }
 
-TagPtr Stream::Evict(Env* env) {
+auto Stream::Evict(Env* env) -> Tag {
   auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM);
 
   *sp = stream_;
@@ -182,7 +183,7 @@ Stream::Stream(Platform::StreamId streamid) : Type() {
   tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);
 }
 
-Stream::Stream(TagPtr fn) : Type() {
+Stream::Stream(Tag fn) : Type() {
   assert(Function::IsType(fn));
 
   stream_.stream = Platform::STREAM_ERROR;

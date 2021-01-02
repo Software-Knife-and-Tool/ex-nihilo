@@ -74,7 +74,7 @@ void ReadChar(Frame* fp) {
 
   if (Stream::IsFunction(stream)) {
     auto ch = core::Function::Funcall(fp->env, Stream::func(stream),
-                                      std::vector<Type::TagPtr>{});
+                                      std::vector<Type::Tag>{});
 
     if (!Char::IsType(ch))
       Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -123,7 +123,7 @@ void ReadByte(Frame* fp) {
 
   if (Stream::IsFunction(stream)) {
     auto byte = core::Function::Funcall(fp->env, Stream::func(stream),
-                                        std::vector<Type::TagPtr>{});
+                                        std::vector<Type::Tag>{});
 
     if (!Fixnum::IsType(byte) || Fixnum::Int64Of(byte) < 0 ||
         Fixnum::Int64Of(byte) > 255)

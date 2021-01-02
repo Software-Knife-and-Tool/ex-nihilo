@@ -73,7 +73,7 @@ void VectorRef(Frame* fp) {
       fp->value = core::Float(Vector::Ref<float>(vector, index)).tag_;
       break;
     case Type::SYS_CLASS::T:
-      fp->value = Vector::Ref<Type::TagPtr>(vector, index);
+      fp->value = Vector::Ref<Type::Tag>(vector, index);
       break;
     default:
       assert(!"vector type botch");

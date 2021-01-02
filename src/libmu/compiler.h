@@ -24,16 +24,16 @@
 namespace libmu {
 namespace core {
 
-TagPtr Compile(Env*, TagPtr);
-bool IsSpecOp(TagPtr);
+Tag Compile(Env*, Tag);
+bool IsSpecOp(Tag);
 
-constexpr auto lexicals(TagPtr lambda) {
+constexpr auto lexicals(Tag lambda) {
   assert(Cons::IsList(lambda));
 
   return Cons::car(lambda);
 }
 
-constexpr auto restsym(TagPtr lambda) {
+constexpr auto restsym(Tag lambda) {
   assert(Cons::IsList(lambda));
 
   return Cons::cdr(lambda);

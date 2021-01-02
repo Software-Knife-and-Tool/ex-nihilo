@@ -35,7 +35,7 @@ class Env;
 using platform::Platform;
 
 using SYS_CLASS = core::Type::SYS_CLASS;
-using TagPtr = core::Type::TagPtr;
+using Tag = core::Type::Tag;
 
 class Heap {
  private:
@@ -48,8 +48,8 @@ class Heap {
   char* alloc_;          /* alloc barrier */
   HeapInfo* conses_;     /* gc caching */
 
-  /** * HeapInfo from TagPtr **/
-  static HeapInfo* GetHeapInfo(TagPtr ptr) {
+  /** * HeapInfo from Tag **/
+  static HeapInfo* GetHeapInfo(Tag ptr) {
     return reinterpret_cast<HeapInfo*>((static_cast<uint64_t>(ptr) & ~7) - 8);
   }
 
@@ -116,14 +116,14 @@ class Heap {
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }
 
-  /** * SYS_CLASS of TagPtr **/
-  static SYS_CLASS SysClass(TagPtr ptr) { return SysClass(*GetHeapInfo(ptr)); }
+  /** * SYS_CLASS of Tag **/
+  static SYS_CLASS SysClass(Tag ptr) { return SysClass(*GetHeapInfo(ptr)); }
 
   void* Alloc(size_t, SYS_CLASS);
 
   size_t Gc();
-  bool IsGcMarked(TagPtr);
-  void GcMark(TagPtr);
+  bool IsGcMarked(Tag);
+  void GcMark(Tag);
   void ClearRefBits();
   HeapInfo* FindFree(size_t, SYS_CLASS);
 

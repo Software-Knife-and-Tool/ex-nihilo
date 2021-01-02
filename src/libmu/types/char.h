@@ -21,28 +21,28 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = core::Type::TagPtr;
+using Tag = core::Type::Tag;
 
 /** * character type class **/
 class Char : public Type {
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return IsImmediate(ptr) && (ImmediateClass(ptr) == IMMEDIATE_CLASS::CHAR);
   }
 
-  static constexpr uint8_t Uint8Of(TagPtr ptr) {
+  static constexpr uint8_t Uint8Of(Tag ptr) {
     assert(IsType(ptr));
 
     return static_cast<uint8_t>(ImmediateData(ptr));
   }
 
-  static float VSpecOf(TagPtr ch) { return Uint8Of(ch); }
-  static void Print(Env*, TagPtr, TagPtr, bool);
-  static TagPtr Read(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static float VSpecOf(Tag ch) { return Uint8Of(ch); }
+  static void Print(Env*, Tag, Tag, bool);
+  static Tag Read(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  TagPtr Evict(Env*) { return tag_; }
+  Tag Evict(Env*) { return tag_; }
 
   explicit Char(uint8_t ch) : Type() {
     tag_ = MakeImmediate(ch, 0, IMMEDIATE_CLASS::CHAR);

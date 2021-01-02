@@ -20,11 +20,11 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = Type::TagPtr;
+using Tag = Type::Tag;
 
-void Print(Env*, TagPtr, TagPtr, bool);
-void PrintStdString(Env*, const std::string&, TagPtr, bool);
-void Terpri(Env*, TagPtr);
+void Print(Env*, Tag, Tag, bool);
+void PrintStdString(Env*, const std::string&, Tag, bool);
+void Terpri(Env*, Tag);
 
 } /* namespace core */
 } /* namespace libmu */

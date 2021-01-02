@@ -14,7 +14,6 @@
 #include <cassert>
 #include <numeric>
 
-#include <errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -59,11 +58,11 @@ void HeapInfo(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a system class keyword (heap-info)", type);
 
-  std::function<Type::TagPtr(Type::SYS_CLASS, int)> type_vec =
+  std::function<Type::Tag(Type::SYS_CLASS, int)> type_vec =
       [fp](Type::SYS_CLASS sys_class, int size) {
         return core::Vector(
                    fp->env,
-                   std::vector<Type::TagPtr>{
+                   std::vector<Type::Tag>{
                        Fixnum(-1).tag_, /* figure out per object size */
                        Fixnum(size).tag_,
                        Fixnum(fp->env->heap_->nalloc_->at(
@@ -88,7 +87,7 @@ void HeapInfo(Frame* fp) {
       fp->value =
           core::Vector(
               fp->env,
-              std::vector<Type::TagPtr>{
+              std::vector<Type::Tag>{
                   Fixnum(fp->env->heap_->size()).tag_,
                   Fixnum(fp->env->heap_->alloc()).tag_,
                   Fixnum(std::accumulate(fp->env->heap_->nalloc_->begin(),

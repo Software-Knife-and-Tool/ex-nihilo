@@ -13,7 +13,6 @@
  **/
 #include "libmu/heap/heap.h"
 
-#include <errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -36,7 +35,7 @@ namespace heap {
 using SYS_CLASS = core::Type::SYS_CLASS;
 
 /** * find free object **/
-Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
+auto Heap::FindFree(size_t nbytes, SYS_CLASS tag) -> HeapInfo* {
   if (nfree_->at(static_cast<size_t>(tag)) != 0) {
     HeapInfo hinfo;
 
@@ -69,7 +68,7 @@ Heap::HeapInfo* Heap::FindFree(size_t nbytes, SYS_CLASS tag) {
 }
 
 /** * allocate heap object **/
-void* Heap::Alloc(size_t nbytes, SYS_CLASS tag) {
+auto Heap::Alloc(size_t nbytes, SYS_CLASS tag) -> void* {
   auto fp = FindFree(nbytes, tag);
 
   if (fp == nullptr) {
@@ -93,7 +92,7 @@ void* Heap::Alloc(size_t nbytes, SYS_CLASS tag) {
 }
 
 /** * count up total data bytes in heap **/
-size_t Heap::room() {
+auto Heap::room() -> size_t {
   size_t nbytes = 0;
   HeapInfo hinfo;
 
@@ -108,7 +107,7 @@ size_t Heap::room() {
 }
 
 /** * count up total type tag size **/
-size_t Heap::room(SYS_CLASS tag) {
+auto Heap::room(SYS_CLASS tag) -> size_t {
   size_t total_size = 0;
   HeapInfo hinfo;
 
@@ -123,21 +122,21 @@ size_t Heap::room(SYS_CLASS tag) {
 }
 
 /** * heap object marked? **/
-bool Heap::IsGcMarked(TagPtr ptr) {
+auto Heap::IsGcMarked(Tag ptr) -> bool {
   auto hinfo = GetHeapInfo(ptr);
 
   return RefBits(*hinfo) == 0 ? false : true;
 }
 
 /** * mark heap object **/
-void Heap::GcMark(TagPtr ptr) {
+auto Heap::GcMark(Tag ptr) -> void {
   auto hinfo = GetHeapInfo(ptr);
 
   *hinfo = RefBits(*hinfo, 1);
 }
 
 /** * clear refbits **/
-void Heap::ClearRefBits() {
+auto Heap::ClearRefBits() -> void {
   HeapInfo hinfo;
 
   for (auto hp = reinterpret_cast<uint64_t>(uaddr_);
@@ -147,11 +146,11 @@ void Heap::ClearRefBits() {
     *reinterpret_cast<HeapInfo*>(hp) = RefBits(hinfo, 0);
   }
 
-  for (auto fp = nfree_->begin(); fp != nfree_->end(); ++fp) *fp = 0;
+  for (auto& fp : *nfree_) fp = 0;
 }
 
 /** * garbage collection **/
-size_t Heap::Gc() {
+auto Heap::Gc() -> size_t {
   HeapInfo hinfo;
 
   size_t nmarked = 0;
