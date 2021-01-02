@@ -43,7 +43,7 @@ namespace core {
 namespace {
 
 /** * read #<:type fixnum attr-list> syntax **/
-auto ReadBroketSyntax(Env* env, TagPtr stream) {
+auto ReadBroketSyntax(Env* env, Tag stream) -> Tag {
   assert(Stream::IsType(stream));
 
   auto type = ReadForm(env, stream);
@@ -87,7 +87,7 @@ auto ReadBroketSyntax(Env* env, TagPtr stream) {
 }
 
 /** * read atom **/
-auto Atom(Env* env, TagPtr stream) {
+auto Atom(Env* env, Tag stream) -> std::string {
   assert(Stream::IsType(stream));
 
   std::string string;
@@ -114,7 +114,7 @@ auto Atom(Env* env, TagPtr stream) {
 }
 
 /** * read radixed fixnum from stream **/
-auto RadixFixnum(Env* env, int radix, TagPtr stream) {
+auto RadixFixnum(Env* env, int radix, Tag stream) -> Tag {
   assert(Stream::IsType(stream));
 
   std::string str = Atom(env, stream);
@@ -145,7 +145,7 @@ auto RadixFixnum(Env* env, int radix, TagPtr stream) {
 }
 
 /** * parse a numeric std::string **/
-auto Number(Env* env, const std::string& str) {
+auto Number(Env* env, const std::string& str) -> Tag {
   auto number = Type::NIL;
 
   try {
@@ -178,10 +178,10 @@ auto Number(Env* env, const std::string& str) {
 } /* anonymous namespace */
 
 /** * absorb whitespace until eof **/
-bool ReadWSUntilEof(Env* env, TagPtr stream) {
+auto ReadWSUntilEof(Env* env, Tag stream) -> bool {
   assert(Stream::IsType(stream));
 
-  TagPtr ch;
+  Tag ch;
 
   do {
     ch = Stream::ReadByte(env, stream);
@@ -199,8 +199,8 @@ bool ReadWSUntilEof(Env* env, TagPtr stream) {
 }
 
 /** * read form **/
-TagPtr ReadForm(Env* env, TagPtr stream_designator) {
-  TagPtr rval;
+auto ReadForm(Env* env, Tag stream_designator) -> Tag {
+  Tag rval;
 
   auto stream = Stream::StreamDesignator(env, stream_designator);
 
@@ -212,7 +212,7 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
   auto chm = Char(Fixnum::Int64Of(ch)).tag_;
   if (env->readtable_.count(chm) > 0)
     return Function::Funcall(env, env->readtable_[chm],
-                             std::vector<TagPtr>{stream, chm});
+                             std::vector<Tag>{stream, chm});
 
   switch (MapSyntaxChar(ch)) {
     case SYNTAX_CHAR::COMMENT:
@@ -228,8 +228,8 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
     case SYNTAX_CHAR::QUOTE: /* quote syntax */
       rval = ReadForm(env, stream);
       if (Symbol::IsType(rval) || Cons::IsType(rval))
-        rval = Cons::List(env,
-                          std::vector<TagPtr>{Symbol::Keyword("quote"), rval});
+        rval =
+            Cons::List(env, std::vector<Tag>{Symbol::Keyword("quote"), rval});
       break;
     case SYNTAX_CHAR::STRING: /* string syntax */
       rval = String::Read(env, stream);
@@ -261,7 +261,7 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
               Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
                                "read", stream);
             rval = Cons::List(
-                env, std::vector<TagPtr>{
+                env, std::vector<Tag>{
                          Namespace::FindSymbol(env, env->mu_,
                                                String(env, "closure").tag_),
                          fn});
@@ -319,12 +319,11 @@ TagPtr ReadForm(Env* env, TagPtr stream_designator) {
 }
 
 /** * read **/
-TagPtr Read(Env* env, TagPtr stream_designator) {
+auto Read(Env* env, Tag stream_designator) -> Tag {
   auto stream = Stream::StreamDesignator(env, stream_designator);
 
   return Stream::IsFunction(stream)
-             ? Function::Funcall(env, Stream::func(stream),
-                                 std::vector<TagPtr>{})
+             ? Function::Funcall(env, Stream::func(stream), std::vector<Tag>{})
              : ReadForm(env, Stream::StreamDesignator(env, stream));
 }
 

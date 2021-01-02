@@ -31,17 +31,17 @@ namespace libmu {
 namespace core {
 
 /** * view of float object **/
-TagPtr Float::ViewOf(Env* env, TagPtr flt) {
+auto Float::ViewOf(Env* env, Tag flt) -> Tag {
   assert(IsType(flt));
 
-  auto view = std::vector<TagPtr>{Symbol::Keyword("float"),
-                                  Fixnum(ToUint64(flt) >> 3).Evict(env), flt};
+  auto view = std::vector<Tag>{Symbol::Keyword("float"),
+                               Fixnum(ToUint64(flt) >> 3).Evict(env), flt};
 
   return Vector(env, view).tag_;
 }
 
 /** * print float object to stream **/
-void Float::Print(Env* env, TagPtr lfloat, TagPtr stream, bool) {
+auto Float::Print(Env* env, Tag lfloat, Tag stream, bool) -> void {
   assert(IsType(lfloat));
   assert(Stream::IsType(stream));
 

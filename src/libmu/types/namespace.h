@@ -45,14 +45,14 @@ namespace core {
 /** * namespace type class **/
 class Namespace : public Type {
  private: /* symbol map, keyed by hash id */
-  /* think: wouldn't it be less stress to key by symbol TagPtr? */
-  typedef std::unordered_map<uint32_t, TagPtr> symbol_map;
+  /* think: wouldn't it be less stress to key by symbol Tag? */
+  typedef std::unordered_map<uint32_t, Tag> symbol_map;
   typedef symbol_map::const_iterator symbol_iter;
 
   static const size_t FNV_prime = 16777619;
   static const uint64_t OFFSET_BASIS = 2166136261UL;
 
-  static symbol_iter find(const std::shared_ptr<symbol_map>& map, TagPtr key) {
+  static symbol_iter find(const std::shared_ptr<symbol_map>& map, Tag key) {
     return map->find(static_cast<uint64_t>(key));
   }
 
@@ -60,13 +60,13 @@ class Namespace : public Type {
     return el != map->end();
   }
 
-  static TagPtr Insert(const std::shared_ptr<symbol_map>& map, TagPtr key,
-                       TagPtr symbol) {
+  static Tag Insert(const std::shared_ptr<symbol_map>& map, Tag key,
+                    Tag symbol) {
     (*map.get())[static_cast<uint64_t>(key)] = symbol;
     return symbol;
   }
 
-  static uint64_t hash_id(TagPtr str) {
+  static uint64_t hash_id(Tag str) {
     assert(String::IsType(str));
 
     uint64_t hash = OFFSET_BASIS;
@@ -82,51 +82,51 @@ class Namespace : public Type {
 
  private:
   typedef struct {
-    TagPtr name;
-    TagPtr import;
+    Tag name;
+    Tag import;
     std::shared_ptr<symbol_map> externs;
     std::shared_ptr<symbol_map> interns;
   } Layout;
 
   Layout namespace_;
 
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::NAMESPACE;
   }
 
   /** * accessor **/
-  static TagPtr name(TagPtr ns) {
+  static Tag name(Tag ns) {
     assert(IsType(ns));
 
     return Untag<Layout>(ns)->name;
   }
 
   /** * accessors **/
-  static TagPtr import(TagPtr ns) {
+  static Tag import(Tag ns) {
     assert(IsType(ns));
 
     return Untag<Layout>(ns)->import;
   }
 
-  static symbol_map externs(TagPtr ns) {
+  static symbol_map externs(Tag ns) {
     assert(IsType(ns));
 
     return *Untag<Layout>(ns)->externs.get();
   }
 
-  static symbol_map interns(TagPtr ns) {
+  static symbol_map interns(Tag ns) {
     assert(IsType(ns));
 
     return *Untag<Layout>(ns)->interns.get();
   }
 
   /** * find symbol in namespace externs **/
-  static TagPtr FindInExterns(Env*, TagPtr ns, TagPtr str) {
+  static Tag FindInExterns(Env*, Tag ns, Tag str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
-    auto key = static_cast<TagPtr>(hash_id(str));
+    auto key = static_cast<Tag>(hash_id(str));
     auto entry = find(Untag<Layout>(ns)->externs, key);
 
     return isFound(Untag<Layout>(ns)->externs, entry) ? entry->second
@@ -134,11 +134,11 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace interns **/
-  static TagPtr FindInInterns(Env*, TagPtr ns, TagPtr str) {
+  static Tag FindInInterns(Env*, Tag ns, Tag str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
-    auto key = static_cast<TagPtr>(hash_id(str));
+    auto key = static_cast<Tag>(hash_id(str));
     auto entry = find(Untag<Layout>(ns)->interns, key);
 
     return isFound(Untag<Layout>(ns)->interns, entry) ? entry->second
@@ -146,33 +146,33 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace externs **/
-  static TagPtr FindInExterns(Env* env, TagPtr ns, std::string str) {
+  static Tag FindInExterns(Env* env, Tag ns, std::string str) {
     assert(IsType(ns));
 
     return FindInExterns(env, ns, String(env, str).tag_);
   }
 
   /** * find symbol in namespace interns **/
-  static TagPtr FindInInterns(Env* env, TagPtr ns, std::string str) {
+  static Tag FindInInterns(Env* env, Tag ns, std::string str) {
     assert(IsType(ns));
 
     return FindInInterns(env, ns, String(env, str).tag_);
   }
 
-  static TagPtr Symbols(Env*, TagPtr);
-  static void GcMark(Env*, TagPtr);
-  static TagPtr Intern(Env*, TagPtr, TagPtr);
-  static TagPtr InternInNs(Env*, TagPtr, TagPtr);
-  static TagPtr ExternInNs(Env*, TagPtr, TagPtr);
-  static TagPtr FindSymbol(Env*, TagPtr, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static Tag Symbols(Env*, Tag);
+  static void GcMark(Env*, Tag);
+  static Tag Intern(Env*, Tag, Tag);
+  static Tag InternInNs(Env*, Tag, Tag);
+  static Tag ExternInNs(Env*, Tag, Tag);
+  static Tag FindSymbol(Env*, Tag, Tag);
+  static Tag ViewOf(Env*, Tag);
 
-  static void Print(Env*, TagPtr, TagPtr, bool);
+  static void Print(Env*, Tag, Tag, bool);
 
  public: /* object model */
-  TagPtr Evict(Env*);
+  Tag Evict(Env*);
 
-  explicit Namespace(TagPtr, TagPtr);
+  explicit Namespace(Tag, Tag);
 }; /* class Namespace */
 
 } /* namespace core */

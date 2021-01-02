@@ -28,10 +28,10 @@ namespace libmu {
 namespace core {
 
 /** * view of string object **/
-TagPtr String::ViewOf(Env* env, TagPtr string) {
+auto String::ViewOf(Env* env, Tag string) -> Tag {
   assert(IsType(string));
 
-  auto view = std::vector<TagPtr>{
+  auto view = std::vector<Tag>{
       Symbol::Keyword("string"),
       string,
       Fixnum(ToUint64(string) >> 3).tag_,
@@ -40,7 +40,8 @@ TagPtr String::ViewOf(Env* env, TagPtr string) {
   return Vector(env, view).tag_;
 }
 
-void String::Print(Env* env, TagPtr string, TagPtr stream, bool esc) {
+/** * print string **/
+auto String::Print(Env* env, Tag string, Tag stream, bool esc) -> void {
   assert(String::IsType(string));
   assert(Stream::IsType(stream));
 
@@ -54,7 +55,7 @@ void String::Print(Env* env, TagPtr string, TagPtr stream, bool esc) {
 }
 
 /** * read string **/
-TagPtr String::Read(Env* env, TagPtr stream) {
+auto String::Read(Env* env, Tag stream) -> Tag {
   assert(Stream::IsType(stream));
 
   std::string str;

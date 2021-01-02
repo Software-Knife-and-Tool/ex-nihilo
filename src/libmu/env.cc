@@ -46,7 +46,7 @@ namespace core {
 namespace {
 
 /** * library extern core functions **/
-static const std::vector<Env::TagPtrFn> kExtFuncTab{
+static const std::vector<Env::TagFn> kExtFuncTab{
     {"accept-socket-stream", mu::AcceptSocketStream, 1},
     {"acos", mu::Acos, 1},
     {"asin", mu::Asin, 1},
@@ -144,7 +144,7 @@ static const std::vector<Env::TagPtrFn> kExtFuncTab{
     {"write-char", mu::WriteChar, 2}};
 
 /** * library intern core functions **/
-static const std::vector<Env::TagPtrFn> kIntFuncTab{
+static const std::vector<Env::TagFn> kIntFuncTab{
     {"apply", mu::Apply, 2},
     {"block", mu::Block, 2},
     {"env-view", mu::EnvView, 0},
@@ -168,25 +168,24 @@ static const std::vector<Env::TagPtrFn> kIntFuncTab{
 
 /** * make vector of frame **/
 auto FrameView(Env* env, Frame* fp) {
-  auto args = std::vector<TagPtr>();
+  auto args = std::vector<Tag>();
 
   for (size_t i = 0; i < fp->nargs; ++i) args.push_back(fp->argv[i]);
 
-  auto frame =
-      std::vector<TagPtr>{Symbol::Keyword("frame"), fp->func,
-                          Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
-                          Cons::List(env, args), fp->frame_id};
+  auto frame = std::vector<Tag>{Symbol::Keyword("frame"), fp->func,
+                                Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
+                                Cons::List(env, args), fp->frame_id};
 
   return Vector(env, frame).tag_;
 }
 
 /** * make vector of env stack **/
 auto EnvStack(Env* env) {
-  std::vector<TagPtr> stack;
+  std::vector<Tag> stack;
 
   for (auto fp : env->frames_) {
-    std::vector<TagPtr> frame;
-    std::vector<TagPtr> args;
+    std::vector<Tag> frame;
+    std::vector<Tag> args;
 
     frame.push_back(Symbol::Keyword("frame"));
     frame.push_back(fp->func);
@@ -223,9 +222,9 @@ auto RunTime(Env*) {
 
 /** * make list of namespaces **/
 auto Namespaces(Env* env) {
-  std::vector<TagPtr> nslist;
+  std::vector<Tag> nslist;
 
-  for (auto ns : env->namespaces_) nslist.push_back(ns.second);
+  for (auto& ns : env->namespaces_) nslist.push_back(ns.second);
 
   return Cons::List(env, nslist);
 }
@@ -239,78 +238,78 @@ void Env::GcFrame(Frame* fp) {
 }
 
 /** * gc environment **/
-size_t Env::Gc(Env* env) {
+auto Env::Gc(Env* env) -> size_t {
   env->heap_->ClearRefBits();
 
-  for (auto ns : env->namespaces_) GcMark(env, ns.second);
-  for (auto fn : env->lexenv_) GcMark(env, fn);
-  for (auto fp : env->frames_) GcFrame(fp);
+  for (auto& ns : env->namespaces_) GcMark(env, ns.second);
+  for (auto& fn : env->lexenv_) GcMark(env, fn);
+  for (auto& fp : env->frames_) GcFrame(fp);
 
   return env->heap_->Gc();
 }
 
 /** grab last frame **/
-TagPtr Env::LastFrame(Env* env) {
+auto Env::LastFrame(Env* env) -> Tag {
   return env->frames_.empty() ? Type::NIL
                               : FrameView(env, env->frames_.front());
 }
 
 /** * env view **/
-TagPtr Env::EnvView(Env* env) {
-  auto view = std::vector<TagPtr>{Symbol::Keyword("env"), env->namespace_,
-                                  Namespaces(env),        RunTime(env),
-                                  SystemTime(env),        EnvStack(env)};
+auto Env::EnvView(Env* env) -> Tag {
+  auto view =
+      std::vector<Tag>{Symbol::Keyword("env"), env->namespace_, Namespaces(env),
+                       RunTime(env),           SystemTime(env), EnvStack(env)};
 
   return Vector(env, view).tag_;
 }
 
 /** * garbage collection **/
-void Env::GcMark(Env* env, TagPtr ptr) {
-  std::function<void(Env*, TagPtr)> noGc = [](Env*, TagPtr) {};
-  static const std::map<SYS_CLASS, std::function<void(Env*, TagPtr)>>
-      kGcTypeMap{{SYS_CLASS::ADDRESS, noGc},
-                 {SYS_CLASS::CHAR, noGc},
-                 {SYS_CLASS::CONS, Cons::GcMark},
-                 {SYS_CLASS::EXCEPTION, Exception::GcMark},
-                 {SYS_CLASS::FIXNUM, noGc},
-                 {SYS_CLASS::FLOAT, noGc},
-                 {SYS_CLASS::FUNCTION, Function::GcMark},
-                 {SYS_CLASS::MACRO, Macro::GcMark},
-                 {SYS_CLASS::NAMESPACE, Namespace::GcMark},
-                 {SYS_CLASS::STREAM, Stream::GcMark},
-                 {SYS_CLASS::STRING, Vector::GcMark},
-                 {SYS_CLASS::STRUCT, Struct::GcMark},
-                 {SYS_CLASS::SYMBOL, Symbol::GcMark},
-                 {SYS_CLASS::VECTOR, Vector::GcMark}};
+auto Env::GcMark(Env* env, Tag ptr) -> void {
+  std::function<void(Env*, Tag)> noGc = [](Env*, Tag) {};
+  static const std::map<SYS_CLASS, std::function<void(Env*, Tag)>> kGcTypeMap{
+      {SYS_CLASS::ADDRESS, noGc},
+      {SYS_CLASS::CHAR, noGc},
+      {SYS_CLASS::CONS, Cons::GcMark},
+      {SYS_CLASS::EXCEPTION, Exception::GcMark},
+      {SYS_CLASS::FIXNUM, noGc},
+      {SYS_CLASS::FLOAT, noGc},
+      {SYS_CLASS::FUNCTION, Function::GcMark},
+      {SYS_CLASS::MACRO, Macro::GcMark},
+      {SYS_CLASS::NAMESPACE, Namespace::GcMark},
+      {SYS_CLASS::STREAM, Stream::GcMark},
+      {SYS_CLASS::STRING, Vector::GcMark},
+      {SYS_CLASS::STRUCT, Struct::GcMark},
+      {SYS_CLASS::SYMBOL, Symbol::GcMark},
+      {SYS_CLASS::VECTOR, Vector::GcMark}};
 
   assert(kGcTypeMap.count(Type::TypeOf(ptr)));
   kGcTypeMap.at(Type::TypeOf(ptr))(env, ptr);
 }
 
 /** * make a view vector of pointer's contents **/
-TagPtr Env::ViewOf(Env* env, TagPtr object) {
-  static const std::map<SYS_CLASS, std::function<TagPtr(Env*, TagPtr)>>
-      kViewMap{{SYS_CLASS::ADDRESS, Address::ViewOf},
-               {SYS_CLASS::CHAR, Char::ViewOf},
-               {SYS_CLASS::CONS, Cons::ViewOf},
-               {SYS_CLASS::EXCEPTION, Exception::ViewOf},
-               {SYS_CLASS::FIXNUM, Fixnum::ViewOf},
-               {SYS_CLASS::FUNCTION, Function::ViewOf},
-               {SYS_CLASS::FLOAT, Float::ViewOf},
-               {SYS_CLASS::MACRO, Macro::ViewOf},
-               {SYS_CLASS::NAMESPACE, Namespace::ViewOf},
-               {SYS_CLASS::STRING, String::ViewOf},
-               {SYS_CLASS::STREAM, Stream::ViewOf},
-               {SYS_CLASS::STRUCT, Struct::ViewOf},
-               {SYS_CLASS::SYMBOL, Symbol::ViewOf},
-               {SYS_CLASS::VECTOR, Vector::ViewOf}};
+auto Env::ViewOf(Env* env, Tag object) -> Tag {
+  static const std::map<SYS_CLASS, std::function<Tag(Env*, Tag)>> kViewMap{
+      {SYS_CLASS::ADDRESS, Address::ViewOf},
+      {SYS_CLASS::CHAR, Char::ViewOf},
+      {SYS_CLASS::CONS, Cons::ViewOf},
+      {SYS_CLASS::EXCEPTION, Exception::ViewOf},
+      {SYS_CLASS::FIXNUM, Fixnum::ViewOf},
+      {SYS_CLASS::FUNCTION, Function::ViewOf},
+      {SYS_CLASS::FLOAT, Float::ViewOf},
+      {SYS_CLASS::MACRO, Macro::ViewOf},
+      {SYS_CLASS::NAMESPACE, Namespace::ViewOf},
+      {SYS_CLASS::STRING, String::ViewOf},
+      {SYS_CLASS::STREAM, Stream::ViewOf},
+      {SYS_CLASS::STRUCT, Struct::ViewOf},
+      {SYS_CLASS::SYMBOL, Symbol::ViewOf},
+      {SYS_CLASS::VECTOR, Vector::ViewOf}};
 
   auto view = kViewMap.count(Type::TypeOf(object)) != 0;
   return view ? kViewMap.at(Type::TypeOf(object))(env, object) : Type::NIL;
 }
 
 /** look up namespace by name in environment map **/
-TagPtr Env::MapNamespace(Env* env, std::string ns) {
+auto Env::MapNamespace(Env* env, const std::string& ns) -> Tag {
   if (ns.empty()) {
     assert(Namespace::IsType(env->mu_));
     return env->namespace_;
@@ -322,7 +321,7 @@ TagPtr Env::MapNamespace(Env* env, std::string ns) {
 }
 
 /** * add namespace object to environment map **/
-void Env::AddNamespace(Env* env, TagPtr ns) {
+auto Env::AddNamespace(Env* env, Tag ns) -> void {
   assert(Namespace::IsType(ns));
 
   auto ns_name = String::StdStringOf(Namespace::name(ns));

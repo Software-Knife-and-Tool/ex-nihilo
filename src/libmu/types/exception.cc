@@ -27,10 +27,10 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = Type::TagPtr;
+using Tag = Type::Tag;
 
 /** * garbage collection **/
-void Exception::GcMark(Env* env, TagPtr exception) {
+auto Exception::GcMark(Env* env, Tag exception) -> void {
   assert(IsType(exception));
 
   if (!env->heap_->IsGcMarked(exception)) {
@@ -43,24 +43,24 @@ void Exception::GcMark(Env* env, TagPtr exception) {
 }
 
 /** * make view of exception **/
-TagPtr Exception::ViewOf(Env* env, TagPtr ex) {
+auto Exception::ViewOf(Env* env, Tag ex) -> Tag {
   assert(IsType(ex));
 
-  auto view = std::vector<TagPtr>{Symbol::Keyword("except"),
-                                  ex,
-                                  Fixnum(ToUint64(ex) >> 3).tag_,
-                                  tag(ex),
-                                  source(ex),
-                                  reason(ex),
-                                  frame(ex)};
+  auto view = std::vector<Tag>{Symbol::Keyword("except"),
+                               ex,
+                               Fixnum(ToUint64(ex) >> 3).tag_,
+                               tag(ex),
+                               source(ex),
+                               reason(ex),
+                               frame(ex)};
 
   return Vector(env, view).tag_;
 }
 
 /** * raise exception **/
-void Exception::Raise(Env* env, EXCEPT_CLASS ctype, const std::string& reason,
-                      TagPtr source) {
-  typedef std::pair<std::string, TagPtr> ExDesc;
+auto Exception::Raise(Env* env, EXCEPT_CLASS ctype, const std::string& reason,
+                      Tag source) -> void {
+  typedef std::pair<std::string, Tag> ExDesc;
 
   static const std::map<EXCEPT_CLASS, ExDesc> kExceptMap{
       {EXCEPT_CLASS::SIMPLE_ERROR, {"simple-error", Symbol::Keyword("simple")}},

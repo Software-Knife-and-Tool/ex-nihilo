@@ -84,11 +84,11 @@ void NamespaceSymbols(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-symbols",
                      ns);
 
-  std::vector<Type::TagPtr> interns;
+  std::vector<Type::Tag> interns;
 
   for (auto map : Namespace::interns(ns)) interns.push_back(map.second);
 
-  std::vector<Type::TagPtr> externs;
+  std::vector<Type::Tag> externs;
 
   for (auto map : Namespace::externs(ns)) externs.push_back(map.second);
 

@@ -42,35 +42,35 @@ using Type = core::Type;
 using Env = core::Env;
 
 /** * constants interface **/
-void* t() { return (void*)Type::T; }
-void* nil() { return (void*)Type::NIL; }
-const char* version() { return "0.0.21"; }
+auto t() -> void* { return (void*)Type::T; }
+auto nil() -> void* { return (void*)Type::NIL; }
+auto version() -> const char* { return "0.0.21"; }
 
 /** * read_stdin interface **/
-void* read_stream(void* env, void* stream) {
+auto read_stream(void* env, void* stream) -> void* {
   return (void*)core::Type::ToAddress(
       core::Read((Env*)env, core::Type::Entag(stream, Type::TAG::ADDRESS)));
 }
 
 /** * read interface **/
-void* read_cstr(void* env, const char* src) {
+auto read_cstr(void* env, const char* src) -> void* {
   return (void*)Type::ToAddress(
       core::Read((Env*)env, core::Stream::MakeInputString((Env*)env, src)));
 }
 
 /** * read interface **/
-void* read_string(void* env, std::string src) {
+auto read_string(void* env, const std::string& src) -> void* {
   return read_cstr(env, src.c_str());
 }
 
 /** * princ/prin1 interface **/
-void print(void* env, void* ptr, void* stream, bool esc) {
+auto print(void* env, void* ptr, void* stream, bool esc) -> void {
   core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS),
               Type::Entag(stream, Type::TAG::ADDRESS), esc);
 }
 
 /** * print to a cstring **/
-const char* print_cstr(void* env, void* ptr, bool esc) {
+auto print_cstr(void* env, void* ptr, bool esc) -> const char* {
   auto stream = core::Stream::MakeOutputString((Env*)env, "");
 
   core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS), stream, esc);
@@ -84,15 +84,15 @@ const char* print_cstr(void* env, void* ptr, bool esc) {
 }
 
 /** * print end of line **/
-void terpri(void* env, void* stream) {
+auto terpri(void* env, void* stream) -> void {
   core::Terpri((Env*)env, Type::Entag(stream, Type::TAG::ADDRESS));
 }
 
 /** * catch library throws **/
-void withException(void* env, std::function<void(void*)> fn) {
+auto withException(void* env, const std::function<void(void*)>& fn) -> void {
   try {
     fn(env);
-  } catch (Type::TagPtr exception) {
+  } catch (Type::Tag exception) {
     auto std_error = core::Symbol::value(((Env*)env)->standard_error_);
     auto tag = core::Exception::tag(exception);
     auto source = core::Exception::source(exception);
@@ -115,14 +115,14 @@ void withException(void* env, std::function<void(void*)> fn) {
 }
 
 /** * eval **/
-void* eval(void* env, void* form) {
+auto eval(void* env, void* form) -> void* {
   return reinterpret_cast<void*>(core::Eval(
       (Env*)env,
       core::Compile((Env*)env, Type::Entag(form, Type::TAG::ADDRESS))));
 }
 
 /** * env - allocate an environment **/
-void* env_default(Platform* platform) {
+auto env_default(Platform* platform) -> void* {
   auto stdin = Platform::OpenStandardStream(Platform::STD_STREAM::STDIN);
   auto stdout = Platform::OpenStandardStream(Platform::STD_STREAM::STDOUT);
   auto stderr = Platform::OpenStandardStream(Platform::STD_STREAM::STDERR);
@@ -131,8 +131,8 @@ void* env_default(Platform* platform) {
 }
 
 /** * env - allocate an environment **/
-void* env(Platform* platform, Platform::StreamId stdin,
-          Platform::StreamId stdout, Platform::StreamId stderr) {
+auto env(Platform* platform, Platform::StreamId stdin,
+         Platform::StreamId stdout, Platform::StreamId stderr) -> void* {
   return (void*)new Env(platform, stdin, stdout, stderr);
 }
 

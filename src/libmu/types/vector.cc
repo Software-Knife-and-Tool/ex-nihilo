@@ -32,18 +32,18 @@ namespace libmu {
 namespace core {
 
 /** * view of vector object **/
-TagPtr Vector::ViewOf(Env* env, TagPtr vector) {
+auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
 
   auto view =
-      std::vector<TagPtr>{Symbol::Keyword("vector"), vector,
-                          Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector)};
+      std::vector<Tag>{Symbol::Keyword("vector"), vector,
+                       Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector)};
 
   return Vector(env, view).tag_;
 }
 
 /** * garbage collection **/
-void Vector::GcMark(Env* env, TagPtr vec) {
+auto Vector::GcMark(Env* env, Tag vec) -> void {
   assert(IsType(vec));
 
   if (!Type::IsImmediate(vec) && !env->heap_->IsGcMarked(vec)) {
@@ -56,7 +56,7 @@ void Vector::GcMark(Env* env, TagPtr vec) {
       case SYS_CLASS::FLOAT:
         break;
       case SYS_CLASS::T: {
-        Vector::vector_iter<TagPtr> iter(vec);
+        Vector::vector_iter<Tag> iter(vec);
         for (auto it = iter.begin(); it != iter.end(); it = ++iter)
           env->GcMark(env, *it);
         break;
@@ -67,22 +67,35 @@ void Vector::GcMark(Env* env, TagPtr vec) {
   }
 }
 
+/** * vector parser **/
+auto Vector::Read(Env* env, Tag stream) -> Tag {
+  assert(Stream::IsType(stream));
+
+  auto vectype = core::ReadForm(env, stream);
+
+  if (!Symbol::IsKeyword(vectype))
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "type botch in vector reader", vectype);
+
+  return ListToVector(env, vectype, Cons::Read(env, stream));
+}
+
 /** * allocate a general vector from the heap **/
-Vector::Vector(Env* env, std::vector<TagPtr> src) {
-  auto vp = env->heap_alloc<Layout>(
-      sizeof(Layout) + (src.size() * sizeof(TagPtr)), SYS_CLASS::VECTOR);
+Vector::Vector(Env* env, std::vector<Tag> src) {
+  auto vp = env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(Tag)),
+                                    SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::T;
   vp->length = src.size();
 
   tag_ = Entag(vp, TAG::EXTEND);
 
-  std::memcpy(Vector::DataAddress<TagPtr>(tag_), src.data(),
-              src.size() * sizeof(TagPtr));
+  std::memcpy(Vector::DataAddress<Tag>(tag_), src.data(),
+              src.size() * sizeof(Tag));
 }
 
 /** * allocate a char vector from the heap **/
-Vector::Vector(Env* env, std::string src) {
+Vector::Vector(Env* env, const std::string& src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(src);
   } else {
@@ -139,19 +152,6 @@ Vector::Vector(Env* env, std::vector<float> src) {
 
   std::memcpy(Vector::DataAddress<float>(tag_), src.data(),
               src.size() * sizeof(float));
-}
-
-/** * vector parser **/
-TagPtr Vector::Read(Env* env, TagPtr stream) {
-  assert(Stream::IsType(stream));
-
-  auto vectype = core::ReadForm(env, stream);
-
-  if (!Symbol::IsKeyword(vectype))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "type botch in vector reader", vectype);
-
-  return ListToVector(env, vectype, Cons::Read(env, stream));
 }
 
 } /* namespace core */

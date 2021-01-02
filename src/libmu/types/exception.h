@@ -56,59 +56,57 @@ class Exception : public Type {
 
  private:
   typedef struct {
-    TagPtr tag;    /* exception tag */
-    TagPtr frame;  /* frame */
-    TagPtr source; /* on source object */
-    TagPtr reason; /* exception string */
+    Tag tag;    /* exception tag */
+    Tag frame;  /* frame */
+    Tag source; /* on source object */
+    Tag reason; /* exception string */
   } Layout;
 
   Layout exception_;
 
  public:
-  static TagPtr frame(TagPtr exception) {
+  static Tag frame(Tag exception) {
     assert(IsType(exception));
 
     return Untag<Layout>(exception)->frame;
   }
 
-  static TagPtr tag(TagPtr exception) {
+  static Tag tag(Tag exception) {
     assert(IsType(exception));
 
     return Untag<Layout>(exception)->tag;
   }
 
-  static TagPtr source(TagPtr exception) {
+  static Tag source(Tag exception) {
     assert(IsType(exception));
 
     return Untag<Layout>(exception)->source;
   }
 
-  static TagPtr reason(TagPtr exception) {
+  static Tag reason(Tag exception) {
     assert(IsType(exception));
 
     return Untag<Layout>(exception)->reason;
   }
 
-  static constexpr bool IsType(TagPtr ptr) {
+  static constexpr bool IsType(Tag ptr) {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::EXCEPTION;
   }
 
-  static void GcMark(Env*, TagPtr);
+  static void GcMark(Env*, Tag);
 
-  [[noreturn]] static void Raise(Env*, EXCEPT_CLASS, const std::string&,
-                                 TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  [[noreturn]] static void Raise(Env*, EXCEPT_CLASS, const std::string&, Tag);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  TagPtr Evict(Env* env) {
+  Tag Evict(Env* env) {
     auto ep = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::EXCEPTION);
 
     *ep = exception_;
     return Entag(ep, TAG::EXTEND);
   }
 
-  explicit Exception(TagPtr tag, TagPtr frame, TagPtr source, TagPtr reason)
-      : Type() {
+  explicit Exception(Tag tag, Tag frame, Tag source, Tag reason) : Type() {
     assert(Symbol::IsKeyword(tag));
 
     exception_.tag = tag;

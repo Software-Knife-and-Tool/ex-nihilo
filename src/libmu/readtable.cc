@@ -23,12 +23,12 @@ namespace libmu {
 namespace core {
 
 /** * test for syntax char **/
-bool SyntaxEq(TagPtr form, SYNTAX_CHAR syn) {
+auto SyntaxEq(Tag form, SYNTAX_CHAR syn) -> bool {
   return Char::IsType(form) ? static_cast<SYNTAX_CHAR>(form) == syn : false;
 }
 
-/** * map TagPtr to syntax type **/
-SYNTAX_TYPE MapSyntaxType(TagPtr ch) {
+/** * map Tag to syntax type **/
+auto MapSyntaxType(Tag ch) -> SYNTAX_TYPE {
   assert(Fixnum::IsType(ch));
 
   static const std::map<uint64_t, SYNTAX_TYPE> kTypeMap{
@@ -88,7 +88,7 @@ SYNTAX_TYPE MapSyntaxType(TagPtr ch) {
 }
 
 /** * map fixnum to syntax char **/
-SYNTAX_CHAR MapSyntaxChar(TagPtr ch) {
+auto MapSyntaxChar(Tag ch) -> SYNTAX_CHAR {
   assert(Fixnum::IsType(ch));
 
   static const std::map<uint64_t, SYNTAX_CHAR> kCharMap{

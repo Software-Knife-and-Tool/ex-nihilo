@@ -25,18 +25,18 @@ namespace libmu {
 namespace core {
 
 /** * view of char object **/
-TagPtr Char::ViewOf(Env* env, TagPtr ch) {
+auto Char::ViewOf(Env* env, Tag ch) -> Tag {
   assert(IsType(ch));
 
-  auto view = std::vector<TagPtr>{Symbol::Keyword("char"), ch,
-                                  Fixnum(ToUint64(ch) >> 3).tag_,
-                                  Fixnum(Uint8Of(ch)).tag_};
+  auto view = std::vector<Tag>{Symbol::Keyword("char"), ch,
+                               Fixnum(ToUint64(ch) >> 3).tag_,
+                               Fixnum(Uint8Of(ch)).tag_};
 
   return Vector(env, view).tag_;
 }
 
 /** * print char object to stream **/
-void Char::Print(Env* env, TagPtr ch, TagPtr stream, bool esc) {
+auto Char::Print(Env* env, Tag ch, Tag stream, bool esc) -> void {
   assert(IsType(ch));
   assert(Stream::IsType(stream));
 
@@ -65,14 +65,14 @@ void Char::Print(Env* env, TagPtr ch, TagPtr stream, bool esc) {
 }
 
 /** * read char from stream **/
-TagPtr Char::Read(Env* env, TagPtr stream) {
+auto Char::Read(Env* env, Tag stream) -> Tag {
   static const std::map<std::string, int> kCharLit{
       {"newline", 0x0a}, {"space", 0x20},   {"rubout", 0x7f},
       {"page", 0x0c},    {"tab", 0x09},     {"backspace", 0x08},
       {"return", 0x0d},  {"linefeed", 0x0a}};
 
   std::string buffer;
-  TagPtr value;
+  Tag value;
 
   auto ch = Stream::ReadByte(env, stream);
 

@@ -62,7 +62,7 @@ void Apply(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a list (.apply)", args);
 
-  std::vector<Type::TagPtr> argv;
+  std::vector<Type::Tag> argv;
   core::Cons::ListToVec(args, argv);
 
   fp->value = core::Function::Funcall(fp->env, func, argv);

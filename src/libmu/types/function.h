@@ -40,89 +40,87 @@ class Function : public Type {
  private:
   typedef struct {
     size_t arity; /* arity checking */
-    TagPtr name;  /* debugging */
-    TagPtr core;  /* as an address */
-    TagPtr form;  /* as a lambda */
-    TagPtr env;   /* closures */
+    Tag name;     /* debugging */
+    Tag core;     /* as an address */
+    Tag form;     /* as a lambda */
+    Tag env;      /* closures */
     std::vector<Frame*> context;
-    TagPtr frame_id; /* lexical reference */
+    Tag frame_id; /* lexical reference */
   } Layout;
 
   Layout function_;
 
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
-    return TagOf(ptr) == TAG::FUNCTION;
-  }
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::FUNCTION; }
 
   /* accessors */
-  static int arity(TagPtr fn) {
+  static int arity(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->arity;
   }
 
-  static std::vector<Frame*> context(TagPtr fn) {
+  static std::vector<Frame*> context(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->context;
   }
 
-  static size_t ncontext(TagPtr fn) {
+  static size_t ncontext(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->context.size();
   }
 
-  static std::vector<Frame*> context(TagPtr fn, std::vector<Frame*> ctx) {
+  static std::vector<Frame*> context(Tag fn, std::vector<Frame*> ctx) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->context = ctx;
   }
 
-  static TagPtr env(TagPtr fn) {
+  static Tag env(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->env;
   }
 
-  static TagPtr env(TagPtr fn, TagPtr env) {
+  static Tag env(Tag fn, Tag env) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->env = env;
   }
 
-  static TagPtr form(TagPtr fn) {
+  static Tag form(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->form;
   }
 
-  static TagPtr form(TagPtr fn, TagPtr form) {
+  static Tag form(Tag fn, Tag form) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->form = form;
   }
 
-  static TagPtr core(TagPtr fn) {
+  static Tag core(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->core;
   }
 
-  static TagPtr frame_id(TagPtr fn) {
+  static Tag frame_id(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->frame_id;
   }
 
-  static TagPtr name(TagPtr fn) {
+  static Tag name(Tag fn) {
     assert(IsType(fn));
 
     return Untag<Layout>(fn)->name;
   }
 
-  static TagPtr name(TagPtr fn, TagPtr symbol) {
+  static Tag name(Tag fn, Tag symbol) {
     assert(IsType(fn));
     assert(Symbol::IsType(symbol));
 
@@ -134,19 +132,19 @@ class Function : public Type {
 
   static constexpr bool arity_rest(size_t arity) { return arity & 1; }
 
-  static size_t arity_nreqs(TagPtr fn) {
+  static size_t arity_nreqs(Tag fn) {
     assert(IsType(fn));
 
     return arity_nreqs(arity(fn));
   }
 
-  static bool arity_rest(TagPtr fn) {
+  static bool arity_rest(Tag fn) {
     assert(IsType(fn));
 
     return arity_rest(arity(fn));
   }
 
-  static size_t arity_of(Env* env, TagPtr lambda) {
+  static size_t arity_of(Env* env, Tag lambda) {
     assert(Cons::IsList(lambda));
 
     auto nsyms = Cons::Length(env, Cons::car(lambda));
@@ -155,23 +153,23 @@ class Function : public Type {
     return static_cast<size_t>(((nsyms - rest) << 1) | rest);
   }
 
-  static void CheckArity(Env*, TagPtr, const std::vector<TagPtr>&);
+  static void CheckArity(Env*, Tag, const std::vector<Tag>&);
 
-  static TagPtr Funcall(Env*, TagPtr, const std::vector<TagPtr>&);
-  static void GcMark(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static Tag Funcall(Env*, Tag, const std::vector<Tag>&);
+  static void GcMark(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
   static void CallFrame(Env::Frame* fp) {
     fp->value = NIL;
     if (Null(core(fp->func))) {
-      Cons::cons_iter<TagPtr> iter(Cons::cdr(Function::form(fp->func)));
+      Cons::cons_iter<Tag> iter(Cons::cdr(Function::form(fp->func)));
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
         fp->value = core::Eval(fp->env, it->car);
     } else
-      Untag<Env::TagPtrFn>(core(fp->func))->fn(fp);
+      Untag<Env::TagFn>(core(fp->func))->fn(fp);
   }
 
-  static void Print(Env* env, TagPtr fn, TagPtr str, bool) {
+  static void Print(Env* env, Tag fn, Tag str, bool) {
     assert(IsType(fn));
     assert(Stream::IsType(str));
 
@@ -191,7 +189,7 @@ class Function : public Type {
   }
 
  public: /* object model */
-  TagPtr Evict(Env* env) {
+  Tag Evict(Env* env) {
     auto fp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::FUNCTION);
 
     *fp = function_;
@@ -200,13 +198,13 @@ class Function : public Type {
   }
 
   /* core functions */
-  explicit Function(Env* env, TagPtr name, const Env::TagPtrFn* core) : Type() {
+  explicit Function(Env* env, Tag name, const Env::TagFn* core) : Type() {
     assert(Symbol::IsType(name));
 
     function_.arity = core->nreqs << 1;
     function_.context = std::vector<Frame*>{};
     function_.core =
-        Address(static_cast<void*>(const_cast<Env::TagPtrFn*>(core))).tag_;
+        Address(static_cast<void*>(const_cast<Env::TagFn*>(core))).tag_;
     function_.env = NIL;
     function_.form = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;
@@ -218,8 +216,8 @@ class Function : public Type {
   }
 
   /* closures */
-  explicit Function(Env* env, TagPtr name, std::vector<Frame*> context,
-                    TagPtr lambda, TagPtr form)
+  explicit Function(Env* env, Tag name, std::vector<Frame*> context, Tag lambda,
+                    Tag form)
       : Type() {
     assert(Cons::IsList(form));
 

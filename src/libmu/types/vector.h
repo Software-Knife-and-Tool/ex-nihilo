@@ -40,13 +40,13 @@ class Vector : public Type {
     size_t length;
   } Layout;
 
- public: /* TagPtr */
+ public: /* Tag */
   static const size_t MAX_LENGTH = 1024;
 
-  static TagPtr Map(Env*, TagPtr, TagPtr);
-  static void MapC(Env*, TagPtr, TagPtr);
+  static Tag Map(Env*, Tag, Tag);
+  static void MapC(Env*, Tag, Tag);
 
-  static constexpr bool IsType(TagPtr ptr) {
+  static constexpr bool IsType(Tag ptr) {
     return (IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::VECTOR) ||
            (IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRING) ||
            (IsImmediate(ptr) && ImmediateClass(ptr) == IMMEDIATE_CLASS::STRING);
@@ -55,7 +55,7 @@ class Vector : public Type {
  public: /* iterator */
   /* fix: figure out how to const the ref */
   template <typename T>
-  static T* DataAddress(TagPtr& vector) {
+  static T* DataAddress(Tag& vector) {
     assert(IsType(vector));
 
     return IsImmediate(vector)
@@ -67,13 +67,13 @@ class Vector : public Type {
 
   /* figure out how to const the ref */
   template <typename T>
-  static T Ref(TagPtr& vector, TagPtr index) {
+  static T Ref(Tag& vector, Tag index) {
     assert(IsType(vector));
 
     return DataAddress<T>(vector)[Fixnum::Uint64Of(index)];
   }
 
-  static constexpr size_t Length(TagPtr vec) {
+  static constexpr size_t Length(Tag vec) {
     assert(IsType(vec));
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
@@ -81,7 +81,7 @@ class Vector : public Type {
                : Untag<Layout>(vec)->length;
   }
 
-  static SYS_CLASS TypeOf(TagPtr vec) {
+  static SYS_CLASS TypeOf(Tag vec) {
     assert(IsType(vec));
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
@@ -89,33 +89,33 @@ class Vector : public Type {
                : Untag<Layout>(vec)->type;
   }
 
-  static TagPtr VecType(TagPtr vec) {
+  static Tag VecType(Tag vec) {
     assert(IsType(vec));
 
     return Type::MapClassSymbol(TypeOf(vec));
   }
 
-  static TagPtr ListToVector(Env*, TagPtr, TagPtr);
-  static TagPtr Read(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static Tag ListToVector(Env*, Tag, Tag);
+  static Tag Read(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
-  static void GcMark(Env*, TagPtr);
-  static void Print(Env*, TagPtr, TagPtr, bool);
+  static void GcMark(Env*, Tag);
+  static void Print(Env*, Tag, Tag, bool);
 
  public: /* object model */
-  TagPtr Evict(Env*) { return tag_; }
+  Tag Evict(Env*) { return tag_; }
 
-  static constexpr TagPtr VSpecOf(TagPtr t) { return t; }
+  static constexpr Tag VSpecOf(Tag t) { return t; }
 
-  explicit Vector(TagPtr t) : Type() { tag_ = t; }
+  explicit Vector(Tag t) : Type() { tag_ = t; }
 
-  explicit Vector(Env*, std::string); /* string */
+  explicit Vector(Env*, const std::string&); /* string */
   explicit Vector(Env* env, std::vector<char> srcv) {
     std::string src(srcv.begin(), srcv.end());
 
     tag_ = Vector(env, src).tag_;
   }
-  explicit Vector(Env*, std::vector<TagPtr>);  /* general */
+  explicit Vector(Env*, std::vector<Tag>);     /* general */
   explicit Vector(Env*, std::vector<float>);   /* float */
   explicit Vector(Env*, std::vector<int64_t>); /* fixnum */
   explicit Vector(Env*, std::vector<uint8_t>); /* byte */
@@ -132,7 +132,7 @@ class Vector : public Type {
 
     /* because the vector might be an immediate, we need to ref it */
     /* fix: figure out how to const the ref */
-    vector_iter(TagPtr& vec)
+    vector_iter(Tag& vec)
         : vector_(DataAddress<T>(vec)),
           length_(Length(vec)),
           current_(begin()) {}

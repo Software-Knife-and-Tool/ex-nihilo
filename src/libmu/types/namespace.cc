@@ -31,7 +31,7 @@ namespace libmu {
 namespace core {
 
 /** * garbage collect the namespace **/
-void Namespace::GcMark(Env* env, TagPtr ns) {
+auto Namespace::GcMark(Env* env, Tag ns) -> void {
   assert(IsType(ns));
 
   if (!env->heap_->IsGcMarked(ns)) {
@@ -43,18 +43,18 @@ void Namespace::GcMark(Env* env, TagPtr ns) {
 }
 
 /** * view of namespace object **/
-TagPtr Namespace::ViewOf(Env* env, TagPtr ns) {
+auto Namespace::ViewOf(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
 
   auto view =
-      std::vector<TagPtr>{Symbol::Keyword("ns"), ns,
-                          Fixnum(ToUint64(ns) >> 3).tag_, name(ns), import(ns)};
+      std::vector<Tag>{Symbol::Keyword("ns"), ns,
+                       Fixnum(ToUint64(ns) >> 3).tag_, name(ns), import(ns)};
 
   return Vector(env, view).tag_;
 }
 
 /** * find symbol in namespace/imports **/
-TagPtr Namespace::FindSymbol(Env* env, TagPtr ns, TagPtr str) {
+auto Namespace::FindSymbol(Env* env, Tag ns, Tag str) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(str));
 
@@ -67,11 +67,11 @@ TagPtr Namespace::FindSymbol(Env* env, TagPtr ns, TagPtr str) {
 }
 
 /** * intern extern symbol in namespace **/
-TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
+auto Namespace::Intern(Env* env, Tag ns, Tag name) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(name));
 
-  auto key = static_cast<TagPtr>(hash_id(name));
+  auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindSymbol(env, ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
@@ -80,11 +80,11 @@ TagPtr Namespace::Intern(Env* env, TagPtr ns, TagPtr name) {
 }
 
 /** * intern symbol in namespace **/
-TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
+auto Namespace::InternInNs(Env* env, Tag ns, Tag name) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(name));
 
-  auto key = static_cast<TagPtr>(hash_id(name));
+  auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindInInterns(env, ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
@@ -93,11 +93,11 @@ TagPtr Namespace::InternInNs(Env* env, TagPtr ns, TagPtr name) {
 }
 
 /** * extern symbol in namespace **/
-TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
+auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(name));
 
-  auto key = static_cast<TagPtr>(hash_id(name));
+  auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindInExterns(env, ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
@@ -106,13 +106,13 @@ TagPtr Namespace::ExternInNs(Env* env, TagPtr ns, TagPtr name) {
 }
 
 /** * namespace symbols **/
-TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
+auto Namespace::Symbols(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
 
   auto syms = Untag<Layout>(ns)->externs;
   auto list = *syms.get();
 
-  std::vector<TagPtr> symv;
+  std::vector<Tag> symv;
 
   for (auto map : list) symv.push_back(map.second);
 
@@ -120,7 +120,7 @@ TagPtr Namespace::Symbols(Env* env, TagPtr ns) {
 }
 
 /** evict namespace to heap **/
-TagPtr Namespace::Evict(Env* env) {
+auto Namespace::Evict(Env* env) -> Tag {
   auto np = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE);
 
   *np = namespace_;
@@ -129,7 +129,8 @@ TagPtr Namespace::Evict(Env* env) {
   return tag_;
 }
 
-void Namespace::Print(Env* env, TagPtr ns, TagPtr str, bool) {
+/** * print namespace **/
+auto Namespace::Print(Env* env, Tag ns, Tag str, bool) -> void {
   assert(IsType(ns));
   assert(Stream::IsType(str));
 
@@ -148,8 +149,7 @@ void Namespace::Print(Env* env, TagPtr ns, TagPtr str, bool) {
                        stream, false);
 }
 
-/** * allocate namespace **/
-Namespace::Namespace(TagPtr name, TagPtr import) : Type() {
+Namespace::Namespace(Tag name, Tag import) : Type() {
   assert(String::IsType(name));
   assert(Null(import) || IsType(import));
 

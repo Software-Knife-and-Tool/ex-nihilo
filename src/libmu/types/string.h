@@ -32,12 +32,12 @@ class Env;
 
 /** * char vector **/
 class String : public Vector {
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return Vector::IsType(ptr) && Vector::TypeOf(ptr) == SYS_CLASS::CHAR;
   }
 
-  static bool Eql(TagPtr str1, TagPtr str2) {
+  static bool Eql(Tag str1, Tag str2) {
     assert(Vector::IsType(str2) && Vector::TypeOf(str2) == SYS_CLASS::CHAR);
     assert(Vector::IsType(str1) && Vector::TypeOf(str1) == SYS_CLASS::CHAR);
 
@@ -47,19 +47,19 @@ class String : public Vector {
                          Length(str1)) == 0));
   }
 
-  static std::string StdStringOf(TagPtr str) {
+  static std::string StdStringOf(Tag str) {
     assert(IsType(str));
 
     return std::string(DataAddress<char>(str), Length(str));
   }
 
-  static constexpr size_t Length(TagPtr str) {
+  static constexpr size_t Length(Tag str) {
     assert(IsType(str));
 
     return Vector::Length(str);
   }
 
-  static TagPtr MakeImmediate(const std::string& str) {
+  static Tag MakeImmediate(const std::string& str) {
     assert(str.size() <= IMMEDIATE_STR_MAX);
 
     uint64_t buffer = 0;
@@ -69,9 +69,9 @@ class String : public Vector {
     return Type::MakeImmediate(buffer, str.size(), IMMEDIATE_CLASS::STRING);
   }
 
-  static void Print(Env*, TagPtr, TagPtr, bool);
-  static TagPtr Read(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static void Print(Env*, Tag, Tag, bool);
+  static Tag Read(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
   explicit String(Env* env, std::string str) : Vector(env, str) {}

@@ -33,7 +33,7 @@ namespace libmu {
 namespace core {
 
 /** * garbage collection **/
-void Function::GcMark(Env* ev, TagPtr fn) {
+auto Function::GcMark(Env* ev, Tag fn) -> void {
   assert(IsType(fn));
 
   if (!ev->heap_->IsGcMarked(fn)) {
@@ -48,8 +48,8 @@ void Function::GcMark(Env* ev, TagPtr fn) {
 }
 
 /** * run-time function call argument arity validation **/
-void Function::CheckArity(Env* env, TagPtr fn,
-                          const std::vector<TagPtr>& args) {
+auto Function::CheckArity(Env* env, Tag fn, const std::vector<Tag>& args)
+    -> void {
   assert(IsType(fn));
 
   size_t nreqs = arity_nreqs(fn);
@@ -71,31 +71,31 @@ void Function::CheckArity(Env* env, TagPtr fn,
 }
 
 /** * make view of function **/
-TagPtr Function::ViewOf(Env* env, TagPtr fn) {
+auto Function::ViewOf(Env* env, Tag fn) -> Tag {
   assert(IsType(fn));
 
   /* think: add context */
-  auto view = std::vector<TagPtr>{Symbol::Keyword("func"),
-                                  fn,
-                                  Fixnum(ToUint64(fn) >> 3).tag_,
-                                  name(fn),
-                                  core(fn),
-                                  form(fn),
-                                  frame_id(fn),
-                                  Fixnum(arity(fn)).tag_};
+  auto view = std::vector<Tag>{Symbol::Keyword("func"),
+                               fn,
+                               Fixnum(ToUint64(fn) >> 3).tag_,
+                               name(fn),
+                               core(fn),
+                               form(fn),
+                               frame_id(fn),
+                               Fixnum(arity(fn)).tag_};
 
   return Vector(env, view).tag_;
 }
 
 /** * call function with argument vector **/
-TagPtr Function::Funcall(Env* env, TagPtr fn, const std::vector<TagPtr>& argv) {
+auto Function::Funcall(Env* env, Tag fn, const std::vector<Tag>& argv) -> Tag {
   assert(IsType(fn));
 
   size_t nargs = arity_nreqs(fn) + ((arity_rest(fn) ? 1 : 0));
 
   CheckArity(env, fn, argv);
 
-  auto args = std::make_unique<TagPtr[]>(nargs);
+  auto args = std::make_unique<Tag[]>(nargs);
   if (nargs) {
     size_t i = 0;
     for (; i < arity_nreqs(fn); i++) args[i] = argv[i];
@@ -104,7 +104,7 @@ TagPtr Function::Funcall(Env* env, TagPtr fn, const std::vector<TagPtr>& argv) {
       if (i == argv.size()) {
         args[i] = NIL;
       } else {
-        std::vector<TagPtr> restv;
+        std::vector<Tag> restv;
 
         for (size_t j = i; j < argv.size(); j++) restv.push_back(argv[j]);
 

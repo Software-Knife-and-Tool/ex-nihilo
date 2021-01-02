@@ -28,9 +28,9 @@
 namespace libmu {
 namespace core {
 
-TagPtr Read(Env*, TagPtr);
-TagPtr ReadForm(Env*, TagPtr);
-bool ReadWSUntilEof(Env*, TagPtr);
+Tag Read(Env*, Tag);
+Tag ReadForm(Env*, Tag);
+bool ReadWSUntilEof(Env*, Tag);
 
 } /* namespace core */
 } /* namespace libmu */

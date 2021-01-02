@@ -32,7 +32,7 @@ namespace core {
 namespace {
 
 template <typename T, typename S>
-static auto VMap(Env* env, TagPtr func, TagPtr vector) {
+static auto VMap(Env* env, Tag func, Tag vector) -> Tag {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
@@ -40,25 +40,26 @@ static auto VMap(Env* env, TagPtr func, TagPtr vector) {
   Vector::vector_iter<S> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     vlist.push_back(T::VSpecOf(
-        Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_})));
+        Function::Funcall(env, func, std::vector<Tag>{T(*it).tag_})));
   return Vector(env, vlist).tag_;
 }
 
 template <typename T, typename S>
-static auto VMapC(Env* env, TagPtr func, TagPtr vector) {
+static auto VMapC(Env* env, Tag func, Tag vector) -> void {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
   Vector::vector_iter<S> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)Function::Funcall(env, func, std::vector<TagPtr>{T(*it).tag_});
+    (void)Function::Funcall(env, func, std::vector<Tag>{T(*it).tag_});
 }
 
 template <typename T, typename S>
-static auto VList(Env* env, std::function<bool(TagPtr)> isType, TagPtr list) {
+static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
+    -> Tag {
   std::vector<S> vec;
 
-  Cons::cons_iter<TagPtr> iter(list);
+  Cons::cons_iter<Tag> iter(list);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     auto form = it->car;
     if (!isType(form))
@@ -66,19 +67,20 @@ static auto VList(Env* env, std::function<bool(TagPtr)> isType, TagPtr list) {
                        "type mismatch in vector initialization", form);
     vec.push_back(T::VSpecOf(form));
   }
+
   return Vector(env, vec).tag_;
 }
 
 } /* anonymous namespace */
 
 /** * map a function onto a vector **/
-TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
+auto Vector::Map(Env* env, Tag func, Tag vector) -> Tag {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
   switch (Type::MapSymbolClass(Vector::VecType(vector))) {
     case SYS_CLASS::T:
-      return VMap<Vector, TagPtr>(env, func, vector);
+      return VMap<Vector, Tag>(env, func, vector);
     case SYS_CLASS::FLOAT:
       return VMap<Float, float>(env, func, vector);
     case SYS_CLASS::FIXNUM:
@@ -93,13 +95,13 @@ TagPtr Vector::Map(Env* env, TagPtr func, TagPtr vector) {
 }
 
 /** * map a function over a vector **/
-void Vector::MapC(Env* env, TagPtr func, TagPtr vector) {
+auto Vector::MapC(Env* env, Tag func, Tag vector) -> void {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
   switch (Type::MapSymbolClass(Vector::VecType(vector))) {
     case SYS_CLASS::T:
-      return VMapC<Vector, TagPtr>(env, func, vector);
+      return VMapC<Vector, Tag>(env, func, vector);
     case SYS_CLASS::FLOAT:
       return VMapC<Float, float>(env, func, vector);
     case SYS_CLASS::FIXNUM:
@@ -114,15 +116,15 @@ void Vector::MapC(Env* env, TagPtr func, TagPtr vector) {
 }
 
 /** * list to vector **/
-TagPtr Vector::ListToVector(Env* env, TagPtr vectype, TagPtr list) {
+auto Vector::ListToVector(Env* env, Tag vectype, Tag list) -> Tag {
   assert(Cons::IsList(list));
 
   auto vtype = Type::MapSymbolClass(vectype);
 
   switch (vtype) {
     case SYS_CLASS::T:
-      return VList<Vector, TagPtr>(
-          env, [](TagPtr) { return true; }, list);
+      return VList<Vector, Tag>(
+          env, [](Tag) { return true; }, list);
     case SYS_CLASS::FLOAT:
       return VList<Float, float>(env, Float::IsType, list);
     case SYS_CLASS::FIXNUM:
@@ -137,7 +139,7 @@ TagPtr Vector::ListToVector(Env* env, TagPtr vectype, TagPtr list) {
 }
 
 /** * print vector to stream **/
-void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
+auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
   assert(IsType(vector));
   assert(Stream::IsType(stream));
 
@@ -191,7 +193,7 @@ void Vector::Print(Env* env, TagPtr vector, TagPtr stream, bool esc) {
     case SYS_CLASS::T: {
       core::PrintStdString(env, "#(:t", stream, false);
 
-      vector_iter<TagPtr> iter(vector);
+      vector_iter<Tag> iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         core::PrintStdString(env, " ", stream, false);
         core::Print(env, *iter, stream, esc);

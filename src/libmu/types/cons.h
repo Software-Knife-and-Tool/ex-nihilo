@@ -23,57 +23,57 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = core::Type::TagPtr;
+using Tag = core::Type::Tag;
 
 /** * cons type class **/
 class Cons : public Type {
  private:
   typedef struct {
-    TagPtr car;
-    TagPtr cdr;
+    Tag car;
+    Tag cdr;
   } Layout;
 
   Layout cons_;
 
- public: /* TagPtr */
-  static constexpr TagPtr car(TagPtr cp) {
+ public: /* Tag */
+  static constexpr Tag car(Tag cp) {
     assert(IsList(cp));
 
     return Null(cp) ? NIL : Untag<Layout>(cp)->car;
   }
 
-  static constexpr TagPtr cdr(TagPtr cp) {
+  static constexpr Tag cdr(Tag cp) {
     assert(IsList(cp));
 
     return Null(cp) ? NIL : Untag<Layout>(cp)->cdr;
   }
 
-  static constexpr bool IsType(TagPtr ptr) { return TagOf(ptr) == TAG::CONS; }
-  static constexpr bool IsList(TagPtr ptr) { return IsType(ptr) || Null(ptr); }
+  static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::CONS; }
+  static constexpr bool IsList(Tag ptr) { return IsType(ptr) || Null(ptr); }
 
-  static void ListToVec(TagPtr, std::vector<TagPtr>&);
-  static TagPtr List(Env*, const std::vector<TagPtr>&);
-  static TagPtr ListDot(Env*, const std::vector<TagPtr>&);
+  static void ListToVec(Tag, std::vector<Tag>&);
+  static Tag List(Env*, const std::vector<Tag>&);
+  static Tag ListDot(Env*, const std::vector<Tag>&);
 
-  static TagPtr Nth(TagPtr, size_t);
-  static TagPtr NthCdr(TagPtr, size_t);
-  static size_t Length(Env*, TagPtr);
+  static Tag Nth(Tag, size_t);
+  static Tag NthCdr(Tag, size_t);
+  static size_t Length(Env*, Tag);
 
-  static void MapC(Env*, TagPtr, TagPtr);
-  static TagPtr MapCar(Env*, TagPtr, TagPtr);
-  static void MapL(Env*, TagPtr, TagPtr);
-  static TagPtr MapList(Env*, TagPtr, TagPtr);
+  static void MapC(Env*, Tag, Tag);
+  static Tag MapCar(Env*, Tag, Tag);
+  static void MapL(Env*, Tag, Tag);
+  static Tag MapList(Env*, Tag, Tag);
 
-  static void Print(Env*, TagPtr, TagPtr, bool);
-  static TagPtr Read(Env*, TagPtr);
+  static void Print(Env*, Tag, Tag, bool);
+  static Tag Read(Env*, Tag);
 
-  static void GcMark(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static void GcMark(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object */
-  TagPtr Evict(Env*);
+  Tag Evict(Env*);
 
-  explicit Cons(TagPtr, TagPtr);
+  explicit Cons(Tag, Tag);
 
  public:
   /** * cons iterator **/
@@ -84,7 +84,7 @@ class Cons : public Type {
     iterator cons_;
     iterator current_;
 
-    cons_iter(TagPtr cons)
+    cons_iter(Tag cons)
         : cons_(Null(cons) ? end() : Untag<Layout>(cons)), current_(cons_) {
       assert(IsList(cons));
     }
@@ -111,7 +111,7 @@ class Cons : public Type {
       return retn;
     }
 
-    TagPtr operator*() { return current_->car; }
+    Tag operator*() { return current_->car; }
   };
 
 }; /* class Cons */

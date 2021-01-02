@@ -31,51 +31,51 @@ class Env;
 class Symbol : public Type {
  private:
   typedef struct {
-    TagPtr ns;
-    TagPtr name;
-    TagPtr value;
+    Tag ns;
+    Tag name;
+    Tag value;
   } Layout;
 
   Layout symbol_;
 
  public:
-  static constexpr bool IsType(TagPtr ptr) {
+  static constexpr bool IsType(Tag ptr) {
     return (TagOf(ptr) == TAG::SYMBOL) || IsKeyword(ptr);
   }
 
   /* keywords */
-  static constexpr bool IsKeyword(TagPtr ptr) {
+  static constexpr bool IsKeyword(Tag ptr) {
     return IsImmediate(ptr) &&
            (ImmediateClass(ptr) == IMMEDIATE_CLASS::KEYWORD);
   }
 
-  static constexpr TagPtr Keyword(TagPtr name) {
+  static constexpr Tag Keyword(Tag name) {
     assert(String::IsType(name));
 
     return MakeImmediate(ImmediateData(name), ImmediateSize(name),
                          IMMEDIATE_CLASS::KEYWORD);
   }
 
-  static TagPtr Keyword(const std::string& name) {
+  static Tag Keyword(const std::string& name) {
     return Keyword(String::MakeImmediate(name));
   }
 
   /* accessors */
-  static TagPtr ns(TagPtr symbol) {
+  static Tag ns(Tag symbol) {
     assert(IsType(symbol));
 
     return IsKeyword(symbol) ? NIL : Untag<Layout>(symbol)->ns;
   }
 
-  static void ns(TagPtr, TagPtr);
+  static void ns(Tag, Tag);
 
-  static TagPtr value(TagPtr symbol) {
+  static Tag value(Tag symbol) {
     assert(IsType(symbol));
 
     return IsKeyword(symbol) ? symbol : Untag<Layout>(symbol)->value;
   }
 
-  static TagPtr name(TagPtr symbol) {
+  static Tag name(Tag symbol) {
     assert(IsType(symbol));
 
     return IsKeyword(symbol)
@@ -85,13 +85,13 @@ class Symbol : public Type {
   }
 
   /** * namespaces **/
-  static bool IsUninterned(TagPtr symbol) {
+  static bool IsUninterned(Tag symbol) {
     assert(IsType(symbol) && !IsKeyword(symbol));
 
     return Null(Symbol::ns(symbol));
   }
 
-  static TagPtr Bind(TagPtr symbol, TagPtr value) {
+  static Tag Bind(Tag symbol, Tag value) {
     assert(IsType(symbol));
     assert(!IsBound(symbol));
 
@@ -99,16 +99,16 @@ class Symbol : public Type {
     return symbol;
   }
 
-  static void GcMark(Env*, TagPtr);
-  static bool IsBound(TagPtr);
-  static void Print(Env*, TagPtr, TagPtr, bool);
-  static TagPtr ParseSymbol(Env*, std::string, bool);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static void GcMark(Env*, Tag);
+  static bool IsBound(Tag);
+  static void Print(Env*, Tag, Tag, bool);
+  static Tag ParseSymbol(Env*, std::string, bool);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  TagPtr Evict(Env*);
+  Tag Evict(Env*);
 
-  explicit Symbol(TagPtr, TagPtr);
+  explicit Symbol(Tag, Tag);
 };
 
 } /* namespace core */

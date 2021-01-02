@@ -29,10 +29,10 @@
 namespace libmu {
 namespace core {
 
-using TagPtr = Type::TagPtr;
+using Tag = Type::Tag;
 
-TagPtr Apply(Env*, TagPtr, TagPtr);
-TagPtr Eval(Env*, TagPtr);
+Tag Apply(Env*, Tag, Tag);
+Tag Eval(Env*, Tag);
 
 } /* namespace core */
 } /* namespace libmu */

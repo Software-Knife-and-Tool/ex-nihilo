@@ -32,15 +32,13 @@ namespace core {
 
 /** * address class type **/
 class Address : public Type {
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
-    return TagOf(ptr) == TAG::ADDRESS;
-  }
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::ADDRESS; }
 
-  static auto ViewOf(Env* env, TagPtr addr) {
+  static auto ViewOf(Env* env, Tag addr) {
     assert(IsType(addr));
 
-    auto view = std::vector<TagPtr>{
+    auto view = std::vector<Tag>{
         Symbol::Keyword("address"),
         addr,
         Fixnum(ToUint64(addr)).tag_,
@@ -50,7 +48,7 @@ class Address : public Type {
   }
 
  public: /* object model */
-  TagPtr Evict(Env*) { return tag_; }
+  Tag Evict(Env*) { return tag_; }
 
   explicit Address(void* caddr) : Type() {
     tag_ = Type::Entag(caddr, TAG::ADDRESS);

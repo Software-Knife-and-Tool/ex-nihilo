@@ -51,8 +51,7 @@ void Trampoline(Frame* fp) {
                      fp->value);
 
   do {
-    fp->value =
-        Function::Funcall(fp->env, fp->value, std::vector<Type::TagPtr>{});
+    fp->value = Function::Funcall(fp->env, fp->value, std::vector<Type::Tag>{});
   } while (Function::IsType(fp->value));
 }
 
@@ -67,11 +66,11 @@ void Closure(Frame* fp) {
   if (!Type::Null(Function::env(fn))) {
     std::vector<Frame*> context{};
 
-    Cons::cons_iter<Type::TagPtr> iter(Function::env(fn));
+    Cons::cons_iter<Type::Tag> iter(Function::env(fn));
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       auto fn = it->car;
       auto frame = fp->env->MapFrame(Function::frame_id(fn));
-      auto args = new Type::TagPtr[frame->nargs];
+      auto args = new Type::Tag[frame->nargs];
 
       for (size_t i = 0; i < frame->nargs; ++i) args[i] = frame->argv[i];
 

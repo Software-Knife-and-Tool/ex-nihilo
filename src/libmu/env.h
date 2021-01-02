@@ -31,7 +31,7 @@ using platform::Platform;
 
 class Namespace;
 
-using TagPtr = Type::TagPtr;
+using Tag = Type::Tag;
 using SYS_CLASS = Type::SYS_CLASS;
 
 /** * Environment Class **/
@@ -46,7 +46,7 @@ class Env {
  public:
   /** * function activation record **/
   typedef struct frame {
-    frame(Env* env, TagPtr frame_id, TagPtr func, TagPtr* argv, size_t nargs)
+    frame(Env* env, Tag frame_id, Tag func, Tag* argv, size_t nargs)
         : env(env),
           frame_id(frame_id),
           func(func),
@@ -56,12 +56,12 @@ class Env {
 
     ~frame() {}
 
-    Env* env;        /* environment */
-    TagPtr frame_id; /* frame id */
-    TagPtr func;     /* applied function */
-    TagPtr* argv;    /* argument list */
-    size_t nargs;    /* length of argument list */
-    TagPtr value;    /* return value */
+    Env* env;     /* environment */
+    Tag frame_id; /* frame id */
+    Tag func;     /* applied function */
+    Tag* argv;    /* argument list */
+    size_t nargs; /* length of argument list */
+    Tag value;    /* return value */
 
   } Frame;
 
@@ -74,28 +74,28 @@ class Env {
     const char* name;
     FrameFn fn;
     size_t nreqs;
-  } TagPtrFn;
+  } TagFn;
 
   /** * map address to core function **/
-  TagPtrFn* CoreFunction(TagPtr caddr) { return Type::Untag<TagPtrFn>(caddr); }
+  TagFn* CoreFunction(Tag caddr) { return Type::Untag<TagFn>(caddr); }
 
  private:
-  std::unordered_map<TagPtr, std::stack<Frame*>> framecache_;
+  std::unordered_map<Tag, std::stack<Frame*>> framecache_;
 
  public:
-  std::map<std::string, TagPtr> namespaces_;
+  std::map<std::string, Tag> namespaces_;
   std::unique_ptr<heap::Heap> heap_; /* heap */
   Platform* platform_;               /* platform */
   std::vector<Frame*> frames_;       /* frame stack */
   size_t frame_id_;                  /* frame cache */
-  std::vector<TagPtr> lexenv_;       /* lexical symbols */
+  std::vector<Tag> lexenv_;          /* lexical symbols */
                                      /* syntax dispatch */
-  std::unordered_map<TagPtr, TagPtr> readtable_;
-  TagPtr mu_;              /* mu namespace */
-  TagPtr namespace_;       /* current namespace */
-  TagPtr standard_input_;  /* standard input */
-  TagPtr standard_output_; /* standard output */
-  TagPtr standard_error_;  /* standard error */
+  std::unordered_map<Tag, Tag> readtable_;
+  Tag mu_;              /* mu namespace */
+  Tag namespace_;       /* current namespace */
+  Tag standard_input_;  /* standard input */
+  Tag standard_output_; /* standard output */
+  Tag standard_error_;  /* standard error */
 
  public: /* frame stack */
   constexpr void PushFrame(Frame* fp) { frames_.push_back(fp); }
@@ -104,29 +104,29 @@ class Env {
   constexpr void UnCache(Frame* fp) { framecache_[fp->frame_id].pop(); }
 
   /** * map id to frame **/
-  constexpr Frame* MapFrame(TagPtr id) {
+  constexpr Frame* MapFrame(Tag id) {
     assert(!framecache_[id].empty());
     return framecache_[id].top();
   }
 
-  static TagPtr LastFrame(Env*);
+  static Tag LastFrame(Env*);
 
  public: /* heap */
   static size_t Gc(Env*);
   static void GcFrame(Frame*);
-  static void GcMark(Env*, TagPtr);
+  static void GcMark(Env*, Tag);
 
-  static TagPtr MapNamespace(Env*, std::string);
-  static void AddNamespace(Env*, TagPtr);
+  static Tag MapNamespace(Env*, const std::string&);
+  static void AddNamespace(Env*, Tag);
 
-  static TagPtr EnvView(Env*);
+  static Tag EnvView(Env*);
 
-  static bool InHeap(Env* env, TagPtr ptr) {
+  static bool InHeap(Env* env, Tag ptr) {
     return Type::IsImmediate(ptr) ? false
                                   : env->heap_->in_heap(Type::ToAddress(ptr));
   }
 
-  static TagPtr ViewOf(Env*, TagPtr);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
   explicit Env(Platform*, Platform::StreamId, Platform::StreamId,

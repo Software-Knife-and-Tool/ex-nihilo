@@ -91,17 +91,17 @@ void WithException(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "with-exception", handler);
 
-  Type::TagPtr value;
+  Type::Tag value;
 
   int nframes = fp->env->frames_.size();
 
   try {
-    value = Function::Funcall(fp->env, thunk, std::vector<Type::TagPtr>{});
-  } catch (Type::TagPtr ex) {
+    value = Function::Funcall(fp->env, thunk, std::vector<Type::Tag>{});
+  } catch (Type::Tag ex) {
     for (auto i = fp->env->frames_.size() - nframes; i != 0; --i)
       fp->env->frames_.pop_back();
 
-    value = Function::Funcall(fp->env, handler, std::vector<Type::TagPtr>{ex});
+    value = Function::Funcall(fp->env, handler, std::vector<Type::Tag>{ex});
   } catch (...) {
     assert(!"unexpected throw from libmu");
   }
@@ -124,9 +124,9 @@ void Block(Frame* fp) {
 
   try {
     fp->value =
-        core::Eval(fp->env, Cons::List(fp->env, std::vector<Type::TagPtr>{fn}));
+        core::Eval(fp->env, Cons::List(fp->env, std::vector<Type::Tag>{fn}));
   } catch (
-      Type::TagPtr ex) { /* think: don't we need a specific return condition? */
+      Type::Tag ex) { /* think: don't we need a specific return condition? */
     if (Cons::IsType(ex) && Type::Eq(tag, Cons::car(ex)))
       fp->value = Cons::cdr(ex);
     else

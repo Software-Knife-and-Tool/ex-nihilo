@@ -29,21 +29,21 @@ namespace core {
 class Struct : public Type {
  private:
   typedef struct {
-    TagPtr stype; /* keyword */
-    TagPtr slots; /* slot values alist (slot-name . value)) */
+    Tag stype; /* keyword */
+    Tag slots; /* slot values alist (slot-name . value)) */
   } Layout;
 
   Layout struct_;
 
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
-  static TagPtr stype(TagPtr str) { return Untag<Layout>(str)->stype; }
-  static TagPtr slots(TagPtr str) { return Untag<Layout>(str)->slots; }
+  static Tag stype(Tag str) { return Untag<Layout>(str)->stype; }
+  static Tag slots(Tag str) { return Untag<Layout>(str)->slots; }
 
-  static void GcMark(Env* env, TagPtr ptr) {
+  static void GcMark(Env* env, Tag ptr) {
     assert(IsType(ptr));
 
     if (!env->heap_->IsGcMarked(ptr)) {
@@ -54,18 +54,18 @@ class Struct : public Type {
   }
 
   /** * view of struct object **/
-  static TagPtr ViewOf(Env* env, TagPtr strct) {
+  static Tag ViewOf(Env* env, Tag strct) {
     assert(IsType(strct));
 
-    auto view = std::vector<TagPtr>{Symbol::Keyword("struct"), strct,
-                                    Fixnum(ToUint64(strct) >> 3).tag_,
-                                    stype(strct), slots(strct)};
+    auto view = std::vector<Tag>{Symbol::Keyword("struct"), strct,
+                                 Fixnum(ToUint64(strct) >> 3).tag_,
+                                 stype(strct), slots(strct)};
 
     return Vector(env, view).tag_;
   }
 
  public: /* object model */
-  TagPtr Evict(Env* env) {
+  Tag Evict(Env* env) {
     auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STRUCT);
 
     *sp = struct_;
@@ -74,7 +74,7 @@ class Struct : public Type {
     return tag_;
   }
 
-  explicit Struct(TagPtr name, TagPtr slots) {
+  explicit Struct(Tag name, Tag slots) {
     assert(Symbol::IsKeyword(name));
     assert(Cons::IsList(slots));
 

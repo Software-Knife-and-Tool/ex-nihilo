@@ -33,26 +33,26 @@ namespace core {
 class Macro : public Type {
  private:
   typedef struct {
-    TagPtr func;
+    Tag func;
   } Layout;
 
   Layout macro_;
 
- public: /* TagPtr */
-  static constexpr bool IsType(TagPtr ptr) {
+ public: /* Tag */
+  static constexpr bool IsType(Tag ptr) {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::MACRO;
   }
 
-  static TagPtr func(TagPtr ptr) {
+  static Tag func(Tag ptr) {
     assert(IsType(ptr));
 
     return Untag<Layout>(ptr)->func;
   }
 
-  static TagPtr MacroExpand(Env*, TagPtr);
-  static TagPtr MacroFunction(Env*, TagPtr);
+  static Tag MacroExpand(Env*, Tag);
+  static Tag MacroFunction(Env*, Tag);
 
-  static void Print(Env* env, TagPtr macro, TagPtr str, bool) {
+  static void Print(Env* env, Tag macro, Tag str, bool) {
     auto fn = func(macro);
 
     assert(Function::IsType(fn));
@@ -68,11 +68,11 @@ class Macro : public Type {
                          stream, false);
   }
 
-  static void GcMark(Env*, TagPtr);
-  static TagPtr ViewOf(Env*, TagPtr);
+  static void GcMark(Env*, Tag);
+  static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  TagPtr Evict(Env* env) {
+  Tag Evict(Env* env) {
     auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::MACRO);
 
     *sp = macro_;
@@ -81,7 +81,7 @@ class Macro : public Type {
     return tag_;
   }
 
-  explicit Macro(TagPtr func) : Type() {
+  explicit Macro(Tag func) : Type() {
     assert(Function::IsType(func));
 
     macro_.func = func;

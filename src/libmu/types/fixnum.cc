@@ -30,17 +30,17 @@ namespace libmu {
 namespace core {
 
 /** * view of fixnum object **/
-TagPtr Fixnum::ViewOf(Env* env, TagPtr fix) {
+auto Fixnum::ViewOf(Env* env, Tag fix) -> Tag {
   assert(IsType(fix));
 
-  auto view = std::vector<TagPtr>{Symbol::Keyword("fixnum"), fix,
-                                  Fixnum(ToUint64(fix) >> 3).tag_};
+  auto view = std::vector<Tag>{Symbol::Keyword("fixnum"), fix,
+                               Fixnum(ToUint64(fix) >> 3).tag_};
 
   return Vector(env, view).tag_;
 }
 
 /** * print fixnum to stream **/
-void Fixnum::Print(Env* env, TagPtr fixnum, TagPtr stream, bool) {
+auto Fixnum::Print(Env* env, Tag fixnum, Tag stream, bool) -> void {
   assert(IsType(fixnum));
   assert(Stream::IsType(stream));
 
