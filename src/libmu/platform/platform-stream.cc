@@ -11,15 +11,13 @@
  ** stream.cc: platform streams
  **
  **/
-#include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <cassert>
 #include <cstdio>
@@ -32,25 +30,25 @@
 namespace libmu {
 namespace platform {
 
-bool Platform::IsClosed(StreamId stream) {
+auto Platform::IsClosed(StreamId stream) -> bool {
   auto sp = StructOfStreamId(stream);
 
   return (sp->flags & STREAM_CLOSED) ? true : false;
 }
 
-bool Platform::IsOutput(StreamId stream) {
+auto Platform::IsOutput(StreamId stream) -> bool {
   auto sp = StructOfStreamId(stream);
 
   return (sp->flags & STREAM_OUTPUT) ? true : false;
 }
 
-bool Platform::IsString(StreamId stream) {
+auto Platform::IsString(StreamId stream) -> bool {
   auto sp = StructOfStreamId(stream);
 
   return (sp->flags & STREAM_STRING) ? true : false;
 }
 
-bool Platform::IsEof(StreamId stream) {
+auto Platform::IsEof(StreamId stream) -> bool {
   auto sp = StructOfStreamId(stream);
 
   if (sp->flags & STREAM_STD) {
@@ -68,7 +66,7 @@ bool Platform::IsEof(StreamId stream) {
   return sp->u.istream->eof();
 }
 
-std::string Platform::GetStdString(StreamId stream) {
+auto Platform::GetStdString(StreamId stream) -> std::string {
   auto sp = StructOfStreamId(stream);
   auto str = sp->u.sstream->str();
 
@@ -76,13 +74,13 @@ std::string Platform::GetStdString(StreamId stream) {
   return str;
 }
 
-void Platform::Flush(StreamId stream) {
+auto Platform::Flush(StreamId stream) -> void {
   auto sp = StructOfStreamId(stream);
 
   if ((sp->flags & STREAM_STD) && (sp->flags & STREAM_OUTPUT)) fflush(stdout);
 }
 
-void Platform::WriteByte(int ch, Platform::StreamId stream) {
+auto Platform::WriteByte(int ch, Platform::StreamId stream) -> void {
   auto sp = StructOfStreamId(stream);
 
   assert(sp->flags & STREAM_OUTPUT);
@@ -110,9 +108,9 @@ void Platform::WriteByte(int ch, Platform::StreamId stream) {
   }
 }
 
-int Platform::ReadByte(Platform::StreamId stream) {
+auto Platform::ReadByte(Platform::StreamId stream) -> int {
   auto sp = StructOfStreamId(stream);
-  char ch;
+  int ch;
 
   assert(sp->flags & STREAM_INPUT || sp->flags & STREAM_STRING);
 
@@ -147,7 +145,7 @@ int Platform::ReadByte(Platform::StreamId stream) {
   return ch;
 }
 
-int Platform::UnReadByte(int ch, Platform::StreamId stream) {
+auto Platform::UnReadByte(int ch, Platform::StreamId stream) -> int {
   auto sp = StructOfStreamId(stream);
 
   assert(sp->flags & STREAM_INPUT || sp->flags & STREAM_STRING);
@@ -176,7 +174,8 @@ int Platform::UnReadByte(int ch, Platform::StreamId stream) {
   return ch;
 }
 
-Platform::StreamId Platform::OpenInputFile(std::string pathname) {
+auto Platform::OpenInputFile(const std::string &pathname)
+    -> Platform::StreamId {
   struct stat fileInfo;
 
   if (stat(pathname.c_str(), &fileInfo) == -1) {
@@ -197,7 +196,8 @@ Platform::StreamId Platform::OpenInputFile(std::string pathname) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::OpenOutputFile(std::string pathname) {
+auto Platform::OpenOutputFile(const std::string &pathname)
+    -> Platform::StreamId {
   std::ofstream *ofs = new std::ofstream;
 
   ofs->open(pathname, std::fstream::out);
@@ -212,7 +212,7 @@ Platform::StreamId Platform::OpenOutputFile(std::string pathname) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::OpenOutputString(std::string init) {
+auto Platform::OpenOutputString(const std::string &init) -> Platform::StreamId {
   std::stringstream *ofs = new std::stringstream(init);
 
   auto sp = new Stream();
@@ -222,7 +222,7 @@ Platform::StreamId Platform::OpenOutputString(std::string init) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::OpenInputString(std::string str) {
+auto Platform::OpenInputString(const std::string &str) -> Platform::StreamId {
   std::stringstream *ifs = new std::stringstream(str);
 
   auto sp = new Stream();
@@ -232,7 +232,8 @@ Platform::StreamId Platform::OpenInputString(std::string str) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::OpenStandardStream(Platform::STD_STREAM stream) {
+auto Platform::OpenStandardStream(Platform::STD_STREAM stream)
+    -> Platform::StreamId {
   auto sp = new Stream();
 
   switch (stream) {
@@ -250,7 +251,7 @@ Platform::StreamId Platform::OpenStandardStream(Platform::STD_STREAM stream) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::OpenServerSocketStream(int port) {
+auto Platform::OpenServerSocketStream(int port) -> Platform::StreamId {
   struct sockaddr_in address;
   int opt = 1;
   auto socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -278,9 +279,8 @@ Platform::StreamId Platform::OpenServerSocketStream(int port) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::AcceptSocketStream(Platform::StreamId stream) {
+auto Platform::AcceptSocketStream(Platform::StreamId) -> Platform::StreamId {
   auto socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-  (void)stream;
 
   if (socket_fd < 0) {
     return STREAM_ERROR;
@@ -306,7 +306,8 @@ Platform::StreamId Platform::AcceptSocketStream(Platform::StreamId stream) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::OpenClientSocketStream(int ipaddr, int port) {
+auto Platform::OpenClientSocketStream(int ipaddr, int port)
+    -> Platform::StreamId {
   auto sp = new Stream();
   (void)ipaddr;
   (void)port;
@@ -314,7 +315,7 @@ Platform::StreamId Platform::OpenClientSocketStream(int ipaddr, int port) {
   return StreamIdOf(sp);
 }
 
-Platform::StreamId Platform::ConnectSocketStream(Platform::StreamId) {
+auto Platform::ConnectSocketStream(Platform::StreamId) -> Platform::StreamId {
   auto socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
   if (socket_fd < 0) return STREAM_ERROR;
@@ -357,7 +358,7 @@ Platform::StreamId Platform::ConnectSocketStream(Platform::StreamId) {
   return StreamIdOf(sp);
 }
 
-void Platform::Close(StreamId stream) {
+auto Platform::Close(StreamId stream) -> void {
   auto sp = StructOfStreamId(stream);
 
   if (sp->flags & STREAM_STD) {

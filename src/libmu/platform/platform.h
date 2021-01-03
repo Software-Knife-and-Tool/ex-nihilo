@@ -93,10 +93,10 @@ class Platform {
   static StreamId AcceptSocketStream(StreamId);
   static StreamId ConnectSocketStream(StreamId);
   static StreamId OpenClientSocketStream(int, int);
-  static StreamId OpenInputFile(std::string);
-  static StreamId OpenInputString(std::string);
-  static StreamId OpenOutputFile(std::string);
-  static StreamId OpenOutputString(std::string);
+  static StreamId OpenInputFile(const std::string &);
+  static StreamId OpenInputString(const std::string &);
+  static StreamId OpenOutputFile(const std::string &);
+  static StreamId OpenOutputString(const std::string &);
   static StreamId OpenServerSocketStream(int);
   static StreamId OpenStandardStream(Platform::STD_STREAM);
 
@@ -119,8 +119,8 @@ class Platform {
  public: /* generalize conditions */
  public: /* generalize ffi */
   static char **Environment();
-  static int System(const std::string);
-  static std::string Invoke(uint64_t, std::string);
+  static int System(const std::string &);
+  static std::string Invoke(uint64_t, const std::string &);
 
   Platform()
       : options_(std::make_unique<std::list<OptMap>>()),

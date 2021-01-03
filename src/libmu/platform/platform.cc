@@ -13,15 +13,14 @@
  **/
 #include <cassert>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <climits>
 
 #include "libmu/platform/platform-ffi.h"
 #include "libmu/platform/platform.h"
@@ -32,7 +31,7 @@ namespace libmu {
 namespace platform {
 
 /** * map pages in system address space **/
-const char *Platform::MapPages(unsigned npages, const char *heapId) {
+auto Platform::MapPages(unsigned npages, const char *heapId) -> const char * {
   char *base;
   int fd, seek;
   char tmpfn[PATH_MAX];
@@ -47,7 +46,7 @@ const char *Platform::MapPages(unsigned npages, const char *heapId) {
   seek = ftruncate(fd, npages * PAGESIZE);
   assert(seek >= 0);
 
-  base = (char *)mmap(NULL, npages * PAGESIZE, PROT_READ | PROT_WRITE,
+  base = (char *)mmap(nullptr, npages * PAGESIZE, PROT_READ | PROT_WRITE,
                       MAP_PRIVATE, fd, 0);
 
   assert(base != (char *)-1);
@@ -59,7 +58,7 @@ const char *Platform::MapPages(unsigned npages, const char *heapId) {
 }
 
 /** * get system clock time in millseconds**/
-void Platform::SystemTime(uint64_t *retn) {
+auto Platform::SystemTime(uint64_t *retn) -> void {
   struct timeval now;
 
   assert(gettimeofday(&now, NULL) >= 0);
@@ -67,22 +66,24 @@ void Platform::SystemTime(uint64_t *retn) {
 }
 
 /** * get process elapsed time in milliseconds **/
-void Platform::ProcessTime(uint64_t *retn) {
+auto Platform::ProcessTime(uint64_t *retn) -> void {
   struct timespec now;
 
   /* check return, CLOCK_PROCESS_CPUTIME_ID may not be portable */
   assert(clock_gettime(CLOCK_THREAD_CPUTIME_ID, &now) >= 0);
-  *retn = (now.tv_sec * 1e6) + (now.tv_nsec / 1e3);
+  *retn = (now.tv_sec * 1e6) + (now.tv_nsec / 1e3L);
 }
 
 /** * system **/
-int Platform::System(const std::string cmd) { return system(cmd.c_str()); }
+auto Platform::System(const std::string &cmd) -> int {
+  return system(cmd.c_str());
+}
 
 /** * system environment **/
-char **Platform::Environment() { return environ; }
+auto Platform::Environment() -> char ** { return environ; }
 
 /** * platform invoke **/
-std::string Platform::Invoke(uint64_t fnp, std::string arg) {
+auto Platform::Invoke(uint64_t fnp, const std::string &arg) -> std::string {
   /* I ought to be slapped for this */
   std::string (*fn)(std::string) = (std::string(*)(std::string))(fnp);
 

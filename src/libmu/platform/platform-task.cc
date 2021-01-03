@@ -11,12 +11,6 @@
  ** task.cc: process abstraction
  **
  **/
-
-#include <errno.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <cassert>
 #include <cstdio>
 

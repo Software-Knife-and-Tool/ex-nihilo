@@ -12,17 +12,12 @@
  **
  **/
 
-#include <assert.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <numeric>
-#include <string>
 
 #include "libmu/platform/platform-ffi.h"
 #include "libmu/platform/platform.h"
