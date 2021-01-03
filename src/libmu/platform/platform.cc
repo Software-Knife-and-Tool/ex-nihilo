@@ -66,13 +66,12 @@ void Platform::SystemTime(uint64_t *retn) {
   *retn = (now.tv_sec * 1e6) + (now.tv_usec / 1000);
 }
 
-/** * get process elapsed time **/
+/** * get process elapsed time in milliseconds**/
 void Platform::ProcessTime(uint64_t *retn) {
   struct timespec now;
 
   /* check return, CLOCK_PROCESS_CPUTIME_ID may not be portable */
   assert(clock_gettime(CLOCK_THREAD_CPUTIME_ID, &now) >= 0);
-
   *retn = (now.tv_sec * 1e6) + (now.tv_nsec / 1e3);
 }
 
