@@ -147,7 +147,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
 static const std::vector<Env::TagFn> kIntFuncTab{
     {"apply", mu::Apply, 2},
     {"block", mu::Block, 2},
-    {"clocks", mu::Block, 0},
+    {"clocks", mu::Clocks, 0},
     {"env-view", mu::EnvView, 0},
     {"frame-ref", mu::FrameRef, 2},
     {"heap-view", mu::HeapInfo, 1},
