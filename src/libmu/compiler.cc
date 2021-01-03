@@ -35,7 +35,7 @@ namespace core {
 namespace {
 
 /** * is this symbol in the lexical environment? **/
-auto LexicalEnv(Env* env, Tag sym) {
+auto LexicalEnv(Env* env, Tag sym) -> std::pair<Tag, size_t> {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
   auto not_found = std::pair<Tag, size_t>{Type::NIL, 0};

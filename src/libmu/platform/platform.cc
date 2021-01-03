@@ -21,7 +21,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-// #include <time.h>
 #include <unistd.h>
 
 #include "libmu/platform/platform-ffi.h"
@@ -59,12 +58,12 @@ const char *Platform::MapPages(unsigned npages, const char *heapId) {
   return base;
 }
 
-/** * get system clock time **/
+/** * get system clock time in millseconds**/
 void Platform::SystemTime(uint64_t *retn) {
   struct timeval now;
 
   assert(gettimeofday(&now, NULL) >= 0);
-  *retn = now.tv_sec * 1e6 + now.tv_usec;
+  *retn = (now.tv_sec * 1e6) + (now.tv_usec / 1000);
 }
 
 /** * get process elapsed time **/
@@ -74,7 +73,7 @@ void Platform::ProcessTime(uint64_t *retn) {
   /* check return, CLOCK_PROCESS_CPUTIME_ID may not be portable */
   assert(clock_gettime(CLOCK_THREAD_CPUTIME_ID, &now) >= 0);
 
-  *retn = (now.tv_sec * 1e6) + (now.tv_nsec / 1000);
+  *retn = (now.tv_sec * 1e6) + (now.tv_nsec / 1e3);
 }
 
 /** * system **/
