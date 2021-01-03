@@ -12,8 +12,8 @@
  **
  **/
 
-#if !defined(_LIBMU_EVAL_H_)
-#define _LIBMU_EVAL_H_
+#if !defined(LIBMU_EVAL_H_)
+#define LIBMU_EVAL_H_
 
 #include <cassert>
 #include <cinttypes>
@@ -37,4 +37,4 @@ Tag Eval(Env*, Tag);
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_EVAL_H_ */
+#endif /* LIBMU_EVAL_H_ */

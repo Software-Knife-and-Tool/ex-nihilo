@@ -11,8 +11,8 @@
  **  char.h: library characters
  **
  **/
-#if !defined(_LIBMU_TYPES_CHAR_H_)
-#define _LIBMU_TYPES_CHAR_H_
+#if !defined(LIBMU_TYPES_CHAR_H_)
+#define LIBMU_TYPES_CHAR_H_
 
 #include <cassert>
 
@@ -53,4 +53,4 @@ class Char : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_CHAR_H_ */
+#endif /* LIBMU_TYPES_CHAR_H_ */

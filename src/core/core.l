@@ -6,7 +6,6 @@
 ;;;
 ;;; core forms
 ;;;
-(:defsym identity (:lambda (a) a))
 
 ;;; lambda
 (:defsym parse-lambda (:lambda (lambda-list)

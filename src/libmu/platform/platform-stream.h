@@ -12,8 +12,8 @@
  **
  **/
 
-#if !defined(_LIBMU_PLATFORM_STREAM_H_)
-#define _LIBMU_PLATFORM_STREAM_H_
+#if !defined(LIBMU_PLATFORM_STREAM_H_)
+#define LIBMU_PLATFORM_STREAM_H_
 
 #include <cassert>
 #include <fstream>
@@ -58,4 +58,4 @@ static Stream *StructOfStreamId(Platform::StreamId sh) {
 } /* namespace platform */
 } /* namespace libmu */
 
-#endif /* _LIBMU_PLATFORM_STREAM_H_ */
+#endif /* LIBMU_PLATFORM_STREAM_H_ */

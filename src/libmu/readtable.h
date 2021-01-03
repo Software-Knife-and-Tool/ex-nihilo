@@ -12,8 +12,8 @@
  **
  **/
 
-#if !defined(_LIBMU_READTABLE_H_)
-#define _LIBMU_READTABLE_H_
+#if !defined(LIBMU_READTABLE_H_)
+#define LIBMU_READTABLE_H_
 
 #include <cassert>
 #include <map>
@@ -67,4 +67,4 @@ SYNTAX_CHAR MapSyntaxChar(Tag);
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_READTABLE_H_ */
+#endif /* LIBMU_READTABLE_H_ */

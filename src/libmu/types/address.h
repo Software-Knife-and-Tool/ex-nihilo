@@ -11,8 +11,8 @@
  **  address.h: library address object
  **
  **/
-#if !defined(_LIBMU_TYPES_ADDRESS_H_)
-#define _LIBMU_TYPES_ADDRESS_H_
+#if !defined(LIBMU_TYPES_ADDRESS_H_)
+#define LIBMU_TYPES_ADDRESS_H_
 
 #include <cassert>
 #include <functional>
@@ -59,4 +59,4 @@ class Address : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_ADDRESS_H_ */
+#endif /* LIBMU_TYPES_ADDRESS_H_ */

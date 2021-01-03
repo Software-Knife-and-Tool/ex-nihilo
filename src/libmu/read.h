@@ -11,8 +11,8 @@
  **  read.h: libmu reader
  **
  **/
-#if !defined(_LIBMU_READ_H_)
-#define _LIBMU_READ_H_
+#if !defined(LIBMU_READ_H_)
+#define LIBMU_READ_H_
 
 #include <cassert>
 #include <map>
@@ -35,4 +35,4 @@ bool ReadWSUntilEof(Env*, Tag);
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_READ_H_ */
+#endif /* LIBMU_READ_H_ */

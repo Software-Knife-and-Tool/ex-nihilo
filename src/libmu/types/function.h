@@ -11,8 +11,8 @@
  **  function.h: library functions
  **
  **/
-#if !defined(_LIBMU_TYPES_FUNCTION_H_)
-#define _LIBMU_TYPES_FUNCTION_H_
+#if !defined(LIBMU_TYPES_FUNCTION_H_)
+#define LIBMU_TYPES_FUNCTION_H_
 
 #include <cassert>
 #include <functional>
@@ -239,4 +239,4 @@ class Function : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_FUNCTION_H_ */
+#endif /* LIBMU_TYPES_FUNCTION_H_ */

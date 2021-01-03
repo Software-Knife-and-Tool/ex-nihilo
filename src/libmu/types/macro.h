@@ -11,8 +11,8 @@
  **  macro.h: library macros
  **
  **/
-#if !defined(_LIBMU_TYPES_MACRO_H_)
-#define _LIBMU_TYPES_MACRO_H_
+#if !defined(LIBMU_TYPES_MACRO_H_)
+#define LIBMU_TYPES_MACRO_H_
 
 #include <cassert>
 #include <functional>
@@ -93,4 +93,4 @@ class Macro : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_MACRO_H_ */
+#endif /* LIBMU_TYPES_MACRO_H_ */

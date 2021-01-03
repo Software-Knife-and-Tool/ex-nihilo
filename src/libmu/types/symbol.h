@@ -11,8 +11,8 @@
  **  symbol.h: library symbols
  **
  **/
-#if !defined(_LIBMU_TYPES_SYMBOL_H_)
-#define _LIBMU_TYPES_SYMBOL_H_
+#if !defined(LIBMU_TYPES_SYMBOL_H_)
+#define LIBMU_TYPES_SYMBOL_H_
 
 #include <cassert>
 
@@ -114,4 +114,4 @@ class Symbol : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_SYMBOL_H_ */
+#endif /* LIBMU_TYPES_SYMBOL_H_ */

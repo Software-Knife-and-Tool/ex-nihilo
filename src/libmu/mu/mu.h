@@ -11,8 +11,8 @@
  **  mu.h: library functions
  **
  **/
-#if !defined(_LIBMU_MU_MU_H_)
-#define _LIBMU_MU_MU_H_
+#if !defined(LIBMU_MU_MU_H_)
+#define LIBMU_MU_MU_H_
 
 #include "libmu/env.h"
 
@@ -143,4 +143,4 @@ void WriteChar(Frame*);
 } /* namespace mu */
 } /* namespace libmu */
 
-#endif /* _LIBMU_MU_MU_H_ */
+#endif /* LIBMU_MU_MU_H_ */

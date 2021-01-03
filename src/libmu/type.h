@@ -11,8 +11,8 @@
  **  type.h: library tagged pointers
  **
  **/
-#if !defined(_LIBMU_TYPE_H_)
-#define _LIBMU_TYPE_H_
+#if !defined(LIBMU_TYPE_H_)
+#define LIBMU_TYPE_H_
 
 #include <cassert>
 #include <cinttypes>
@@ -179,4 +179,4 @@ class Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPE_H_ */
+#endif /* LIBMU_TYPE_H_ */

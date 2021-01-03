@@ -11,8 +11,8 @@
  **  fixnum.h: library fixnums
  **
  **/
-#if !defined(_LIBMU_TYPES_FIXNUM_H_)
-#define _LIBMU_TYPES_FIXNUM_H_
+#if !defined(LIBMU_TYPES_FIXNUM_H_)
+#define LIBMU_TYPES_FIXNUM_H_
 
 #include <cassert>
 
@@ -57,4 +57,4 @@ class Fixnum : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_FIXNUM_H_ */
+#endif /* LIBMU_TYPES_FIXNUM_H_ */

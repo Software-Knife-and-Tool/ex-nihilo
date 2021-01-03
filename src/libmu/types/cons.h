@@ -11,8 +11,8 @@
  **  cons.h: library conses
  **
  **/
-#if !defined(_LIBMU_TYPES_CONS_H_)
-#define _LIBMU_TYPES_CONS_H_
+#if !defined(LIBMU_TYPES_CONS_H_)
+#define LIBMU_TYPES_CONS_H_
 
 #include <cassert>
 #include <functional>
@@ -119,4 +119,4 @@ class Cons : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_CONS_H_ */
+#endif /* LIBMU_TYPES_CONS_H_ */
