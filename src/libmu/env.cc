@@ -204,20 +204,18 @@ auto EnvStack(Env* env) {
 
 /** * system time **/
 auto SystemTime(Env*) {
-  unsigned long ts[2];
+  uint64_t ts;
 
-  Platform::SystemTime(ts);
-
-  return Fixnum(ts[0] * 1000000 + ts[1]).tag_;
+  Platform::SystemTime(&ts);
+  return Fixnum(ts).tag_;
 }
 
 /** * run time **/
 auto RunTime(Env*) {
-  unsigned long ts[2];
+  uint64_t ts;
 
-  Platform::ProcessTime(ts);
-
-  return Fixnum(ts[0] * 1000000 + ts[1]).tag_;
+  Platform::ProcessTime(&ts);
+  return Fixnum(ts).tag_;
 }
 
 /** * make list of namespaces **/
