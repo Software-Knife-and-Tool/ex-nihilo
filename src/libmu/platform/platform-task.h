@@ -11,8 +11,8 @@
  **  task.h: task abstraction
  **
  **/
-#if !defined(_LIBMU_PLATFORM_TASK_H_)
-#define _LIBMU_PLATFORM_TASK_H_
+#if !defined(LIBMU_PLATFORM_TASK_H_)
+#define LIBMU_PLATFORM_TASK_H_
 
 #include <cassert>
 #include <cinttypes>
@@ -36,4 +36,4 @@ class Task {
 } /* namespace platform */
 } /* namespace libmu */
 
-#endif /* _LIBMU_PLATFORM_TASK_H_ */
+#endif /* LIBMU_PLATFORM_TASK_H_ */

@@ -11,8 +11,8 @@
  **  float.h: library floats
  **
  **/
-#if !defined(_LIBMU_TYPES_FLOAT_H_)
-#define _LIBMU_TYPES_FLOAT_H_
+#if !defined(LIBMU_TYPES_FLOAT_H_)
+#define LIBMU_TYPES_FLOAT_H_
 
 #include <cassert>
 #include <cstring>
@@ -58,4 +58,4 @@ class Float : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_FLOAT_H_ */
+#endif /* LIBMU_TYPES_FLOAT_H_ */

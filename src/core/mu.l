@@ -6,7 +6,9 @@
 ;;;
 ;;; mu forms
 ;;;
-(:defsym .version "0.0.21")
+(:defsym .version "0.0.22")
+
+(:defsym identity (:lambda (form) form))
 
 ;;; lists
 (:defsym null (:lambda (t) (eq :nil t)))
@@ -15,6 +17,9 @@
 
 (:defsym listp (:lambda (ptr)
   ((consp ptr) :t (null ptr))))
+
+(:defsym atom (:lambda (form)
+  (null (listp form))))
 
 (:defsym list* (:lambda (:rest args)
   ((null (cdr args))
@@ -157,7 +162,11 @@
 
 ;;; append
 (:defsym append (:lambda (:rest lists)
-   (foldr
+  (mu::mapl
+   (:lambda (l)
+            (and (atom (car l)) (cdr l) (raise "is not a list" (car l))))
+   lists)
+  (foldr
     (:lambda (el acc)
        (if (listp el)
            (foldr (:lambda (el acc) (cons el acc)) acc el)

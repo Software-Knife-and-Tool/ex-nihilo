@@ -11,8 +11,8 @@
  **  stream.h: library streams
  **
  **/
-#if !defined(_LIBMU_TYPES_STREAM_H_)
-#define _LIBMU_TYPES_STREAM_H_
+#if !defined(LIBMU_TYPES_STREAM_H_)
+#define LIBMU_TYPES_STREAM_H_
 
 #include <cassert>
 #include <memory>
@@ -112,4 +112,4 @@ class Stream : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_STREAM_H_ */
+#endif /* LIBMU_TYPES_STREAM_H_ */

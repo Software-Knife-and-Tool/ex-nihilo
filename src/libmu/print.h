@@ -12,8 +12,8 @@
  **
  **/
 
-#if !defined(_LIBMU_PRINT_H_)
-#define _LIBMU_PRINT_H_
+#if !defined(LIBMU_PRINT_H_)
+#define LIBMU_PRINT_H_
 
 #include "libmu/type.h"
 
@@ -29,4 +29,4 @@ void Terpri(Env*, Tag);
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_PRINT_H_ */
+#endif /* LIBMU_PRINT_H_ */

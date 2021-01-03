@@ -11,8 +11,8 @@
  **  heap.h: libmu heap
  **
  **/
-#if !defined(_LIBMU_HEAP_HEAP_H_)
-#define _LIBMU_HEAP_HEAP_H_
+#if !defined(LIBMU_HEAP_HEAP_H_)
+#define LIBMU_HEAP_HEAP_H_
 
 #include <algorithm>
 #include <cassert>
@@ -142,4 +142,4 @@ class Heap {
 } /* namespace heap */
 } /* namespace libmu */
 
-#endif /* _LIBMU_HEAP_HEAP_H_ */
+#endif /* LIBMU_HEAP_HEAP_H_ */

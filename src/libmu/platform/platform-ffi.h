@@ -12,8 +12,8 @@
  **
  **/
 
-#if !defined(_LIBMU_PLATFORM_FFI_H_)
-#define _LIBMU_PLATFORM_FFI_H_
+#if !defined(LIBMU_PLATFORM_FFI_H_)
+#define LIBMU_PLATFORM_FFI_H_
 
 #include <cassert>
 #include <cinttypes>
@@ -35,4 +35,4 @@ class Ffi {
 } /* namespace platform */
 } /* namespace libmu */
 
-#endif /* _LIBMU_PLATFORM_FFI_H_ */
+#endif /* LIBMU_PLATFORM_FFI_H_ */

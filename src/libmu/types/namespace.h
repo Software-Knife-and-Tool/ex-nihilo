@@ -11,8 +11,8 @@
  **  namespace.h: library symbol bindings
  **
  **/
-#if !defined(_LIBMU_TYPES_NAMESPACE_H_)
-#define _LIBMU_TYPES_NAMESPACE_H_
+#if !defined(LIBMU_TYPES_NAMESPACE_H_)
+#define LIBMU_TYPES_NAMESPACE_H_
 
 #include <algorithm>
 #include <cassert>
@@ -178,4 +178,4 @@ class Namespace : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_NAMESPACE_H_ */
+#endif /* LIBMU_TYPES_NAMESPACE_H_ */

@@ -23,8 +23,8 @@
 #include <utility>
 #include <vector>
 
-#if !defined(_LIBMU_PLATFORM_PLATFORM_H_)
-#define _LIBMU_PLATFORM_PLATFORM_H_
+#if !defined(LIBMU_PLATFORM_PLATFORM_H_)
+#define LIBMU_PLATFORM_PLATFORM_H_
 
 namespace libmu {
 namespace platform {
@@ -132,4 +132,4 @@ class Platform {
 } /* namespace platform */
 } /* namespace libmu */
 
-#endif /* _LIBMU_PLATFORM_PLATFORM_H_ */
+#endif /* LIBMU_PLATFORM_PLATFORM_H_ */

@@ -11,8 +11,8 @@
  **  env.h: library environment
  **
  **/
-#if !defined(_LIBMU_ENV_H_)
-#define _LIBMU_ENV_H_
+#if !defined(LIBMU_ENV_H_)
+#define LIBMU_ENV_H_
 
 #include <cassert>
 #include <memory>
@@ -138,4 +138,4 @@ class Env {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_ENV_H_ */
+#endif /* LIBMU_ENV_H_ */

@@ -11,8 +11,8 @@
  **  compiler.h: library form compiler
  **
  **/
-#if !defined(_LIBMU_COMPILER_H_)
-#define _LIBMU_COMPILER_H_
+#if !defined(LIBMU_COMPILER_H_)
+#define LIBMU_COMPILER_H_
 
 #include <cassert>
 
@@ -42,4 +42,4 @@ constexpr auto restsym(Tag lambda) {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_COMPILER_H_ */
+#endif /* LIBMU_COMPILER_H_ */

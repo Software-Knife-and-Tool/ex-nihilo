@@ -12,8 +12,8 @@
  **
  **/
 
-#if !defined(_LIBMU_LIBMU_H_)
-#define _LIBMU_LIBMU_H_
+#if !defined(LIBMULIBMU_H_)
+#define LIBMULIBMU_H_
 
 #include <cassert>
 #include <cinttypes>
@@ -47,4 +47,4 @@ void* env(Platform*, Platform::StreamId, Platform::StreamId,
 } /* namespace api */
 } /* namespace libmu */
 
-#endif /* _LIBMU_LIBMU_H_ */
+#endif /* LIBMULIBMU_H_ */

@@ -11,8 +11,8 @@
  **  struct.h: library structs
  **
  **/
-#if !defined(_LIBMU_TYPES_STRUCT_H_)
-#define _LIBMU_TYPES_STRUCT_H_
+#if !defined(LIBMU_TYPES_STRUCT_H_)
+#define LIBMU_TYPES_STRUCT_H_
 
 #include <cassert>
 
@@ -89,4 +89,4 @@ class Struct : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* _LIBMU_TYPES_STRUCT_H_ */
+#endif /* LIBMU_TYPES_STRUCT_H_ */
