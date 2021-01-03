@@ -47,6 +47,7 @@
 (floor 3 2)
 (functionp mu::apply)
 (functionp mu::block)
+(functionp mu::clocks)
 (functionp mu::frame-ref)
 (functionp mu::letq)
 (functionp mu::list-to-vector)

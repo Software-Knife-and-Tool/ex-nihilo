@@ -46,7 +46,7 @@ clean:
 	@rm -rf googletest
 
 tidy:
-	@for f in ../src/libmu/*.cc ../src/libmu/heap/*.cc ../src/libmu/types/*.cc ../src/libmu/mu/*.cc; do	\
+	@for f in ../src/libmu/*.cc ../src/libmu/heap/*.cc ../src/libmu/platform/*.cc ../src/libmu/types/*.cc ../src/libmu/mu/*.cc; do	\
 	    clang-tidy 									\
 	        -checks='cppcoreguidelines*,clang-diagnostic-*,clang-analyzer-*,-*,bugprone*,modernize*,performance*,-modernize-pass-by-value,-modernize-use-auto,-modernize-use-using'	\
 		$$f -- 									\

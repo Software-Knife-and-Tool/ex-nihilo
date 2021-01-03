@@ -147,6 +147,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
 static const std::vector<Env::TagFn> kIntFuncTab{
     {"apply", mu::Apply, 2},
     {"block", mu::Block, 2},
+    {"clocks", mu::Block, 0},
     {"env-view", mu::EnvView, 0},
     {"frame-ref", mu::FrameRef, 2},
     {"heap-view", mu::HeapInfo, 1},
@@ -202,22 +203,6 @@ auto EnvStack(Env* env) {
   return Cons::List(env, stack);
 }
 
-/** * system time **/
-auto SystemTime(Env*) {
-  uint64_t ts;
-
-  Platform::SystemTime(&ts);
-  return Fixnum(ts).tag_;
-}
-
-/** * run time **/
-auto RunTime(Env*) {
-  uint64_t ts;
-
-  Platform::ProcessTime(&ts);
-  return Fixnum(ts).tag_;
-}
-
 /** * make list of namespaces **/
 auto Namespaces(Env* env) {
   std::vector<Tag> nslist;
@@ -259,6 +244,22 @@ auto Env::EnvView(Env* env) -> Tag {
                        RunTime(env),           SystemTime(env), EnvStack(env)};
 
   return Vector(env, view).tag_;
+}
+
+/** * system time **/
+auto Env::SystemTime(Env*) -> Tag {
+  uint64_t ts;
+
+  Platform::SystemTime(&ts);
+  return Fixnum(ts).tag_;
+}
+
+/** * run time **/
+auto Env::RunTime(Env*) -> Tag {
+  uint64_t ts;
+
+  Platform::ProcessTime(&ts);
+  return Fixnum(ts).tag_;
 }
 
 /** * garbage collection **/

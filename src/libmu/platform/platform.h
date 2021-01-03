@@ -108,8 +108,8 @@ class Platform {
   static void WriteByte(int, StreamId);
 
  public: /* time */
-  static void SystemTime(uint64_t*);
-  static void ProcessTime(uint64_t*);
+  static void SystemTime(uint64_t *);
+  static void ProcessTime(uint64_t *);
 
  public: /* tasks */
   static void TaskCreate();

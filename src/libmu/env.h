@@ -120,6 +120,8 @@ class Env {
   static void AddNamespace(Env*, Tag);
 
   static Tag EnvView(Env*);
+  static Tag SystemTime(Env*);
+  static Tag RunTime(Env*);
 
   static bool InHeap(Env* env, Tag ptr) {
     return Type::IsImmediate(ptr) ? false

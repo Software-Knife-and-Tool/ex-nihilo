@@ -19,6 +19,7 @@
 
 #include "libmu/platform/platform.h"
 
+#include "libmu/env.h"
 #include "libmu/print.h"
 #include "libmu/read.h"
 #include "libmu/type.h"
@@ -42,6 +43,13 @@ using Frame = core::Env::Frame;
 using Platform = core::Platform;
 using String = core::String;
 using Type = core::Type;
+
+/** *  (clocks fixnum) => (systime-msec . runtime-usec)  **/
+void Clocks(Frame* fp) {
+  fp->value =
+      core::Cons(core::Env::SystemTime(fp->env), core::Env::RunTime(fp->env))
+          .Evict(fp->env);
+}
 
 /** *  (exit fixnum) never returns **/
 void Exit(Frame* fp) {
