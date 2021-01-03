@@ -13,15 +13,15 @@
  **/
 #include <cassert>
 #include <cstdio>
+#include <ctime>
 
-#include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <time.h>
+// #include <time.h>
 #include <unistd.h>
 
 #include "libmu/platform/platform-ffi.h"
@@ -60,23 +60,21 @@ const char *Platform::MapPages(unsigned npages, const char *heapId) {
 }
 
 /** * get system clock time **/
-void Platform::SystemTime(unsigned long *retn) {
+void Platform::SystemTime(uint64_t *retn) {
   struct timeval now;
 
   assert(gettimeofday(&now, NULL) >= 0);
-  retn[0] = now.tv_sec;
-  retn[1] = now.tv_usec;
+  *retn = now.tv_sec * 1e6 + now.tv_usec;
 }
 
 /** * get process elapsed time **/
-void Platform::ProcessTime(unsigned long *retn) {
+void Platform::ProcessTime(uint64_t *retn) {
   struct timespec now;
 
   /* check return, CLOCK_PROCESS_CPUTIME_ID may not be portable */
   assert(clock_gettime(CLOCK_THREAD_CPUTIME_ID, &now) >= 0);
 
-  retn[0] = now.tv_sec;
-  retn[1] = now.tv_nsec / 100;
+  *retn = (now.tv_sec * 1e6) + (now.tv_nsec / 1000);
 }
 
 /** * system **/
