@@ -63,10 +63,10 @@ void Platform::SystemTime(uint64_t *retn) {
   struct timeval now;
 
   assert(gettimeofday(&now, NULL) >= 0);
-  *retn = (now.tv_sec * 1e6) + (now.tv_usec / 1000);
+  *retn = (now.tv_sec * 1e6) + now.tv_usec;
 }
 
-/** * get process elapsed time in milliseconds**/
+/** * get process elapsed time in milliseconds **/
 void Platform::ProcessTime(uint64_t *retn) {
   struct timespec now;
 
