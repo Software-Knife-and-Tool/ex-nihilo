@@ -29,15 +29,15 @@
 (:defsym quasi (:macro (form)
    (parse-quasi form)))
 
+(set-macro-character #\`
+  (:lambda (stream ch) (list 'quasi (read stream))))
+
 (set-macro-character #\,
   (:lambda (stream ch)                            
     (let ((ch (read-char stream)))
       (mu:if (eq ch #\@)
           (list (read stream))
         (progn (unread-char ch stream) (eval (read stream)))))))
-
-(set-macro-character #\`
-  (:lambda (stream ch) (list 'quasi (read stream))))
 
 ;;; lambda
 (:defsym parse-lambda (:lambda (lambda-list)
