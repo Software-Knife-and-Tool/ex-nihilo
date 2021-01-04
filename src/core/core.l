@@ -37,7 +37,7 @@
         (progn (unread-char ch stream) (eval (read stream)))))))
 
 (set-macro-character #\`
-  (:lambda (stream ch) (list 'list 'quasi (read stream))))                            
+  (:lambda (stream ch) (list 'quasi (read stream))))
 
 ;;; lambda
 (:defsym parse-lambda (:lambda (lambda-list)
