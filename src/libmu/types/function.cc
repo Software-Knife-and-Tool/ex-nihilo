@@ -31,6 +31,42 @@
 
 namespace libmu {
 namespace core {
+namespace {
+
+/** * call function on frame **/
+auto CallFrame(Env::Frame* fp) -> void {
+  fp->value = Type::NIL;
+  if (Type::Null(Function::core(fp->func))) {
+    Cons::cons_iter<Tag> iter(Cons::cdr(Function::form(fp->func)));
+    for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+      fp->value = core::Eval(fp->env, it->car);
+  } else
+    Type::Untag<Env::TagFn>(Function::core(fp->func))->fn(fp);
+}
+
+/** * run-time function call argument arity validation **/
+auto CheckArity(Env* env, Tag fn, const std::vector<Tag>& args) -> void {
+  assert(Function::IsType(fn));
+
+  size_t nreqs = Function::arity_nreqs(fn);
+  auto rest = Function::arity_rest(fn);
+  auto nargs = args.size();
+
+  if (nargs < nreqs)
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "argument list arity: nargs (" + std::to_string(nargs) +
+                         ") < nreqs (" + std::to_string(nreqs) + ") (funcall)",
+                     fn);
+
+  if (!rest && (nargs > nreqs))
+    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+                     "argument list arity: !rest && nargs (" +
+                         std::to_string(nargs) + ") > nreq (" +
+                         std::to_string(nreqs) + ") (funcall)",
+                     fn);
+}
+
+} /* anonymous namespace */
 
 /** * garbage collection **/
 auto Function::GcMark(Env* ev, Tag fn) -> void {
@@ -47,27 +83,24 @@ auto Function::GcMark(Env* ev, Tag fn) -> void {
   }
 }
 
-/** * run-time function call argument arity validation **/
-auto Function::CheckArity(Env* env, Tag fn, const std::vector<Tag>& args)
-    -> void {
+/** * function printer **/
+auto Function::Print(Env* env, Tag fn, Tag str, bool) -> void {
   assert(IsType(fn));
+  assert(Stream::IsType(str));
 
-  size_t nreqs = arity_nreqs(fn);
-  auto rest = arity_rest(fn);
-  auto nargs = args.size();
+  auto stream = Stream::StreamDesignator(env, str);
 
-  if (nargs < nreqs)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument list arity: nargs (" + std::to_string(nargs) +
-                         ") < nreqs (" + std::to_string(nreqs) + ") (funcall)",
-                     fn);
+  auto type =
+      String::StdStringOf(Symbol::name(Type::MapClassSymbol(Type::TypeOf(fn))));
 
-  if (!rest && (nargs > nreqs))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "argument list arity: !rest && nargs (" +
-                         std::to_string(nargs) + ") > nreq (" +
-                         std::to_string(nreqs) + ") (funcall)",
-                     fn);
+  auto name = String::StdStringOf(Symbol::name(Function::name(fn)));
+
+  std::stringstream hexs;
+
+  hexs << std::hex << Type::to_underlying(fn);
+  core::PrintStdString(env,
+                       "#<:" + type + " #x" + hexs.str() + " (" + name + ")>",
+                       stream, false);
 }
 
 /** * make view of function **/
@@ -136,6 +169,43 @@ auto Function::Funcall(Env* env, Tag fn, const std::vector<Tag>& argv) -> Tag {
   env->PopFrame();
 
   return fp.value;
+}
+
+/* core functions */
+Function::Function(Env* env, Tag name, const Env::TagFn* core) : Type() {
+  assert(Symbol::IsType(name));
+
+  function_.arity = core->nreqs << 1;
+  function_.context = std::vector<Frame*>{};
+  function_.core =
+      Address(static_cast<void*>(const_cast<Env::TagFn*>(core))).tag_;
+  function_.env = NIL;
+  function_.form = NIL;
+  function_.frame_id = Fixnum(env->frame_id_).tag_;
+  function_.name = name;
+
+  env->frame_id_++;
+
+  tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
+}
+
+/* closures */
+Function::Function(Env* env, Tag name, std::vector<Frame*> context, Tag lambda,
+                   Tag form)
+    : Type() {
+  assert(Cons::IsList(form));
+
+  function_.arity = arity_of(env, lambda);
+  function_.context = context;
+  function_.core = NIL;
+  function_.env = Cons::List(env, env->lexenv_);
+  function_.form = form;
+  function_.frame_id = Fixnum(env->frame_id_).tag_;
+  function_.name = name;
+
+  env->frame_id_++;
+
+  tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
 }
 
 } /* namespace core */

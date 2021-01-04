@@ -3,7 +3,6 @@
 ;;;    Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
 ;;;
 (:defsym parse-quasi (:lambda (form)
-;;;   (fmt :t "parse-quasi: ~A~%" form)
    (letf ((unquote (form)
             (and (consp form) (eq :unquote (car form)) (list 'list (nth 1 form))))
           (unquote-splice (form)
@@ -21,6 +20,9 @@
           ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
           (:t (list 'list (list :quote form)))))))
 
+(:defsym quasi (:macro (form)
+   (parse-quasi form)))
+         
 (mu::mapc
  (:lambda (form)
     (fmt :t "~A -> ~A -> ~A~%" form (parse-quasi form) (eval (parse-quasi form))))
