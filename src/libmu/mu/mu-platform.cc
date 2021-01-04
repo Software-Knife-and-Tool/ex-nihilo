@@ -46,9 +46,12 @@ using Type = core::Type;
 
 /** *  (clocks fixnum) => (systime-msec . runtime-usec)  **/
 void Clocks(Frame* fp) {
-  fp->value =
-      core::Cons(core::Env::SystemTime(fp->env), core::Env::RunTime(fp->env))
-          .Evict(fp->env);
+  uint64_t st, rt;
+
+  Platform::SystemTime(&st);
+  Platform::ProcessTime(&rt);
+
+  fp->value = core::Cons(Fixnum(st).tag_, Fixnum(rt).tag_).Evict(fp->env);
 }
 
 /** *  (exit fixnum) never returns **/
@@ -61,7 +64,7 @@ void Exit(Frame* fp) {
   std::exit(Fixnum::Int64Of(rc));
 }
 
-/** *  (system string) **/
+/** * (system string) **/
 void System(Frame* fp) {
   auto cmd = fp->argv[0];
 

@@ -239,27 +239,16 @@ auto Env::LastFrame(Env* env) -> Tag {
 
 /** * env view **/
 auto Env::EnvView(Env* env) -> Tag {
+  uint64_t st, rt;
+
+  Platform::SystemTime(&st);
+  Platform::ProcessTime(&rt);
+
   auto view =
       std::vector<Tag>{Symbol::Keyword("env"), env->namespace_, Namespaces(env),
-                       RunTime(env),           SystemTime(env), EnvStack(env)};
+                       Fixnum(st).tag_,        Fixnum(rt).tag_, EnvStack(env)};
 
   return Vector(env, view).tag_;
-}
-
-/** * system time **/
-auto Env::SystemTime(Env*) -> Tag {
-  uint64_t ts;
-
-  Platform::SystemTime(&ts);
-  return Fixnum(ts).tag_;
-}
-
-/** * run time **/
-auto Env::RunTime(Env*) -> Tag {
-  uint64_t ts;
-
-  Platform::ProcessTime(&ts);
-  return Fixnum(ts).tag_;
 }
 
 /** * garbage collection **/
