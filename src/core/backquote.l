@@ -5,7 +5,7 @@
 (:defsym parse-quasi (:lambda (form)
 ;;;   (fmt :t "parse-quasi: ~A~%" form)
    (letf ((unquote (form)
-            (and (consp form) (eq :unquote (car form)) (list :quote (nth 1 form))))
+            (and (consp form) (eq :unquote (car form)) (list 'list (nth 1 form))))
           (unquote-splice (form)
             (and (consp form) (eq :splice (car form)) (nth 1 form)))
           (quasi (form)
@@ -19,11 +19,11 @@
           ((unquote-splice form))
           ((quasi form))
           ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
-          (:t (list :quote form))))))
+          (:t (list 'list (list :quote form)))))))
 
 (mu::mapc
  (:lambda (form)
-    (fmt :t "~A -> ~A~%" form (parse-quasi form)))
+    (fmt :t "~A -> ~A -> ~A~%" form (parse-quasi form) (eval (parse-quasi form))))
  '((:quasi (a (fixnum+ 1 2) c))
    (:quasi (a (:unquote (fixnum+ 1 2)) c))
    (:quasi (a (list 1 2) c))
