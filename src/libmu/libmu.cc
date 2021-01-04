@@ -44,7 +44,7 @@ using Env = core::Env;
 /** * constants interface **/
 auto t() -> void* { return (void*)Type::T; }
 auto nil() -> void* { return (void*)Type::NIL; }
-auto version() -> const char* { return "0.0.21"; }
+auto version() -> const char* { return "0.0.22"; }
 
 /** * read_stdin interface **/
 auto read_stream(void* env, void* stream) -> void* {
