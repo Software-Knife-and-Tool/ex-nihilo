@@ -7,6 +7,38 @@
 ;;; core forms
 ;;;
 
+;;; quasiquote
+(:defsym parse-quasi (:lambda (form)
+   (letf ((unquote (form)
+            (and (consp form) (eq :unquote (car form)) (list 'list (nth 1 form))))
+          (unquote-splice (form)
+            (and (consp form) (eq :splice (car form)) (nth 1 form)))
+          (quasi (form)
+            (and (consp form)
+                 (eq :quasi (car form))
+                 (consp (nth 1 form))
+                 (list* 'append (mu::mapcar parse-quasi (nth 1 form))))))
+         (cond
+          ((null form) form)
+          ((unquote form))
+          ((unquote-splice form))
+          ((quasi form))
+          ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
+          (:t (list 'list (list :quote form)))))))
+
+(:defsym quasi (:macro (form)
+   (parse-quasi form)))
+
+(set-macro-character #\`
+  (:lambda (stream ch) (list 'quasi (read stream))))
+
+(set-macro-character #\,
+  (:lambda (stream ch)                            
+    (let ((ch (read-char stream)))
+      (mu:if (eq ch #\@)
+          (list (read stream))
+        (progn (unread-char ch stream) (eval (read stream)))))))
+
 ;;; lambda
 (:defsym parse-lambda (:lambda (lambda-list)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
@@ -534,22 +566,3 @@
     (list 'when test (list (list* :lambda () body)) 'whilef)))
       (list 'mu::trampoline 'whilef)))
 
-;;; backquote
-(set-macro-character #\,
-  (:lambda (stream ch)                            
-    (let ((ch (read-char stream)))
-      (mu:if (eq ch #\@)
-          (list (read stream))
-        (progn (unread-char ch stream) (eval (read stream)))))))
-
-(set-macro-character #\`
-  (:lambda (stream ch)
-    (let ((expr (read stream))
-          (read-from-string (:lambda (str)
-            (read (open-input-string str)))))
-      (mu:if (listp expr)
-        (append '(append)
-          (mapcar
-           (:lambda (el) (list 'list el))
-           expr))
-        (read-from-string (fmt :nil "'~A" expr))))))

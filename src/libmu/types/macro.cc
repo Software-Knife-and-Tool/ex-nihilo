@@ -83,7 +83,24 @@ auto Macro::ViewOf(Env* env, Tag macro) -> Tag {
   return Vector(env, view).tag_;
 }
 
-/** * macro-function predicate **/
+/** * macro printer **/
+auto Macro::Print(Env* env, Tag macro, Tag str, bool) -> void {
+  auto fn = func(macro);
+
+  assert(Function::IsType(fn));
+  assert(Stream::IsType(str));
+
+  auto stream = Stream::StreamDesignator(env, str);
+  auto name = String::StdStringOf(Symbol::name(Function::name(fn)));
+
+  std::stringstream hexs;
+
+  hexs << std::hex << Type::to_underlying(fn);
+  core::PrintStdString(env, "#<:macro #x" + hexs.str() + " (" + name + ")>",
+                       stream, false);
+}
+
+/** * macro-function accessore **/
 auto Macro::MacroFunction(Env* env, Tag macsym) -> Tag {
   assert(Symbol::IsType(macsym));
 
