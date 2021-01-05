@@ -7,6 +7,7 @@
 ;;; core forms
 ;;;
 
+#|
 ;;; quasiquote
 (:defsym parse-quasi (:lambda (form)
    (letf ((quasi-list (form)
@@ -35,6 +36,7 @@
           ((quasi-list form))
           ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
           (:t (list 'list (list :quote form)))))))
+|#
 
 (:defsym quasi (:macro (form) (parse-quasi form)))
 
