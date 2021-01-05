@@ -26,18 +26,16 @@
           ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
           (:t (list 'list (list :quote form)))))))
 
-(:defsym quasi (:macro (form)
-   (parse-quasi form)))
+(:defsym quasi (:macro (form) (parse-quasi form)))
 
-(set-macro-character #\`
-  (:lambda (stream ch) (list 'quasi (read stream))))
+(set-macro-character #\` (:lambda (stream ch) (list 'quasi (read stream))))
 
 (set-macro-character #\,
   (:lambda (stream ch)                            
     (let ((ch (read-char stream)))
-      (mu:if (eq ch #\@)
-          (list (read stream))
-        (progn (unread-char ch stream) (eval (read stream)))))))
+      (cond
+       ((eq ch #\@) (list :splice (read stream)))
+       (:t (unread-char ch stream) (list :unquote (read stream)))))))
 
 ;;; lambda
 (:defsym parse-lambda (:lambda (lambda-list)
