@@ -6,25 +6,28 @@
 ;;; quasiquote
 (:defsym parse-quasi (:lambda (quote-form)
    (letf ((quasi-list (form)
-            (cond
-              ((null form) form)
-              ((and (consp form) (eq :unquote (car form))) (list 'list (nth 1 form)))
-              ((and (consp form) (eq :splice (car form))) (nth 1 form))
-              ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form))) (nth 1 form))
-              ((and (consp form) (eq :quasi (car form)) (consp (nth 1 form)))
-               (list* 'append (mu::mapcar quasi-list (nth 1 form))))
-              ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
-              (:t (list 'list (list :quote form))))))
-       (let ((form (nth 1 quote-form)))
-         ;;; (fmt :t "parse-quasi: ~A -> ~A~%" quote-form form)
-         (cond
-           ((or (null form) (atom form)) form)
-           ((and (consp form) (eq :unquote (car form))) (nth 1 form))
-           ((and (consp form) (eq :splice (car form)) (nth 1 form))) ;;; undefined consequences
-           ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form))) (nth 1 form))
-           ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
-           ((consp form) (quasi-list form))
-           (:t :t))))))
+           (cond
+            ((null form) form)
+            ((and (consp form) (eq :unquote (car form)))
+             (list 'list (nth 1 form)))
+            ((and (consp form) (eq :splice (car form)))
+             (nth 1 form))
+            ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form)))
+             (nth 1 form))
+            ((and (consp form) (eq :quasi (car form)) (consp (nth 1 form)))
+             (list* 'append (mu::mapcar quasi-list (nth 1 form))))
+            ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
+            (:t (list 'list (list :quote form))))))
+
+         (let ((form (nth 1 quote-form)))
+           (cond
+            ((or (null form) (atom form)) form)
+            ((and (consp form) (eq :unquote (car form))) (nth 1 form))
+            ((and (consp form) (eq :splice (car form)) (nth 1 form))) ;;; undefined consequences
+            ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form))) (nth 1 form))
+            ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
+            ((consp form) (quasi-list quote-form))
+            (:t (raise "quasiquote botch" form)))))))
          
 (mu::mapc
  (:lambda (test)
