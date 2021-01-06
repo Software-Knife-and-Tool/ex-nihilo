@@ -36,7 +36,6 @@
                       "mu::mapcar"
                       "mu::mapc"
                       "core.acons"
-                      "core.constantp"
                       "core.eql"
                       "core.pairp"
                       "core.sequencep"

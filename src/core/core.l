@@ -155,21 +155,9 @@
           (list* :lambda names (append letqs closures body))
           (list :quote args)))))
 
-;;; constantp - constant form predicate
-(defun constantp (form)
-  (if (and (consp form) (eq (car form) :quote))
-    :t                            
-    (if (symbolp form)
-      (boundp form)
-      (null (consp form)))))
-
 ;;; sequencep - sequence predicate 
 (defun sequencep (sequence)
   (or (vectorp sequence) (listp sequence)))
-
-;;; pairp - predicate for dotted pairs
-(defun pairp (object)
-  (and (consp object) (null (listp (cdr object)))))
 
 ;;; eql
 (defun eql (x y)
