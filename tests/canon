@@ -1,53 +1,53 @@
-(atom '(1 2 3)),:nil
-(bool (macro-function 'dolist)),:t
-(bool (macro-function 'dotimes)),:t
-(cond (:t 1)),1
-(functionp 1+),:t
-(functionp 1-),:t
-(functionp atom),:t
-(functionp break),:t
-(functionp concatenate),:t
-(functionp copy-list),:t
-(functionp count-if),:t
-(functionp describe),:t
-(functionp elt),:t
-(functionp error),:t
-(functionp find-if),:t
-(functionp find-if*),:t
-(functionp length),:t
-(functionp mapc),:t
-(functionp mapcar),:t
-(functionp mapl),:t
-(functionp maplist),:t
-(functionp pairp),:t
-(functionp prin1),:t
-(functionp prin1-to-string),:t
-(functionp princ),:t
-(functionp princ-to-string),:t
-(functionp print),:t
-(functionp read-from-string),:t
-(functionp read-from-string-stream),:t
-(functionp reverse),:t
-(functionp typep),:t
-(functionp with-ns-symbols),:t
-(functionp with-open-stream),:t
-(functionp zip-1),:t
-(functionp zip-2),:t
-(functionp reduce),:t
-(reduce fixnum* '(1 2 3 4 5) 1),120
-(mu.apply (let ((a 1)) (closure (:lambda (b) (fixnum+ a b)))) '(2)),3
-(prin1-to-string "one"),"one"
-(princ-to-string "one"),one
-(progn (:defcon g-macro (:macro () (let ((result (gensym))) (list 'let (list (list result 1)) result)))) (g-macro)),1
-(read-from-string "(1 2 3)"),(1 2 3)
-(read-from-string "1.024e5"),102400.000000
-(reverse #(:char #\\a #\\b #\\c)),cba
-(reverse '(1 2 3)),(3 2 1)
-(typep 1 :fixnum),:t
-(typep 1 :float),:nil
-(typep 1 :t),:t
-(unless :t :nil),:nil
-(vector :fixnum (fixnum+ 1 2) 3 (fixnum- 4 1)),#(:fixnum 3 3 3)
-(when :t :t),:t
-(zerop 0),:t
-(zerop 1),:nil
+(atom '(1 2 3));:nil
+(bool (macro-function 'dolist));:t
+(bool (macro-function 'dotimes));:t
+(cond (:t 1));1
+(functionp 1+);:t
+(functionp 1-);:t
+(functionp atom);:t
+(functionp break);:t
+(functionp concatenate);:t
+(functionp copy-list);:t
+(functionp count-if);:t
+(functionp describe);:t
+(functionp elt);:t
+(functionp error);:t
+(functionp find-if);:t
+(functionp find-if*);:t
+(functionp length);:t
+(functionp mapc);:t
+(functionp mapcar);:t
+(functionp mapl);:t
+(functionp maplist);:t
+(functionp pairp);:t
+(functionp prin1);:t
+(functionp prin1-to-string);:t
+(functionp princ);:t
+(functionp princ-to-string);:t
+(functionp print);:t
+(functionp read-from-string);:t
+(functionp read-from-string-stream);:t
+(functionp reverse);:t
+(functionp typep);:t
+(functionp with-ns-symbols);:t
+(functionp with-open-stream);:t
+(functionp zip-1);:t
+(functionp zip-2);:t
+(functionp reduce);:t
+(reduce fixnum* '(1 2 3 4 5) 1);120
+(mu.apply (let ((a 1)) (closure (:lambda (b) (fixnum+ a b)))) '(2));3
+(prin1-to-string "one");"one"
+(princ-to-string "one");one
+(progn (:defcon g-macro (:macro () (let ((result (gensym))) (list 'let (list (list result 1)) result)))) (g-macro));1
+(read-from-string "(1 2 3)");(1 2 3)
+(read-from-string "1.024e5");102400.000000
+(reverse #(:char #\\a #\\b #\\c));cba
+(reverse '(1 2 3));(3 2 1)
+(typep 1 :fixnum);:t
+(typep 1 :float);:nil
+(typep 1 :t);:t
+(unless :t :nil);:nil
+(vector :fixnum (fixnum+ 1 2) 3 (fixnum- 4 1));#(:fixnum 3 3 3)
+(when :t :t);:t
+(zerop 0);:t
+(zerop 1);:nil

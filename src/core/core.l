@@ -8,27 +8,33 @@
 ;;;
 
 ;;; quasiquote
-(:defsym parse-quasi (:lambda (form)
-   (letf ((unquote (form)
-            (and (consp form) (eq :unquote (car form)) (list 'list (nth 1 form))))
-          (unquote-splice (form)
-            (and (consp form) (eq :splice (car form)) (nth 1 form)))
-          (quasi (form)
-            (and (consp form)
-                 (eq :quasi (car form))
-                 (consp (nth 1 form))
-                 (list* 'append (mu::mapcar parse-quasi (nth 1 form))))))
-         (cond
-          ((null form) form)
-          ((unquote form))
-          ((unquote-splice form))
-          ((quasi form))
-          ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
-          (:t (list 'list (list :quote form)))))))
+(set-macro-character #\`
+  (:lambda (stream ch)
+    (let ((parse-quasi (:lambda (quote-form)
+      (letf ((quasi-list (form)
+           (cond
+            ((null form) form)
+            ((and (consp form) (eq :unquote (car form)))
+             (list 'list (nth 1 form)))
+            ((and (consp form) (eq :splice (car form)))
+             (nth 1 form))
+            ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form)))
+             (nth 1 form))
+            ((and (consp form) (eq :quasi (car form)) (consp (nth 1 form)))
+             (list* 'append (mu::mapcar quasi-list (nth 1 form))))
+            ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
+            (:t (list 'list (list :quote form))))))
 
-(:defsym quasi (:macro (form) (parse-quasi form)))
-
-(set-macro-character #\` (:lambda (stream ch) (list 'quasi (read stream))))
+         (let ((form (nth 1 quote-form)))
+           (cond
+            ((or (null form) (atom form)) form)
+            ((and (consp form) (eq :unquote (car form))) (nth 1 form))
+            ((and (consp form) (eq :splice (car form)) (nth 1 form))) ;;; undefined consequences
+            ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form))) (nth 1 form))
+            ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
+            ((consp form) (quasi-list quote-form))
+            (:t (raise "quasiquote botch" form))))))))
+         (parse-quasi (list :quasi (read stream))))))
 
 (set-macro-character #\,
   (:lambda (stream ch)                            

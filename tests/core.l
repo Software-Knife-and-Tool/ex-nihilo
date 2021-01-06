@@ -1,3 +1,11 @@
+`123
+`,123
+`,(fixnum+ 1 2)
+`(a (fixnum+ 1 2) c)
+`(a ,(fixnum+ 1 2) c)
+`(a (list 1 2) c)
+`(a ,(list 1 2) c)
+`(a ,@(list 1 2) c)
 (constantp ''a)
 (constantp '(1 2 3))
 (constantp 'a)
