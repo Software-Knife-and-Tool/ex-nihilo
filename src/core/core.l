@@ -35,7 +35,7 @@
          
 (:defsym quasi (:macro (form) (parse-quasi form)))
 
-(set-macro-character #\` (:lambda (stream ch) (list 'quasi (read stream))))
+(set-macro-character #\` (:lambda (stream ch) (list 'car (parse-quasi (read stream)))))
 
 (set-macro-character #\,
   (:lambda (stream ch)                            
