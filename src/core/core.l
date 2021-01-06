@@ -8,8 +8,10 @@
 ;;;
 
 ;;; quasiquote
-(:defsym parse-quasi (:lambda (quote-form)
-   (letf ((quasi-list (form)
+(set-macro-character #\`
+  (:lambda (stream ch)
+    (let ((parse-quasi (:lambda (quote-form)
+      (letf ((quasi-list (form)
            (cond
             ((null form) form)
             ((and (consp form) (eq :unquote (car form)))
@@ -31,11 +33,8 @@
             ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form))) (nth 1 form))
             ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
             ((consp form) (quasi-list quote-form))
-            (:t (raise "quasiquote botch" form)))))))
-         
-(:defsym quasi (:macro (form) (parse-quasi form)))
-
-(set-macro-character #\` (:lambda (stream ch) (list 'car (parse-quasi (read stream)))))
+            (:t (raise "quasiquote botch" form))))))))
+         (parse-quasi (list :quasi (read stream))))))
 
 (set-macro-character #\,
   (:lambda (stream ch)                            
