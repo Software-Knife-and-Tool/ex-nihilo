@@ -12,7 +12,7 @@ function run () {
     
     if [ $? -eq 0 ]
     then
-	echo -n $1 "," $2 ">" `cat $TMP/result.$$` "-- "
+	echo -n $1 ";" $2 ">" `cat $TMP/result.$$` "-- "
 	diff $TMP/expect.$$ $TMP/result.$$ > /dev/null 2>&1
 	if [ $? -eq 0 ]
 	then
@@ -30,8 +30,8 @@ rm -f $TMP/test.$$.log
 while read test; do
     if [ ${test::1} != \; ]
     then
-	form=$(echo $test | sed -e "s/,.*$//")
-	result=$(echo $test | sed -e "s/^.*,//")
+	form=$(echo $test | sed -e "s/;.*$//")
+	result=$(echo $test | sed -e "s/^.*;//")
 	run "$form" "$result" "$2" "$3" >> $TMP/test.$$.log 2>&1
     fi
 done < $1

@@ -1,221 +1,221 @@
-#(:char),
-#(:fixnum),#(:fixnum)
-#(:float),#(:float)
-#(:t),#(:t)
-((:lambda ())),:nil
-(apply fixnum+ '(1 2)),3
-(:defsym list1 (:lambda (:rest lists) lists)),list1
-(boundp 'foo),:nil
-(boundp :nil),:t
-(car '(1 2 3)),1
-(car :nil),:nil
-(cdr '(1 2 3)),(2 3)
-(cdr :nil),:nil
-(charp #\\a),:t
-(charp 1),:nil
-(cons 1 '(2)),(1 2)
-(cons 1 2),(1 . 2)
-(consp '(1)),:t
-(consp 1),:nil
-(cos 60.0),0.500000
-(eq #\\p #\\p),:t
-(eq :t :nil),:nil
-(eq :t :t),:t
-(eval 1),1
-(fixnum* -2 3),-6
-(fixnum* 2 3),6
-(fixnum+ -1 2),1
-(fixnum+ 1 2),3
-(fixnum- 1 2),-1
-(fixnum- 2 1),1
-(fixnum< 2 3),:t
-(fixnum< 3 2),:nil
-(fixnump 1),:t
-(fixnump :t),:nil
-(float* -0.1 0.2),-0.020000
-(float* 0.1 0.2),0.020000
-(float+ -3.0 2.0),-1.000000
-(float+ 0.1 0.2),0.300000
-(float- 0.1 0.2),-0.100000
-(float- 3.0 1.0),2.000000
-(float/ 0.1 0.2),0.500000
-(float/ 2.0 3.0),0.666667
-(float< 2.0 3.0),:t
-(float< 3.0 2.0),:nil
-(floatp 1.0),:t
-(floatp :t),:nil
-(floor 2 3),(0 . 2)
-(floor 3 2),(1 . 1)
-(get-output-stream-string (open-output-string "")),
-(keywordp 'foo),:nil
-(keywordp :keyp),:t
-(length '(1 2 3)),3
-(length :nil),0
-(log 10.0),2.302585
-(log10 1000.0),3.000000
-(logand 3 1),1
-(logor 4 2),6
-(macroexpand 123),123
-(make-symbol "abc"),abc
-(nth 0 '(1 2 3)),1
-(nthcdr 0 '(1 2 3)),(1 2 3)
-(eq apply mu::apply),:t
-(functionp mu::apply),:t
-(functionp mu::block),:t
-(functionp mu::clocks),:t
-(functionp mu::frame-ref),:t
-(functionp mu::letq),:t
-(functionp mu::print),:t
-(functionp mu::return),:t
-(functionp :t),:nil
-(functionp accept-socket-stream),:t
-(functionp acos),:t
-(functionp apply),:t
-(functionp asin),:t
-(functionp atan),:t
-(functionp boundp),:t
-(functionp car),:t
-(functionp cdr),:t
-(functionp charp),:t
-(functionp close),:t
-(functionp closure),:t
-(functionp connect-socket-stream),:t
-(functionp cons),:t
-(functionp consp),:t
-(functionp cos),:t
-(functionp env-view),:t
-(functionp eofp),:t
-(functionp eq),:t
-(functionp eval),:t
-(functionp exception),:t
-(functionp exceptionp),:t
-(functionp exit),:t
-(functionp exp),:t
-(functionp find-in-ns),:t
-(functionp find-symbol),:t
-(functionp fixnum*),:t
-(functionp fixnum+),:t
-(functionp fixnum+),:t
-(functionp fixnum-),:t
-(functionp fixnum<),:t
-(functionp fixnump),:t
-(functionp float*),:t
-(functionp float+),:t
-(functionp float-),:t
-(functionp float/),:t
-(functionp float<),:t
-(functionp floatp),:t
-(functionp floor),:t
-(functionp functionp),:t
-(functionp gc),:t
-(functionp get-output-stream-string),:t
-(functionp heap-view),:t
-(functionp in-ns),:t
-(functionp intern),:t
-(functionp invoke),:t
-(functionp keyword),:t
-(functionp keywordp),:t
-(functionp length),:t
-(functionp load),:t
-(functionp log),:t
-(functionp log10),:t
-(functionp logand),:t
-(functionp logor),:t
-(functionp macro-function),:t
-(functionp macroexpand),:t
-(functionp make-symbol),:t
-(functionp mapc),:t
-(functionp mapcar),:t
-(functionp mapl),:t
-(functionp maplist),:t
-(functionp mu::apply),:t
-(functionp namespacep),:t
-(functionp ns),:t
-(functionp ns-import),:t
-(functionp ns-name),:t
-(functionp ns-symbols),:t
-(functionp nth),:t
-(functionp nthcdr),:t
-(functionp open-input-file),:t
-(functionp open-input-string),:t
-(functionp open-output-file),:t
-(functionp open-output-string),:t
-(functionp open-socket-server),:t
-(functionp open-socket-stream),:t
-(functionp open-stream),:t
-(functionp pow),:t
-(functionp raise),:t
-(functionp raise-exception),:t
-(functionp read),:t
-(functionp read-byte),:t
-(functionp read-char),:t
-(functionp set-macro-character),:t
-(functionp sin),:t
-(functionp special-operatorp),:t
-(functionp sqrt),:t
-(functionp streamp),:t
-(functionp struct),:t
-(functionp struct-slots),:t
-(functionp struct-type),:t
-(functionp structp),:t
-(functionp symbol-name),:t
-(functionp symbol-ns),:t
-(functionp symbol-value),:t
-(functionp symbolp),:t
-(functionp system),:t
-(functionp tan),:t
-(functionp terpri),:t
-(functionp trampoline),:t
-(functionp truncate),:t
-(functionp type-of),:t
-(functionp unread-char),:t
-(functionp list-to-vector),:t
-(functionp vector-length),:t
-(functionp vector-map),:t
-(functionp vector-mapc),:t
-(functionp vector-ref),:t
-(functionp vector-type),:t
-(functionp vectorp),:t
-(functionp view),:t
-(functionp with-exception),:t
-(functionp write-byte),:t
-(functionp write-char),:t
-(namespacep :t),:nil
-(special-operatorp 'foo),:nil
-(special-operatorp :defsym),:t
-(streamp error-output),:t
-(streamp standard-input),:t
-(streamp standard-output),:t
-(vectorp #(:char #\\a #\\a #\\a)),:t
-(vectorp #(:fixnum 1 2 3)),:t
-(vectorp #(:float 1.0 2.0 3.0)),:t
-(vectorp #(:t 1 'a 3)),:t
-(vectorp :nil),:nil
-(pow 7.0 3.0),343.000000
-(print 1.0 :nil :t),1.0000001.000000
-(print 123 :nil :nil),123123
-(print 123 :nil :t),123123
-(read (open-input-string "'f")),(:quote f)
-(sin 30.0),0.500000
-(sqrt 2.0),1.414214
-(symbol-name 'foo),foo
-(symbol-value :nil),:nil
-(symbolp :t),:t
-(tan 45.0),1.000000
-(trampoline (:lambda () 0)),0
-(truncate 2 3),(0 . 2)
-(truncate 3 2),(1 . 1)
-(type-of "foo"),:string
-(type-of load),:func
-(type-of macroexpand),:func
-(vector-length "abc"),3
-(vector-length #(:t 1 2 3)),3
-(vector-map (:lambda (n) (fixnum+ 1 n)) #(:fixnum 1 2 3)),#(:fixnum 2 3 4)
-(vector-mapc (:lambda (n) (print n :nil :nil)) #(:fixnum 1 2 3)),123#(:fixnum 1 2 3)
-(vector-ref #(:fixnum 1 2 3) 1),2
-(vector-ref #(:float 1.0 2.0 3.0) 1),2.000000
-(vector-ref #(:t 'a 2 3.0) 1),2
-(vector-type #(:t a b c)),:t
-(write-char #\\a standard-output),aa
-:nil,:nil
-:t,:t
+#(:char);
+#(:fixnum);#(:fixnum)
+#(:float);#(:float)
+#(:t);#(:t)
+((:lambda ()));:nil
+(apply fixnum+ '(1 2));3
+(:defsym list1 (:lambda (:rest lists) lists));list1
+(boundp 'foo);:nil
+(boundp :nil);:t
+(car '(1 2 3));1
+(car :nil);:nil
+(cdr '(1 2 3));(2 3)
+(cdr :nil);:nil
+(charp #\\a);:t
+(charp 1);:nil
+(cons 1 '(2));(1 2)
+(cons 1 2);(1 . 2)
+(consp '(1));:t
+(consp 1);:nil
+(cos 60.0);0.500000
+(eq #\\p #\\p);:t
+(eq :t :nil);:nil
+(eq :t :t);:t
+(eval 1);1
+(fixnum* -2 3);-6
+(fixnum* 2 3);6
+(fixnum+ -1 2);1
+(fixnum+ 1 2);3
+(fixnum- 1 2);-1
+(fixnum- 2 1);1
+(fixnum< 2 3);:t
+(fixnum< 3 2);:nil
+(fixnump 1);:t
+(fixnump :t);:nil
+(float* -0.1 0.2);-0.020000
+(float* 0.1 0.2);0.020000
+(float+ -3.0 2.0);-1.000000
+(float+ 0.1 0.2);0.300000
+(float- 0.1 0.2);-0.100000
+(float- 3.0 1.0);2.000000
+(float/ 0.1 0.2);0.500000
+(float/ 2.0 3.0);0.666667
+(float< 2.0 3.0);:t
+(float< 3.0 2.0);:nil
+(floatp 1.0);:t
+(floatp :t);:nil
+(floor 2 3);(0 . 2)
+(floor 3 2);(1 . 1)
+(get-output-stream-string (open-output-string ""));
+(keywordp 'foo);:nil
+(keywordp :keyp);:t
+(length '(1 2 3));3
+(length :nil);0
+(log 10.0);2.302585
+(log10 1000.0);3.000000
+(logand 3 1);1
+(logor 4 2);6
+(macroexpand 123);123
+(make-symbol "abc");abc
+(nth 0 '(1 2 3));1
+(nthcdr 0 '(1 2 3));(1 2 3)
+(eq apply mu::apply);:t
+(functionp mu::apply);:t
+(functionp mu::block);:t
+(functionp mu::clocks);:t
+(functionp mu::frame-ref);:t
+(functionp mu::letq);:t
+(functionp mu::print);:t
+(functionp mu::return);:t
+(functionp :t);:nil
+(functionp accept-socket-stream);:t
+(functionp acos);:t
+(functionp apply);:t
+(functionp asin);:t
+(functionp atan);:t
+(functionp boundp);:t
+(functionp car);:t
+(functionp cdr);:t
+(functionp charp);:t
+(functionp close);:t
+(functionp closure);:t
+(functionp connect-socket-stream);:t
+(functionp cons);:t
+(functionp consp);:t
+(functionp cos);:t
+(functionp env-view);:t
+(functionp eofp);:t
+(functionp eq);:t
+(functionp eval);:t
+(functionp exception);:t
+(functionp exceptionp);:t
+(functionp exit);:t
+(functionp exp);:t
+(functionp find-in-ns);:t
+(functionp find-symbol);:t
+(functionp fixnum*);:t
+(functionp fixnum+);:t
+(functionp fixnum+);:t
+(functionp fixnum-);:t
+(functionp fixnum<);:t
+(functionp fixnump);:t
+(functionp float*);:t
+(functionp float+);:t
+(functionp float-);:t
+(functionp float/);:t
+(functionp float<);:t
+(functionp floatp);:t
+(functionp floor);:t
+(functionp functionp);:t
+(functionp gc);:t
+(functionp get-output-stream-string);:t
+(functionp heap-view);:t
+(functionp in-ns);:t
+(functionp intern);:t
+(functionp invoke);:t
+(functionp keyword);:t
+(functionp keywordp);:t
+(functionp length);:t
+(functionp load);:t
+(functionp log);:t
+(functionp log10);:t
+(functionp logand);:t
+(functionp logor);:t
+(functionp macro-function);:t
+(functionp macroexpand);:t
+(functionp make-symbol);:t
+(functionp mapc);:t
+(functionp mapcar);:t
+(functionp mapl);:t
+(functionp maplist);:t
+(functionp mu::apply);:t
+(functionp namespacep);:t
+(functionp ns);:t
+(functionp ns-import);:t
+(functionp ns-name);:t
+(functionp ns-symbols);:t
+(functionp nth);:t
+(functionp nthcdr);:t
+(functionp open-input-file);:t
+(functionp open-input-string);:t
+(functionp open-output-file);:t
+(functionp open-output-string);:t
+(functionp open-socket-server);:t
+(functionp open-socket-stream);:t
+(functionp open-stream);:t
+(functionp pow);:t
+(functionp raise);:t
+(functionp raise-exception);:t
+(functionp read);:t
+(functionp read-byte);:t
+(functionp read-char);:t
+(functionp set-macro-character);:t
+(functionp sin);:t
+(functionp special-operatorp);:t
+(functionp sqrt);:t
+(functionp streamp);:t
+(functionp struct);:t
+(functionp struct-slots);:t
+(functionp struct-type);:t
+(functionp structp);:t
+(functionp symbol-name);:t
+(functionp symbol-ns);:t
+(functionp symbol-value);:t
+(functionp symbolp);:t
+(functionp system);:t
+(functionp tan);:t
+(functionp terpri);:t
+(functionp trampoline);:t
+(functionp truncate);:t
+(functionp type-of);:t
+(functionp unread-char);:t
+(functionp list-to-vector);:t
+(functionp vector-length);:t
+(functionp vector-map);:t
+(functionp vector-mapc);:t
+(functionp vector-ref);:t
+(functionp vector-type);:t
+(functionp vectorp);:t
+(functionp view);:t
+(functionp with-exception);:t
+(functionp write-byte);:t
+(functionp write-char);:t
+(namespacep :t);:nil
+(special-operatorp 'foo);:nil
+(special-operatorp :defsym);:t
+(streamp error-output);:t
+(streamp standard-input);:t
+(streamp standard-output);:t
+(vectorp #(:char #\\a #\\a #\\a));:t
+(vectorp #(:fixnum 1 2 3));:t
+(vectorp #(:float 1.0 2.0 3.0));:t
+(vectorp #(:t 1 'a 3));:t
+(vectorp :nil);:nil
+(pow 7.0 3.0);343.000000
+(print 1.0 :nil :t);1.0000001.000000
+(print 123 :nil :nil);123123
+(print 123 :nil :t);123123
+(read (open-input-string "'f"));(:quote f)
+(sin 30.0);0.500000
+(sqrt 2.0);1.414214
+(symbol-name 'foo);foo
+(symbol-value :nil);:nil
+(symbolp :t);:t
+(tan 45.0);1.000000
+(trampoline (:lambda () 0));0
+(truncate 2 3);(0 . 2)
+(truncate 3 2);(1 . 1)
+(type-of "foo");:string
+(type-of load);:func
+(type-of macroexpand);:func
+(vector-length "abc");3
+(vector-length #(:t 1 2 3));3
+(vector-map (:lambda (n) (fixnum+ 1 n)) #(:fixnum 1 2 3));#(:fixnum 2 3 4)
+(vector-mapc (:lambda (n) (print n :nil :nil)) #(:fixnum 1 2 3));123#(:fixnum 1 2 3)
+(vector-ref #(:fixnum 1 2 3) 1);2
+(vector-ref #(:float 1.0 2.0 3.0) 1);2.000000
+(vector-ref #(:t 'a 2 3.0) 1);2
+(vector-type #(:t a b c));:t
+(write-char #\\a standard-output);aa
+:nil;:nil
+:t;:t
