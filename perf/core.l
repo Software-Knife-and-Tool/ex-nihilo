@@ -9,7 +9,7 @@
 ;;; (fmt :t "~A ;;; core.constantp~%" (perf-time (constantp 1)))
 ;;; (fmt :t "~A ;;; core.pairlis~%" (perf-time (pairlis '(a b c d e f g h i j) '(0 1 2 3 4 5 6 7 8 9))))
 (fmt :t "~A ;;; core.eql~%" (perf-time (eql blist clist)))
-(fmt :t "~A ;;; core.pairp~%" (perf-time (pairp '(0 . 1))))
+;;; (fmt :t "~A ;;; core.pairp~%" (perf-time (pairp '(0 . 1))))
 (fmt :t "~A ;;; core.schar~%" (perf-time (schar "0123456" 5)))
 (fmt :t "~A ;;; core.sequencep~%" (perf-time (sequencep alist)))
 (fmt :t "~A ;;; core.string=~%" (perf-time (string= "123456789" "0123456789")))

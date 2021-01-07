@@ -37,7 +37,6 @@
                       "mu::mapc"
                       "core.acons"
                       "core.eql"
-                      "core.pairp"
                       "core.sequencep"
                       "core.schar"
                       "core.stringp"
