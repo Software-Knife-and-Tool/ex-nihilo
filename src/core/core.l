@@ -43,6 +43,23 @@
        ((eq ch #\@) (list :splice (read stream)))
        (:t (unread-char ch stream) (list :unquote (read stream)))))))
 
+;;; require/provide macro
+(:defsym require (:macro (tag path)
+  (let ((string-concat (:lambda (:rest strings)
+    (let ((ostream (output-string)))
+      (mu::mapc (:lambda (str) (princ str ostream)) strings)
+      (get-output-string-stream ostream)))))
+
+   (fmt :t "require: tag ~A path ~A~%" tag path)
+   (unless (bound? 'lib-base) (raise "require: lib-base is not bound" :nil))
+   (unless (symbol? tag) (raise "require: tag is not a symbol" tag))
+   (unless (string? path) (raise "require: path is not a string" path))
+   (unless (bound? tag)
+     (let ((load-verbose (when (bound? 'load-verbose) load-verbose)))
+       (when load-verbose (fmt :t "require: loading ~A~%" path))
+       (list 'progn (list :defsym tag :nil)
+          (list 'load (string-concat lib-base path) load-verbose)))))))
+
 ;;; lambda
 (:defsym parse-lambda (:lambda (lambda-list)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
