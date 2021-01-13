@@ -106,9 +106,10 @@ auto Atom(Env* env, Tag stream) -> std::string {
 
   if (!Type::Null(ch)) Stream::UnReadByte(ch, stream);
 
-  if (string.size() == 0)
+  if (string.size() == 0) {
     Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
                      "naked atom syntax (read-atom)", Type::NIL);
+  }
 
   return string;
 }

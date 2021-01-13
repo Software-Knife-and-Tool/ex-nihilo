@@ -6,14 +6,8 @@
 `(a (list 1 2) c);(a (list 1 2) c)
 `(a ,(list 1 2) c);(a (1 2) c)
 `(a ,@(list 1 2) c);(a 1 2 c)
-(constantp ''a);:t
-(constantp '(1 2 3));:nil
-(constantp 'a);:nil
-(constantp 1);:t
-(constantp :nil);:t
 (functionp acons);:t
 (functionp assq);:t
-(functionp constantp);:t
 (functionp eql);:t
 (functionp fmt);:t
 (functionp pairlis);:t

@@ -6,7 +6,7 @@
 ;;;
 ;;; mu forms
 ;;;
-(:defsym .version "0.0.22")
+(:defsym mu::version "0.0.22")
 
 (:defsym identity (:lambda (form) form))
 
