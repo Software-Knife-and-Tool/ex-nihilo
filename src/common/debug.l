@@ -1,7 +1,6 @@
 ;;;
 ;;; debug.l
 ;;;
-(in-ns (find-ns "common"))
 
 ;;; pprint
 (defun pprint (sexpr stream)

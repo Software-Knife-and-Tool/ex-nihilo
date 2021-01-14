@@ -91,6 +91,7 @@
 (functionp exceptionp);:t
 (functionp exit);:t
 (functionp exp);:t
+(functionp find-ns);:t
 (functionp find-in-ns);:t
 (functionp find-symbol);:t
 (functionp fixnum*);:t

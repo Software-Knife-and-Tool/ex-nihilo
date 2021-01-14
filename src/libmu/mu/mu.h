@@ -39,6 +39,7 @@ void Eq(Frame*);
 void Eval(Frame*);
 void Exit(Frame*);
 void Exp(Frame*);
+void FindNamespace(Frame*);
 void FindInNamespace(Frame*);
 void FindSymbolNamespace(Frame*);
 void FixAdd(Frame*);

@@ -27,6 +27,7 @@
 namespace libmu {
 namespace mu {
 
+using Env = core::Env;
 using Exception = core::Exception;
 using Frame = core::Env::Frame;
 using Namespace = core::Namespace;
@@ -37,6 +38,17 @@ using Type = core::Type;
 /** * (namespacep object) => bool  **/
 void IsNamespace(Frame* fp) {
   fp->value = Type::Bool(Namespace::IsType(fp->argv[0]));
+}
+
+/** * (find-ns name) => namespace **/
+void FindNamespace(Frame* fp) {
+  auto name = fp->argv[0];
+
+  if (!String::IsType(name))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-ns",
+                     name);
+
+  fp->value = Env::MapNamespace(fp->env, String::StdStringOf(name));
 }
 
 /** * (name-ns namespace) => string **/

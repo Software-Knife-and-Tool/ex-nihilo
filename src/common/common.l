@@ -1,4 +1,4 @@
-(in-ns (find-ns "common"))
+;;; (in-ns (find-ns "common"))
 
 ;;; typep
 (defun typep (object type)
@@ -24,7 +24,7 @@
       (raise "error: " obj))))
 
 ;;; lambda
-(defmacro lambda (args :rest body)
+(defmacro lambda-common (args :rest body)
   (unless (listp args) (raise "must be a list (lambda)" args))
   (list* :lambda () body))
 

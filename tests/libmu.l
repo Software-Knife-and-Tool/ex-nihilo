@@ -76,6 +76,7 @@
 (functionp exceptionp)
 (functionp exit)
 (functionp exp)
+(functionp find-ns)
 (functionp find-in-ns)
 (functionp find-symbol)
 (functionp fixnum*)

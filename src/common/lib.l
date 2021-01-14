@@ -5,8 +5,8 @@
 
 (defconstant .version "0.0.1")
 
-(load-once common/common "/src/common/common.l")
-(load-once common/debug "/src/common/debug.l")
-(load-once common/list "/src/common/list.l")
-(load-once common/sequence "/src/common/sequence.l")
-(load-once common/stream "/src/common/stream.l")
+(require common/common "/src/common/common.l")
+(require common/debug "/src/common/debug.l")
+(require common/list "/src/common/list.l")
+(require common/sequence "/src/common/sequence.l")
+(require common/stream "/src/common/stream.l")

@@ -1,5 +1,3 @@
-(in-ns (find-ns "common"))
-
 ;;; reverse - reverse sequence
 (defun reverse (src)
   (cond

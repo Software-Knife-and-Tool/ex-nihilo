@@ -1,5 +1,3 @@
-(in-ns (find-ns "common"))
-
 ;;; print newline, then object 
 (defun print (obj :rest args)
   (let ((stream

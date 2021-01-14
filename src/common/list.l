@@ -1,5 +1,3 @@
-(in-ns (find-ns "common"))
-
 ;;; dotimes/dolist
 (defmacro dotimes (sym countf :rest body) 
   (unless (and (symbolp sym) (null (keywordp sym)))
