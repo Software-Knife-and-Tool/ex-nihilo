@@ -1,0 +1,20 @@
+#-*- mode: org -*-
+#+STARTUP: showall
+
+* ALC - A Lisp Compiler
+  This project is a multi-pass machine-code compiler for Gyre.
+  + output format? LLVM?
+* ALC Architecture
+  This compiler is composed of a series of Gyre libraries, structured as a number of passes.
+  1. lexical analysis (compiler/lex)
+     + mostly done by mu reader
+     + (lex sexpr)
+  2. AST (compiler/ast)
+     + (ast (lex sexpr))
+     + convert sexpr to AST
+     + replace all nodes with (sexpr . :type)
+  3. Optimizer (compiler/opt)
+     + (opt (ast (lex seexpr)))
+     + constant folding
+  4. Code emitter (compiler/emit)
+     + write machine code output file
