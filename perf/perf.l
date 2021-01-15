@@ -1,6 +1,6 @@
 ;;; time macro
 (defmacro perf-time (form)
-  (let ((now (:lambda () (vector-ref (env-view) 3)))
+  (let ((now (:lambda () (mu::vector-ref (mu::env-view) 3)))
         (now-usecs (gensym))
         (start-time (gensym))
         (start-room (gensym))
@@ -11,33 +11,26 @@
         (result (gensym)))
     
     (list 'let* (list (list now-usecs (list now))
-                      (list start-room (list 'heap-view :t))
+                      (list start-room (list 'mu::heap-view :t))
                       (list start-time (list now))
                       (list result form)
                       (list stop-time (list now))
-                      (list stop-room (list 'heap-view :t))
+                      (list stop-room (list 'mu::heap-view :t))
                       (list start-used
-                            (list 'fixnum- (list 'vector-ref start-room 1)
-                                           (list 'vector-ref start-room 3)))
+                            (list 'fixnum- (list 'mu::vector-ref start-room 1)
+                                           (list 'mu::vector-ref start-room 3)))
                       (list stop-used
-                            (list 'fixnum- (list 'vector-ref stop-room 1)
-                                           (list 'vector-ref stop-room 3))))
+                            (list 'fixnum- (list 'mu::vector-ref stop-room 1)
+                                           (list 'mu::vector-ref stop-room 3))))
 
           (list 'cons (list 'fixnum- stop-time start-time) (list 'fixnum- stop-used start-used)))))
 
 ;;; report
 (defun perf-report (log)
-  (let* ((functions '(
-                  ;;;    "gc"
-                  ;;;    "mu:mapc"
-                  ;;;    "mu:mapcar"
-                      "mu:foldl"
+  (let* ((functions '("mu:foldl"
                       "mu:foldr"
                       "mu::mapcar"
                       "mu::mapc"
-                      "core.acons"
-                      "core.eql"
-                      "core.sequencep"
                       "core.schar"
                       "core.stringp"
                       "core.string="
@@ -53,7 +46,7 @@
   
              (let* ((logf (open-input-file log-temp))
                     (times (read logf))
-                    (ntimes (length times))
+                    (ntimes (mu::length times))
                     (sums
                      (mu:foldl
                       (:lambda (acc el)
@@ -72,5 +65,5 @@
                 (nused (car stats))
                 (secs (cdr stats)))
              (fmt :t "~A: ~A ~A~%" which nused secs)))))
-    (mapc (:lambda (fn) (stat fn)) functions))
+    (mu::mapc (:lambda (fn) (stat fn)) functions))
     ())

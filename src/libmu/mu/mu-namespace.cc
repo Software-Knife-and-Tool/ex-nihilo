@@ -110,10 +110,7 @@ void NamespaceSymbols(Frame* fp) {
 }
 
 /** * mu function (ns-current ns) => ns **/
-void GetNamespace(Frame* fp) {
-
-  fp->value = fp->env->namespace_;
-}
+void GetNamespace(Frame* fp) { fp->value = fp->env->namespace_; }
 
 /** * (in-ns ns) => ns **/
 void SetNamespace(Frame* fp) {
