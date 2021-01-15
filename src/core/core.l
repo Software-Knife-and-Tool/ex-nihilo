@@ -208,7 +208,7 @@
 
 ;;; vector - coerce list to vector
 (defun vector (type :rest list)
-  (list-to-vector type list))
+  (mu::list-to-vector type list))
 
 ;;; vector-to-list - make a list from vector
 (defun vector-to-list (vector)
@@ -435,7 +435,7 @@
       (list 'let (list (list '%namespace% ns))
             (list 'mu::mapc 'eval
                   (list 'read (list 'open-input-string
-                                    (list 'list-to-vector :char (list :quote body-string)))))))))
+                                    (list 'mu::list-to-vector :char (list :quote body-string)))))))))
 
 ;;; while bouncing on a trampoline
 (defmacro while (test :rest body)
