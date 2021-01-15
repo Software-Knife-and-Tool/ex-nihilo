@@ -101,6 +101,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
     {"make-symbol", mu::UninternedSymbol, 1},
     {"namespacep", mu::IsNamespace, 1},
     {"ns", mu::MakeNamespace, 2},
+    {"ns-current", mu::GetNamespace, 0},
     {"ns-import", mu::ImportOfNamespace, 1},
     {"ns-name", mu::NameOfNamespace, 1},
     {"ns-symbols", mu::NamespaceSymbols, 1},

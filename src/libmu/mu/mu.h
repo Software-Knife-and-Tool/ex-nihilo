@@ -55,6 +55,7 @@ void Floor(Frame*);
 void FrameRef(Frame*);
 void FunctionStream(Frame*);
 void Gc(Frame*);
+void GetNamespace(Frame*);
 void GetStringStream(Frame*);
 void HeapInfo(Frame*);
 void ImportOfNamespace(Frame*);
