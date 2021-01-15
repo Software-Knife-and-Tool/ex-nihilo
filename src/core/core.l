@@ -6,6 +6,9 @@
 ;;;
 ;;; core forms
 ;;;
+(in-ns (ns "core" (find-ns "mu")))
+
+(:defsym core::version "0.0.1")
 
 ;;; quasiquote
 (set-macro-character #\`
@@ -47,7 +50,7 @@
 (:defsym require (:macro (tag path)
   (let ((string-concat (:lambda (:rest strings)
     (let ((ostream (open-output-string "")))
-      (mu::mapc (:lambda (str) (print str ostream :nil)) strings)
+      (mu::mapc (:lambda (str) (mu::print str ostream :nil)) strings)
       (get-output-stream-string ostream)))))
 
    ;;; (fmt :t "require: tag ~A path ~A~%" tag path)
@@ -74,7 +77,7 @@
                       (raise "is not an opt symbol or initializer (lambda)" term))
                     (cond
                      ((consp term)
-                      (unless (eq 2 (length term))
+                      (unless (eq 2 (mu::length term))
                         (raise "is not a legal term (lambda)" term))
                       (let ((sym (nth 0 term)) (value (nth 1 term)))
                         (unless (and (symbolp sym) (null (keywordp sym)))
@@ -109,7 +112,7 @@
           (rest (llist)
             (cond
               ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
-              (:t (unless (eq 2 (length llist))
+              (:t (unless (eq 2 (mu::length llist))
                     (raise "excess elements (lambda)" llist))
                   (let ((sym (nth 1 llist)))
                     (unless (and (symbolp sym) (null (keywordp sym)))
@@ -172,28 +175,6 @@
           (list* :lambda names (append letqs closures body))
           (list :quote args)))))
 
-;;; sequencep - sequence predicate 
-(defun sequencep (sequence)
-  (or (vectorp sequence) (listp sequence)))
-
-;;; eql
-(defun eql (x y)
-  (let ((eql (:lambda (x y)
-          (cond
-           ((eq x y) :t)
-           ((null (eq (type-of x) (type-of y))) :nil)
-           ((stringp x) (string= x y))
-           ((and (vectorp x) (vectorp y))
-            (and (eq (mu::vector-type x) (mu::vector-type y))
-                 (eq (mu::vector-length x) (mu::vector-length y))
-                 (eql (vector-to-list x) (vector-to-list y))))
-           ((consp x)
-            (and (eq (length x) (length y))
-                 (eql (car x) (car y))
-                 (eql (cdr x) (cdr y))))
-           (:t :nil)))))
-    (eql x y)))
-
 ;;; strings accessor
 (defun schar (string index)
   (mu::vector-ref string index))
@@ -236,122 +217,6 @@
      (:lambda (el) (:letq lst (cons el lst)))
      vector)
     (foldl (:lambda (x r) (cons r x)) () lst)))
-
-;;; assq/pairlis/acons
-(defun assq (item alist)
-  (unless (listp alist) (raise "is not a list (assq)" alist))
-  (mu:block :nil
-     (mu::mapc (:lambda (pair)
-       (when (eq item (car pair)) (mu:return (cdr pair))))
-       alist)
-     :nil))
-
-(defun pairlis (keys data)
-  (unless (consp keys) (raise "is not a proper list (pairlis)" keys))
-  (unless (consp data) (raise "is not a proper list (pairlis)" data))
-  (unless (eq (length keys) (length data))
-    (raise "unequal lengths (pairlis)" :nil))
-  (letf ((zip (l1 l2)
-              (if (or (null l1) (null l2))
-                  ()
-                (cons (cons (car l1) (car l2))
-                      (zip (cdr l1) (cdr l2))))))
-    (zip keys data)))
-
-(defun acons (key datum alist)
-  (unless (listp alist) (raise "is not a list (acons)" list))
-  (cons (cons key datum) alist))
-
-;;; mapc
-(defun mu:mapc (fn :rest lists)
-  (mu:block ()
-    (letf* ((map-cars (lists)
-              (mu::mapcar
-               (:lambda (lst)
-                 (when (null (car (car lst))) (mu:return :nil))
-                 (car (car lst)))
-              lists))
-            (map-cdrs (lists)
-               (mu::mapcar
-                (:lambda (lst) (mu::maplist identity lst))
-                lists))
-            (mcar (cdr-list)
-              (mu::apply fn (map-cars cdr-list))
-              (mcar (mu::mapcar cdr cdr-list))))
-       (mcar (map-cdrs lists))))
-  (car lists))
-
-;;; mapcar
-(defun mu:mapcar (fn :rest lists)
-  (letf* ((map-cars (lists)
-            (mu:block ()
-              (mu::mapcar
-               (:lambda (lst)
-                  (when (null (car (car lst))) (mu:return :nil))
-                  (car (car lst)))
-               lists)))
-          (map-cdrs (lists)
-             (mu::mapcar
-              (:lambda (lst) (mu::maplist identity lst))
-              lists))
-          (mcar (cdr-list)
-            (let ((argl (map-cars cdr-list)))
-              (if (null argl)
-                  :nil
-                (cons (fn argl) (mcar (mu::mapcar cdr cdr-list)))))))
-      (mcar (map-cdrs lists))))
-
-;;; mapl
-(defun mu:mapl (fn :rest lists)
-  (mu:block :nil
-    (letf* ((map-cars (lists)
-              (mu::mapcar
-                (:lambda (lst)
-                  (when (null (car lst)) (mu:return :nil))
-                  (car lst))
-                lists))
-            (map-cdrs (lists)
-              (mu::mapcar
-                (:lambda (lst) (mu::maplist identity lst))
-                lists))
-            (ml (cdr-list)
-               (mu::apply fn (map-cars cdr-list))))
-      (ml (map-cdrs lists))))
-  (car lists))
-
-;;; maplist
-(defun mu:maplist (fn :rest lists)
-  (letf* ((map-cars (lists)
-            (mu:block ()
-              (mu::mapcar
-               (:lambda (lst)
-                  (when (null (car lst)) (mu:return :nil))
-                  (car lst))
-               lists)))
-          (map-cdrs (lists)
-              (mu::mapcar
-                (:lambda (lst) (mu::maplist identity lst))
-                lists))
-          (mlist (cdr-list)
-            (let ((argl (map-cars cdr-list)))
-              (if (null argl)
-                  :nil
-                (cons (mu::apply fn argl) (mlist (mu::mapcar cdr cdr-list)))))))
-      (mlist (map-cdrs lists))))
-
-;;; check-type form type string
-(defmacro check-type (form type reason)
-  (unless (keywordp type) (raise "type is not a keyword" type))
-  (unless (stringp reason) (raise "reason is not a string" reason))
-  (let ((arg-form (gensym)))
-    (list 'let (list (list arg-form form))
-      (list 'if (list 'eq type :list)
-        (list 'if (list 'listp arg-form)
-          :nil
-          (list 'raise reason arg-form))
-        (list 'if (list 'eq (list 'type-of arg-form) type)
-            :nil
-            (list 'raise reason arg-form))))))
 
 ;;; fmt dest string args...
 (defun fmt (stream fmt-string :rest args)
@@ -396,13 +261,13 @@
                          ((eq dir #\C) (mu::print (car args) dest :nil))
                          ((eq dir #\S) (mu::print (car args) dest :t))
                          ((eq dir #\X) (let ((fix (car args)))
-                                         (check-type fix :fixnum "is not a fixnum (fmt)")
+                                         (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
                                          (mu::print (radix-string 16 fix) dest :nil)))
                          ((eq dir #\D) (let ((fix (car args)))
-                                         (check-type fix :fixnum "is not a fixnum (fmt)")
+                                         (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
                                          (mu::print (radix-string 10 fix) dest :nil)))
                          ((eq dir #\O) (let ((fix (car args)))
-                                         (check-type fix :fixnum "is not a fixnum (fmt)")
+                                         (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
                                          (mu::print (radix-string 8 fix) dest :nil)))
                          ((eq dir #\W) (print-unreadable (car args) dest)))
                         (loop (cdr args))))))
@@ -411,7 +276,7 @@
 
 ;;; room
 (defun room (:rest args)
-  (unless (fixnum< (length args) 2) (raise "one optional argument (room)" args))
+  (unless (fixnum< (mu::length args) 2) (raise "one optional argument (room)" args))
   (let* ((opt (car args))
          (type-info (heap-info :t))
          (size (mu::vector-ref type-info 0))
@@ -488,13 +353,16 @@
 ;;; defstruct: immutable objects
 (defmacro defstruct (struct-name :rest struct-slot-defs)
   (unless (symbolp struct-name) (raise "is not a string (defstruct)" struct-name))
-  (let* ((slot-def-alist
+  (let*
+      ((acons (:lambda (key datum alist)
+          (cons (cons key datum) alist)))
+       (slot-def-alist
           ;; parse slot definitions and make an alist from them
           ;; (slot-name init-value type)
           (foldl
            (:lambda (acc def)
               (unless (listp def) (raise "slot definition is not a list (defstruct)" def))
-              (unless (eq (length def) 3) (raise "malformed slot definition (defstruct)" def))
+              (unless (eq (mu::length def) 3) (raise "malformed slot definition (defstruct)" def))
               (unless (symbolp (nth 0 def)) (raise "slot name is not a symbol (defstruct)" (nth 0 def)))
               (unless (keywordp (nth 2 def)) (raise "slot type is not a keyword (defstruct)" (nth 2 def)))
               (acons (nth 0 def) (cdr def) acc))
@@ -508,7 +376,7 @@
                    ;; values '(slot-name slot-value ...)
                    ;; if slot-name is in the values list, bind it to eval'd slot-value
                    ;; if not, bind it to eval'd init value from slot-def-alist
-                   (when (logand (length values) 1)
+                   (when (logand (mu::length values) 1)
                      (raise "ill-formed struct initializer (defstruct)" values))
                    (let ((values-alist
                            (foldl
@@ -516,7 +384,7 @@
                              ()
                              (mu::maplist
                               (:lambda (cdr)
-                                (when (evenp (length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
+                                (when (evenp (mu::length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
                               values))))
                      (mu::mapcar
                       (:lambda (def)
@@ -575,3 +443,30 @@
     (list 'when test (list (list* :lambda () body)) 'whilef)))
       (list 'mu::trampoline 'whilef)))
 
+;;; with-open-stream direction stream-type init-string fn
+(defun with-open-stream (direction stream-type init-string fn)
+  (cond
+    ((and (null (eq direction :input))
+          (null (eq direction :output))
+          (raise "with-open-stream: direction must be a keyword (:input|:output)" direction))
+     :nil)
+    ((and (null (eq stream-type :file))
+          (null (eq stream-type :string))
+          (raise "with-open-stream: stream-type must be a keyword (:file|:string)" stream-type))
+     :nil)
+    ((null (stringp init-string))
+     (raise "with-open-stream: init-string must be a string" init-string))
+    ((null (functionp fn))
+     (raise "with-open-stream: fn must be a function" fn))
+    (:t (cond
+         ((eq stream-type :file)
+          (cond
+           ((eq direction :input) (fn (open-input-file init-string)))
+           ((eq direction :output) (fn (open-output-file init-string)))
+         ((eq stream-type :string)
+          (cond
+           ((eq direction :input) (fn (open-input-string init-string)))
+           ((eq direction :output)
+            (let ((stream (open-output-string "")))
+              (mu::print init-string stream :nil)
+              (fn stream)))))))))))

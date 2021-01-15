@@ -4,10 +4,10 @@
 
 ;;; repl stdin
 (defun repl ()
-  (fmt :t "canon repl (:? for help)~%")
+  (fmt :t "gyre repl (:? for help)~%")
   (fmt :t "versions:~%")
-  (fmt :t "  canon: ~A~%" canon.version)
-  (fmt :t "     mu: ~A~%" mu.version)
+  (fmt :t "  common: ~A~%" common::version)
+  (fmt :t "      mu: ~A~%" mu::version)
   (fmt :t "stats:~%")
   (fmt :t "  heap words free: ~A~%~%" (fixnum/ (gc :t) 8))
   (let* ((history (open-output-string ""))

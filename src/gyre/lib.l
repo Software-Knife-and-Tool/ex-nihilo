@@ -1,17 +1,14 @@
 ;;;
-;;; canon library
+;;; gyre library
 ;;;
-(in-ns (ns "canon" (find-ns "mu")))
+(require common "/src/common/lib.l")
 
-(defconstant .version "0.0.18")
+(in-ns (ns "gyre" (find-ns "common")))
 
-;;; load core first
-(load-once canon/core "/canon/core/core.l")
-(load-once canon/common "/canon/canon/common.l")
-(load-once canon/common "/canon/canon/compiler.l")
-(load-once canon/debug "/canon/canon/debug.l")
-(load-once canon/list "/canon/canon/list.l")
-(load-once canon/namespace "/canon/canon/namespace.l")
-(load-once canon/repl "/canon/canon/repl.l")
-(load-once canon/sequence "/canon/canon/sequence.l")
-(load-once canon/stream "/canon/canon/stream.l")
+(defconstant gyre::version "0.0.1")
+
+(require gyre/list "/src/gyre/list.l")
+(require gyre/namespace "/src/gyre/namespace.l")
+(require gyre/repl "/src/gyre/repl.l")
+(require gyre/sequence "/src/gyre/sequence.l")
+(require gyre/stream "/src/gyre/stream.l")

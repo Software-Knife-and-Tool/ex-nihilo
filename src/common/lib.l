@@ -1,9 +1,9 @@
 ;;;
 ;;; common library
 ;;;
-(in-ns (ns "canon" (find-ns "mu")))
+(in-ns (ns "common" (find-ns "core")))
 
-(defconstant .version "0.0.1")
+(defconstant common::version "0.0.1")
 
 (require common/common "/src/common/common.l")
 (require common/debug "/src/common/debug.l")
