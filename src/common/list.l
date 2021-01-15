@@ -1,3 +1,102 @@
+;;; assq/pairlis/acons
+(defun assq (item alist)
+  (unless (listp alist) (raise "is not a list (assq)" alist))
+  (mu:block :nil
+     (mu::mapc (:lambda (pair)
+       (when (eq item (car pair)) (mu:return (cdr pair))))
+       alist)
+     :nil))
+
+(defun pairlis (keys data)
+  (unless (consp keys) (raise "is not a proper list (pairlis)" keys))
+  (unless (consp data) (raise "is not a proper list (pairlis)" data))
+  (unless (eq (mu::length keys) (mu::length data))
+    (raise "unequal lengths (pairlis)" :nil))
+  (letf ((zip (l1 l2)
+              (if (or (null l1) (null l2))
+                  ()
+                (cons (cons (car l1) (car l2))
+                      (zip (cdr l1) (cdr l2))))))
+    (zip keys data)))
+
+
+;;; mapc
+(defun mapc (fn :rest lists)
+  (mu:block ()
+    (letf* ((map-cars (lists)
+              (mu::mapcar
+               (:lambda (lst)
+                 (when (null (car (car lst))) (mu:return :nil))
+                 (car (car lst)))
+              lists))
+            (map-cdrs (lists)
+               (mu::mapcar
+                (:lambda (lst) (mu::maplist identity lst))
+                lists))
+            (mcar (cdr-list)
+              (mu::apply fn (map-cars cdr-list))
+              (mcar (mu::mapcar cdr cdr-list))))
+       (mcar (map-cdrs lists))))
+  (car lists))
+
+;;; mapcar
+(defun mapcar (fn :rest lists)
+  (letf* ((map-cars (lists)
+            (mu:block ()
+              (mu::mapcar
+               (:lambda (lst)
+                  (when (null (car (car lst))) (mu:return :nil))
+                  (car (car lst)))
+               lists)))
+          (map-cdrs (lists)
+             (mu::mapcar
+              (:lambda (lst) (mu::maplist identity lst))
+              lists))
+          (mcar (cdr-list)
+            (let ((argl (map-cars cdr-list)))
+              (if (null argl)
+                  :nil
+                (cons (fn argl) (mcar (mu::mapcar cdr cdr-list)))))))
+      (mcar (map-cdrs lists))))
+
+;;; mapl
+(defun mapl (fn :rest lists)
+  (mu:block :nil
+    (letf* ((map-cars (lists)
+              (mu::mapcar
+                (:lambda (lst)
+                  (when (null (car lst)) (mu:return :nil))
+                  (car lst))
+                lists))
+            (map-cdrs (lists)
+              (mu::mapcar
+                (:lambda (lst) (mu::maplist identity lst))
+                lists))
+            (ml (cdr-list)
+               (mu::apply fn (map-cars cdr-list))))
+      (ml (map-cdrs lists))))
+  (car lists))
+
+;;; maplist
+(defun maplist (fn :rest lists)
+  (letf* ((map-cars (lists)
+            (mu:block ()
+              (mu::mapcar
+               (:lambda (lst)
+                  (when (null (car lst)) (mu:return :nil))
+                  (car lst))
+               lists)))
+          (map-cdrs (lists)
+              (mu::mapcar
+                (:lambda (lst) (mu::maplist identity lst))
+                lists))
+          (mlist (cdr-list)
+            (let ((argl (map-cars cdr-list)))
+              (if (null argl)
+                  :nil
+                (cons (mu::apply fn argl) (mlist (mu::mapcar cdr cdr-list)))))))
+      (mlist (map-cdrs lists))))
+
 ;;; dotimes/dolist
 (defmacro dotimes (sym countf :rest body) 
   (unless (and (symbolp sym) (null (keywordp sym)))

@@ -1,3 +1,7 @@
+;;; sequencep - sequence predicate 
+(defun sequencep (sequence)
+  (or (vectorp sequence) (listp sequence)))
+
 ;;; reverse - reverse sequence
 (defun reverse (src)
   (cond

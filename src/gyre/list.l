@@ -22,9 +22,6 @@
     (let ((bodyf (list* :lambda (list sym) body)))
       (list 'block :nil (list 'mu.mapc bodyf list-form)))))
 
-;;; copy-list
-(defun copy-list (list) (mu.mapcar identity list))
-
 ;;; zip-1 - cons pairs of elements in a single list
 (defun zip-1 (fn values)
   (check-type fn :lambda "is not a function (zip-1)")

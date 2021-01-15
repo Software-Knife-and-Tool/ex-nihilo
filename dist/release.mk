@@ -25,6 +25,7 @@ release:
 	@install -d $(DEST)/src/gyre
 	@install -d $(DEST)/src/core
 	@install -d $(DEST)/src/common
+	@install -m 755 ../dist/common.sh $(DEST)/bin/common
 	@install -m 755 ../dist/core.sh $(DEST)/bin/core
 	@install -m 755 ../dist/gyre.sh $(DEST)/bin/gyre
 	@install -m 755 ../dist/mu.sh $(DEST)/bin/mu
