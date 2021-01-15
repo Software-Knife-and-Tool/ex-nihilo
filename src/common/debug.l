@@ -40,8 +40,8 @@
     (letf ((describe-object (object depth)
               (let* ((spacer (shim depth))
                      (view (view object))
-                     (type (mu.vec-ref view 0))
-                     (tagptr (mu.vec-ref view 2)))
+                     (type (mu::vector-ref view 0))
+                     (tagptr (mu::vector-ref view 2)))
                      
                 (cond
                  ((keywordp object) (fmt :nil "~A~S is an immediate keyword symbol @~X~%" spacer object tagptr))
@@ -76,15 +76,15 @@
                        spacer
                        (pprint object :nil)
                        spacer
-                       (mu.vec-ref view 7)
+                       (mu::vector-ref view 7)
                        spacer
-                       (mu.vec-ref view 6)
+                       (mu::vector-ref view 6)
                        spacer
-                       (mu.vec-ref view 3)
+                       (mu::vector-ref view 3)
                        spacer
-                       (mu.vec-ref view 5)
+                       (mu::vector-ref view 5)
                        spacer
-                       (mu.vec-ref view 8)))
+                       (mu::vector-ref view 8)))
                  (:t (fmt :nil "~Aundecoded ~W type-of ~A (@~X)~%" spacer object (type-of object) tagptr))))))
           (mu.print (describe-object object 0) :nil :nil)))
     :nil)
@@ -93,10 +93,10 @@
 (defun break (ex)
   (when (eq (type-of ex) :except)
     (let* ((ex-view (view ex))
-           (tag (mu.vec-ref ex-view 3))
-           (source (mu.vec-ref ex-view 4))
-           (reason (mu.vec-ref ex-view 5))
-           (frame (mu.vec-ref ex-view 6)))
+           (tag (mu::vector-ref ex-view 3))
+           (source (mu::vector-ref ex-view 4))
+           (reason (mu::vector-ref ex-view 5))
+           (frame (mu::vector-ref ex-view 6)))
       (fmt :t "break loop invoked with ")
       (cond       
        ((eq tag :arith) (fmt :t "arithmetic-error~%"))
@@ -122,7 +122,7 @@
        ((eq tag :zerodiv) (fmt :t "arithmetic error division-by-zero~%"))
        (:t (fmt :t "undecoded-exception-type~%")))
       (fmt :t ":p for help~%~%")
-      (fmt :t "    ~A (~A . ~A)~%" reason (mu.vec-ref frame 1) (mu.vec-ref frame 3))))
+      (fmt :t "    ~A (~A . ~A)~%" reason (mu::vector-ref frame 1) (mu::vector-ref frame 3))))
 
   (block :nil
     (while (null (eofp :t))
@@ -137,27 +137,27 @@
          ((eq sexpr :e)
            (when (eq (type-of ex) :except)
              (let* ((ex-view (view ex))
-                    (tag (mu.vec-ref ex-view 3))
-                    (source (mu.vec-ref ex-view 4))
-                    (frame (mu.vec-ref ex-view 6))
-                    (reason (mu.vec-ref ex-view 5)))
+                    (tag (mu::vector-ref ex-view 3))
+                    (source (mu::vector-ref ex-view 4))
+                    (frame (mu::vector-ref ex-view 6))
+                    (reason (mu::vector-ref ex-view 5)))
                (fmt :t "exception: ~A~%" ex)
                (fmt :t "      tag: ~A~%" tag)
                (fmt :t "   source: ~A~%" (pprint source :nil))
                (fmt :t "   reason: ~A~%" reason)
                (fmt :t "    frame: ~A~%" frame)
                (fmt :t "           ~A~%"
-                    (cons (pprint (mu.vec-ref frame 1) :nil) (mu.vec-ref frame 3))))))
+                    (cons (pprint (mu::vector-ref frame 1) :nil) (mu::vector-ref frame 3))))))
          ((eq sexpr :b)
           (let* ((nframes (fixnum- (mu.env-stack-depth) depth))
                 (stack (mu.env-stack nframes)))
             (fmt :t "backtrace: ~A (~A)~%" depth nframes)
             (mu.mapc
              (:lambda (el)
-               (let ((function (mu.vec-ref el 1))
-                     (nargs (mu.vec-ref el 2))
-                     (argl (mu.vec-ref el 3))
-                     (frame-id (mu.vec-ref el 4)))
+               (let ((function (mu::vector-ref el 1))
+                     (nargs (mu::vector-ref el 2))
+                     (argl (mu::vector-ref el 3))
+                     (frame-id (mu::vector-ref el 4)))
                  (if (null argl)
                    (fmt :t "  (~A)~%" function)
                    (fmt :t "  (~A ~A)~%" function argl))))

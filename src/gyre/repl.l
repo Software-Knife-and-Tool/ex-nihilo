@@ -6,7 +6,8 @@
 (defun repl ()
   (fmt :t "gyre repl (:? for help)~%")
   (fmt :t "versions:~%")
-  ;;; (fmt :t "  common: ~A~%" common::version)
+  (fmt :t "  common: ~A~%" common::version)
+  (fmt :t "    gyre: ~A~%" gyre::version)
   (fmt :t "      mu: ~A~%" mu::version)
   (fmt :t "stats:~%")
   (fmt :t "  heap bytes free: ~A~%~%" (gc :t))
@@ -23,10 +24,10 @@
           (:lambda ()
             (let* ((hist (history-list))
                    (len (list-length hist)))    
-              (mapl-1
+              (mu::mapl
                (:lambda (expr)                      
                         (fmt :t ":~A ~A~%"
-                             (1- (fixnum- len (list-length (cdr expr))))
+                             (1- (fixnum- len (mu::length (cdr expr))))
                              (car expr)))
                (history-list))))))
 
@@ -42,7 +43,7 @@
            ((and (keywordp sexpr) (fixnump (read-from-string (symbol-name sexpr))))
             (let* ((n (read-from-string (symbol-name sexpr)))
                    (hist (history-list))
-                   (len (list-length hist)))
+                   (len (mu::length hist)))
               (when (fixnum< n len)
                 (fmt :t "~A~%" (eval (nth n hist)) :t))))
            ((eq sexpr :q) (return :t))

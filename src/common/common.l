@@ -1,3 +1,6 @@
+;;; version
+(defconstant common::version "0.0.1")
+
 ;;; typep
 (defun typep (object type)
   (unless (keywordp type) (error "is not a type keyword (typep)" type)) 
