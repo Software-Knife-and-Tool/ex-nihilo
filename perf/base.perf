@@ -1,9 +1,9 @@
-mu:foldl: 942 67304
-mu:foldr: 864 74576
-mu::mapcar: 90 9008
-mu::mapc: 174 15616
+mu:foldl: 935 67304
+mu:foldr: 851 74576
+mu::mapcar: 89 9008
+mu::mapc: 172 15616
 core.schar: 12 1952
 core.stringp: 12 2096
-core.string=: 29 3128
-core.vector: 193 16080
-core.vector-to-list: 176 13568
+core.string=: 28 3128
+core.vector: 189 16080
+core.vector-to-list: 172 13568

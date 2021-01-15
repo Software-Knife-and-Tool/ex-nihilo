@@ -95,7 +95,7 @@
     (:vector
      (unless (fixnum< index (mu.vec-length sequence))
        (raise "index out of range (elt)" index))
-     (mu.vec-ref sequence index))
+     (mu::vector-ref sequence index))
     (:cons
      (unless (fixnum< index (list-length sequence))
        (raise "index out of range (elt)" index))
