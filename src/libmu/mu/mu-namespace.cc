@@ -27,6 +27,7 @@
 namespace libmu {
 namespace mu {
 
+using Env = core::Env;
 using Exception = core::Exception;
 using Frame = core::Env::Frame;
 using Namespace = core::Namespace;
@@ -37,6 +38,17 @@ using Type = core::Type;
 /** * (namespacep object) => bool  **/
 void IsNamespace(Frame* fp) {
   fp->value = Type::Bool(Namespace::IsType(fp->argv[0]));
+}
+
+/** * (find-ns name) => namespace **/
+void FindNamespace(Frame* fp) {
+  auto name = fp->argv[0];
+
+  if (!String::IsType(name))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-ns",
+                     name);
+
+  fp->value = Env::MapNamespace(fp->env, String::StdStringOf(name));
 }
 
 /** * (name-ns namespace) => string **/
@@ -50,7 +62,7 @@ void NameOfNamespace(Frame* fp) {
   fp->value = Namespace::name(fp->argv[0]);
 }
 
-/** * (name-ns namespace) => string **/
+/** * (ns-import namespace) => string **/
 void ImportOfNamespace(Frame* fp) {
   auto ns = fp->argv[0];
 
@@ -104,8 +116,10 @@ void SetNamespace(Frame* fp) {
   if (!Namespace::IsType(ns))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "in-ns", ns);
 
+  auto prev = fp->env->namespace_;
+
   fp->env->namespace_ = ns;
-  fp->value = ns;
+  fp->value = prev;
 }
 
 /** * (find-symbol ns symbol) => symbol **/

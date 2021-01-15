@@ -68,6 +68,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
     {"exceptionp", mu::IsException, 1},
     {"exit", mu::Exit, 1},
     {"exp", mu::Exp, 1},
+    {"find-ns", mu::FindNamespace, 1},
     {"find-in-ns", mu::FindInNamespace, 3},
     {"find-symbol", mu::FindSymbolNamespace, 2},
     {"fixnum*", mu::FixMul, 2},
