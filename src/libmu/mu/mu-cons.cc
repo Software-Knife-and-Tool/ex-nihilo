@@ -102,13 +102,13 @@ void MapL(Frame* fp) {
   fp->value = list;
 }
 
-/** * (list-length list) => fixnum**/
+/** * (length list) => fixnum**/
 void ListLength(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                     "list-length", list);
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "length",
+                     list);
 
   fp->value = Fixnum(Cons::Length(fp->env, list)).tag_;
 }

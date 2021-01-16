@@ -3,7 +3,7 @@
   (let ((stream
          (cond
           ((null args) standard-output)
-          ((eq (list-length args) 1)
+          ((eq (mu::length args) 1)
              (if (null (car args))
                standard-output
                (car args)))
@@ -18,7 +18,7 @@
   (let ((stream
          (cond
           ((null args) standard-output)
-          ((eq (list-length args) 1)
+          ((eq (mu::length args) 1)
              (if (null (car args))
                standard-output
                (car args)))
@@ -33,7 +33,7 @@
   (let ((stream
          (cond
           ((null args) standard-output)
-          ((eq (list-length args) 1)
+          ((eq (mu::length args) 1)
              (if (null (car args))
                standard-output
                (car args)))

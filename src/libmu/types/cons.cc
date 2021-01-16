@@ -181,7 +181,7 @@ auto Cons::Length(Env* env, Tag list) -> size_t {
     len++;
     if (!IsList(it->cdr))
       Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
-                       "is not a list (list-length)", list);
+                       "is not a list (length)", list);
   }
 
   return len;
