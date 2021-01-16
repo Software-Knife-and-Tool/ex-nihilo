@@ -54,7 +54,7 @@ tidy:
 		-I/Library/Developer/CommandLineTools/usr/include/c++/v1		\
 		-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include	\
 		-I/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include;	\
-	done
+	done | sort | uniq
 format:
 	@(cd ../src/libmu && clang-format -i *.h *.cc */*.h */*.cc)
 	@(cd ../src/mu-exec && clang-format -i *.cc)
