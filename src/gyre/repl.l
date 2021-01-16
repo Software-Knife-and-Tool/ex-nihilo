@@ -15,15 +15,15 @@
          (history-list
           (:lambda ()
             (let ((ostr (open-output-string ""))
-                  (hstr (get-output-string-stream history)))
+                  (hstr (get-output-stream-string history)))
               (fmt ostr "(~A)" hstr)
               (fmt history "~A" hstr)
-              (mu:read (open-input-string (get-output-string-stream ostr))))))
+              (mu:read (open-input-string (get-output-stream-string ostr))))))
          (add-history (:lambda (form) (fmt history "~A " form)))
          (print-history
           (:lambda ()
             (let* ((hist (history-list))
-                   (len (list-length hist)))    
+                   (len (mu::length hist)))    
               (mu::mapl
                (:lambda (expr)                      
                         (fmt :t ":~A ~A~%"
