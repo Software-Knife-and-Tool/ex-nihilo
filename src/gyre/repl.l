@@ -15,19 +15,19 @@
          (history-list
           (:lambda ()
             (let ((ostr (open-output-string ""))
-                  (hstr (get-output-string-stream history)))
+                  (hstr (get-output-stream-string history)))
               (fmt ostr "(~A)" hstr)
               (fmt history "~A" hstr)
-              (mu:read (open-input-string (get-output-string-stream ostr))))))
+              (mu:read (open-input-string (get-output-stream-string ostr))))))
          (add-history (:lambda (form) (fmt history "~A " form)))
          (print-history
           (:lambda ()
             (let* ((hist (history-list))
-                   (len (list-length hist)))    
+                   (len (length hist)))    
               (mu::mapl
                (:lambda (expr)                      
                         (fmt :t ":~A ~A~%"
-                             (1- (fixnum- len (mu::length (cdr expr))))
+                             (1- (fixnum- len (length (cdr expr))))
                              (car expr)))
                (history-list))))))
 
@@ -43,7 +43,7 @@
            ((and (keywordp sexpr) (fixnump (read-from-string (symbol-name sexpr))))
             (let* ((n (read-from-string (symbol-name sexpr)))
                    (hist (history-list))
-                   (len (mu::length hist)))
+                   (len (length hist)))
               (when (fixnum< n len)
                 (fmt :t "~A~%" (eval (nth n hist)) :t))))
            ((eq sexpr :q) (return :t))
