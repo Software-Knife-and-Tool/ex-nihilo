@@ -1,7 +1,7 @@
 ;;;
 ;;; code reduction
 ;;;
-(load-once llopt/rewrite "/tools/llopt/rewrite.l")
+;;; (load-once llopt/rewrite "/tools/llopt/rewrite.l")
 
 (defmacro vfmt (:rest args)
   (when (bound? '%verbose%)

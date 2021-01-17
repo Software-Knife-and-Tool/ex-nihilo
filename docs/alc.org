@@ -5,18 +5,19 @@
   This project is a multi-pass machine-code compiler for Gyre.
   + output format? LLVM?
 * ALC Architecture
-  This compiler is composed of a Gyre libraries, structured as a number of passes.
-  1. lexical analysis (compiler/lex)
-     + mostly done by compiler reader
-     + (lex sexpr)
+  This compiler is composed libraries, structured as a number of passes.
+  1. system interface (compiler.l)
   2. AST (compiler/ast)
+     + mostly done by compiler reader
      + (ast (lex sexpr))
      + convert sexpr to AST
      + replace all nodes with (sexpr . :type)
   3. Optimizer (compiler/opt)
      + (opt (ast (lex seexpr)))
      + constant folding
-  4. Code emitter (compiler/emit)
+  4. Gyre language semantics
+     + special forms
+  5. Code emitter (compiler/emit)
      + write machine code output file
  * ALC Sources
    1. system integratiom

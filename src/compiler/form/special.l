@@ -1,7 +1,7 @@
 ;;;
 ;;; special forms
 ;;;
-(load-once llc/lambda "/tools/llc/lambda.l")
+;;; (load-once llc/lambda "/tools/llc/lambda.l")
 
 #|
  (defconstant specials
