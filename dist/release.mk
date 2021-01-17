@@ -5,6 +5,7 @@ BUILD = ../build
 GYRE = ../src/gyre
 CORE = ../src/core
 COMMON = ../src/common
+COMPILER = ../src/compiler
 DEST = gyre
 LIBMU = ../src/libmu
 
@@ -25,6 +26,7 @@ release:
 	@install -d $(DEST)/src/gyre
 	@install -d $(DEST)/src/core
 	@install -d $(DEST)/src/common
+	@install -d $(DEST)/src/compiler
 	@install -m 755 ../dist/common.sh $(DEST)/bin/common
 	@install -m 755 ../dist/core.sh $(DEST)/bin/core
 	@install -m 755 ../dist/gyre.sh $(DEST)/bin/gyre
@@ -35,6 +37,7 @@ release:
 	@install -m 644 $(GYRE)/*.l $(DEST)/src/gyre
 	@install -m 644 $(CORE)/*.l $(DEST)/src/core
 	@install -m 644 $(COMMON)/*.l $(DEST)/src/common
+	@install -m 644 $(COMPILER)/*.l $(DEST)/src/compiler
 	@install -m 644 $(LIBMU)/libmu.h $(DEST)/include/libmu
 	@install -m 644 $(LIBMU)/platform/platform.h $(DEST)/include/libmu/platform
 	@tar cfz $(DEST)-0.0.1.tgz $(DEST)

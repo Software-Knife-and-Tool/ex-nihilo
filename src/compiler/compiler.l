@@ -1,6 +1,8 @@
 ;;;
-;;; compiler driver
+;;; compiler
 ;;;
+(defconstant compiler::version "0.0.1")
+
 (defun compile (sexpr)
   (let* ((special
           (:lambda (fn form)
@@ -118,6 +120,9 @@
       ((or (null sexpr) (atom sexpr)) (atomf sexpr))
       (:t (funcall sexpr)))))
 
+;;;
+;;; compile-file
+;;;
 (defun compile-file (file-name)
   (block :nil
     (unless (string? file-name)
