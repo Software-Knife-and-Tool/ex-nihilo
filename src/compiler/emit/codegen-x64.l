@@ -1,8 +1,8 @@
 ;;;
 ;;; x86-64 code generation
 ;;;
-(load-once llc/x86-ops "/tools/llc/x86-ops.l")
-(load-once llc/primitives-x64 "/tools//llc/primitives-x64.l")
+;;; (load-once llc/x86-ops "/tools/llc/x86-ops.l")
+;;; (load-once llc/primitives-x64 "/tools//llc/primitives-x64.l")
 
 (defconstant primitives
   (list (cons 'fixnum+ cg-fixnum+)))

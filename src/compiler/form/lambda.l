@@ -1,7 +1,7 @@
 ;;;
 ;;; lambda compiler
 ;;;
-(load-once llc/function "/tools/llc/function.l")
+;;; (load-once llc/function "/tools/llc/function.l")
 
 (defun lambda (llist body)
   (let ((rewrite (:lambda (llist rest body))

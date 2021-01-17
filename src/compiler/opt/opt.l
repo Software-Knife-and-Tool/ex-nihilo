@@ -3,7 +3,7 @@
 ;;;
 (in-ns (ns "llopt" (ns-current)))
 
-(load-once llopt/reduce "/tools/llopt/reduce.l")
+;;; (load-once llopt/reduce "/tools/llopt/reduce.l")
 
 (defconstant llopt-version "0.0.5")
 
