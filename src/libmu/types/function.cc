@@ -93,7 +93,9 @@ auto Function::Print(Env* env, Tag fn, Tag str, bool) -> void {
   auto type =
       String::StdStringOf(Symbol::name(Type::MapClassSymbol(Type::TypeOf(fn))));
 
-  auto name = String::StdStringOf(Symbol::name(Function::name(fn)));
+  auto name = Null(Function::name(fn))
+                  ? std::string{":lambda"}
+                  : String::StdStringOf(Symbol::name(Function::name(fn)));
 
   std::stringstream hexs;
 

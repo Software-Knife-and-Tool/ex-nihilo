@@ -8,7 +8,7 @@
 
 /********
  **
- **  mu-eval.cc: library eval/apply
+ **  mu-env.cc: library eval/apply/env
  **
  **/
 #include <cassert>
