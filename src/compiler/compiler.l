@@ -6,15 +6,15 @@
 ;;;
 ;;; compile-file
 ;;;
-(defun compile-file (file-name)
+(defun compile-file (src-path obj-path)
   (block :nil
-    (unless (string? file-name)
-      (fmt :t "~A is not a file path~%" file-name)
-      (return :nil))
-    (let ((src (make-input-file file-name)))
-      (when (null src)
-        (fmt :t "can't open ~A~%" file-name)
-          (return :nil))
-      (while (null (eof? src))
-        (let ((sexpr (read src)))
-          (compile sexpr))))))
+    (unless (stringp src-path) (raise "is not a file path" src-path))
+    (unless (stringp obj-path) (raise "is not a file path" obj-path))
+    (let ((src (make-input-file src-path))
+          (obj (make-output-file obj-path)))
+      (when (null src-path) (raise "can't open" src-path))
+      (when (null obj-path) (raise "can't open" obj-path))
+      (let ((ns (in-ns (ns (symbol-name (gensym)) (ns-current)))))
+        (while (null (eofp src))
+          (let ((sexpr (read src)))
+            (compile sexpr)))))))
