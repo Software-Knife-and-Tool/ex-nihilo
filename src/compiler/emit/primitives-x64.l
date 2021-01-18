@@ -2,7 +2,6 @@
 ;;; x64 primitives
 ;;;
 
-#|
 ;;; fixnum+ code generator
 (defun cg-fixnum+ (args)
   (unless (eq (length args) 2) (error "requires 2 arguments (cg-fixnum+)" args))
@@ -14,4 +13,3 @@
       (fmt :t "    mov %rdi,~A~%" arg1)
       (fmt :t "    add %rdi,~A~%" arg2))
      (:t :nil))))
-|#

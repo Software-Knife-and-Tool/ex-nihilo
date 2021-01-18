@@ -2,7 +2,7 @@
 ;;; x86-64 code generation
 ;;;
 (defconstant primitives
-  (list (cons 'fixnum+ fixnum+)))
+  (list (cons 'fixnum+ cg-fixnum+)))
 
 (defun opencode (form ostream)
   (check-type form :cons "is not a list (opencode)")

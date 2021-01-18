@@ -9,6 +9,6 @@
         (raise "function: is not a function symbol" form)))
    ((cons? form)
     (if (eq (car form) (keyword "lambda"))
-        (lambda form)
+        (compiler:lambda form)
         (raise "function: is not a lambda form" form)))
    (:t  (raise "function: is not a function symbol or lambda form" form))))
