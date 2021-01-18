@@ -1,7 +1,6 @@
 ;;;
 ;;; code reduction
 ;;;
-;;; (load-once llopt/rewrite "/tools/llopt/rewrite.l")
 
 (defmacro vfmt (:rest args)
   (when (bound? '%verbose%)
@@ -26,7 +25,7 @@
       (let ((fnc (assoc fn folds)))
         (when fnc (apply-1 fnc args))))))
 
-(defun reduce (sexpr)
+(defun compiler:reduce (sexpr)
   (let ((funcall
         (:lambda (form)
           (let ((fn (car form))
@@ -49,7 +48,7 @@
                   (if (or (symbol? obj) (cons? obj))
                     form
                     (progn (fmt :t ";;;    quote reduction: ~A~%" obj) obj))))
-               (:t form)))
+               (list :t form)))
              ((symbol? fn)
               (fmt :t ";;; reduce:funcall:symbol: ~A~%" fn)
               (let ((fold (constant-fold fn (mapcar-1 opt-expr args))))

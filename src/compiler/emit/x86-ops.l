@@ -485,7 +485,6 @@ repz
 retf
 retn
 rex
-#|
 rex.b
 rex.r
 rex.rb
@@ -501,7 +500,6 @@ rex.wx
 rex.wxb
 rex.x
 rex.xb
-|#
 rol
 ror
 roundpd

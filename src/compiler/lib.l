@@ -2,6 +2,7 @@
 ;;; compiler library
 ;;;
 (let ((ns (in-ns (ns "compiler" (find-ns "common")))))
+  (fmt :t "ns: ~A ~A~%" ns (ns-current))
   (require compiler "/src/compiler/compiler.l")
   (require compiler/ast "/src/compiler/ast/lib.l")
   (require compiler/emit "/src/compiler/emit/lib.l")

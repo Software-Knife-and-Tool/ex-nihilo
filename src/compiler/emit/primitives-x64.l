@@ -11,5 +11,5 @@
      ((and (typep arg1 :fixnum) (typep arg2 :fixnum))
       (fmt :t "    # fixnum+ ~A ~A~%" arg1 arg2)
       (fmt :t "    mov %rdi,~A~%" arg1)
-      (fmt :t "    add %rdi,~A~%" arg2)
-     (:t :nil)))))
+      (fmt :t "    add %rdi,~A~%" arg2))
+     (:t :nil))))
