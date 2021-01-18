@@ -278,7 +278,7 @@
 (defun room (:rest args)
   (unless (fixnum< (mu::length args) 2) (raise "one optional argument (room)" args))
   (let* ((opt (car args))
-         (type-info (heap-info :t))
+         (type-info (mu::heap-view :t))
          (size (mu::vector-ref type-info 0))
          (nbytes (mu::vector-ref type-info 1))
          (nalloc (mu::vector-ref type-info 2))
@@ -290,7 +290,7 @@
         (mu::mapc
           (:lambda (type)
              (let*
-                 ((type-info (heap-info type))
+                 ((type-info (mu::heap-view type))
                   (size (mu::vector-ref type-info 0))
                   (nbytes (mu::vector-ref type-info 1))
                   (nalloc (mu::vector-ref type-info 2))
@@ -298,7 +298,7 @@
                (unless (eq nbytes 0)
                  (fmt :t "~A (object size: ~A), bytes used ~A, objects allocated ~A, bytes free ~A~%"
                       type size nbytes nalloc nfree))))
-          '(:t :code :cons :except :func :macro :namespc :stream :string :struct :symbol :vector)))
+          '(:t :cons :except :func :macro :namespc :stream :string :struct :symbol :vector)))
      ((null opt)
       (fmt :t "heap: bytes used ~A, objects allocated ~A, bytes free ~A~%"
            nbytes nalloc nfree))
@@ -322,11 +322,11 @@
         (result (gensym)))
     
     (list 'let* (list (list now-secs now)
-                      (list start-room (list 'heap-info :t))
+                      (list start-room (list 'mu::heap-view :t))
                       (list start-time (list now-secs))
                       (list result form)
                       (list stop-time (list now-secs))
-                      (list stop-room (list 'heap-info :t))
+                      (list stop-room (list 'mu::heap-view :t))
                       (list start-used
                             (list 'fixnum- (list 'mu::vector-ref start-room 1)
                                            (list 'mu::vector-ref start-room 3)))
