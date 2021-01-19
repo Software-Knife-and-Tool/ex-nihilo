@@ -33,7 +33,7 @@
 
     (block :nil
       (while (null (eofp :t))
-        (let ((sexpr (progn (fmt :t "~A> " (ns-name (ns-current))) (read :t))))
+        (let ((sexpr (progn (fmt :t "~A> " (ns-name (current-ns))) (read :t))))
           (cond
            ((eq sexpr :?) (fmt :t ":? - this message~%")
             (fmt :t ":h - print history stack~%")

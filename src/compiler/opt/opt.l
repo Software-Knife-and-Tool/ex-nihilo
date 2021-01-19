@@ -1,10 +1,6 @@
 ;;;
-;;; llopt main
+;;; opt main
 ;;;
-(in-ns (ns "llopt" (ns-current)))
-
-;;; (load-once llopt/reduce "/tools/llopt/reduce.l")
-
 (defconstant llopt-version "0.0.5")
 
 (defun opt-expr (sexpr)
@@ -31,7 +27,7 @@
     (block :nil
       (while (null (eof? :t))
         (with-exception (:lambda ()
-          (let ((sexpr (progn (fmt :t "[llopt] ~A> " (ns-name (ns-current))) (read :t))))
+          (let ((sexpr (progn (fmt :t "[llopt] ~A> " (ns-name (current-ns))) (read :t))))
             (cond
              ((eq sexpr :?)
               (fmt :t ":? - this message~%")

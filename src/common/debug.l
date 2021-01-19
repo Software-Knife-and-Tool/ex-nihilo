@@ -11,7 +11,7 @@
                                         (when (and (boundp sym) (eq fn (symbol-value sym)))
                                           (return (symbol-name sym))))))
                                 (block :nil
-                                       (mu.mapc mapfn (ns-symbols (ns-current)))
+                                       (mu::mapc mapfn (ns-symbols (current-ns)))
                                        (mu::mapc mapfn (ns-symbols (find-ns "canon")))
                                        (mu::mapc mapfn (ns-symbols (find-ns "mu")))
                                        ":lambda")))))
