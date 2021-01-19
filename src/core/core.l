@@ -444,4 +444,15 @@
       (list 'mu::trampoline 'whilef)))
 
 ;;; namespace
-(defun ns-clone (ns import))
+(defun ns-clone (ns import)
+  (unless (namespacep ns) (raise "is not a namespace (ns-clone)" ns))
+  (unless (namespacep import) (raise "is not a namespace (ns-clone)" import))
+  (let ((clone-name (symbol-name (gensym)))
+        (clone-import (ns-import ns)))
+  ;;; name - gensym
+  ;;; clone - empty
+  ;;; clone import - import
+  ;;;
+  ;;; 
+  
+  ))
