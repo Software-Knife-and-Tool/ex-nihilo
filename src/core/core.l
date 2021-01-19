@@ -442,3 +442,6 @@
   (list 'letf (list (list 'whilef ()
     (list 'when test (list (list* :lambda () body)) 'whilef)))
       (list 'mu::trampoline 'whilef)))
+
+;;; namespace
+(defun ns-clone (ns import))
