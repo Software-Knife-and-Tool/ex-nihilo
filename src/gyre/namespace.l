@@ -8,3 +8,4 @@
   (check-type ns :ns "is not a namespace (with-ns-symbols)")
   (mu::mapc fn (ns-symbols ns))
   ns)
+

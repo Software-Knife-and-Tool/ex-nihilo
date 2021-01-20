@@ -31,7 +31,7 @@ OBJS =  \
     vector.o           \
     mu-char.o          \
     mu-cons.o          \
-    mu-eval.o          \
+    mu-env.o           \
     mu-exception.o     \
     mu-fixnum.o        \
     mu-float.o         \

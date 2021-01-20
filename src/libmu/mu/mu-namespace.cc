@@ -109,7 +109,7 @@ void NamespaceSymbols(Frame* fp) {
                   .Evict(fp->env);
 }
 
-/** * mu function (ns-current ns) => ns **/
+/** * mu function (current-ns) => ns **/
 void GetNamespace(Frame* fp) { fp->value = fp->env->namespace_; }
 
 /** * (in-ns ns) => ns **/
