@@ -1,7 +1,6 @@
 ;;;
 ;;; compiler
 ;;;
-(defconstant compiler::version "0.0.1")
 
 ;;;
 ;;; compile-file
@@ -17,4 +16,4 @@
       (let ((ns (in-ns (ns (symbol-name (gensym)) (current-ns)))))
         (while (null (eofp src))
           (let ((sexpr (read src)))
-            (compiler::compile-form sexpr)))))))
+            (compile-form sexpr)))))))

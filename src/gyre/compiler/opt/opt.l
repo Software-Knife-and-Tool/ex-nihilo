@@ -5,7 +5,7 @@
 
 (defun opt-expr (sexpr)
   (let* ((rw (rewrite sexpr))
-         (rexpr (compiler:reduce rw)))
+         (rexpr (gyre:reduce rw)))
     (fmt :t ";;; opt-expr ~S~%    ~S~%" sexpr rexpr)
     rexpr))
 
