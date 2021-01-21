@@ -62,7 +62,7 @@ void NameOfNamespace(Frame* fp) {
   fp->value = Namespace::name(fp->argv[0]);
 }
 
-/** * (ns-import namespace) => string **/
+/** * (ns-import namespace) => list **/
 void ImportOfNamespace(Frame* fp) {
   auto ns = fp->argv[0];
 
@@ -70,21 +70,34 @@ void ImportOfNamespace(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-import",
                      ns);
 
-  fp->value = Namespace::import(fp->argv[0]);
+  fp->value = Namespace::imports(fp->argv[0]);
 }
 
 /** * (ns name) => namespace **/
 void MakeNamespace(Frame* fp) {
   auto name = fp->argv[0];
-  auto import = fp->argv[1];
+  auto imports = fp->argv[1];
 
   if (!String::IsType(name))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns", name);
 
-  if (!Namespace::IsType(import))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns", name);
+  if (!Cons::IsListIs(imports))
+    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
+                     imports);
 
-  fp->value = Namespace(name, import).Evict(fp->env);
+  if (!Consp::IsCons(imports)) {
+    fp->value = Namespace(name, imports).Evict(fp->env);
+  } else {
+    Cons::MapC(
+        fp->env,
+        [](Env* env, Tag ns) {
+          if (!Namespace::IsType(ns))
+            Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
+                             ns);
+        },
+        imports);
+    fp->value = Namespace(name, imports).Evict(fp->env);
+  }
   core::Env::AddNamespace(fp->env, fp->value);
 }
 

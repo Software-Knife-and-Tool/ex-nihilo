@@ -82,8 +82,8 @@ class Namespace : public Type {
 
  private:
   typedef struct {
-    Tag name;
-    Tag import;
+    Tag name;    /* string */
+    Tag imports; /* list of namespaces */
     std::shared_ptr<symbol_map> externs;
     std::shared_ptr<symbol_map> interns;
   } Layout;
@@ -103,10 +103,10 @@ class Namespace : public Type {
   }
 
   /** * accessors **/
-  static Tag import(Tag ns) {
+  static Tag imports(Tag ns) {
     assert(IsType(ns));
 
-    return Untag<Layout>(ns)->import;
+    return Untag<Layout>(ns)->imports;
   }
 
   static symbol_map externs(Tag ns) {
