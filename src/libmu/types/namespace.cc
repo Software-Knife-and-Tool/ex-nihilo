@@ -36,7 +36,7 @@ auto Namespace::GcMark(Env* env, Tag ns) -> void {
 
   if (!env->heap_->IsGcMarked(ns)) {
     env->heap_->GcMark(ns);
-    env->GcMark(env, import(ns));
+    env->GcMark(env, imports(ns));
     for (auto entry : externs(ns)) Symbol::GcMark(env, entry.second);
     for (auto entry : interns(ns)) Symbol::GcMark(env, entry.second);
   }
@@ -48,7 +48,7 @@ auto Namespace::ViewOf(Env* env, Tag ns) -> Tag {
 
   auto view =
       std::vector<Tag>{Symbol::Keyword("ns"), ns,
-                       Fixnum(ToUint64(ns) >> 3).tag_, name(ns), import(ns)};
+                       Fixnum(ToUint64(ns) >> 3).tag_, name(ns), imports(ns)};
 
   return Vector(env, view).tag_;
 }
@@ -58,10 +58,13 @@ auto Namespace::FindSymbol(Env* env, Tag ns, Tag str) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(str));
 
-  for (; !Type::Null(ns); ns = Namespace::import(ns)) {
-    auto sym = Namespace::FindInExterns(env, ns, str);
-    if (!Type::Null(sym)) return sym;
-  }
+  Cons::MapC(
+      env,
+      [&str](Env* env, ns) {
+        auto sym = Namespace::FindInExterns(env, ns, str);
+        if (!Type::Null(sym)) return sym;
+      },
+      NameSpace::imports(ns));
 
   return Type::NIL;
 }
@@ -149,12 +152,13 @@ auto Namespace::Print(Env* env, Tag ns, Tag str, bool) -> void {
                        stream, false);
 }
 
-Namespace::Namespace(Tag name, Tag import) : Type() {
+Namespace::Namespace(Tag name, Tag imports) : Type() {
+  assert(Cons::IsList(imports));
   assert(String::IsType(name));
   assert(Null(import) || IsType(import));
 
   namespace_.name = name;
-  namespace_.import = import;
+  namespace_.import = imports;
   namespace_.externs = std::make_shared<symbol_map>();
   namespace_.interns = std::make_shared<symbol_map>();
 
