@@ -3,7 +3,7 @@
 ;;;
 (require common "/src/common/lib.l")
 
-(let ((ns (in-ns (ns "gyre" (find-ns "common")))))
+(let ((ns (in-ns (ns "gyre" (list (find-ns "common"))))))
   (require gyre/gyre "/src/gyre/gyre.l")
   (require gyre/compiler "/src/gyre/compiler/lib.l")
   (require gyre/list "/src/gyre/list.l")
