@@ -58,13 +58,21 @@ auto Namespace::FindSymbol(Env* env, Tag ns, Tag str) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(str));
 
+  Cons::cons_iter<Tag> iter(Namespace::imports(ns));
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+    auto sym = Namespace::FindInExterns(env, it->car, str);
+    if (!Type::Null(sym)) return sym;
+  }
+
+  /*
   Cons::MapC(
       env,
-      [&str](Env* env, ns) {
+      [&str](Env* env, Tag ns) -> void {
         auto sym = Namespace::FindInExterns(env, ns, str);
         if (!Type::Null(sym)) return sym;
       },
       NameSpace::imports(ns));
+  */
 
   return Type::NIL;
 }
@@ -155,10 +163,10 @@ auto Namespace::Print(Env* env, Tag ns, Tag str, bool) -> void {
 Namespace::Namespace(Tag name, Tag imports) : Type() {
   assert(Cons::IsList(imports));
   assert(String::IsType(name));
-  assert(Null(import) || IsType(import));
+  assert(Null(imports) || IsType(imports));
 
   namespace_.name = name;
-  namespace_.import = imports;
+  namespace_.imports = imports;
   namespace_.externs = std::make_shared<symbol_map>();
   namespace_.interns = std::make_shared<symbol_map>();
 

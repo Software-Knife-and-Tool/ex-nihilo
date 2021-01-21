@@ -27,6 +27,7 @@
 namespace libmu {
 namespace mu {
 
+using Cons = core::Cons;
 using Env = core::Env;
 using Exception = core::Exception;
 using Frame = core::Env::Frame;
@@ -81,23 +82,22 @@ void MakeNamespace(Frame* fp) {
   if (!String::IsType(name))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns", name);
 
-  if (!Cons::IsListIs(imports))
+  if (!Cons::IsList(imports))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
                      imports);
 
-  if (!Consp::IsCons(imports)) {
+  if (Type::Null(imports)) {
     fp->value = Namespace(name, imports).Evict(fp->env);
   } else {
-    Cons::MapC(
-        fp->env,
-        [](Env* env, Tag ns) {
-          if (!Namespace::IsType(ns))
-            Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
-                             ns);
-        },
-        imports);
-    fp->value = Namespace(name, imports).Evict(fp->env);
+    Cons::cons_iter<Type::Tag> iter(imports);
+    for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
+      if (!Namespace::IsType(it->car))
+        Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
+                         it->car);
+    }
   }
+
+  fp->value = Namespace(name, imports).Evict(fp->env);
   core::Env::AddNamespace(fp->env, fp->value);
 }
 
@@ -122,7 +122,7 @@ void NamespaceSymbols(Frame* fp) {
                   .Evict(fp->env);
 }
 
-/** * mu function (current-ns) => ns **/
+/** * (ns->current) => ns **/
 void GetNamespace(Frame* fp) { fp->value = fp->env->namespace_; }
 
 /** * (in-ns ns) => ns **/
