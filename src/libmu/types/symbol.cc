@@ -161,7 +161,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
         rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ":"));
       else {
         auto name = String(env, string).tag_;
-        rval = Namespace::FindInInterns(env, env->namespace_, name);
+        rval = Namespace::FindInterns(env, env->namespace_, name);
         if (Null(rval)) rval = Namespace::Intern(env, env->namespace_, name);
       }
     } else if (Null(ext_ns) && Null(int_ns)) {

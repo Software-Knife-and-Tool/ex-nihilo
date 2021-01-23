@@ -230,7 +230,7 @@ auto Letq(Env* env, Tag form) {
   if (!Cons::IsList(lsym))
     Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":letq", lsym);
 
-  auto letq = Namespace::FindInInterns(env, env->mu_, String(env, "letq").tag_);
+  auto letq = Namespace::FindInterns(env, env->mu_, String(env, "letq").tag_);
   assert(!Type::Null(letq));
 
   return Cons::List(
@@ -332,7 +332,7 @@ auto Compile(Env* env, Tag form) -> Tag {
                     Cons::List(
                         env,
                         std::vector<Tag>{
-                            Namespace::FindInInterns(
+                            Namespace::FindInterns(
                                 env, env->mu_, String(env, "frame-ref").tag_),
                             Function::frame_id(fn), Fixnum(offset).tag_}))
               : form;
