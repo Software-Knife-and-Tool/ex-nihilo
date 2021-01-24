@@ -148,9 +148,9 @@ auto Namespace::Print(Env* env, Tag ns, Tag str, bool) -> void {
   std::stringstream hexs;
 
   hexs << std::hex << Type::to_underlying(ns);
-  core::PrintStdString(env,
-                       "#<:" + type + " #x" + hexs.str() + " (" + name + "...)>",
-                       stream, false);
+  core::PrintStdString(
+      env, "#<:" + type + " #x" + hexs.str() + " (" + name + "...)>", stream,
+      false);
 }
 
 Namespace::Namespace(Tag name, Tag imports) : Type() {

@@ -1,7 +1,7 @@
-mu:foldl: 910 67304
-mu:foldr: 864 74576
+mu:foldl: 913 67304
+mu:foldr: 866 74576
 mu::mapcar: 90 9008
-mu::mapc: 173 15616
+mu::mapc: 174 15616
 core.schar: 12 1952
 core.stringp: 12 2096
 core.string=: 28 3128
