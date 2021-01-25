@@ -1,8 +1,6 @@
 ;;;
 ;;; opt main
 ;;;
-(defconstant llopt-version "0.0.5")
-
 (defun opt-expr (sexpr)
   (let* ((rw (rewrite sexpr))
          (rexpr (gyre:reduce rw)))
@@ -11,14 +9,14 @@
 
 (defun opt-file (file-name)
   (block :nil
-    (unless (string? file-name)
+    (unless (stringp file-name)
       (fmt :t "~A is not a file path (llopt/opt-file)~%" file-name)
       (return :nil))
     (let ((src (make-input-file file-name)))
       (when (null src)
         (fmt :t "can't open ~A (llopt/opt-file)~%" file-name)
           (return :nil))
-      (while (null (eof? src))
+      (while (null (eofp src))
         (opt-expr (read src))))))
 
 (defun llopt (arg-string)
@@ -44,7 +42,7 @@
              ((eq sexpr :t)
               (fmt :t "~S~%" (opt-file "test.l")))
              ((eq sexpr :v)
-              (unless (bound? '%verbose%)
+              (unless (boundp '%verbose%)
                 (fmt :t ";;; verbose on~%")
                 (defconstant %verbose% :t)))
              ((eq sexpr :q) (return :t))

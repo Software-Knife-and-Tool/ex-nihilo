@@ -7,5 +7,5 @@
             (list function lambda)))
 
  (defun special-function (name)
-  (assoc name specials))
+  (assq name specials))
 |#

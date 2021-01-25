@@ -17,7 +17,7 @@
             (:t (raise "read: syntax-type not mapped" ch)))))
          (fixnump (:lambda (str)
            (cond
-            ((zero? (length str)) :nil)
+            ((zerop (length str)) :nil)
             (:t (block :nil
                   (svmapc
                    (:lambda (el)

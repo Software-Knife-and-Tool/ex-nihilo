@@ -16,4 +16,4 @@
       (let ((ns (in-ns (ns (symbol-name (gensym)) (list (current-ns))))))
         (while (null (eofp src))
           (let ((sexpr (read src)))
-            (compile-form sexpr)))))))
+            (compile-form (opt-expr sexpr))))))))

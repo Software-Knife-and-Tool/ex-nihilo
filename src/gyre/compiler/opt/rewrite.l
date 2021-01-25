@@ -23,17 +23,17 @@
           (cons 'fixnum- (:lambda (fn args)
                            (let ((arg0 (nth 0 args))
                                  (arg1 (nth 1 args)))
-                             (cond--------------------------
-                              ((zero? arg1)
+                             (cond
+                              ((zerop arg1)
                                (fmt :t ";;;    fixnum- identity rewrite: ~A~%" arg0) arg0)
                               (list :t form)))))
           (cons 'fixnum+ (:lambda (fn args)
                            (let ((arg0 (nth 0 args))
                                  (arg1 (nth 1 args)))
                              (cond
-                              ((zero? arg0)
+                              ((zerop arg0)
                                (fmt :t ";;;    fixnum+ identity rewrite: ~A~%" arg1) arg1)
-                              ((zero? arg1)
+                              ((zerop arg1)
                                (fmt :t ";;;    fixnum+ identity rewrite: ~A~%" arg0) arg0)
                              (list :t form)))))
           (cons 'fixnum* (:lambda (fn args)
@@ -45,13 +45,14 @@
                               ((eq 1 arg1)
                                (fmt :t ";;;    fixnum* identity rewrite: ~A~%" arg0) arg0)
                              (list :t form)))))
-          (cons 'apply-1 (:lambda (fn args)
+          (cons 'apply (:lambda (fn args)
                            (fmt :t ";;;    apply-1 rewrite: ~S~%" fn)
                            (list* fn args))))))
 
-    (cond ((constant? form) form)
-          (:t (let ((rwf (assoc (car form) rewrites)))
-                (if rwf
-                  (rwf (car form) (cdr form))
-                  form))))))
+    (cond
+     ((constantp form) form)
+     (:t (let ((rwf (assq (car form) rewrites)))
+           (if rwf
+               (rwf (car form) (cdr form))
+             form))))))
 

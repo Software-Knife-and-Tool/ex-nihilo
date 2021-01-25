@@ -37,7 +37,7 @@ using Frame = core::Env::Frame;
 using Function = core::Function;
 using Type = core::Type;
 
-/** * (function? object) => bool **/
+/** * (functionp object) => bool **/
 void IsFunction(Frame* fp) {
   fp->value = Type::Bool(Function::IsType(fp->argv[0]));
 }
