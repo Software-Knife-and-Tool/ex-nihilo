@@ -69,7 +69,7 @@ void SymbolNamespace(Frame* fp) {
   fp->value = Symbol::ns(symbol);
 }
 
-/** * (symbol? object) => bool **/
+/** * (symbolp object) => bool **/
 void IsSymbol(Frame* fp) {
   fp->value = Type::Bool(Symbol::IsType(fp->argv[0]));
 }

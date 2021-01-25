@@ -13,7 +13,7 @@
       ;; check for non-symbols
       (mapc-1
        (:lambda (sym)
-                (and (not (symbol? sym))
+                (and (not (symbolp sym))
                      (raise "lambda: lambda list element is not a symbol" sym)))
         llist)
       ;; check for duplicates

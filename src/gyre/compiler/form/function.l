@@ -3,7 +3,7 @@
 ;;;
 (defmacro s-function (form)
   (cond
-   ((symbol? form)
+   ((symbolp form)
     (if (function? (symbol-value form))
         (symbol-value form)
         (raise "function: is not a function symbol" form)))
