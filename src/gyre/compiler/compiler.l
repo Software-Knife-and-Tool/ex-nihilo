@@ -13,7 +13,7 @@
     (when (null src) (raise "compile-file: can't open" src-path))
     (when (null obj) (raise "compile-file: can't open" obj-path))
     (emit obj
-      (let ((ns (in-ns (ns (symbol-name (gensym)) (current-ns)))))
+      (let ((ns (in-ns (ns (symbol-name (gensym)) (list (current-ns))))))
         (while (null (eofp src))
           (let ((sexpr (read src)))
             (compile-form sexpr)))))))

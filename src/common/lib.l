@@ -1,9 +1,7 @@
 ;;;
 ;;; common library
 ;;;
-(let ((ns (in-ns (ns "common" (find-ns "core")))))
-  ;;; (defconstant common::version "0.0.1")
-
+(let ((ns (in-ns (ns "common" (list (find-ns "core"))))))11
   (require common/common "/src/common/common.l")
   (require common/debug "/src/common/debug.l")
   (require common/list "/src/common/list.l")

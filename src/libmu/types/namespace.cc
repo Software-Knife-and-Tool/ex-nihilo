@@ -58,21 +58,14 @@ auto Namespace::FindSymbol(Env* env, Tag ns, Tag str) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(str));
 
+  auto sym = FindExterns(env, ns, str);
+  if (!Type::Null(sym)) return sym;
+
   Cons::cons_iter<Tag> iter(Namespace::imports(ns));
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
-    auto sym = Namespace::FindInExterns(env, it->car, str);
+    auto sym = FindSymbol(env, it->car, str);
     if (!Type::Null(sym)) return sym;
   }
-
-  /*
-  Cons::MapC(
-      env,
-      [&str](Env* env, Tag ns) -> void {
-        auto sym = Namespace::FindInExterns(env, ns, str);
-        if (!Type::Null(sym)) return sym;
-      },
-      NameSpace::imports(ns));
-  */
 
   return Type::NIL;
 }
@@ -96,7 +89,7 @@ auto Namespace::InternInNs(Env* env, Tag ns, Tag name) -> Tag {
   assert(String::IsType(name));
 
   auto key = static_cast<Tag>(hash_id(name));
-  auto sym = FindInInterns(env, ns, name);
+  auto sym = FindInterns(env, ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
                                   Symbol(ns, name).Evict(env))
@@ -109,7 +102,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
   assert(String::IsType(name));
 
   auto key = static_cast<Tag>(hash_id(name));
-  auto sym = FindInExterns(env, ns, name);
+  auto sym = FindExterns(env, ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
@@ -155,15 +148,14 @@ auto Namespace::Print(Env* env, Tag ns, Tag str, bool) -> void {
   std::stringstream hexs;
 
   hexs << std::hex << Type::to_underlying(ns);
-  core::PrintStdString(env,
-                       "#<:" + type + " #x" + hexs.str() + " (" + name + ")>",
-                       stream, false);
+  core::PrintStdString(
+      env, "#<:" + type + " #x" + hexs.str() + " (" + name + "...)>", stream,
+      false);
 }
 
 Namespace::Namespace(Tag name, Tag imports) : Type() {
   assert(Cons::IsList(imports));
   assert(String::IsType(name));
-  assert(Null(imports) || IsType(imports));
 
   namespace_.name = name;
   namespace_.imports = imports;

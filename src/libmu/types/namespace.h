@@ -122,7 +122,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace externs **/
-  static Tag FindInExterns(Env*, Tag ns, Tag str) {
+  static Tag FindExterns(Env*, Tag ns, Tag str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -134,7 +134,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace interns **/
-  static Tag FindInInterns(Env*, Tag ns, Tag str) {
+  static Tag FindInterns(Env*, Tag ns, Tag str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -146,17 +146,17 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace externs **/
-  static Tag FindInExterns(Env* env, Tag ns, std::string str) {
+  static Tag FindExterns(Env* env, Tag ns, std::string str) {
     assert(IsType(ns));
 
-    return FindInExterns(env, ns, String(env, str).tag_);
+    return FindExterns(env, ns, String(env, str).tag_);
   }
 
   /** * find symbol in namespace interns **/
-  static Tag FindInInterns(Env* env, Tag ns, std::string str) {
+  static Tag FindInterns(Env* env, Tag ns, std::string str) {
     assert(IsType(ns));
 
-    return FindInInterns(env, ns, String(env, str).tag_);
+    return FindInterns(env, ns, String(env, str).tag_);
   }
 
   static Tag Symbols(Env*, Tag);

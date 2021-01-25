@@ -6,7 +6,7 @@
 ;;;
 ;;; core forms
 ;;;
-(in-ns (ns "core" (find-ns "mu")))
+(in-ns (ns "core" (list (find-ns "mu"))))
 
 (:defsym core::version "0.0.1")
 
