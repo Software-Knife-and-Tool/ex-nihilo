@@ -1,7 +1,7 @@
 ;;;
 ;;; read
 ;;;
-(defun llc-read (src)
+(defun ast-read (src)
   (let* ((find-in (:lambda (ch str)
            (find-if (:lambda (el) (eq ch el)) str)))
          (syntax-type (:lambda (ch)
@@ -63,7 +63,7 @@
               (cons :symbol token)))))
        ((eq (syntax-type ch) 'tmacro)  ;; quote/list/string/comment/backquote
         (cond
-         ((eq ch #\') (list :quote (llc-read src)))
+         ((eq ch #\') (list :quote (ast-read src)))
          ((eq ch #\;) (comment src))
          ; ((eq ch #\`) :nil)
          ((eq ch #\")
@@ -77,10 +77,10 @@
                    (:t (princ ch str) :t))))
             (cons :string (get-output-string-stream str)))))
          ((eq ch #\()       ; list/cons
-          (let ((el (llc-read src)))
+          (let ((el (ast-read src)))
             (cond
              ((eq (car el) 'eol) :nil)
-             (:t (list el (llc-read src))))))
+             (:t (list el (ast-read src))))))
          ((eq ch #\)) (cons :eol :nil))
          (:t (raise "unimplemented terminating macro" ch) :nil)))
        ((eq (syntax-type ch) 'ntmacro)     ;; non-terminating macro
