@@ -15,5 +15,4 @@
     (emit obj
       (let ((ns (in-ns (ns (symbol-name (gensym)) (list (current-ns))))))
         (while (null (eofp src))
-          (let ((sexpr (read src)))
-            (compile-form (opt-expr (ast sexpr)))))))))
+          (compile-form (opt-expr (ast src))))))))

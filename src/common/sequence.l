@@ -108,11 +108,11 @@
   (block :nil
     (cond
       ((vectorp sequence)
-       (mu.vec-vmapc
+       (mu::vector-mapc
         (:lambda (el) (when (predicate el) (return el)))
         sequence))
       ((listp sequence)
-       (mu.mapc
+       (mu::mapc
         (:lambda (el) (when (predicate el) (return el)))
           sequence))
       (:t (raise "is not a sequence (find-if)" sequence)))
@@ -126,11 +126,11 @@
      (:lambda (sequence)
        (cond
         ((vectorp sequence)
-         (mu.vec-mapc
+         (mu::vector-mapc
           (:lambda (el) (when (predicate el) (return el)))
           sequence))
         ((listp sequence)
-         (mu.mapc
+         (mu::mapc
           (:lambda (el) (when (predicate el) (return el)))
           sequence))
         (:t (raise "is not a sequence (find-if)" sequence)))

@@ -1,7 +1,7 @@
 ;;;
 ;;; read
 ;;;
-(defun compiler:read (src)
+(defun gyre:read (src)
   (let* ((find-in (:lambda (ch str)
            (find-if (:lambda (el) (eq ch el)) str)))
          (syntax-type (:lambda (ch)
@@ -34,21 +34,18 @@
                   (:t :t)))))
            (cons :comment :nil)))
          (ws-until-eof (:lambda (src)
-           (while
-             (:lambda ()
+           (while 
                (let ((ch (read-char src)))
                  (cond
                   ((null ch) :nil)
                   ((eq (syntax-type ch) 'whitespace) :t)
-                  (:t (unread-char ch src) :nil))))))))
-
+                  (:t (unread-char ch src) :nil)))))))
     (ws-until-eof src)
-    ;;; check here for eof
     (let ((ch (read-char src)))
       (cond
        ((null ch) (cons 'eof :nil))
        ((eq (syntax-type ch) 'constituent) ;; symbol/number
-        (let ((str (make-output-string "")))
+        (let ((str (open-output-string "")))
           (princ ch str)
           (while
             (:lambda ()
@@ -57,17 +54,17 @@
                  ((null ch) :nil) 
                  ((eq (syntax-type ch) 'constituent) (princ ch str) :t)
                  (:t (unread-char ch src) :nil)))))
-          (let ((token (get-output-string-stream str)))
+          (let ((token (get-output-stream-string str)))
             (if (fixnump token)
               (cons :fixnum token)
               (cons :symbol token)))))
        ((eq (syntax-type ch) 'tmacro)  ;; quote/list/string/comment/backquote
         (cond
-         ((eq ch #\') (list :quote (compiler:read src)))
+         ((eq ch #\') (list :quote (gyre:read src)))
          ((eq ch #\;) (comment src))
          ; ((eq ch #\`) :nil)
          ((eq ch #\")
-          (let ((str (make-output-string "")))
+          (let ((str (open-output-string "")))
             (while
               (:lambda ()
                 (let ((ch (read-char src)))
@@ -77,10 +74,10 @@
                    (:t (princ ch str) :t))))
             (cons :string (get-output-string-stream str)))))
          ((eq ch #\()       ; list/cons
-          (let ((el (ompiler:read src)))
+          (let ((el (gyre:read src)))
             (cond
              ((eq (car el) 'eol) :nil)
-             (:t (list el (compiler:read src))))))
+             (:t (list el (gyre:read src))))))
          ((eq ch #\)) (cons :eol :nil))
          (:t (raise "unimplemented terminating macro" ch) :nil)))
        ((eq (syntax-type ch) 'ntmacro)     ;; non-terminating macro
