@@ -2,17 +2,29 @@
 ;;; compiler
 ;;;
 (defun compile-form (form)
-  (let* ((special
+  (let* ((special-operatorp
+          (:lambda (token)
+             (let ((name (cdr token)))
+               (cond
+                ((eql name ":defsym") :defsym)
+                ((eql name ":lambda") :lambda)
+                ((eql name ":letq") :letq)
+                ((eql name ":macro") :macro)
+                ((eql name ":nil") :nil)
+                ((eql name ":quote") :quote)
+                ((eql name ":t") :t)
+                (:t :nil)))))
+         (special
           (:lambda (fn form)
             (cond
-             ((eq fn :defcon)
-              (compile (car form))
-              (mapc compile-form (cdr form)))
-             ((eq fn :quote) (compile-form (car form)))
+             ((eq fn :defsym) (fmt :t "special:defsym: ~A ~A~%" (car form) (cdr form)))
              ((eq fn :lambda) (fmt :t "special:lambda: ~A ~A~%" (car form) (cdr form)))
              ((eq fn :letq) (fmt :t "special:letq: ~A ~A~%" (car form) (cdr form)))
              ((eq fn :macro) (fmt :t "special:macro: ~A ~A~%" (car form) (cdr form)))
-             (:t (error "special: what is you?" expr)))))
+             ((eq fn :nil) (fmt :t "special:nil: ~A ~A~%" (car form) (cdr form)))
+             ((eq fn :quote) (fmt :t "special:quote: ~A ~A~%" (car form) (cdr form)))
+             ((eq fn :t) (fmt :t "special:t: ~A ~A~%" (car form) (cdr form)))
+             (:t (error "special: what is you?" fn)))))
          (atomf
           (:lambda (expr)
             (cond
@@ -31,7 +43,7 @@
               (let ((fn (car form))
                     (args (cdr form)))
                 (cond
-                 ((and (consp fn) (eq :symbol (car fn)) (special-operatorp (cdr fn)))
+                 ((and (consp fn) (eq :symbol (car fn)) (special-operatorp fn))
                   (fmt :t "funcall:special-operator: (~A . ~A)~%" fn args)
                   (special (cdr fn) form))
                  ((macro-function fn) (fmt :t "funcall:macro: (~A . ~A)~%" fn args)
