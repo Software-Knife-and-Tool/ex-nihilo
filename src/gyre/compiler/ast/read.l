@@ -20,7 +20,7 @@
             ((zerop (length str)) :nil)
             (:t (block :nil
                   (mu::vector-mapc
-                   (:lambda (el)
+                   (:lambda (ch)
                      (when (null (find-in ch "0123456789")) (return :nil)))
                    str)
                   :t)))))
@@ -65,17 +65,16 @@
          ((eq ch #\")
           (let ((str (open-output-string "")))
             (while
-              (:lambda ()
                 (let ((ch (read-char src)))
                   (cond
                    ((null ch) (raise "early eof in string" :nil) :nil)
                    ((eq ch #\") :nil)
                    (:t (princ ch str) :t))))
-            (cons :string (get-output-string-stream str)))))
-         ((eq ch #\()       ; list/cons
+            (cons :string (get-output-string-stream str))))
+         ((eq ch #\()                      ;; list/cons
           (let ((el (gyre:read src)))
             (cond
-             ((eq (car el) 'eol) :nil)
+             ((eq (car el) :eol) :nil)
              (:t (list el (gyre:read src))))))
          ((eq ch #\)) (cons :eol :nil))
          (:t (raise "unimplemented terminating macro" ch) :nil)))

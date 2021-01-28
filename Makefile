@@ -24,6 +24,7 @@ help:
 	@echo "format - format source"
 
 commit: perf-base format
+	@cat perf/base.perf
 
 release:
 	@$(MAKE) -C build release --no-print-directory

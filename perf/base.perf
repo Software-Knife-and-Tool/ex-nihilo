@@ -1,9 +1,0 @@
-mu:foldl: 2021 67304
-mu:foldr: 2148 74576
-mu::mapcar: 212 9008
-mu::mapc: 416 15616
-core.schar: 27 1952
-core.stringp: 30 2096
-core.string=: 88 3128
-core.vector: 491 16080
-core.vector-to-list: 450 13568

@@ -5,6 +5,7 @@
 *.html
 *.so
 *.out
+*.perf
 build/mu-exec
 dist/*.tgz
 TAGS*
