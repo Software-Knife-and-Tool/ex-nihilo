@@ -30,11 +30,10 @@
               (fmt :t "funcall: form ~A~%" form)
               (let ((fn (car form))
                     (args (cdr form)))
-                (fmt :t "funcall: fn ~A args~A~%" fn args)
                 (cond
-                 ((and (symbolp fn) (special-operatorp fn))
+                 ((and (consp fn) (eq :symbol (car fn)) (special-operatorp (cdr fn)))
                   (fmt :t "funcall:special-operator: (~A . ~A)~%" fn args)
-                  (special fn form))
+                  (special (cdr fn) form))
                  ((macro-function fn) (fmt :t "funcall:macro: (~A . ~A)~%" fn args)
                   (compile-form fn)
                   (mapc compile-form args))
