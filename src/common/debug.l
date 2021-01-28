@@ -58,8 +58,8 @@
                                         spacer
                                         (describe-object (symbol-value object) (fixnum+ depth 1))))
                  ((stringp object) (fmt :nil "~A~S is a ~A string of length ~A (@~X)~%"
-                                        spacer object (if (fixnum< (mu::vec-length object) 8) "immediate" "heap") (mu::vec-length object) tagptr))
-                 ((vectorp object) (fmt :nil "~A~S is a ~A :vector of length ~A (@~X)~%" spacer object (svtype object) (mu::vec-length object) tagptr))
+                                        spacer object (if (fixnum< (mu::vector-length object) 8) "immediate" "heap") (mu::vector-length object) tagptr))
+                 ((vectorp object) (fmt :nil "~A~S is a ~A :vector of length ~A (@~X)~%" spacer object (svtype object) (mu::vector-length object) tagptr))
                  ((fixnump object) (fmt :nil "~A~S is a fixnum (@~X)~%" spacer object tagptr))
                  ((floatp object) (fmt :nil "~A~S is a float (@~X)~%" spacer object tagptr))
                  ((consp object) (fmt :nil "~A~S is a cons (@~X)~%" spacer object tagptr))

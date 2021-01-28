@@ -15,9 +15,9 @@
         (raise "opcode not found" op))
       (fmt out "    ~A    ~A~%" op (cdr form)))))
 
-(defun primitive? (fn)
-  (assoc fn primitives))
+(defun primitivep (fn)
+  (assq fn primitives))
 
 (defun codegen (fn args)
-  (let ((cg (assoc fn primitives)))
+  (let ((cg (assq fn primitives)))
     (when cg (cg args))))

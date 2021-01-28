@@ -1,29 +1,27 @@
 ;;;
 ;;; lambda compiler
 ;;;
-;;; (load-once llc/function "/tools/llc/function.l")
-
 (defun gyre:lambda (llist body)
   (let ((rewrite (:lambda (llist rest body))
                  (fmt :t "rewriting symbols ~A,~A in ~A~%" llist rest body)))
-    (and (not (list? llist)) (raise "lambda: lambda list is not a list" llist))
-    (and (not (list? body)) (raise "lambda: body is not a list" body))
+    (and (not (listp llist)) (raise "lambda: lambda list is not a list" llist))
+    (and (not (listp body)) (raise "lambda: body is not a list" body))
     (cond
-     ((list? llist)
+     ((listp llist)
       ;; check for non-symbols
-      (mapc-1
+      (mapc
        (:lambda (sym)
-                (and (not (symbol? sym))
+                (and (not (symbolp sym))
                      (raise "lambda: lambda list element is not a symbol" sym)))
         llist)
       ;; check for duplicates
-      (mapl-1
+      (mapl
        (:lambda (llist)
                 (and (not (null (list-find (car llist) (cdr llist))))
                      (raise "lambda: duplicate symbol in lambda list" (car llist))))
        llist)
       ;; get rest symbol and rewrite body
-      (mapl-1
+      (mapl
        (:lambda (llist)
                 (if (eq (car llist) :rest)
                     (let ((rest (nth 1 llist)))

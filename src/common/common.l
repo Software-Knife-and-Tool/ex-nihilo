@@ -48,6 +48,15 @@
   (check-type fx :fixnum "is not a fixnum (1-)")
   (fixnum- fx 1))
 
+;;; zerop
+(defun zerop (fx)
+  (check-type fx :fixnum "is not a fixnum (zerop)")
+  (eq fx 0))
+
+;;; not
+(defun not (obj)
+  (null obj))
+
 ;;; error
 (defun error (obj :rest fmt-list)
   (let ((fmt-string (car fmt-list))
@@ -56,3 +65,10 @@
       (raise (mu::apply fmt (list* :nil fmt-string args)) obj)
       (raise "error: " obj))))
 
+;;; constantp
+(defun constantp (obj)
+  (cond
+   ((and (symbolp obj) (not (keywordp obj))) :t)
+   ((consp obj) (eq (car obj) :quote))
+   (:t :t)))
+     

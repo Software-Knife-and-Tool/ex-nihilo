@@ -23,5 +23,5 @@
            ((eq direction :input) (fn (open-input-string init-string)))
            ((eq direction :output)
             (let ((stream (open-output-string "")))
-              (mu.print init-string stream :nil)
+              (mu::print init-string stream :nil)
               (fn stream)))))))))))
