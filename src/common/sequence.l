@@ -82,9 +82,9 @@
 (defun length (sequence)
   (typecase sequence
     (:null 0)
-    (:string (mu::vec-length sequence))        
-    (:vector (mu::vec-length sequence))
-    (:cons (mu::list-length sequence))
+    (:string (mu::vector-length sequence))        
+    (:vector (mu::vector-length sequence))
+    (:cons (mu:length sequence))
     (:t (raise "is not a sequence (length)" sequence))))
 
 ;;; elt - sequence ref
@@ -93,7 +93,7 @@
   (when (fixnum< index 0) (raise "is a negative fixnum (elt)" index))
   (typecase sequence
     (:vector
-     (unless (fixnum< index (mu.vec-length sequence))
+     (unless (fixnum< index (mu::vector-length sequence))
        (raise "index out of range (elt)" index))
      (mu::vector-ref sequence index))
     (:cons

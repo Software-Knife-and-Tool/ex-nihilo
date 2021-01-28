@@ -19,19 +19,18 @@
            (cond
             ((zerop (length str)) :nil)
             (:t (block :nil
-                  (svmapc
+                  (mu::vector-mapc
                    (:lambda (el)
                      (when (null (find-in ch "0123456789")) (return :nil)))
                    str)
                   :t)))))
          (comment (:lambda (src)
-           (while
-             (:lambda ()
-                (let ((ch (read-char src)))
+           (while 
+               (let ((ch (read-char src)))
                  (cond
                   ((null ch) (raise "end of file in comment" :nil))
-                  ((eq ch #\newline) :nil)
-                  (:t :t)))))
+                  ((eq ch #\newline) :t)
+                  (:t :nil))))
            (cons :comment :nil)))
          (ws-until-eof (:lambda (src)
            (while 
@@ -43,22 +42,22 @@
     (ws-until-eof src)
     (let ((ch (read-char src)))
       (cond
-       ((null ch) (cons 'eof :nil))
+       ((null ch) (cons 'eof :nil))        ;; eof
        ((eq (syntax-type ch) 'constituent) ;; symbol/number
         (let ((str (open-output-string "")))
           (princ ch str)
           (while
-            (:lambda ()
               (let ((ch (read-char src)))
                 (cond
-                 ((null ch) :nil) 
+                 ((null ch) :nil)
                  ((eq (syntax-type ch) 'constituent) (princ ch str) :t)
-                 (:t (unread-char ch src) :nil)))))
+                 (:t (unread-char ch src) :nil))))
           (let ((token (get-output-stream-string str)))
+            (fmt :t "symbol: ~A~%" token)
             (if (fixnump token)
               (cons :fixnum token)
               (cons :symbol token)))))
-       ((eq (syntax-type ch) 'tmacro)  ;; quote/list/string/comment/backquote
+       ((eq (syntax-type ch) 'tmacro)      ;; quote/list/string/comment/backquote
         (cond
          ((eq ch #\') (list :quote (gyre:read src)))
          ((eq ch #\;) (comment src))
