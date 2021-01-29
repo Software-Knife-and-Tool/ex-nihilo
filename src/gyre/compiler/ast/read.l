@@ -15,7 +15,7 @@
             ((find-in ch "0123456789") 'constituent)
             ((find-in ch "'();`\"") 'tmacro)
             (:t (raise "read: syntax-type not mapped" ch)))))
-         (fixnump (:lambda (str)
+         (fixp (:lambda (str)
            (cond
             ((zerop (length str)) :nil)
             (:t (block :nil
@@ -54,9 +54,7 @@
                  (:t (unread-char ch src) :nil))))
           (let ((token (get-output-stream-string str)))
             (fmt :t "symbol: ~A~%" token)
-            (if (fixnump token)
-              (cons :fixnum token)
-              (cons :symbol token)))))
+            (cons ((fixp token) :fixnum :symbol) token))))
        ((eq (syntax-type ch) 'tmacro)      ;; quote/list/string/comment/backquote
         (cond
          ((eq ch #\') (list :quote (gyre:read src)))

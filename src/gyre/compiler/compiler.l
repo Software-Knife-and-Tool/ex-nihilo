@@ -12,7 +12,6 @@
         (obj (open-output-file obj-path)))
     (when (null src) (raise "compile-file: can't open" src-path))
     (when (null obj) (raise "compile-file: can't open" obj-path))
-    (emit obj
-      (let ((ns (in-ns (ns (symbol-name (gensym)) (list (current-ns))))))
-        (while (null (eofp src))
-          (compile-form (ast src)))))))
+    (while (null (eofp src))
+      (fmt :t "~A~%" (eofp src))
+      (compile-form (ast src)))))
