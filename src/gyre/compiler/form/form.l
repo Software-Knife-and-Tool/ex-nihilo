@@ -3,28 +3,28 @@
 ;;;
 (defun compile-form (form)
   (let* ((special-operatorp
-          (:lambda (token)
-             (let ((name (cdr token)))
-               (cond
-                ((eql name ":defsym") :defsym)
-                ((eql name ":lambda") :lambda)
-                ((eql name ":letq") :letq)
-                ((eql name ":macro") :macro)
-                ((eql name ":nil") :nil)
-                ((eql name ":quote") :quote)
-                ((eql name ":t") :t)
-                (:t :nil)))))
+          (:lambda (name)
+             (cond
+              ((eql name ":defsym") :defsym)
+              ((eql name ":lambda") :lambda)
+              ((eql name ":letq") :letq)
+              ((eql name ":macro") :macro)
+              ((eql name ":nil") :nil)
+              ((eql name ":quote") :quote)
+              ((eql name ":t") :t)
+              (:t :nil))))
          (special
           (:lambda (fn form)
-            (cond
-             ((eq fn :defsym) (fmt :t "special:defsym: ~A ~A~%" (car form) (cdr form)))
-             ((eq fn :lambda) (fmt :t "special:lambda: ~A ~A~%" (car form) (cdr form)))
-             ((eq fn :letq) (fmt :t "special:letq: ~A ~A~%" (car form) (cdr form)))
-             ((eq fn :macro) (fmt :t "special:macro: ~A ~A~%" (car form) (cdr form)))
-             ((eq fn :nil) (fmt :t "special:nil: ~A ~A~%" (car form) (cdr form)))
-             ((eq fn :quote) (fmt :t "special:quote: ~A ~A~%" (car form) (cdr form)))
-             ((eq fn :t) (fmt :t "special:t: ~A ~A~%" (car form) (cdr form)))
-             (:t (error "special: what is you?" fn)))))
+             (let ((fn (special-operatorp fn)))
+               (cond
+                ((eq fn :defsym) (fmt :t "special:defsym: ~A%" form))
+                ((eq fn :lambda) (fmt :t "special:lambda: ~A~%" form))
+                ((eq fn :letq) (fmt :t "special:letq: ~A~%" form))
+                ((eq fn :macro) (fmt :t "special:macro: ~A~%" form))
+                ((eq fn :nil) (fmt :t "special:nil: ~A~%" form))
+                ((eq fn :quote) (fmt :t "special:quote: ~A~%" form))
+                ((eq fn :t) (fmt :t "special:t: ~A~%" form))
+                (:t (error "special: what is you?" fn))))))
          (atomf
           (:lambda (expr)
             (cond
@@ -43,7 +43,7 @@
               (let ((fn (car form))
                     (args (cdr form)))
                 (cond
-                 ((and (consp fn) (eq :symbol (car fn)) (special-operatorp fn))
+                 ((and (consp fn) (eq :symbol (car fn)) (special-operatorp (cdr fn)))
                   (fmt :t "funcall:special-operator: (~A . ~A)~%" fn args)
                   (special (cdr fn) form))
                  ((macro-function fn) (fmt :t "funcall:macro: (~A . ~A)~%" fn args)
