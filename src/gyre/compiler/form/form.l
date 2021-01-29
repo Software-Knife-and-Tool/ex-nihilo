@@ -2,7 +2,7 @@
 ;;; compiler
 ;;;
 (defun compile-form (form)
-  (let* ((special-operatorp
+  (let* ((specop
           (:lambda (name)
              (cond
               ((eql name ":defsym") :defsym)
@@ -15,7 +15,7 @@
               (:t :nil))))
          (special
           (:lambda (fn form)
-             (let ((fn (special-operatorp fn)))
+             (let ((fn (specop fn)))
                (cond
                 ((eq fn :defsym) (fmt :t "special:defsym: ~A%" form))
                 ((eq fn :lambda) (fmt :t "special:lambda: ~A~%" form))
@@ -43,7 +43,7 @@
               (let ((fn (car form))
                     (args (cdr form)))
                 (cond
-                 ((and (consp fn) (eq :symbol (car fn)) (special-operatorp (cdr fn)))
+                 ((and (consp fn) (eq :symbol (car fn)) (specop (cdr fn)))
                   (fmt :t "funcall:special-operator: (~A . ~A)~%" fn args)
                   (special (cdr fn) form))
                  ((macro-function fn) (fmt :t "funcall:macro: (~A . ~A)~%" fn args)
