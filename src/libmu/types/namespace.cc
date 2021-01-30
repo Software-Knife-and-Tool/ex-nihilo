@@ -36,6 +36,7 @@ auto Namespace::GcMark(Env* env, Tag ns) -> void {
 
   if (!env->heap_->IsGcMarked(ns)) {
     env->heap_->GcMark(ns);
+    env->GcMark(env, name(ns));
     env->GcMark(env, imports(ns));
     for (auto entry : externs(ns)) Symbol::GcMark(env, entry.second);
     for (auto entry : interns(ns)) Symbol::GcMark(env, entry.second);
