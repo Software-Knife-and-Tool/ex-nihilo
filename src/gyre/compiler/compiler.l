@@ -13,5 +13,4 @@
     (when (null src) (raise "compile-file: can't open" src-path))
     (when (null obj) (raise "compile-file: can't open" obj-path))
     (while (null (eofp src))
-      (fmt :t "~A~%" (eofp src))
       (compile-form (ast src)))))

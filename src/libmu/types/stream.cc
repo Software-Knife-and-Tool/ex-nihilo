@@ -71,7 +71,7 @@ auto Stream::IsEof(Tag stream) -> bool {
 
   auto sp = Untag<Layout>(stream);
 
-  return Platform::IsEof(sp->stream) ? true : false;
+  return Platform::IsEof(sp->stream);
 }
 
 /** * stream closed predicate **/
@@ -82,7 +82,7 @@ auto Stream::IsClosed(Tag stream) -> bool {
 
   auto sp = Untag<Layout>(stream);
 
-  return (Platform::IsClosed(sp->stream)) ? true : false;
+  return (Platform::IsClosed(sp->stream));
 }
 
 /** * flush stream **/
