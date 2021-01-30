@@ -2,6 +2,7 @@
 ;;; read
 ;;;
 (defun gyre:read (src)
+  (fmt :t "read: eofp ~A~%" (eofp src))
   (let* ((find-in (:lambda (ch str)
            (find-if (:lambda (el) (eq ch el)) str)))
          (syntax-type (:lambda (ch)
@@ -49,12 +50,14 @@
           (while
               (let ((ch (read-char src)))
                 (cond
-                 ((null ch) :nil)
+                 ((null ch) (fmt :t "eof in constituent read~%") :nil)
                  ((eq (syntax-type ch) 'constituent) (princ ch str) :t)
                  (:t (unread-char ch src) :nil))))
           (let ((token (get-output-stream-string str)))
             (fmt :t "symbol: ~A~%" token)
-            (cons ((fixp token) :fixnum :symbol) token))))
+            (if (fixp token)
+                (cons :fixnum token)
+              (cons :symbol token)))))
        ((eq (syntax-type ch) 'tmacro)      ;; quote/list/string/comment/backquote
         (cond
          ((eq ch #\') (list :quote (gyre:read src)))
