@@ -13,4 +13,5 @@
     (when (null src) (raise "compile-file: can't open" src-path))
     (when (null obj) (raise "compile-file: can't open" obj-path))
     (while (null (eofp src))
-      (compile-form (ast src)))))
+      ;;; (compile-form (ast src)))))
+      (ast src))))

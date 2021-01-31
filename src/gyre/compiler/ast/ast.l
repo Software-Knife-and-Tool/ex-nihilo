@@ -10,4 +10,5 @@
   (:scall form)
 |#
 
-(defun ast (src) (gyre:read src))
+(defun ast (src)
+  (gyre:read src))

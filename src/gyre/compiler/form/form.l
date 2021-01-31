@@ -62,7 +62,7 @@
     (cond
       ((or (null form) (atom form)) (atomf form))
       (:t (funcall form)))))
-    
+
 (defun print-form (form level)
   (let* ((spaces
           (:lambda (l)
