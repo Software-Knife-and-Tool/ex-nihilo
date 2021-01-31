@@ -331,6 +331,7 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   frame_id_ = 0;
   namespace_ = mu_;
   namespaces_["mu"] = mu_;
+  nil_ = Type::NIL;
 
   standard_input_ = Symbol::Bind(
       Namespace::Intern(this, mu_, String(this, "standard-input").tag_),

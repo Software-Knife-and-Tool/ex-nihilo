@@ -34,11 +34,22 @@ namespace libmu {
 namespace core {
 namespace {
 
+/** * compile a list of forms **/
+auto List(Env* env, Tag list) {
+  std::vector<Tag> vlist;
+  Cons::cons_iter<Tag> iter(list);
+
+  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
+    vlist.push_back(Compile(env, it->car));
+
+  return Cons::List(env, vlist);
+}
+
 /** * is this symbol in the lexical environment? **/
 auto LexicalEnv(Env* env, Tag sym) -> std::pair<Tag, size_t> {
   assert(Symbol::IsType(sym) || Symbol::IsKeyword(sym));
 
-  auto not_found = std::pair<Tag, size_t>{Type::NIL, 0};
+  auto not_found = std::pair<Tag, size_t>{env->nil_, 0};
 
   if (Symbol::IsKeyword(sym)) return not_found;
 
@@ -56,17 +67,6 @@ auto LexicalEnv(Env* env, Tag sym) -> std::pair<Tag, size_t> {
   }
 
   return not_found;
-}
-
-/** * compile a list of forms **/
-auto List(Env* env, Tag list) {
-  std::vector<Tag> vlist;
-  Cons::cons_iter<Tag> iter(list);
-
-  for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    vlist.push_back(Compile(env, it->car));
-
-  return Cons::List(env, vlist);
 }
 
 /** * compile lambda definition **/
