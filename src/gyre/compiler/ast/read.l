@@ -33,7 +33,7 @@
                   (:t :nil))))
            (cons :comment :nil)))
          (ws-until-eof (:lambda (src)
-           (while 
+           (while
                (let ((ch (read-char src)))
                  (cond
                   ((null ch) :nil)
