@@ -228,7 +228,7 @@ auto Env::Gc(Env* env) -> size_t {
 
   for (auto& ns : env->namespaces_) GcMark(env, ns.second);
   for (auto& fn : env->lexenv_) GcMark(env, fn);
-  for (auto& fp : env->frames_) GcFrame(fp);
+  // for (auto& fp : env->frames_) GcFrame(fp);
 
   return env->heap_->Gc();
 }
