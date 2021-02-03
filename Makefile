@@ -36,7 +36,6 @@ debug:
 	@$(MAKE) -C build debug --no-print-directory
 
 dist:
-	@$(MAKE) -C build release --no-print-directory
 	@$(MAKE) -C dist -f release.mk release --no-print-directory
 
 format:

@@ -155,16 +155,12 @@ auto Function::Funcall(Env* env, Tag fn, const std::vector<Tag>& argv) -> Tag {
   if (nargs) env->Cache(&fp);
 
   for (auto frame : Function::context(fn))
-    if (frame->nargs) {
-      env->Cache(frame);
-    }
+    if (frame->nargs) env->Cache(frame);
 
   CallFrame(&fp);
 
   for (auto frame : Function::context(fn))
-    if (frame->nargs) {
-      env->UnCache(frame);
-    }
+    if (frame->nargs) env->UnCache(frame);
 
   if (nargs) env->UnCache(&fp);
 
