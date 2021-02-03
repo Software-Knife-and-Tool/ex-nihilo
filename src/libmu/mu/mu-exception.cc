@@ -113,8 +113,7 @@ void WithException(Frame* fp) {
 void Block(Frame* fp) {
   auto tag = fp->argv[0];
   auto fn = fp->argv[1];
-
-  printf("block: %d\n", fp->env->frames_.size());
+  auto mark = fp->env->frames_.size();
 
   if (!Symbol::IsType(tag))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -129,9 +128,10 @@ void Block(Frame* fp) {
         core::Eval(fp->env, Cons::List(fp->env, std::vector<Type::Tag>{fn}));
   } catch (
       Type::Tag ex) { /* think: don't we need a specific return condition? */
-    if (Cons::IsType(ex) && Type::Eq(tag, Cons::car(ex)))
+    if (Cons::IsType(ex) && Type::Eq(tag, Cons::car(ex))) {
+      fp->env->frames_.resize(mark);
       fp->value = Cons::cdr(ex);
-    else
+    } else
       throw ex;
   } catch (Exception& ex) {
     throw ex;
@@ -147,7 +147,6 @@ void Return(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a symbol (%return)", tag);
 
-  printf("return: %d\n", fp->env->frames_.size());
   throw Cons(tag, value).Evict(fp->env);
 }
 
