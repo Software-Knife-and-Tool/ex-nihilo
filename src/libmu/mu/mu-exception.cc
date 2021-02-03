@@ -114,6 +114,8 @@ void Block(Frame* fp) {
   auto tag = fp->argv[0];
   auto fn = fp->argv[1];
 
+  printf("block: %d\n", fp->env->frames_.size());
+
   if (!Symbol::IsType(tag))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a symbol (::block)", tag);
@@ -145,6 +147,7 @@ void Return(Frame* fp) {
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
                      "is not a symbol (%return)", tag);
 
+  printf("return: %d\n", fp->env->frames_.size());
   throw Cons(tag, value).Evict(fp->env);
 }
 
