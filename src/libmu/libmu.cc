@@ -90,6 +90,9 @@ auto terpri(void* env, void* stream) -> void {
 
 /** * catch library throws **/
 auto withException(void* env, const std::function<void(void*)>& fn) -> void {
+  auto ev = static_cast<Env*>(env);
+  auto mark = ev->frames_.size();
+
   try {
     fn(env);
   } catch (Type::Tag exception) {
@@ -108,6 +111,8 @@ auto withException(void* env, const std::function<void(void*)>& fn) -> void {
     core::PrintStdString((Env*)env, " on frame ", std_error, false);
     core::Print((Env*)env, frame, std_error, false);
     core::Terpri((Env*)env, std_error);
+    ev->frames_.resize(mark);
+
   } catch (...) {
     printf("unexpected throw from library");
     exit(-1);

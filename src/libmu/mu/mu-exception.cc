@@ -82,6 +82,7 @@ void MakeException(Frame* fp) {
 void WithException(Frame* fp) {
   auto thunk = fp->argv[0];
   auto handler = fp->argv[1];
+  auto mark = fp->env->frames_.size();
 
   if (!Function::IsType(thunk))
     Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
@@ -93,14 +94,10 @@ void WithException(Frame* fp) {
 
   Type::Tag value;
 
-  int nframes = fp->env->frames_.size();
-
   try {
     value = Function::Funcall(fp->env, thunk, std::vector<Type::Tag>{});
   } catch (Type::Tag ex) {
-    for (auto i = fp->env->frames_.size() - nframes; i != 0; --i)
-      fp->env->frames_.pop_back();
-
+    fp->env->frames_.resize(mark);
     value = Function::Funcall(fp->env, handler, std::vector<Type::Tag>{ex});
   } catch (...) {
     assert(!"unexpected throw from libmu");
