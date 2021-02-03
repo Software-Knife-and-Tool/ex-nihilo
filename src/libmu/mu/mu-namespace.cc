@@ -134,7 +134,7 @@ void SetNamespace(Frame* fp) {
   fp->value = prev;
 }
 
-/** * (find-symbol ns symbol) => symbol **/
+/** * (find-symbol ns string) => symbol **/
 void FindSymbolNamespace(Frame* fp) {
   auto ns = fp->argv[0];
   auto name = fp->argv[1];
