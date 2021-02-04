@@ -23,7 +23,7 @@
 
 #include "libmu/types/cons.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/function.h"
 #include "libmu/types/namespace.h"
 #include "libmu/types/stream.h"
@@ -43,7 +43,7 @@ auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep)
     ns = Env::MapNamespace(env, symbol.substr(0, cpos));
 
     if (Type::Null(ns))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "unmapped namespace",
                        String(env, symbol.substr(0, cpos)).tag_);
   } else {
@@ -129,7 +129,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
   Tag rval;
 
   if (string.size() == 0)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                      "naked symbol syntax (read)", Type::NIL);
 
   if (string.size() == 1 && string[0] == '.')
@@ -140,11 +140,11 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
 
   if (keywdp) {
     if (string.size() == 1)
-      Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
+      Condition::Raise(env, Condition::CONDITION_CLASS::END_OF_FILE,
                        "early eof in keyword (read)", Type::NIL);
 
     if (string.size() - 1 > Type::IMMEDIATE_STR_MAX)
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "keyword symbols may not exceed seven characters",
                        String(env, string).tag_);
 
@@ -168,7 +168,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
       auto name = String(env, string).tag_;
       rval = Symbol(NIL, name).Evict(env);
     } else
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "uninterned symbols may not be qualified (read)",
                        String(env, string).tag_);
   }

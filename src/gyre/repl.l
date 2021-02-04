@@ -47,7 +47,7 @@
               (when (fixnum< n len)
                 (fmt :t "~A~%" (eval (nth n hist)) :t))))
            ((eq sexpr :q) (return :t))
-           (:t (with-exception
+           (:t (with-condition
                 (:lambda ()
                          (add-history sexpr)
                          (fmt :t "~A~%" (eval sexpr)))

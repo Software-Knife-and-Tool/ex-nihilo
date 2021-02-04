@@ -24,8 +24,8 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -38,7 +38,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Type = core::Type;
 
@@ -49,7 +49,7 @@ void PrintEscape(Frame* fp) {
   auto escape = fp->argv[2];
 
   if (!core::Stream::IsStreamDesignator(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "print",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "print",
                      stream);
 
   core::Print(fp->env, obj, stream, !Type::Null(escape));
@@ -62,7 +62,7 @@ void Terpri(Frame* fp) {
   auto stream = fp->argv[0];
 
   if (!core::Stream::IsStreamDesignator(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "terpri",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "terpri",
                      stream);
 
   core::Terpri(fp->env, stream);

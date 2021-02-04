@@ -21,7 +21,7 @@
 #include "libmu/type.h"
 #include "libmu/types/cons.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/function.h"
 #include "libmu/types/symbol.h"
@@ -31,7 +31,7 @@ namespace libmu {
 namespace mu {
 
 using Cons = core::Cons;
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Fixnum = core::Fixnum;
 using Frame = core::Env::Frame;
 using Function = core::Function;
@@ -47,8 +47,8 @@ void Trampoline(Frame* fp) {
   fp->value = fp->argv[0];
 
   if (!Function::IsType(fp->value))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "trampoline",
-                     fp->value);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "trampoline", fp->value);
 
   do {
     fp->value = Function::Funcall(fp->env, fp->value, std::vector<Type::Tag>{});
@@ -60,7 +60,7 @@ void Closure(Frame* fp) {
   auto fn = fp->argv[0];
 
   if (!Function::IsType(fn))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "closure",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "closure",
                      fn);
 
   if (!Type::Null(Function::env(fn))) {
@@ -91,12 +91,12 @@ void FrameRef(Frame* fp) {
   auto offset = fp->argv[1];
 
   if (!Fixnum::IsType(frame_id))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".frame-ref",
-                     frame_id);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     ".frame-ref", frame_id);
 
   if (!Fixnum::IsType(offset))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".frame-ref",
-                     offset);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     ".frame-ref", offset);
 
   auto lfp = fp->env->MapFrame(frame_id);
 
@@ -110,11 +110,11 @@ void Letq(Frame* fp) {
   auto value = fp->argv[2];
 
   if (!Fixnum::IsType(frame_id))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "letq",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "letq",
                      frame_id);
 
   if (!Fixnum::IsType(offset))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "letq",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "letq",
                      offset);
 
   auto lfp = fp->env->MapFrame(frame_id);

@@ -20,7 +20,7 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/stream.h"
 #include "libmu/types/vector.h"
 
@@ -64,13 +64,13 @@ auto String::Read(Env* env, Tag stream) -> Tag {
   for (size_t len = 0; core::MapSyntaxChar(ch) != core::SYNTAX_CHAR::STRING;
        len++) {
     if (len >= Vector::MAX_LENGTH)
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "string exceeds maximum limit", Type::NIL);
 
     if (core::MapSyntaxChar(ch) == core::SYNTAX_CHAR::BACKSLASH) {
       ch = Stream::ReadByte(env, stream);
       if (Type::Null(ch))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
+        Condition::Raise(env, Condition::CONDITION_CLASS::END_OF_FILE,
                          "EOF in string", stream);
     }
 
@@ -78,7 +78,7 @@ auto String::Read(Env* env, Tag stream) -> Tag {
     ch = Stream::ReadByte(env, stream);
 
     if (Type::Null(ch))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
+      Condition::Raise(env, Condition::CONDITION_CLASS::END_OF_FILE,
                        "EOF in string", stream);
   }
 

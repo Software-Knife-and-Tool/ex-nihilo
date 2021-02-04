@@ -17,13 +17,13 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/struct.h"
 
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Struct = core::Struct;
 using Frame = core::Env::Frame;
 using Type = core::Type;
@@ -39,11 +39,11 @@ void MakeStruct(Frame* fp) {
   auto values = fp->argv[1];
 
   if (!core::Symbol::IsKeyword(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "struct",
                      name);
 
   if (!core::Cons::IsList(values))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "struct",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "struct",
                      values);
 
   fp->value = Struct(name, values).Evict(fp->env);
@@ -54,7 +54,7 @@ void StructType(Frame* fp) {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "struct-type", strct);
 
   fp->value = Struct::stype(strct);
@@ -65,7 +65,7 @@ void StructValues(Frame* fp) {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "struct-slots", strct);
 
   fp->value = Struct::slots(strct);

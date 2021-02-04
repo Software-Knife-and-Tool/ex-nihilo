@@ -22,8 +22,8 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/function.h"
 #include "libmu/types/macro.h"
 #include "libmu/types/namespace.h"
@@ -82,20 +82,20 @@ auto Lambda(Env* env, Tag form) {
     std::function<void(Env*, Tag)> parse = [&lexicals, lambda, &restsym,
                                             &has_rest](Env* env, Tag symbol) {
       if (!Symbol::IsType(symbol))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                          "non-symbol in lambda list (parse-lambda)", lambda);
 
       if (Type::Eq(Symbol::Keyword("rest"), symbol)) {
         if (has_rest)
-          Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+          Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                            "multiple rest clauses (parse-lambda)", lambda);
         has_rest = true;
         return;
       }
 
       if (Symbol::IsKeyword(symbol))
-        Exception::Raise(
-            env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+        Condition::Raise(
+            env, Condition::CONDITION_CLASS::TYPE_ERROR,
             "keyword cannot be used as a lexical variable (parse-lambda)",
             lambda);
 
@@ -105,7 +105,7 @@ auto Lambda(Env* env, Tag form) {
           });
 
       if (el != lexicals.end())
-        Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                          "duplicate symbol in lambda list (parse-lambda)",
                          lambda);
 
@@ -119,11 +119,11 @@ auto Lambda(Env* env, Tag form) {
       parse(env, it->car);
 
     if (has_rest && Type::Null(restsym))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "early end of lambda list (parse-lambda)", lambda);
 
     if (lexicals.size() != (Cons::Length(env, lambda) - has_rest))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        ":rest should terminate lambda list (parse-lambda)",
                        lambda);
 
@@ -149,7 +149,7 @@ auto Lambda(Env* env, Tag form) {
 /** * (:defsym symbol form) **/
 auto DefSymbol(Env* env, Tag form) {
   if (Cons::Length(env, form) != 3)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":defsym: argument count(2)", form);
 
   auto args = Cons::cdr(form);
@@ -157,15 +157,15 @@ auto DefSymbol(Env* env, Tag form) {
   auto expr = Cons::Nth(args, 1);
 
   if (!Symbol::IsType(sym))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "is not a symbol (:defsym)", sym);
 
   if (Symbol::IsKeyword(sym))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "can't bind keywords (:defsym)", sym);
 
   if (Symbol::IsBound(sym))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::CELL_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::CELL_ERROR,
                      "symbol previously bound (:defsym)", sym);
 
   auto value = Eval(env, Compile(env, expr));
@@ -179,14 +179,14 @@ auto DefSymbol(Env* env, Tag form) {
 /** * (:lambda list . body) **/
 auto DefLambda(Env* env, Tag form) {
   if (Cons::Length(env, form) == 1)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":lambda: argument count(1*)", form);
 
   auto args = Cons::cdr(form);
   auto lambda = Cons::Nth(args, 0);
 
   if (!Cons::IsList(lambda))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":lambda",
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR, ":lambda",
                      lambda);
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
@@ -197,14 +197,14 @@ auto DefLambda(Env* env, Tag form) {
 /** * (:macro list . body) **/
 auto DefMacro(Env* env, Tag form) {
   if (Cons::Length(env, form) == 1)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":macro: argument count(1*)", form);
 
   auto args = Cons::cdr(form);
   auto lambda = Cons::Nth(args, 0);
 
   if (!Cons::IsList(lambda))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":macro",
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR, ":macro",
                      lambda);
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
@@ -215,7 +215,7 @@ auto DefMacro(Env* env, Tag form) {
 /** * (:letq symbol expr) **/
 auto Letq(Env* env, Tag form) {
   if (Cons::Length(env, form) != 3)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":letq: argument count(2)", form);
 
   auto args = Cons::cdr(form);
@@ -223,12 +223,13 @@ auto Letq(Env* env, Tag form) {
   auto expr = Cons::Nth(args, 1);
 
   if (!Symbol::IsType(sym))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":letq", sym);
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR, ":letq", sym);
 
   auto lsym = Compile(env, sym);
 
   if (!Cons::IsList(lsym))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, ":letq", lsym);
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR, ":letq",
+                     lsym);
 
   auto letq = Namespace::FindInterns(env, env->mu_, String(env, "letq").tag_);
   assert(!Type::Null(letq));
@@ -241,7 +242,7 @@ auto Letq(Env* env, Tag form) {
 /** * (:quote object) **/
 auto Quote(Env* env, Tag form) {
   if (Cons::Length(env, form) != 2)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":quote: argument count(1)", form);
 
   return form;
@@ -250,7 +251,7 @@ auto Quote(Env* env, Tag form) {
 /** * (:t object object) **/
 auto T(Env* env, Tag form) {
   if (Cons::Length(env, form) != 3)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":t: argument count(1)", form);
 
   return form;
@@ -259,7 +260,7 @@ auto T(Env* env, Tag form) {
 /** * (:nil object object) **/
 auto Nil(Env* env, Tag form) {
   if (Cons::Length(env, form) != 3)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      ":nil: argument count(1)", form);
 
   return form;
@@ -313,7 +314,7 @@ auto Compile(Env* env, Tag form) -> Tag {
           rval = List(env, form);
           break;
         default:
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+          Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                            "compile: function type", fn);
           break;
       }

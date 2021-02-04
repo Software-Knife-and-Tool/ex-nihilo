@@ -19,8 +19,8 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -32,7 +32,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Macro = core::Macro;
 using Frame = core::Env::Frame;
 using Type = core::Type;
@@ -42,7 +42,7 @@ void MacroFunction(Frame* fp) {
   auto macsym = fp->argv[0];
 
   if (!core::Symbol::IsType(macsym))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "macro-function", macsym);
 
   fp->value = Macro::MacroFunction(fp->env, macsym);

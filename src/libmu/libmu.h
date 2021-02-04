@@ -38,7 +38,7 @@ void* read_cstr(void*, const char*);
 void print(void*, void*, void*, bool);
 const char* print_cstr(void*, void*, bool);
 void terpri(void*, void*);
-void withException(void*, const std::function<void(void*)>&);
+void withCondition(void*, const std::function<void(void*)>&);
 void* env_default(Platform*);
 void* env(Platform*, Platform::StreamId, Platform::StreamId,
           Platform::StreamId);

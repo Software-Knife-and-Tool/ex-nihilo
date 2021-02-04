@@ -29,7 +29,7 @@
 
 #include "libmu/heap/heap.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/namespace.h"
 #include "libmu/types/stream.h"
 #include "libmu/types/string.h"
@@ -89,20 +89,20 @@ auto terpri(void* env, void* stream) -> void {
 }
 
 /** * catch library throws **/
-auto withException(void* env, const std::function<void(void*)>& fn) -> void {
+auto withCondition(void* env, const std::function<void(void*)>& fn) -> void {
   auto ev = static_cast<Env*>(env);
   auto mark = ev->frames_.size();
 
   try {
     fn(env);
-  } catch (Type::Tag exception) {
+  } catch (Type::Tag condition) {
     auto std_error = core::Symbol::value(((Env*)env)->standard_error_);
-    auto tag = core::Exception::tag(exception);
-    auto source = core::Exception::source(exception);
-    auto reason = core::Exception::reason(exception);
-    auto frame = core::Exception::frame(exception);
+    auto tag = core::Condition::tag(condition);
+    auto source = core::Condition::source(condition);
+    auto reason = core::Condition::reason(condition);
+    auto frame = core::Condition::frame(condition);
 
-    core::PrintStdString((Env*)env, "exception: ", std_error, false);
+    core::PrintStdString((Env*)env, "condition: ", std_error, false);
     core::Print((Env*)env, tag, std_error, false);
     core::PrintStdString((Env*)env, " ", std_error, false);
     core::Print((Env*)env, source, std_error, false);

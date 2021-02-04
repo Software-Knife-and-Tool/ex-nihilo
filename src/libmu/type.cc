@@ -23,8 +23,8 @@
 #include "libmu/read.h"
 
 #include "libmu/types/address.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -43,7 +43,7 @@ static const std::map<Tag, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
     {Symbol::Keyword("cons"), SYS_CLASS::CONS},
-    {Symbol::Keyword("except"), SYS_CLASS::EXCEPTION},
+    {Symbol::Keyword("except"), SYS_CLASS::CONDITION},
     {Symbol::Keyword("fixnum"), SYS_CLASS::FIXNUM},
     {Symbol::Keyword("float"), SYS_CLASS::FLOAT},
     {Symbol::Keyword("func"), SYS_CLASS::FUNCTION},
@@ -80,7 +80,7 @@ auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
       {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
       {SYS_CLASS::CHAR, Symbol::Keyword("char")},
       {SYS_CLASS::CONS, Symbol::Keyword("cons")},
-      {SYS_CLASS::EXCEPTION, Symbol::Keyword("except")},
+      {SYS_CLASS::CONDITION, Symbol::Keyword("except")},
       {SYS_CLASS::FIXNUM, Symbol::Keyword("fixnum")},
       {SYS_CLASS::FLOAT, Symbol::Keyword("float")},
       {SYS_CLASS::FUNCTION, Symbol::Keyword("func")},
@@ -104,7 +104,7 @@ auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
       {Address::IsType, SYS_CLASS::ADDRESS},
       {Char::IsType, SYS_CLASS::CHAR},
       {Cons::IsType, SYS_CLASS::CONS},
-      {Exception::IsType, SYS_CLASS::EXCEPTION},
+      {Condition::IsType, SYS_CLASS::CONDITION},
       {Fixnum::IsType, SYS_CLASS::FIXNUM},
       {Float::IsType, SYS_CLASS::FLOAT},
       {Function::IsType, SYS_CLASS::FUNCTION},

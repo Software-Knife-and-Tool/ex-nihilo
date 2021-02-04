@@ -67,7 +67,7 @@ void  libmu_terpri(void*, void*);
  
 
 ```
-void  libmu_withException(void*, std::function<void(void*)>);
+void  libmu_withCondition(void*, std::function<void(void*)>);
 ```
 
  
@@ -102,7 +102,7 @@ void* libmu_env(Platform*, Platform::StreamId, Platform::StreamId, Platform::Str
 ```
 
 ```
-:except     exception
+:except     condition
 ```
 
 ```

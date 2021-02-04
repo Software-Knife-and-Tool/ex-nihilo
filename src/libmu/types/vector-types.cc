@@ -21,8 +21,8 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
 #include "libmu/types/stream.h"
@@ -63,7 +63,7 @@ static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     auto form = it->car;
     if (!isType(form))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                        "type mismatch in vector initialization", form);
     vec.push_back(T::VSpecOf(form));
   }

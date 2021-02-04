@@ -24,8 +24,8 @@
 #include "libmu/read.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -37,7 +37,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Type = core::Type;
 
@@ -55,11 +55,11 @@ void Apply(Frame* fp) {
   auto args = fp->argv[1];
 
   if (!(core::Function::IsType(func)))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "is not a function (.apply)", func);
 
   if (!(core::Cons::IsList(args)))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "is not a list (.apply)", args);
 
   std::vector<Type::Tag> argv;

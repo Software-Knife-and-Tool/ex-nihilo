@@ -121,7 +121,7 @@
          ((eq tag :unslot) (fmt :t "unbound-slot ~A~%"))
          ((eq tag :unsym) (fmt :t "the symbol ~A is unbound~%" source))
          ((eq tag :zerodiv) (fmt :t "arithmetic error division-by-zero~%"))
-         (:t (fmt :t "undecoded-exception-type~%")))
+         (:t (fmt :t "undecoded-condition-type~%")))
         (fmt :t ":p for help~%~%")
         (fmt :t "    ~A (~A . ~A)~%" reason (mu::vector-ref frame 1) (mu::vector-ref frame 3))))
 
@@ -132,7 +132,7 @@
            ((eq sexpr :p) (fmt :t ":p - this message~%")
             (fmt :t ":c - continue~%")
             (fmt :t ":b - backtrace~%")
-            (fmt :t ":e - exception details~%"))
+            (fmt :t ":e - condition details~%"))
            ((eq sexpr :c) (return :t))
            ((eq sexpr :e)
             (when (eq (type-of ex) :except)
@@ -141,7 +141,7 @@
                      (source (mu::vector-ref ex-view 4))
                      (frame (mu::vector-ref ex-view 6))
                      (reason (mu::vector-ref ex-view 5)))
-                (fmt :t "exception: ~A~%" ex)
+                (fmt :t "condition: ~A~%" ex)
                 (fmt :t "      tag: ~A~%" tag)
                 (fmt :t "   source: ~A~%" (pprint source :nil))
                 (fmt :t "   reason: ~A~%" reason)
@@ -161,6 +161,6 @@
                         (fmt :t "  (~A)~%" function)
                       (fmt :t "  (~A ~A)~%" function argl))))
                (cdr stack))))
-           (:t (with-exception
+           (:t (with-condition
                 (:lambda () (fmt :t "~A~%" (eval sexpr)))
                 (:lambda (ex))))))))))

@@ -19,7 +19,7 @@
 #include "libmu/read.h"
 #include "libmu/type.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/function.h"
 #include "libmu/types/stream.h"
@@ -180,7 +180,7 @@ auto Cons::Length(Env* env, Tag list) -> size_t {
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     len++;
     if (!IsList(it->cdr))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                        "is not a list (length)", list);
   }
 
@@ -217,7 +217,7 @@ auto Cons::Read(Env* env, Tag stream) -> Tag {
   Tag ch;
 
   if (!core::ReadWSUntilEof(env, stream))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                      "early end of file in list form (read)", Type::NIL);
 
   ch = Stream::ReadByte(env, stream);
@@ -232,12 +232,12 @@ auto Cons::Read(Env* env, Tag stream) -> Tag {
       vlist.push_back(core::ReadForm(env, stream));
 
       if (!core::ReadWSUntilEof(env, stream))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                          "early end of file in dotted form", Type::NIL);
 
       ch = Stream::ReadByte(env, stream);
       if (core::MapSyntaxChar(ch) != core::SYNTAX_CHAR::CPAREN)
-        Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                          "syntax problem in dotted form (read)",
                          Char(Fixnum::Uint64Of(ch)).tag_);
 
@@ -247,7 +247,7 @@ auto Cons::Read(Env* env, Tag stream) -> Tag {
     vlist.push_back(el);
 
     if (!core::ReadWSUntilEof(env, stream))
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "early end of file in list form (read)", Type::NIL);
 
     ch = Stream::ReadByte(env, stream);

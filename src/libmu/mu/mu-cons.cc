@@ -16,8 +16,8 @@
 #include "libmu/env.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -27,7 +27,7 @@ namespace libmu {
 namespace mu {
 
 using Cons = core::Cons;
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Fixnum = core::Fixnum;
 using Function = core::Function;
 using Frame = core::Env::Frame;
@@ -42,11 +42,11 @@ void MapCar(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapcar",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".mapcar",
                      func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapcar",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".mapcar",
                      list);
 
   fp->value = Type::Null(list) ? Type::NIL : Cons::MapCar(fp->env, func, list);
@@ -58,11 +58,11 @@ void MapC(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapc",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".mapc",
                      func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapc",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".mapc",
                      list);
 
   Cons::MapC(fp->env, func, list);
@@ -75,12 +75,12 @@ void MapList(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".maplist",
-                     func);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     ".maplist", func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".maplist",
-                     list);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     ".maplist", list);
 
   fp->value = Type::Null(list) ? Type::NIL : Cons::MapList(fp->env, func, list);
 }
@@ -91,11 +91,11 @@ void MapL(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapl",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".mapl",
                      func);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".mapl",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".mapl",
                      list);
 
   Cons::MapL(fp->env, func, list);
@@ -107,7 +107,7 @@ void ListLength(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "length",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "length",
                      list);
 
   fp->value = Fixnum(Cons::Length(fp->env, list)).tag_;
@@ -123,7 +123,8 @@ void Car(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "car", list);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "car",
+                     list);
 
   fp->value = Cons::car(list);
 }
@@ -133,7 +134,8 @@ void Cdr(Frame* fp) {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "cdr", list);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "cdr",
+                     list);
 
   fp->value = Cons::cdr(list);
 }
@@ -144,13 +146,16 @@ void Nth(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Fixnum::IsType(nth))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nth", nth);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "nth",
+                     nth);
 
   if (Fixnum::Int64Of(nth) < 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nth", nth);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "nth",
+                     nth);
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nth", list);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "nth",
+                     list);
 
   fp->value = Cons::Nth(list, Fixnum::Uint64Of(nth));
 }
@@ -161,15 +166,15 @@ void Nthcdr(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "nthcdr",
                      list);
 
   if (!Fixnum::IsType(nth))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "nthcdr",
                      nth);
 
   if (Fixnum::Int64Of(nth) < 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "nthcdr",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "nthcdr",
                      nth);
 
   fp->value = Cons::NthCdr(list, Fixnum::Uint64Of(nth));

@@ -31,7 +31,7 @@
 #include "libmu/types/char.h"
 #include "libmu/types/cons.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/function.h"
 #include "libmu/types/namespace.h"
 
@@ -107,7 +107,7 @@ auto Stream::StreamDesignator(Env* env, Tag stream) -> Tag {
       break;
     default:
       if (!Stream::IsType(stream))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                          "not a stream (stream-designator)", stream);
       break;
   }

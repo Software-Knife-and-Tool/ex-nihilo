@@ -24,7 +24,7 @@ using libmu::platform::Platform;
 void repl(Platform *platform, int) {
   auto env = libmu::api::env_default(platform);
 
-  libmu::api::withException(env, [platform](void *env) {
+  libmu::api::withCondition(env, [platform](void *env) {
     auto repl = false;
 
     for (const Platform::OptMap &opt : *platform->options_) {
@@ -83,7 +83,7 @@ void repl(Platform *platform, int) {
 
     if (repl)
       for (;;) {
-        libmu::api::withException(env, [](void *env) {
+        libmu::api::withCondition(env, [](void *env) {
           if (feof(stdin))
             exit(0);
 
