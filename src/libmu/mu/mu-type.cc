@@ -21,8 +21,8 @@
 #include "libmu/read.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -34,7 +34,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Type = core::Type;
 
@@ -57,7 +57,7 @@ void IsSpecOp(Frame* fp) {
   auto symbol = fp->argv[0];
 
   if (!core::Symbol::IsType(symbol))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "special-operatorp", symbol);
 
   fp->value = Type::Bool(core::IsSpecOp(symbol));

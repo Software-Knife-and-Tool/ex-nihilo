@@ -698,12 +698,12 @@ dl.reflist dd {
         line-height: 14px;
 }
 
-.params, .retval, .exception, .tparams {
+.params, .retval, .condition, .tparams {
         margin-left: 0px;
         padding-left: 0px;
 }       
 
-.params .paramname, .retval .paramname, .tparams .paramname, .exception .paramname {
+.params .paramname, .retval .paramname, .tparams .paramname, .condition .paramname {
         font-weight: bold;
         vertical-align: top;
 }

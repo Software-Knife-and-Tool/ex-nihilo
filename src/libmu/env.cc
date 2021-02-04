@@ -29,8 +29,8 @@
 #include "libmu/mu/mu.h"
 
 #include "libmu/types/address.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -65,8 +65,8 @@ static const std::vector<Env::TagFn> kExtFuncTab{
     {"eofp", mu::IsEof, 1},
     {"eq", mu::Eq, 2},
     {"eval", mu::Eval, 1},
-    {"exception", mu::MakeException, 3},
-    {"exceptionp", mu::IsException, 1},
+    {"condition", mu::MakeCondition, 3},
+    {"conditionp", mu::IsCondition, 1},
     {"exit", mu::Exit, 1},
     {"exp", mu::Exp, 1},
     {"find-in-ns", mu::FindInNamespace, 3},
@@ -116,7 +116,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
     {"open-stream", mu::FunctionStream, 1},
     {"pow", mu::Pow, 2},
     {"raise", mu::Raise, 2},
-    {"raise-exception", mu::RaiseException, 1},
+    {"raise-condition", mu::RaiseCondition, 1},
     {"read", mu::Read, 1},
     {"read-byte", mu::ReadByte, 1},
     {"read-char", mu::ReadChar, 1},
@@ -141,7 +141,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
     {"unread-char", mu::UnReadChar, 2},
     {"vectorp", mu::IsVector, 1},
     {"view", mu::MakeView, 1},
-    {"with-exception", mu::WithException, 2},
+    {"with-condition", mu::WithCondition, 2},
     {"write-byte", mu::WriteByte, 2},
     {"write-char", mu::WriteChar, 2}};
 
@@ -260,7 +260,7 @@ auto Env::GcMark(Env* env, Tag ptr) -> void {
       {SYS_CLASS::ADDRESS, noGc},
       {SYS_CLASS::CHAR, noGc},
       {SYS_CLASS::CONS, Cons::GcMark},
-      {SYS_CLASS::EXCEPTION, Exception::GcMark},
+      {SYS_CLASS::CONDITION, Condition::GcMark},
       {SYS_CLASS::FIXNUM, noGc},
       {SYS_CLASS::FLOAT, noGc},
       {SYS_CLASS::FUNCTION, Function::GcMark},
@@ -282,7 +282,7 @@ auto Env::ViewOf(Env* env, Tag object) -> Tag {
       {SYS_CLASS::ADDRESS, Address::ViewOf},
       {SYS_CLASS::CHAR, Char::ViewOf},
       {SYS_CLASS::CONS, Cons::ViewOf},
-      {SYS_CLASS::EXCEPTION, Exception::ViewOf},
+      {SYS_CLASS::CONDITION, Condition::ViewOf},
       {SYS_CLASS::FIXNUM, Fixnum::ViewOf},
       {SYS_CLASS::FUNCTION, Function::ViewOf},
       {SYS_CLASS::FLOAT, Float::ViewOf},

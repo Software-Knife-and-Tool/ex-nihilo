@@ -25,8 +25,8 @@
 
 #include "libmu/types/address.h"
 #include "libmu/types/char.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"

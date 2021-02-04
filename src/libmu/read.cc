@@ -26,7 +26,7 @@
 #include "libmu/types/char.h"
 #include "libmu/types/cons.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -55,14 +55,14 @@ auto ReadBroketSyntax(Env* env, Tag stream) -> Tag {
 
   auto bracket = Stream::ReadByte(env, stream);
   if (Fixnum::Uint64Of(bracket) != '>')
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "broket syntax (terminal)", bracket);
 
   auto sysclass = Type::MapSymbolClass(type);
   auto tagptr_bits = Fixnum::Uint64Of(tagptr);
 
   if (!Fixnum::IsType(tagptr))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "broket syntax (type)", tagptr);
 
   switch (sysclass) {
@@ -71,14 +71,14 @@ auto ReadBroketSyntax(Env* env, Tag stream) -> Tag {
 
       return Address(caddr).tag_;
     }
-    case SYS_CLASS::EXCEPTION:
+    case SYS_CLASS::CONDITION:
     case SYS_CLASS::FUNCTION:
     case SYS_CLASS::MACRO:
     case SYS_CLASS::NAMESPACE:
     case SYS_CLASS::STREAM:
     case SYS_CLASS::STRUCT:
     default:
-      Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                        "broket syntax (unimplemented)", type);
       break;
   }
@@ -97,7 +97,7 @@ auto Atom(Env* env, Tag stream) -> std::string {
        !Type::Null(ch) && MapSyntaxType(ch) == SYNTAX_TYPE::CONSTITUENT;
        len++) {
     if (len >= Vector::MAX_LENGTH)
-      Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "atom exceeds maximum size (read-atom)", Type::NIL);
 
     string.push_back(Fixnum::Int64Of(ch));
@@ -107,7 +107,7 @@ auto Atom(Env* env, Tag stream) -> std::string {
   if (!Type::Null(ch)) Stream::UnReadByte(ch, stream);
 
   if (string.size() == 0) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                      "naked atom syntax (read-atom)", Type::NIL);
   }
 
@@ -127,19 +127,19 @@ auto RadixFixnum(Env* env, int radix, Tag stream) -> Tag {
 
     if (n == str.length()) {
       if (((fxval >> 62) & 1) ^ ((fxval >> 63) & 1))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                          "parse-number", String(env, str).tag_);
       number = Fixnum(fxval).tag_;
     }
   } catch (std::invalid_argument& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "parse-number",
-                     String(env, str).tag_);
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
+                     "parse-number", String(env, str).tag_);
   } catch (std::out_of_range& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "parse-number",
-                     String(env, str).tag_);
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
+                     "parse-number", String(env, str).tag_);
   } catch (std::exception& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR, "parse-number",
-                     String(env, str).tag_);
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
+                     "parse-number", String(env, str).tag_);
   }
 
   return number;
@@ -155,7 +155,7 @@ auto Number(Env* env, const std::string& str) -> Tag {
 
     if (n == str.length()) {
       if (((fxval >> 62) & 1) ^ ((fxval >> 63) & 1))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+        Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                          "parse-number:fixnum", String(env, str).tag_);
 
       number = Fixnum(fxval).tag_;
@@ -169,7 +169,7 @@ auto Number(Env* env, const std::string& str) -> Tag {
   } catch (std::out_of_range& ex) {
     return Type::NIL;
   } catch (std::exception& ex) {
-    Exception::Raise(env, Exception::EXCEPT_CLASS::PARSE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                      "malformed float", String(env, str).tag_);
   }
 
@@ -238,7 +238,7 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
     case SYNTAX_CHAR::SHARP: /* sharp syntax */
       ch = Stream::ReadByte(env, stream);
       if (Type::Null(ch))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE, "read",
+        Condition::Raise(env, Condition::CONDITION_CLASS::END_OF_FILE, "read",
                          stream);
       else if (Fixnum::Int64Of(ch) == '<')
         rval = ReadBroketSyntax(env, stream);
@@ -259,7 +259,7 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
           case SYNTAX_CHAR::QUOTE: { /* closure syntax */
             auto fn = ReadForm(env, stream);
             if (Type::Null(ch))
-              Exception::Raise(env, Exception::EXCEPT_CLASS::END_OF_FILE,
+              Condition::Raise(env, Condition::CONDITION_CLASS::END_OF_FILE,
                                "read", stream);
             rval = Cons::List(
                 env, std::vector<Tag>{
@@ -272,7 +272,7 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
             std::string atom = Atom(env, stream);
             rval = Number(env, atom);
             if (!Type::Null(rval))
-              Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+              Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
                                "uninterned symbol", String(env, atom).tag_);
             rval = Symbol::ParseSymbol(env, atom, false);
             break;
@@ -293,18 +293,18 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
             }
 
             if (Type::Null(ch))
-              Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+              Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
                                "eof in block comment", ch);
 
             rval = ReadForm(env, stream);
             break;
           default:
-            Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+            Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
                              "# syntax", ch);
         }
       break;
     case SYNTAX_CHAR::CPAREN:
-      Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+      Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
                        "naked syntax", Char(')').tag_);
       break;
     default: { /* unadorned atom */

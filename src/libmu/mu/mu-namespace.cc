@@ -17,8 +17,8 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/function.h"
 #include "libmu/types/namespace.h"
 #include "libmu/types/string.h"
@@ -29,7 +29,7 @@ namespace mu {
 
 using Cons = core::Cons;
 using Env = core::Env;
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Namespace = core::Namespace;
 using String = core::String;
@@ -46,7 +46,7 @@ void FindNamespace(Frame* fp) {
   auto name = fp->argv[0];
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-ns",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "find-ns",
                      name);
 
   fp->value = Env::MapNamespace(fp->env, String::StdStringOf(name));
@@ -57,7 +57,7 @@ void NameOfNamespace(Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-name",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "ns-name",
                      ns);
 
   fp->value = Namespace::name(fp->argv[0]);
@@ -68,8 +68,8 @@ void ImportOfNamespace(Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-import",
-                     ns);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "ns-import", ns);
 
   fp->value = Namespace::imports(fp->argv[0]);
 }
@@ -80,16 +80,17 @@ void MakeNamespace(Frame* fp) {
   auto imports = fp->argv[1];
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns", name);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "ns",
+                     name);
 
   if (!Cons::IsList(imports))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "ns",
                      imports);
 
   Cons::cons_iter<Type::Tag> iter(imports);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
     if (!Namespace::IsType(it->car))
-      Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns",
+      Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "ns",
                        it->car);
   }
 
@@ -102,8 +103,8 @@ void NamespaceSymbols(Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "ns-symbols",
-                     ns);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "ns-symbols", ns);
 
   std::vector<Type::Tag> interns;
 
@@ -126,7 +127,8 @@ void SetNamespace(Frame* fp) {
   auto ns = fp->argv[0];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "in-ns", ns);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "in-ns",
+                     ns);
 
   auto prev = fp->env->namespace_;
 
@@ -134,17 +136,17 @@ void SetNamespace(Frame* fp) {
   fp->value = prev;
 }
 
-/** * (find-symbol ns symbol) => symbol **/
+/** * (find-symbol ns string) => symbol **/
 void FindSymbolNamespace(Frame* fp) {
   auto ns = fp->argv[0];
   auto name = fp->argv[1];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "find-symbol", ns);
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "find-symbol", name);
 
   fp->value = Namespace::FindSymbol(fp->env, ns, name);
@@ -157,20 +159,20 @@ void FindInNamespace(Frame* fp) {
   auto name = fp->argv[2];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
-                     ns);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "find-in-ns", ns);
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
-                     name);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "find-in-ns", name);
 
   if (Type::Eq(Symbol::Keyword("intern"), type)) {
     fp->value = Namespace::FindInterns(fp->env, ns, name);
   } else if (Type::Eq(Symbol::Keyword("extern"), type)) {
     fp->value = Namespace::FindExterns(fp->env, ns, name);
   } else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "find-in-ns",
-                     name);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "find-in-ns", name);
 }
 
 /** * (intern ns keyword symbol value) => symbol **/
@@ -181,11 +183,11 @@ void InternNamespace(Frame* fp) {
   auto value = fp->argv[3];
 
   if (!Namespace::IsType(ns))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "intern",
                      ns);
 
   if (!String::IsType(name))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "intern",
                      name);
 
   if (Type::Eq(Symbol::Keyword("intern"), type)) {
@@ -193,7 +195,7 @@ void InternNamespace(Frame* fp) {
   } else if (Type::Eq(Symbol::Keyword("extern"), type)) {
     fp->value = Namespace::Intern(fp->env, ns, name);
   } else
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "intern",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "intern",
                      name);
 
   if (!Symbol::IsBound(fp->value)) Symbol::Bind(fp->value, value);

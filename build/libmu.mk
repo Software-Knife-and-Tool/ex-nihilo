@@ -9,10 +9,10 @@ CPPFLAGS = -I ../src
 OBJS =  \
     char.o             \
     compiler.o         \
+    condition.o        \
     cons.o             \
     env.o              \
     eval.o             \
-    exception.o        \
     fixnum.o           \
     float.o            \
     function.o         \
@@ -32,7 +32,7 @@ OBJS =  \
     mu-char.o          \
     mu-cons.o          \
     mu-env.o           \
-    mu-exception.o     \
+    mu-condition.o     \
     mu-fixnum.o        \
     mu-float.o         \
     mu-function.o      \

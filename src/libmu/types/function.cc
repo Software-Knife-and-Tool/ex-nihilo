@@ -23,8 +23,8 @@
 
 #include "libmu/compiler.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/symbol.h"
 #include "libmu/types/vector.h"
@@ -53,13 +53,13 @@ auto CheckArity(Env* env, Tag fn, const std::vector<Tag>& args) -> void {
   auto nargs = args.size();
 
   if (nargs < nreqs)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "argument list arity: nargs (" + std::to_string(nargs) +
                          ") < nreqs (" + std::to_string(nreqs) + ") (funcall)",
                      fn);
 
   if (!rest && (nargs > nreqs))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "argument list arity: !rest && nargs (" +
                          std::to_string(nargs) + ") > nreq (" +
                          std::to_string(nreqs) + ") (funcall)",

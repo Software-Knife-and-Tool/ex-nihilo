@@ -9,7 +9,7 @@ var searchData=
   ['macrofunction_248',['MacroFunction',['../classlibmu_1_1_macro.html#a59293c533048831c6c5b38747edeef83',1,'libmu::Macro::MacroFunction()'],['../namespacelibmu_1_1mu.html#a2aa07a8ea62698dcdde523acdeaa47be',1,'libmu::mu::MacroFunction()']]],
   ['macros_2ecc_249',['macros.cc',['../macros_8cc.html',1,'']]],
   ['make_250',['Make',['../classlibmu_1_1_ffi.html#a4c1202951a4d07461f05f6abdab5a00d',1,'libmu::Ffi']]],
-  ['makeexception_251',['MakeException',['../namespacelibmu_1_1mu.html#a4696a9d7362885d3996d328064c8442b',1,'libmu::mu']]],
+  ['makecondition_251',['MakeCondition',['../namespacelibmu_1_1mu.html#a4696a9d7362885d3996d328064c8442b',1,'libmu::mu']]],
   ['makeexti_252',['MakeExti',['../classlibmu_1_1_type.html#aaea6434b4d60a2c1085112358315e965',1,'libmu::Type']]],
   ['makeheapinfo_253',['MakeHeapInfo',['../classlibmu_1_1_heap.html#ae0949d5fe8625027fbd6d3cc2d9854a2',1,'libmu::Heap']]],
   ['makeimmediate_254',['MakeImmediate',['../classlibmu_1_1_string.html#aee05d66936c57863d791fa3a7baa172b',1,'libmu::String']]],

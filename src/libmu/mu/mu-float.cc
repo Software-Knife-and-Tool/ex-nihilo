@@ -18,13 +18,13 @@
 
 #include "libmu/env.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/float.h"
 
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Float = core::Float;
 using Frame = core::Env::Frame;
 using Type = core::Type;
@@ -40,10 +40,10 @@ void FloatAdd(Frame* fp) {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float+",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float+",
                      fl0);
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float+",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float+",
                      fl1);
 
   fp->value = Float(Float::FloatOf(fl0) + Float::FloatOf(fl1)).tag_;
@@ -55,11 +55,11 @@ auto FloatSub(Frame* fp) -> void {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float-",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float-",
                      fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float-",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float-",
                      fl1);
 
   fp->value = Float(Float::FloatOf(fl0) - Float::FloatOf(fl1)).tag_;
@@ -71,11 +71,11 @@ auto FloatMul(Frame* fp) -> void {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float*",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float*",
                      fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float*",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float*",
                      fl1);
 
   fp->value = Float(Float::FloatOf(fl0) * Float::FloatOf(fl1)).tag_;
@@ -87,11 +87,11 @@ auto FloatDiv(Frame* fp) -> void {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float/",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float/",
                      fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float/",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float/",
                      fl1);
 
   fp->value = Float(Float::FloatOf(fl0) / Float::FloatOf(fl1)).tag_;
@@ -103,11 +103,11 @@ auto FloatLessThan(Frame* fp) -> void {
   auto fl1 = fp->argv[1];
 
   if (!Float::IsType(fl0))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float<",
                      fl0);
 
   if (!Float::IsType(fl1))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "float<",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "float<",
                      fl1);
 
   fp->value = Type::Bool(Float::FloatOf(fl0) < Float::FloatOf(fl1));
@@ -118,7 +118,7 @@ auto Sqrt(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(sqrt)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(sqrt)",
                      scalar);
 
   fp->value = Float(sqrtf(Float::FloatOf(scalar))).tag_;
@@ -130,11 +130,11 @@ void Pow(Frame* fp) {
   auto exp = fp->argv[1];
 
   if (!Float::IsType(base))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(pow)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(pow)",
                      base);
 
   if (!Float::IsType(exp))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(pow)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(pow)",
                      exp);
 
   fp->value = Float(powf(Float::FloatOf(base), Float::FloatOf(exp))).tag_;
@@ -145,7 +145,7 @@ auto Atan(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(exp)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(exp)",
                      scalar);
 
   fp->value = Float(atanf(Float::FloatOf(scalar))).tag_;
@@ -156,7 +156,7 @@ auto Asin(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(exp)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(exp)",
                      scalar);
 
   fp->value = Float(asinf(Float::FloatOf(scalar))).tag_;
@@ -167,7 +167,7 @@ auto Acos(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(exp)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(exp)",
                      scalar);
 
   fp->value = Float(acosf(Float::FloatOf(scalar))).tag_;
@@ -178,7 +178,7 @@ auto Exp(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(exp)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(exp)",
                      scalar);
 
   fp->value = Float(expf(Float::FloatOf(scalar))).Evict(fp->env);
@@ -189,7 +189,7 @@ auto Log(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(log)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(log)",
                      scalar);
 
   fp->value = Float(logf(Float::FloatOf(scalar))).tag_;
@@ -200,7 +200,7 @@ auto Log10(Frame* fp) -> void {
   auto scalar = fp->argv[0];
 
   if (!Float::IsType(scalar))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(log)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(log)",
                      scalar);
 
   fp->value = Float(log10f(Float::FloatOf(scalar))).tag_;
@@ -211,7 +211,7 @@ auto Sine(Frame* fp) -> void {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(sin)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(sin)",
                      theta);
 
   fp->value = Float(sinf(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;
@@ -222,7 +222,7 @@ auto Cosine(Frame* fp) -> void {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(cos)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(cos)",
                      theta);
 
   fp->value = Float(cosf(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;
@@ -233,7 +233,7 @@ auto Tangent(Frame* fp) -> void {
   auto theta = fp->argv[0];
 
   if (!Float::IsType(theta))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(tan)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "(tan)",
                      theta);
 
   fp->value = Float(tanf(Float::FloatOf(theta) * 3.14159265 / 180.0)).tag_;

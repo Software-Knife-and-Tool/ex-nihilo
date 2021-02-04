@@ -3,7 +3,7 @@ var searchData=
   ['_7echar_906',['~Char',['../classlibmu_1_1_char.html#a5fe2ca5e1ae4ddacad7f424cf68052e9',1,'libmu::Char']]],
   ['_7econs_907',['~Cons',['../classlibmu_1_1_cons.html#ae498620f8d759db6ff45a05164431ddd',1,'libmu::Cons']]],
   ['_7eenv_908',['~Env',['../classlibmu_1_1_env.html#aef194244feb80ab2314f7ed8720d0b67',1,'libmu::Env']]],
-  ['_7eexception_909',['~Exception',['../classlibmu_1_1_exception.html#adfe2d34a4174227f079ff1f106efedf3',1,'libmu::Exception']]],
+  ['_7econdition_909',['~Condition',['../classlibmu_1_1_condition.html#adfe2d34a4174227f079ff1f106efedf3',1,'libmu::Condition']]],
   ['_7effi_910',['~Ffi',['../classlibmu_1_1_ffi.html#a5ec8e7c0939d1c22375ca982697fd801',1,'libmu::Ffi']]],
   ['_7efixnum_911',['~Fixnum',['../classlibmu_1_1_fixnum.html#a607747b7acd8de087a4d5b5dada24201',1,'libmu::Fixnum']]],
   ['_7efloat_912',['~Float',['../classlibmu_1_1_float.html#aa268465bd90978e91e10aebcf37064a3',1,'libmu::Float']]],

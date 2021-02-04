@@ -24,8 +24,8 @@
 #include "libmu/read.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -37,7 +37,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Fixnum = core::Fixnum;
 using Frame = core::Env::Frame;
 using Platform = core::Platform;
@@ -59,7 +59,8 @@ void Exit(Frame* fp) {
   auto rc = fp->argv[0];
 
   if (!Fixnum::IsType(rc))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "exit", rc);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "exit",
+                     rc);
 
   std::exit(Fixnum::Int64Of(rc));
 }
@@ -69,7 +70,7 @@ void System(Frame* fp) {
   auto cmd = fp->argv[0];
 
   if (!String::IsType(cmd))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "is not a string (.system)", cmd);
 
   fp->value = Fixnum(Platform::System(String::StdStringOf(cmd))).tag_;
@@ -81,11 +82,11 @@ void Invoke(Frame* fp) {
   auto arg = fp->argv[1];
 
   if (!Fixnum::IsType(fn))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".invoke",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".invoke",
                      fn);
 
   if (!String::IsType(arg))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, ".invoke",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".invoke",
                      arg);
 
   fp->value = String(fp->env, Platform::Invoke(Fixnum::Uint64Of(fn),

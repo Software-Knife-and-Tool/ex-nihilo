@@ -18,7 +18,7 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/stream.h"
 
 namespace libmu {
@@ -77,11 +77,11 @@ auto Char::Read(Env* env, Tag stream) -> Tag {
   auto ch = Stream::ReadByte(env, stream);
 
   if (Type::Null(ch))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR, "eof in #\\",
-                     Type::NIL);
+    Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
+                     "eof in #\\", Type::NIL);
 
   if (core::MapSyntaxType(ch) == core::SYNTAX_TYPE::WSPACE)
-    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
                      "malformed character literal", Type::NIL);
 
   buffer.push_back(Fixnum::Int64Of(ch));
@@ -95,8 +95,8 @@ auto Char::Read(Env* env, Tag stream) -> Tag {
   }
 
   if (Type::Null(ch))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR, "eof in #\\",
-                     Type::NIL);
+    Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
+                     "eof in #\\", Type::NIL);
 
   Stream::UnReadByte(ch, stream);
 
@@ -105,7 +105,7 @@ auto Char::Read(Env* env, Tag stream) -> Tag {
   else if (kCharLit.count(buffer))
     value = Char(kCharLit.at(buffer)).tag_;
   else
-    Exception::Raise(env, Exception::EXCEPT_CLASS::READER_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
                      "unmapped char", String(env, buffer).tag_);
 
   return value;

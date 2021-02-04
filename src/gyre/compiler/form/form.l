@@ -13,6 +13,10 @@
               ((eql name ":quote") :quote)
               ((eql name ":t") :t)
               (:t :nil))))
+         (macrof
+          (:lambda (name) (macro-function (find-symbol (find-ns "mu") name))))
+         (symbolf
+          (:lambda (name) (find-symbol (find-ns "mu") name)))
          (special
           (:lambda (fn form)
              (let ((fn (specop fn)))
@@ -46,12 +50,14 @@
                  ((and (consp fn) (eq :symbol (car fn)) (specop (cdr fn)))
                   (fmt :t "funcall:special-operator: (~A . ~A)~%" fn args)
                   (special (cdr fn) form))
-                 ((macro-function fn) (fmt :t "funcall:macro: (~A . ~A)~%" fn args)
+                 ((and (consp fn) (eq :symbol (car fn)) (macrof (cdr fn)))
+                  (fmt :t "funcall:macro: (~A . ~A)~%" fn args)
                   (compile-form fn)
                   (mapc compile-form args))
-                 ((symbolp fn)
+                 ((and (consp fn) (eq :symbol (car fn)) (symbolf (cdr fn)))
                   (fmt :t "funcall:symbol: (~A . ~A)~%" fn args)
-                  (unless (codegen fn args) (compile-form fn) (mapc compile-form args)))
+                  (compile-form fn)
+                  (mapc compile-form args))
                  ((consp fn) (fmt :t "funcall:cons: (~A . ~A)~%" fn args)
                   (compile-form fn)
                   (mapc compile-form args))

@@ -17,14 +17,14 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/fixnum.h"
 
 namespace libmu {
 namespace mu {
 
 using Char = core::Char;
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Type = core::Type;
 

@@ -22,8 +22,8 @@
 #include "libmu/print.h"
 #include "libmu/type.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"

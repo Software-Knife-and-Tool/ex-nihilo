@@ -87,8 +87,8 @@
 (functionp eofp);:t
 (functionp eq);:t
 (functionp eval);:t
-(functionp exception);:t
-(functionp exceptionp);:t
+(functionp condition);:t
+(functionp conditionp);:t
 (functionp exit);:t
 (functionp exp);:t
 (functionp find-ns);:t
@@ -146,7 +146,7 @@
 (functionp open-stream);:t
 (functionp pow);:t
 (functionp raise);:t
-(functionp raise-exception);:t
+(functionp raise-condition);:t
 (functionp read);:t
 (functionp read-byte);:t
 (functionp read-char);:t
@@ -178,7 +178,7 @@
 (functionp vector-type);:t
 (functionp vectorp);:t
 (functionp view);:t
-(functionp with-exception);:t
+(functionp with-condition);:t
 (functionp write-byte);:t
 (functionp write-char);:t
 (namespacep :t);:nil

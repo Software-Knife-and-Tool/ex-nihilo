@@ -26,8 +26,8 @@
 
 #include "libmu/compiler.h"
 
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -59,7 +59,7 @@ auto Eval(Env* env, Tag form) -> Tag {
   switch (Type::TypeOf(form)) {
     case SYS_CLASS::SYMBOL:
       if (!Symbol::IsBound(form))
-        Exception::Raise(env, Exception::EXCEPT_CLASS::UNBOUND_VARIABLE,
+        Condition::Raise(env, Condition::CONDITION_CLASS::UNBOUND_VARIABLE,
                          "(eval)", form);
       rval = Symbol::value(form);
       break;
@@ -75,7 +75,8 @@ auto Eval(Env* env, Tag form) -> Tag {
           else if (Type::Eq(fn, Symbol::Keyword("nil")))
             rval = Eval(env, Cons::Nth(form, 2));
           else
-            Exception::Raise(env, Exception::EXCEPT_CLASS::UNDEFINED_FUNCTION,
+            Condition::Raise(env,
+                             Condition::CONDITION_CLASS::UNDEFINED_FUNCTION,
                              "(eval)", fn);
           break;
         case SYS_CLASS::FUNCTION: { /* function object */
@@ -87,8 +88,8 @@ auto Eval(Env* env, Tag form) -> Tag {
           break;
         }
         default:
-          Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR, "(eval)",
-                           fn);
+          Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                           "(eval)", fn);
       }
       break;
     }

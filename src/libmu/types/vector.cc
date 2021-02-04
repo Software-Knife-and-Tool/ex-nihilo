@@ -23,7 +23,7 @@
 #include "libmu/types/char.h"
 #include "libmu/types/cons.h"
 
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
 #include "libmu/types/stream.h"
@@ -74,7 +74,7 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
   auto vectype = core::ReadForm(env, stream);
 
   if (!Symbol::IsKeyword(vectype))
-    Exception::Raise(env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "type botch in vector reader", vectype);
 
   return ListToVector(env, vectype, Cons::Read(env, stream));

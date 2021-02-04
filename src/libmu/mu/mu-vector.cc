@@ -17,8 +17,8 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
 #include "libmu/types/string.h"
@@ -27,7 +27,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Fixnum = core::Fixnum;
 using Frame = core::Env::Frame;
 using Type = core::Type;
@@ -44,19 +44,19 @@ void VectorRef(Frame* fp) {
   auto index = fp->argv[1];
 
   if (!Vector::IsType(vector))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svref",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svref",
                      vector);
 
   if (!Fixnum::IsType(index))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svref",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svref",
                      index);
 
   if (Fixnum::Int64Of(index) < 0)
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svref",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svref",
                      index);
 
   if (Fixnum::Uint64Of(index) >= Vector::Length(vector))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::RANGE_ERROR, "svchar",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::RANGE_ERROR, "svchar",
                      index);
 
   switch (Vector::TypeOf(vector)) {
@@ -85,8 +85,8 @@ void VectorLength(Frame* fp) {
   auto vector = fp->argv[0];
 
   if (!Vector::IsType(vector))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svlength",
-                     vector);
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
+                     "svlength", vector);
 
   fp->value = Fixnum(Vector::Length(vector)).tag_;
 }
@@ -94,7 +94,7 @@ void VectorLength(Frame* fp) {
 /** * (svtype vector) => symbol **/
 void VectorType(Frame* fp) {
   if (!Vector::IsType(fp->argv[0]))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svtype)",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svtype)",
                      fp->argv[0]);
 
   fp->value = Vector::VecType(fp->argv[0]);
@@ -106,11 +106,11 @@ void VectorMap(Frame* fp) {
   auto vector = fp->argv[1];
 
   if (!core::Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svmap",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svmap",
                      func);
 
   if (!Vector::IsType(vector))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svmap",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svmap",
                      vector);
 
   fp->value = Vector::Map(fp->env, func, vector);
@@ -122,11 +122,11 @@ void VectorMapC(Frame* fp) {
   auto vector = fp->argv[1];
 
   if (!core::Function::IsType(func))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svmapc",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svmapc",
                      func);
 
   if (!Vector::IsType(vector))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "svmapc",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svmapc",
                      vector);
 
   Vector::MapC(fp->env, func, vector);
@@ -139,11 +139,11 @@ void VectorCons(Frame* fp) {
   auto list = fp->argv[1];
 
   if (!core::Symbol::IsType(type))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "vector",
                      type);
 
   if (!core::Cons::IsList(list))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "vector",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "vector",
                      list);
 
   fp->value = Vector::ListToVector(fp->env, type, list);

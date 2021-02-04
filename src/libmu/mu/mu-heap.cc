@@ -24,12 +24,12 @@
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
-#include "libmu/types/exception.h"
+#include "libmu/types/condition.h"
 
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Fixnum = core::Fixnum;
 using Frame = core::Env::Frame;
 using Type = core::Type;
@@ -43,7 +43,7 @@ void Gc(Frame* fp) {
     case Type::T:
       break;
     default:
-      Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+      Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                        "is not boolean (gc)", arg);
   }
 
@@ -55,7 +55,7 @@ void HeapInfo(Frame* fp) {
   auto type = fp->argv[0];
 
   if (!core::Symbol::IsKeyword(type) || !Type::IsClassSymbol(type))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "is not a system class keyword (heap-info)", type);
 
   std::function<Type::Tag(Type::SYS_CLASS, int)> type_vec =

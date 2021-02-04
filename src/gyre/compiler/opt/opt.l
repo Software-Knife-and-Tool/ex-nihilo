@@ -24,7 +24,7 @@
     (fmt :t "llopt ~A: args ~A~%" llopt-version args)
     (block :nil
       (while (null (eof? :t))
-        (with-exception (:lambda ()
+        (with-condition (:lambda ()
           (let ((sexpr (progn (fmt :t "[llopt] ~A> " (ns-name (current-ns))) (read :t))))
             (cond
              ((eq sexpr :?)

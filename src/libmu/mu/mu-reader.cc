@@ -22,8 +22,8 @@
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
+#include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
-#include "libmu/types/exception.h"
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
@@ -36,7 +36,7 @@
 namespace libmu {
 namespace mu {
 
-using Exception = core::Exception;
+using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Stream = core::Stream;
 using Type = core::Type;
@@ -46,11 +46,11 @@ void Read(Frame* fp) {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
   if (!Stream::IsType(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR, "read",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "read",
                      stream);
 
   if (Stream::IsEof(stream))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::END_OF_FILE, "read",
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::END_OF_FILE, "read",
                      stream);
 
   fp->value = core::Read(fp->env, stream);
@@ -62,11 +62,11 @@ void SetMacroChar(Frame* fp) {
   auto reader = fp->argv[1];
 
   if (!core::Char::IsType(macro_char))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "(set-macro-character)", macro_char);
 
   if (!core::Function::IsType(reader))
-    Exception::Raise(fp->env, Exception::EXCEPT_CLASS::TYPE_ERROR,
+    Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "(set-macro-character)", reader);
 
   fp->env->readtable_[macro_char] = reader;
