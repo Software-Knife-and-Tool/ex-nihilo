@@ -24,7 +24,7 @@
             ((and (consp form) (eq :quasi (car form)) (atom (nth 1 form)))
              (nth 1 form))
             ((and (consp form) (eq :quasi (car form)) (consp (nth 1 form)))
-             (list* 'append (mu::mapcar quasi-list (nth 1 form))))
+             (list* 'append (mu:mapcar quasi-list (nth 1 form))))
             ((and (vectorp form) (eq :t (vector-type form))) (raise "implement bq vectors" form))
             (:t (list 'list (list :quote form))))))
 
@@ -50,7 +50,7 @@
 (:defsym require (:macro (tag path)
   (let ((string-concat (:lambda (:rest strings)
     (let ((ostream (open-output-string "")))
-      (mu::mapc (:lambda (str) (mu::print str ostream :nil)) strings)
+      (mu:mapc (:lambda (str) (mu:print str ostream :nil)) strings)
       (get-output-stream-string ostream)))))
 
    ;;; (fmt :t "require: tag ~A path ~A~%" tag path)
@@ -69,7 +69,7 @@
   (letf* ((inits (llist)
            (let ((terms ()))
              (mu:block ()
-               (mu::mapl
+               (mu:mapl
                 (:lambda (l)
                   (let ((term (car l)) (rest (cdr l)))
                     (when (keywordp term) (mu:return (cons terms l)))
@@ -77,7 +77,7 @@
                       (raise "is not an opt symbol or initializer (lambda)" term))
                     (cond
                      ((consp term)
-                      (unless (eq 2 (mu::length term))
+                      (unless (eq 2 (mu:length term))
                         (raise "is not a legal term (lambda)" term))
                       (let ((sym (nth 0 term)) (value (nth 1 term)))
                         (unless (and (symbolp sym) (null (keywordp sym)))
@@ -92,7 +92,7 @@
           (reqs (llist)
             (mu:block ()
              (let ((required ()))
-               (mu::mapl
+               (mu:mapl
                 (:lambda (l)
                   (let ((sym (car l)) (rest (cdr l)))
                      (when (keywordp sym) (mu:return (cons required l)))
@@ -112,7 +112,7 @@
           (rest (llist)
             (cond
               ((or (null (eq (car llist) :rest)) (null llist)) (cons () llist))
-              (:t (unless (eq 2 (mu::length llist))
+              (:t (unless (eq 2 (mu:length llist))
                     (raise "excess elements (lambda)" llist))
                   (let ((sym (nth 1 llist)))
                     (unless (and (symbolp sym) (null (keywordp sym)))
@@ -153,35 +153,35 @@
   (list :defsym name (list* :macro lambda body))))
 
 (:defsym letrec (:macro (bindl :rest body)
-  (let ((names (mu::mapcar
+  (let ((names (mu:mapcar
                  (:lambda (phrase)
                    (nth 0 phrase))
                  bindl))
-        (letqs (mu::mapcar
+        (letqs (mu:mapcar
                  (:lambda (phrase)
                    (list :letq
                          (nth 0 phrase)             
                          (list* :lambda (nth 1 phrase) (nthcdr 2 phrase))))
                    bindl))
-        (closures (mu::mapcar
+        (closures (mu:mapcar
                     (:lambda (phrase)
                       (list :letq
                         (nth 0 phrase)
                         (list 'closure (nth 0 phrase))))
                     bindl))
-        (args (mapcar-1 (:lambda (phrase)) bindl)))
+        (args (mu:mapcar (:lambda (phrase)) bindl)))
 
-    (list 'mu::apply
+    (list 'mu:apply
           (list* :lambda names (append letqs closures body))
           (list :quote args)))))
 
 ;;; strings accessor
 (defun schar (string index)
-  (mu::vector-ref string index))
+  (mu:vector-ref string index))
 
 ;;; stringp - string predicate
 (defun stringp (object)
-  (and (vectorp object) (eq (mu::vector-type object) :char)))
+  (and (vectorp object) (eq (mu:vector-type object) :char)))
 
 ;;; string - string coercion
 (defun string (object)
@@ -195,25 +195,25 @@
 (defun string= (str1 str2)
   (unless (stringp str1) (raise "is not a string (string=)" str1))
   (unless (stringp str2) (raise "is not a string (string=)" str2))
-  (when (eq (mu::vector-length str1) (mu::vector-length str2))
-    (let ((nth 0) (len (mu::vector-length str1)))
+  (when (eq (mu:vector-length str1) (mu:vector-length str2))
+    (let ((nth 0) (len (mu:vector-length str1)))
       (letf ((inc ()
         (cond
          ((eq nth len) :t)
-         ((eq (mu::vector-ref str1 nth) (mu::vector-ref str2 nth))
+         ((eq (mu:vector-ref str1 nth) (mu:vector-ref str2 nth))
           (:letq nth (fixnum+ 1 nth))
           inc)
          (:t :nil))))
-            (mu::trampoline inc)))))
+            (mu:trampoline inc)))))
 
 ;;; vector - coerce list to vector
 (defun vector (type :rest list)
-  (mu::list-to-vector type list))
+  (mu:list-to-vector type list))
 
 ;;; vector-to-list - make a list from vector
 (defun vector-to-list (vector)
   (let ((lst :nil))
-    (mu::vector-mapc
+    (mu:vector-mapc
      (:lambda (el) (:letq lst (cons el lst)))
      vector)
     (foldl (:lambda (x r) (cons r x)) () lst)))
@@ -235,8 +235,8 @@
                             (cond
                              ((eq fx 0) :nil)
                              (:t (radixf (fixnum/ fx radix))
-                                 (write-char (mu::vector-ref digits
-                                                         (logand fx (fixnum- radix 1)))
+                                 (write-char (mu:vector-ref digits
+                                                            (logand fx (fixnum- radix 1)))
                                              out)))))
                    (if (eq fix 0)
                        "0"
@@ -257,18 +257,18 @@
                     ((eq dir #\~) (write-char #\~ dest) (loop args))
                     ((eq dir #\%) (terpri dest) (loop args))
                     (:t (cond
-                         ((eq dir #\A) (mu::print (car args) dest :nil))
-                         ((eq dir #\C) (mu::print (car args) dest :nil))
-                         ((eq dir #\S) (mu::print (car args) dest :t))
+                         ((eq dir #\A) (mu:print (car args) dest :nil))
+                         ((eq dir #\C) (mu:print (car args) dest :nil))
+                         ((eq dir #\S) (mu:print (car args) dest :t))
                          ((eq dir #\X) (let ((fix (car args)))
                                          (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
-                                         (mu::print (radix-string 16 fix) dest :nil)))
+                                         (mu:print (radix-string 16 fix) dest :nil)))
                          ((eq dir #\D) (let ((fix (car args)))
                                          (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
-                                         (mu::print (radix-string 10 fix) dest :nil)))
+                                         (mu:print (radix-string 10 fix) dest :nil)))
                          ((eq dir #\O) (let ((fix (car args)))
                                          (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
-                                         (mu::print (radix-string 8 fix) dest :nil)))
+                                         (mu:print (radix-string 8 fix) dest :nil)))
                          ((eq dir #\W) (print-unreadable (car args) dest)))
                         (loop (cdr args))))))
                 (:t (write-char ch dest) (loop args))))))
@@ -276,29 +276,29 @@
 
 ;;; room
 (defun room (:rest args)
-  (unless (fixnum< (mu::length args) 2) (raise "one optional argument (room)" args))
+  (unless (fixnum< (mu:length args) 2) (raise "one optional argument (room)" args))
   (let* ((opt (car args))
          (type-info (mu::heap-view :t))
-         (size (mu::vector-ref type-info 0))
-         (nbytes (mu::vector-ref type-info 1))
-         (nalloc (mu::vector-ref type-info 2))
-         (nfree (mu::vector-ref type-info 3)))
+         (size (mu:vector-ref type-info 0))
+         (nbytes (mu:vector-ref type-info 1))
+         (nalloc (mu:vector-ref type-info 2))
+         (nfree (mu:vector-ref type-info 3)))
     
     (cond
      ((or (null args) (eq :default opt)) :t)
      ((eq opt :t)
-        (mu::mapc
+        (mu:mapc
           (:lambda (type)
              (let*
                  ((type-info (mu::heap-view type))
-                  (size (mu::vector-ref type-info 0))
-                  (nbytes (mu::vector-ref type-info 1))
-                  (nalloc (mu::vector-ref type-info 2))
-                  (nfree (mu::vector-ref type-info 3)))
+                  (size (mu:vector-ref type-info 0))
+                  (nbytes (mu:vector-ref type-info 1))
+                  (nalloc (mu:vector-ref type-info 2))
+                  (nfree (mu:vector-ref type-info 3)))
                (unless (eq nbytes 0)
                  (fmt :t "~A (object size: ~A), bytes used ~A, objects allocated ~A, bytes free ~A~%"
                       type size nbytes nalloc nfree))))
-          '(:t :cons :except :func :macro :namespc :stream :string :struct :symbol :vector)))
+          '(:t :cons :condtn :func :macro :namespc :stream :string :struct :symbol :vector)))
      ((null opt)
       (fmt :t "heap: bytes used ~A, objects allocated ~A, bytes free ~A~%"
            nbytes nalloc nfree))
@@ -328,11 +328,11 @@
                       (list stop-time (list now-secs))
                       (list stop-room (list 'mu::heap-view :t))
                       (list start-used
-                            (list 'fixnum- (list 'mu::vector-ref start-room 1)
-                                           (list 'mu::vector-ref start-room 3)))
+                            (list 'fixnum- (list 'mu:vector-ref start-room 1)
+                                           (list 'mu:vector-ref start-room 3)))
                       (list stop-used
-                            (list 'fixnum- (list 'mu::vector-ref stop-room 1)
-                                           (list 'mu::vector-ref stop-room 3))))
+                            (list 'fixnum- (list 'mu:vector-ref stop-room 1)
+                                           (list 'mu:vector-ref stop-room 3))))
           (list 'fmt :t "Evaluation:~%")
           (list 'fmt :t "  ~A seconds of real time~%" (list 'float- stop-time start-time))
           (list 'fmt :t "  ~A bytes consed~%" (list 'fixnum- stop-used start-used))
@@ -343,7 +343,7 @@
   (let ((typesym (gensym)))
     (list* (list 'let (list (list typesym (list 'type-of keyform)))
       (list* 'cond 
-             (mu::mapcar
+             (mu:mapcar
               (:lambda (clause)
                 (if (consp clause)
                   (list* (list 'eq (car clause) typesym) (cdr clause))
@@ -362,7 +362,7 @@
           (foldl
            (:lambda (acc def)
               (unless (listp def) (raise "slot definition is not a list (defstruct)" def))
-              (unless (eq (mu::length def) 3) (raise "malformed slot definition (defstruct)" def))
+              (unless (eq (mu:length def) 3) (raise "malformed slot definition (defstruct)" def))
               (unless (symbolp (nth 0 def)) (raise "slot name is not a symbol (defstruct)" (nth 0 def)))
               (unless (keywordp (nth 2 def)) (raise "slot type is not a keyword (defstruct)" (nth 2 def)))
               (acons (nth 0 def) (cdr def) acc))
@@ -376,17 +376,17 @@
                    ;; values '(slot-name slot-value ...)
                    ;; if slot-name is in the values list, bind it to eval'd slot-value
                    ;; if not, bind it to eval'd init value from slot-def-alist
-                   (when (logand (mu::length values) 1)
+                   (when (logand (mu:length values) 1)
                      (raise "ill-formed struct initializer (defstruct)" values))
                    (let ((values-alist
                            (foldl
                              (:lambda (acc acons) (if (null acons) acc (cons acons acc)))
                              ()
-                             (mu::maplist
+                             (mu:maplist
                               (:lambda (cdr)
-                                (when (evenp (mu::length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
+                                (when (evenp (mu:length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
                               values))))
-                     (mu::mapcar
+                     (mu:mapcar
                       (:lambda (def)
                         (let ((value (assq (car def) values-alist)))
                           (cons (car def) (eval (if (null value) (nth 0 (cdr def)) value)))))
@@ -408,7 +408,7 @@
          ;; (:defsym {struct-name}-{slot-name}
          ;;   (closure (:lambda (struct) (assq {struct-name} (struct-values struct)) ...)))
          (readers
-           (mu::mapcar
+           (mu:mapcar
              (:lambda (def)      
                (list :defsym
                  (read (open-input-string (fmt :nil "~A-~A" struct-name (car def))))
@@ -429,16 +429,16 @@
     (let* ((body-stream (open-output-string ""))
            (body-vstream (open-output-string ""))
            (body-string
-            (progn (mu::print body body-stream :t)
-                   (mu::print (vector-to-list (get-output-stream-string body-stream)) body-vstream :t)
+            (progn (mu:print body body-stream :t)
+                   (mu:print (vector-to-list (get-output-stream-string body-stream)) body-vstream :t)
                    (read (open-input-string (get-output-stream-string body-vstream))))))
       (list 'let (list (list '%namespace% ns))
-            (list 'mu::mapc 'eval
+            (list 'mu:mapc 'eval
                   (list 'read (list 'open-input-string
-                                    (list 'mu::list-to-vector :char (list :quote body-string)))))))))
+                                    (list 'mu:list-to-vector :char (list :quote body-string)))))))))
 
 ;;; while bouncing on a trampoline
 (defmacro while (test :rest body)
   (list 'letf (list (list 'whilef ()
     (list 'when test (list (list* :lambda () body)) 'whilef)))
-      (list 'mu::trampoline 'whilef)))
+      (list 'mu:trampoline 'whilef)))

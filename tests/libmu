@@ -59,13 +59,13 @@
 (make-symbol "abc");abc
 (nth 0 '(1 2 3));1
 (nthcdr 0 '(1 2 3));(1 2 3)
-(eq apply mu::apply);:t
-(functionp mu::apply);:t
+(eq apply mu:apply);:t
+(functionp apply);:t
 (functionp mu::block);:t
 (functionp mu::clocks);:t
 (functionp mu::frame-ref);:t
 (functionp mu::letq);:t
-(functionp mu::print);:t
+(functionp print);:t
 (functionp mu::return);:t
 (functionp :t);:nil
 (functionp accept-socket-stream);:t
@@ -129,7 +129,7 @@
 (functionp mapcar);:t
 (functionp mapl);:t
 (functionp maplist);:t
-(functionp mu::apply);:t
+(functionp apply);:t
 (functionp namespacep);:t
 (functionp ns);:t
 (functionp ns-import);:t

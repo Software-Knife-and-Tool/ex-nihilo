@@ -162,7 +162,7 @@
 
 ;;; append
 (:defsym append (:lambda (:rest lists)
-  (mu::mapl
+  (mu:mapl
    (:lambda (l)
             (and (atom (car l)) (cdr l) (raise "is not a list" (car l))))
    lists)

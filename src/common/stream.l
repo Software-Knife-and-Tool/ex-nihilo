@@ -1,9 +1,9 @@
 ;;; print newline, then object 
-(defun print (obj :rest args)
+(defun common:print (obj :rest args)
   (let ((stream
          (cond
           ((null args) standard-output)
-          ((eq (mu::length args) 1)
+          ((eq (mu:length args) 1)
              (if (null (car args))
                standard-output
                (car args)))
@@ -18,13 +18,13 @@
   (let ((stream
          (cond
           ((null args) standard-output)
-          ((eq (mu::length args) 1)
+          ((eq (mu:length args) 1)
              (if (null (car args))
                standard-output
                (car args)))
           (:t (error "improper argument list (prin1)" args)))))
     (cond
-     ((streamp stream) (mu::print obj stream :t))
+     ((streamp stream) (mu:print obj stream :t))
      (:t (error "is not a stream (prin1)" stream)))
   obj))
 
@@ -33,26 +33,26 @@
   (let ((stream
          (cond
           ((null args) standard-output)
-          ((eq (mu::length args) 1)
+          ((eq (mu:length args) 1)
              (if (null (car args))
                standard-output
                (car args)))
           (:t (error "improper argument list (princ)" args)))))
     (cond
-     ((streamp stream) (mu::print obj stream :nil))
+     ((streamp stream) (mu:print obj stream :nil))
      (:t (error "is not a stream (princ)" stream)))
   obj))
 
 ;;; prin1-to-string object
 (defun prin1-to-string (obj)
   (let ((stream (open-output-string "")))
-    (mu::print obj stream :t)
+    (mu:print obj stream :t)
     (get-output-string-stream stream)))
 
 ;;; princ-to-string object
 (defun princ-to-string (obj)
   (let ((stream (open-output-string "")))
-    (mu::print obj stream :nil)
+    (mu:print obj stream :nil)
     (get-output-string-stream stream)))
 
 ;;; read-from-string string

@@ -58,8 +58,8 @@
                                         spacer
                                         (describe-object (symbol-value object) (fixnum+ depth 1))))
                  ((stringp object) (fmt :nil "~A~S is a ~A string of length ~A (@~X)~%"
-                                        spacer object (if (fixnum< (mu::vector-length object) 8) "immediate" "heap") (mu::vector-length object) tagptr))
-                 ((vectorp object) (fmt :nil "~A~S is a ~A :vector of length ~A (@~X)~%" spacer object (svtype object) (mu::vector-length object) tagptr))
+                                        spacer object (if (fixnum< (mu:vector-length object) 8) "immediate" "heap") (mu::vector-length object) tagptr))
+                 ((vectorp object) (fmt :nil "~A~S is a ~A :vector of length ~A (@~X)~%" spacer object (mu:vector-type object) (mu:vector-length object) tagptr))
                  ((fixnump object) (fmt :nil "~A~S is a fixnum (@~X)~%" spacer object tagptr))
                  ((floatp object) (fmt :nil "~A~S is a float (@~X)~%" spacer object tagptr))
                  ((consp object) (fmt :nil "~A~S is a cons (@~X)~%" spacer object tagptr))
@@ -92,7 +92,7 @@
 ;;; break loop
 (defun break (ex)
   (let ((env (mu::env-view)))
-    (when (eq (type-of ex) :except)
+    (when (eq (type-of ex) :condtn)
       (let* ((ex-view (view ex))
              (tag (mu::vector-ref ex-view 3))
              (source (mu::vector-ref ex-view 4))
@@ -135,7 +135,7 @@
             (fmt :t ":e - condition details~%"))
            ((eq sexpr :c) (return :t))
            ((eq sexpr :e)
-            (when (eq (type-of ex) :except)
+            (when (eq (type-of ex) :condtn)
               (let* ((ex-view (view ex))
                      (tag (mu::vector-ref ex-view 3))
                      (source (mu::vector-ref ex-view 4))
