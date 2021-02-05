@@ -8,7 +8,7 @@
   (letf* ((inits (llist)
            (let ((terms ()))
              (mu:block ()
-               (mu::mapl
+               (mu:mapl
                 (:lambda (l)
                   (let ((term (car l)) (rest (cdr l)))
                     (when (keywordp term) (mu:return (cons terms l)))
@@ -31,7 +31,7 @@
           (reqs (llist)
             (mu:block ()
              (let ((required ()))
-               (mu::mapl
+               (mu:mapl
                 (:lambda (l)
                   (let ((sym (car l)) (rest (cdr l)))
                      (when (keywordp sym) (mu:return (cons required l)))

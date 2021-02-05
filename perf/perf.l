@@ -1,6 +1,6 @@
 ;;; time macro
 (defmacro perf-time (form)
-  (let ((now (:lambda () (mu::vector-ref (mu::env-view) 3)))
+  (let ((now (:lambda () (mu:vector-ref (mu::env-view) 3)))
         (now-usecs (gensym))
         (start-time (gensym))
         (start-room (gensym))
@@ -17,11 +17,11 @@
                       (list stop-time (list now))
                       (list stop-room (list 'mu::heap-view :t))
                       (list start-used
-                            (list 'fixnum- (list 'mu::vector-ref start-room 1)
-                                           (list 'mu::vector-ref start-room 3)))
+                            (list 'fixnum- (list 'mu:vector-ref start-room 1)
+                                           (list 'mu:vector-ref start-room 3)))
                       (list stop-used
-                            (list 'fixnum- (list 'mu::vector-ref stop-room 1)
-                                           (list 'mu::vector-ref stop-room 3))))
+                            (list 'fixnum- (list 'mu:vector-ref stop-room 1)
+                                           (list 'mu:vector-ref stop-room 3))))
 
           (list 'cons (list 'fixnum- stop-time start-time) (list 'fixnum- stop-used start-used)))))
 
@@ -29,8 +29,8 @@
 (defun perf-report (log)
   (let* ((functions '("mu:foldl"
                       "mu:foldr"
-                      "mu::mapcar"
-                      "mu::mapc"
+                      "mu:mapcar"
+                      "mu:mapc"
                       "core.schar"
                       "core.stringp"
                       "core.string="
@@ -38,15 +38,15 @@
                       "core.vector-to-list"))
          (rep (:lambda (log which)
            (let ((log-temp (fmt :nil "~A.tmp" log)))
-             (system (fmt :nil "echo \"(\" > ~A" log-temp))
+             (mu::system (fmt :nil "echo \"(\" > ~A" log-temp))
              (if (null which)
-                 (system (fmt :nil "cat ~A >> ~A" log log-temp))
-               (system (fmt :nil "grep ~A ~A >> ~A" which log log-temp)))
-             (system (fmt :nil "echo \")\" >> ~A" log-temp))
+                 (mu::system (fmt :nil "cat ~A >> ~A" log log-temp))
+               (mu::system (fmt :nil "grep ~A ~A >> ~A" which log log-temp)))
+             (mu::system (fmt :nil "echo \")\" >> ~A" log-temp))
   
              (let* ((logf (open-input-file log-temp))
                     (times (read logf))
-                    (ntimes (mu::length times))
+                    (ntimes (mu:length times))
                     (sums
                      (mu:foldl
                       (:lambda (acc el)
@@ -55,7 +55,7 @@
                       (cons 0 0)
                       times)))
                (close logf)
-               (system (fmt :nil "rm ~A" log-temp))
+               (mu::system (fmt :nil "rm ~A" log-temp))
                (cons
                 (car (truncate (car sums) 2500))
                 (car (truncate (cdr sums) 2500)))))))
@@ -65,5 +65,5 @@
                 (nused (car stats))
                 (secs (cdr stats)))
              (fmt :t "~A: ~A ~A~%" which nused secs)))))
-    (mu::mapc (:lambda (fn) (stat fn)) functions))
+    (mu:mapc (:lambda (fn) (stat fn)) functions))
     ())

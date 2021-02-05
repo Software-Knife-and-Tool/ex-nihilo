@@ -19,7 +19,7 @@
            (cond
             ((zerop (length str)) :nil)
             (:t (block :nil
-                  (mu::vector-mapc
+                  (mu:vector-mapc
                    (:lambda (ch)
                      (when (null (find-in ch "0123456789")) (return :nil)))
                    str)

@@ -17,9 +17,9 @@ release:
 		 -l core.l					\
 		 -l gc.l					\
 		 -l map.l 					\
-		 -q "(exit 0)" >> $(TMP)/base.$$PPID.log;	\
+		 -q "(mu::exit 0)" >> $(TMP)/base.$$PPID.log;	\
 	done
-	@core -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(exit 0)" > release.perf
+	@core -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(mu::exit 0)" > release.perf
 	@rm -f $(TMP)/base.$$PPID.log
 
 base:
@@ -29,9 +29,9 @@ base:
 		 -l core.l					\
 		 -l gc.l					\
 		 -l map.l 					\
-		 -q "(exit 0)" >> $(TMP)/base.$$PPID.log;	\
+		 -q "(mu::exit 0)" >> $(TMP)/base.$$PPID.log;	\
 	done
-	@core -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(exit 0)" > base.perf
+	@core -l perf.l -q "(perf-report \"$(TMP)/base.$$PPID.log\")" -q "(mu::exit 0)" > base.perf
 	@rm -f $(TMP)/base.$$PPID.log
 
 diff:

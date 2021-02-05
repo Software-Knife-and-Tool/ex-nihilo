@@ -79,11 +79,11 @@
     (:t (raise "is not a sequence (count-if)" sequence))))
 
 ;;; length - length of sequence
-(defun length (sequence)
+(defun common:length (sequence)
   (typecase sequence
     (:null 0)
-    (:string (mu::vector-length sequence))        
-    (:vector (mu::vector-length sequence))
+    (:string (mu:vector-length sequence))        
+    (:vector (mu:vector-length sequence))
     (:cons (mu:length sequence))
     (:t (raise "is not a sequence (length)" sequence))))
 
@@ -93,11 +93,11 @@
   (when (fixnum< index 0) (raise "is a negative fixnum (elt)" index))
   (typecase sequence
     (:vector
-     (unless (fixnum< index (mu::vector-length sequence))
+     (unless (fixnum< index (mu:vector-length sequence))
        (raise "index out of range (elt)" index))
      (mu::vector-ref sequence index))
     (:cons
-     (unless (fixnum< index (mu::length sequence))
+     (unless (fixnum< index (mu:length sequence))
        (raise "index out of range (elt)" index))
      (nth index sequence))
     (:t (raise "is not a sequence (elt)" sequence))))
@@ -108,7 +108,7 @@
   (block :nil
     (cond
       ((vectorp sequence)
-       (mu::vector-mapc
+       (mu:vector-mapc
         (:lambda (el) (when (predicate el) (return el)))
         sequence))
       ((listp sequence)
@@ -126,7 +126,7 @@
      (:lambda (sequence)
        (cond
         ((vectorp sequence)
-         (mu::vector-mapc
+         (mu:vector-mapc
           (:lambda (el) (when (predicate el) (return el)))
           sequence))
         ((listp sequence)

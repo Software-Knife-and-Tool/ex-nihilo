@@ -46,7 +46,7 @@ auto Condition::GcMark(Env* env, Tag condition) -> void {
 auto Condition::ViewOf(Env* env, Tag ex) -> Tag {
   assert(IsType(ex));
 
-  auto view = std::vector<Tag>{Symbol::Keyword("except"),
+  auto view = std::vector<Tag>{Symbol::Keyword("condtn"),
                                ex,
                                Fixnum(ToUint64(ex) >> 3).tag_,
                                tag(ex),
