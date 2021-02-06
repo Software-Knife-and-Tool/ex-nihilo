@@ -4,6 +4,7 @@
 BUILD = ../build
 GYRE = ../src/gyre
 CORE = ../src/core
+SVG = ../src/svg
 COMMON = ../src/common
 COMPILER = ../src/gyre/compiler
 DEST = gyre
@@ -31,6 +32,7 @@ release:
 	@install -d $(DEST)/src/gyre/compiler/emit
 	@install -d $(DEST)/src/gyre/compiler/form
 	@install -d $(DEST)/src/gyre/compiler/opt
+	@install -d $(DEST)/src/svg
 	@install -m 755 ../dist/common.sh $(DEST)/bin/common
 	@install -m 755 ../dist/core.sh $(DEST)/bin/core
 	@install -m 755 ../dist/gyre.sh $(DEST)/bin/gyre
@@ -39,6 +41,7 @@ release:
 	@install -m 644 $(BUILD)/libmu.a $(DEST)/lib
 	@install -m 644 $(BUILD)/libmu.so $(DEST)/lib
 	@install -m 644 $(GYRE)/*.l $(DEST)/src/gyre
+	@install -m 644 $(SVG)/*.l $(DEST)/src/svg
 	@install -m 644 $(CORE)/*.l $(DEST)/src/core
 	@install -m 644 $(COMMON)/*.l $(DEST)/src/common
 	@install -m 644 $(COMPILER)/*.l $(DEST)/src/gyre/compiler

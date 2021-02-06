@@ -153,7 +153,6 @@
     img.drawDragon(t, depth - 1, -45.0, step);
     t.right(dir);
 }
-|#
 
 (defun dragon (svg order pc)
   (cond
@@ -185,3 +184,4 @@
 
 ((svg-close svg) svg)
 (system "open dragon.html")
+|#
