@@ -11,4 +11,3 @@
   (require gyre/repl "/src/gyre/repl.l")
   (require gyre/stream "/src/gyre/stream.l")
   (in-ns ns))
-

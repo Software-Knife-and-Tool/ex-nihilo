@@ -24,7 +24,7 @@
           (:lambda ()
             (let* ((hist (history-list))
                    (len (length hist)))    
-              (mu::mapl
+              (mu:mapl
                (:lambda (expr)                      
                         (fmt :t ":~A ~A~%"
                              (1- (fixnum- len (length (cdr expr))))
