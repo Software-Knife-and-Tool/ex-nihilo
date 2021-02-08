@@ -1,5 +1,5 @@
 ;;;
-;;; ast
+;;; asm
 ;;;
 
 #| gyre syntax
@@ -10,5 +10,5 @@
   (:scall form)
 |#
 
-(defun ast (src)
+(defun asm (src)
   (gyre:read src))

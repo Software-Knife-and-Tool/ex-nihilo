@@ -11,9 +11,9 @@
                                         (when (and (boundp sym) (eq fn (symbol-value sym)))
                                           (return (symbol-name sym))))))
                                 (block :nil
-                                       (mu::mapc mapfn (ns-symbols (current-ns)))
-                                       (mu::mapc mapfn (ns-symbols (find-ns "canon")))
-                                       (mu::mapc mapfn (ns-symbols (find-ns "mu")))
+                                       (mu:mapc mapfn (ns-symbols (current-ns)))
+                                       (mu:mapc mapfn (ns-symbols (find-ns "canon")))
+                                       (mu:mapc mapfn (ns-symbols (find-ns "mu")))
                                        ":lambda")))))
              (typecase sexpr
                (:null "()")
@@ -40,8 +40,8 @@
     (letf ((describe-object (object depth)
               (let* ((spacer (shim depth))
                      (view (view object))
-                     (type (mu::vector-ref view 0))
-                     (tagptr (mu::vector-ref view 2)))
+                     (type (mu:vector-ref view 0))
+                     (tagptr (mu:vector-ref view 2)))
                      
                 (cond
                  ((keywordp object) (fmt :nil "~A~S is an immediate keyword symbol @~X~%" spacer object tagptr))
@@ -76,15 +76,15 @@
                        spacer
                        (pprint object :nil)
                        spacer
-                       (mu::vector-ref view 7)
+                       (mu:vector-ref view 7)
                        spacer
-                       (mu::vector-ref view 6)
+                       (mu:vector-ref view 6)
                        spacer
-                       (mu::vector-ref view 3)
+                       (mu:vector-ref view 3)
                        spacer
-                       (mu::vector-ref view 5)
+                       (mu:vector-ref view 5)
                        spacer
-                       (mu::vector-ref view 8)))
+                       (mu:vector-ref view 8)))
                  (:t (fmt :nil "~Aundecoded ~W type-of ~A (@~X)~%" spacer object (type-of object) tagptr))))))
           (mu::print (describe-object object 0) :nil :nil)))
     :nil)
@@ -94,10 +94,10 @@
   (let ((env (mu::env-view)))
     (when (eq (type-of ex) :condtn)
       (let* ((ex-view (view ex))
-             (tag (mu::vector-ref ex-view 3))
-             (source (mu::vector-ref ex-view 4))
-             (reason (mu::vector-ref ex-view 5))
-             (frame (mu::vector-ref ex-view 6)))
+             (tag (mu:vector-ref ex-view 3))
+             (source (mu:vector-ref ex-view 4))
+             (reason (mu:vector-ref ex-view 5))
+             (frame (mu:vector-ref ex-view 6)))
         (fmt :t "break loop invoked with ")
         (cond       
          ((eq tag :arith) (fmt :t "arithmetic-error~%"))
@@ -123,11 +123,11 @@
          ((eq tag :zerodiv) (fmt :t "arithmetic error division-by-zero~%"))
          (:t (fmt :t "undecoded-condition-type~%")))
         (fmt :t ":p for help~%~%")
-        (fmt :t "    ~A (~A . ~A)~%" reason (mu::vector-ref frame 1) (mu::vector-ref frame 3))))
+        (fmt :t "    ~A (~A . ~A)~%" reason (mu:vector-ref frame 1) (mu:vector-ref frame 3))))
 
     (block :nil
       (while (null (eofp :t))
-        (let ((sexpr (progn (fmt :t "break> ") (read :t))))
+        (let ((sexpr (progn (fmt :t "break> ") (mu:read :t))))
           (cond
            ((eq sexpr :p) (fmt :t ":p - this message~%")
             (fmt :t ":c - continue~%")
@@ -137,26 +137,26 @@
            ((eq sexpr :e)
             (when (eq (type-of ex) :condtn)
               (let* ((ex-view (view ex))
-                     (tag (mu::vector-ref ex-view 3))
-                     (source (mu::vector-ref ex-view 4))
-                     (frame (mu::vector-ref ex-view 6))
-                     (reason (mu::vector-ref ex-view 5)))
+                     (tag (mu:vector-ref ex-view 3))
+                     (source (mu:vector-ref ex-view 4))
+                     (frame (mu:vector-ref ex-view 6))
+                     (reason (mu:vector-ref ex-view 5)))
                 (fmt :t "condition: ~A~%" ex)
                 (fmt :t "      tag: ~A~%" tag)
                 (fmt :t "   source: ~A~%" (pprint source :nil))
                 (fmt :t "   reason: ~A~%" reason)
                 (fmt :t "    frame: ~A~%" frame)
                 (fmt :t "           ~A~%"
-                     (cons (pprint (mu::vector-ref frame 1) :nil) (mu::vector-ref frame 3))))))
+                     (cons (pprint (mu:vector-ref frame 1) :nil) (mu:vector-ref frame 3))))))
            ((eq sexpr :b)
-            (let* ((stack (mu::vector-ref env 5)))
+            (let* ((stack (mu:vector-ref env 5)))
               (fmt :t "backtrace:~%")
-              (mu::mapc
+              (mu:mapc
                (:lambda (el)
-                  (let ((function (mu::vector-ref el 1))
-                        (nargs (mu::vector-ref el 2))
-                        (argl (mu::vector-ref el 3))
-                        (frame-id (mu::vector-ref el 4)))
+                  (let ((function (mu:vector-ref el 1))
+                        (nargs (mu:vector-ref el 2))
+                        (argl (mu:vector-ref el 3))
+                        (frame-id (mu:vector-ref el 4)))
                     (if (null argl)
                         (fmt :t "  (~A)~%" function)
                       (fmt :t "  (~A ~A)~%" function argl))))

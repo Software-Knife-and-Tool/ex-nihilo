@@ -95,7 +95,7 @@
     (:vector
      (unless (fixnum< index (mu:vector-length sequence))
        (raise "index out of range (elt)" index))
-     (mu::vector-ref sequence index))
+     (mu:vector-ref sequence index))
     (:cons
      (unless (fixnum< index (mu:length sequence))
        (raise "index out of range (elt)" index))
@@ -112,7 +112,7 @@
         (:lambda (el) (when (predicate el) (return el)))
         sequence))
       ((listp sequence)
-       (mu::mapc
+       (mu:mapc
         (:lambda (el) (when (predicate el) (return el)))
           sequence))
       (:t (raise "is not a sequence (find-if)" sequence)))
@@ -130,7 +130,7 @@
           (:lambda (el) (when (predicate el) (return el)))
           sequence))
         ((listp sequence)
-         (mu::mapc
+         (mu:mapc
           (:lambda (el) (when (predicate el) (return el)))
           sequence))
         (:t (raise "is not a sequence (find-if)" sequence)))
