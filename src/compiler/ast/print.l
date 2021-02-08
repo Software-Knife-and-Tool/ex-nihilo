@@ -1,4 +1,4 @@
-(defun gyre:print (form level)
+(defun compiler:print (form level)
   (let* ((spaces
           (:lambda (l)
             (cond

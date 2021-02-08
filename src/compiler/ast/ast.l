@@ -11,4 +11,4 @@
 |#
 
 (defun ast (src)
-  (gyre:read src))
+  (compiler:read src))
