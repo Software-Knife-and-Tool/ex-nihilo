@@ -28,6 +28,7 @@ release:
 	@install -d $(DEST)/src/core
 	@install -d $(DEST)/src/common
 	@install -d $(DEST)/src/gyre/compiler
+	@install -d $(DEST)/src/gyre/compiler/asm
 	@install -d $(DEST)/src/gyre/compiler/ast
 	@install -d $(DEST)/src/gyre/compiler/emit
 	@install -d $(DEST)/src/gyre/compiler/form
@@ -45,6 +46,7 @@ release:
 	@install -m 644 $(CORE)/*.l $(DEST)/src/core
 	@install -m 644 $(COMMON)/*.l $(DEST)/src/common
 	@install -m 644 $(COMPILER)/*.l $(DEST)/src/gyre/compiler
+	@install -m 644 $(COMPILER)/asm/*.l $(DEST)/src/gyre/compiler/asm
 	@install -m 644 $(COMPILER)/ast/*.l $(DEST)/src/gyre/compiler/ast
 	@install -m 644 $(COMPILER)/emit/*.l $(DEST)/src/gyre/compiler/emit
 	@install -m 644 $(COMPILER)/form/*.l $(DEST)/src/gyre/compiler/form
