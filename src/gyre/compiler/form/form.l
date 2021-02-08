@@ -43,7 +43,7 @@
              (:t (error "atom: what is youp" expr)))))
          (funcall
           (:lambda (form)
-              (fmt :t "funcall: form ~A~%" form)
+              ;;; (fmt :t "funcall: form ~A~%" form)
               (let ((fn (car form))
                     (args (cdr form)))
                 (cond
@@ -58,7 +58,7 @@
                   (fmt :t "funcall:symbol: (~A . ~A)~%" fn args)
                   (compile-form fn)
                   (mapc compile-form args))
-                 ((and (consp fn) (eq :list (car fn)))
+                 ((and (consp fn) (listp (car fn)))
                   (fmt :t "funcall:cons: (~A . ~A)~%" fn args)
                   (compile-form fn)
                   (mapc compile-form args))
