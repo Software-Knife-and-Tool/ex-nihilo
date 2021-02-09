@@ -25,7 +25,7 @@
       (let ((fnc (assq fn folds)))
         (when fnc (apply fnc args))))))
 
-(defun gyre:reduce (sexpr)
+(defun compiler:reduce (sexpr)
   (let ((funcall
         (:lambda (form)
           (let ((fn (car form))
