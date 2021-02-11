@@ -33,6 +33,7 @@ release:
 	@install -d $(DEST)/src/compiler/emit
 	@install -d $(DEST)/src/compiler/form
 	@install -d $(DEST)/src/compiler/opt
+	@install -d $(DEST)/src/compiler/reg-model
 	@install -d $(DEST)/src/svg
 	@install -m 755 ../dist/common.sh $(DEST)/bin/common
 	@install -m 755 ../dist/core.sh $(DEST)/bin/core
@@ -51,6 +52,7 @@ release:
 	@install -m 644 $(COMPILER)/emit/*.l $(DEST)/src/compiler/emit
 	@install -m 644 $(COMPILER)/form/*.l $(DEST)/src/compiler/form
 	@install -m 644 $(COMPILER)/opt/*.l $(DEST)/src/compiler/opt
+	@install -m 644 $(COMPILER)/reg-model/*.l $(DEST)/src/compiler/reg-model
 	@install -m 644 $(LIBMU)/libmu.h $(DEST)/include/libmu
 	@install -m 644 $(LIBMU)/platform/platform.h $(DEST)/include/libmu/platform
 	@tar cfz $(DEST)-0.0.1.tgz $(DEST)
