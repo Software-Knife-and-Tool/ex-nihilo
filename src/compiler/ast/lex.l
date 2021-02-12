@@ -1,7 +1,7 @@
 ;;;
-;;; read
+;;; lexical analysis
 ;;;
-(defun compiler:read (src)
+(defun lex (src)
   (let* ((find-in (:lambda (ch str)
            (find-if (:lambda (el) (eq ch el)) str)))
          (syntax-type (:lambda (ch)
@@ -14,7 +14,7 @@
             ((find-in ch "ABCDEFGHIJKLMNOPQRSTUVWXYZ") 'constituent)
             ((find-in ch "0123456789") 'constituent)
             ((find-in ch "'();`\"") 'tmacro)
-            (:t (raise "read: syntax-type not mapped" ch)))))
+            (:t (raise "lex: syntax-type not mapped" ch)))))
          (fixp (:lambda (str)
            (cond
             ((zerop (length str)) :nil)
@@ -62,7 +62,7 @@
                 (cons :symbol token)))))
          ((eq (syntax-type ch) 'tmacro)      ;; quote/list/string/comment/backquote
           (cond
-           ((eq ch #\') (list :quote (compiler:read src)))
+           ((eq ch #\') (list :quote (lex src)))
            ((eq ch #\;) (comment src))
            ((eq ch #\`) :nil)
            ((eq ch #\")
@@ -75,10 +75,10 @@
                      (:t (princ ch str) :t))))
               (cons :string (get-output-string-stream str))))
            ((eq ch #\()                      ;; list/cons
-            (let ((el (compiler:read src)))
+            (let ((el (lex src)))
               (cond
                ((eq (car el) :eol) :nil)
-               (:t (list el (compiler:read src))))))
+               (:t (list el (lex src))))))
            ((eq ch #\)) (cons :eol :nil))
            (:t (raise "unimplemented terminating macro" ch) :nil)))
          ((eq (syntax-type ch) 'ntmacro)     ;; non-terminating macro
