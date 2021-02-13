@@ -8,7 +8,32 @@
 ;;;
 (in-ns (ns "core" (list (find-ns "mu"))))
 
-(:defsym core::version "0.0.1")
+(:defsym core::version "0.0.2")
+
+;;; assq/pairlis/acons
+(:defsym  assq (:lambda (item alist)
+  (unless (listp alist) (raise "is not a list (assq)" alist))
+  (mu:block :nil
+     (mu:mapc (:lambda (pair)
+       (when (eq item (car pair)) (mu:return (cdr pair))))
+       alist)
+     :nil)))
+
+(:defsym pairlis (:lambda (keys data)
+  (unless (listp keys) (raise "is not a list (pairlis)" keys))
+  (unless (listp data) (raise "is not a list (pairlis)" data))
+  (unless (eq (mu:length keys) (mu:length data))
+    (raise "unequal lengths (pairlis)" :nil))
+  (letf ((zip (l1 l2)
+              (if (or (null l1) (null l2))
+                  ()
+                (cons (cons (car l1) (car l2))
+                      (zip (cdr l1) (cdr l2))))))
+    (zip keys data))))
+
+(:defsym acons (:lambda (key datum alist)
+  (unless (listp alist) (raise "is not a list (acons)" alist))
+  (cons (cons key datum) alist)))
 
 ;;; quasiquote
 (set-macro-character #\`
@@ -353,10 +378,7 @@
 ;;; defstruct: immutable objects
 (defmacro defstruct (struct-name :rest struct-slot-defs)
   (unless (symbolp struct-name) (raise "is not a string (defstruct)" struct-name))
-  (let*
-      ((acons (:lambda (key datum alist)
-          (cons (cons key datum) alist)))
-       (slot-def-alist
+  (let* ((slot-def-alist
           ;; parse slot definitions and make an alist from them
           ;; (slot-name init-value type)
           (foldl

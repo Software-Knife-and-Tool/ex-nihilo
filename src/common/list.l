@@ -1,24 +1,3 @@
-;;; assq/pairlis/acons
-(defun assq (item alist)
-  (unless (listp alist) (raise "is not a list (assq)" alist))
-  (mu:block :nil
-     (mu:mapc (:lambda (pair)
-       (when (eq item (car pair)) (mu:return (cdr pair))))
-       alist)
-     :nil))
-
-(defun pairlis (keys data)
-  (unless (consp keys) (raise "is not a proper list (pairlis)" keys))
-  (unless (consp data) (raise "is not a proper list (pairlis)" data))
-  (unless (eq (mu:length keys) (mu:length data))
-    (raise "unequal lengths (pairlis)" :nil))
-  (letf ((zip (l1 l2)
-              (if (or (null l1) (null l2))
-                  ()
-                (cons (cons (car l1) (car l2))
-                      (zip (cdr l1) (cdr l2))))))
-    (zip keys data)))
-
 ;;; mapc
 (defun common:mapc (fn :rest lists)
   (mu:block ()
@@ -128,18 +107,29 @@
   (unless (listp list) (raise "is not a list (last)" list))
   (unless (fixnump n) (raise "is not a fixnum (last)" n))
   (when (fixnum< n 0) (raise "is not a positive fixnum (last)" n))
-  (block :nil
-    (cond
-     ((null list) ())
-     ((zerop n) ())
-     (:t ()))))
+  (cond
+   ((null list) ())
+   ((zerop n) ())
+   (:t
+    (block :nil
+      (letf ((last (n l)
+        (cond
+         ((eq n (mu:length list)) (return l))
+         (:t (last (fixnum+ n 1) (cdr l))))))
+        (last (fixnum- (fixnum- (mu:length list) n) 1) list))))))
 
 ;;; butlast
-(defun butlast (list)
+(defun butlast (list n)
   (unless (listp list) (raise "is not a list (butlast)" list))
   (unless (fixnump n) (raise "is not a fixnum (butlast)" n))
   (when (fixnum< n 0) (raise "is not a positive fixnum (butlast)" n))
   (cond
    ((null list) ())
-   ((zerop n) ())
-   (:t ())))
+   ((zerop n) list)
+   (:t
+    (block :nil
+      (letf ((last (n l ll)
+        (cond
+         ((eq n (mu:length list)) (return (reverse ll)))
+         (:t (last (fixnum+ n 1) (cdr l) (cons (car l) ll))))))
+        (last (fixnum- (fixnum- (mu:length list) n) 1) list ()))))))
