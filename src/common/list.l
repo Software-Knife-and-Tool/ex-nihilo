@@ -121,5 +121,25 @@
       (list 'block :nil (list 'mu:mapc bodyf list-form)))))
 
 ;;; copy-list
-(defun copy-list (list) (mu.mapcar identity list))
+(defun copy-list (list) (mu:mapcar identity list))
 
+;;; last
+(defun last (list n)
+  (unless (listp list) (raise "is not a list (last)" list))
+  (unless (fixnump n) (raise "is not a fixnum (last)" n))
+  (when (fixnum< n 0) (raise "is not a positive fixnum (last)" n))
+  (block :nil
+    (cond
+     ((null list) ())
+     ((zerop n) ())
+     (:t ()))))
+
+;;; butlast
+(defun butlast (list)
+  (unless (listp list) (raise "is not a list (butlast)" list))
+  (unless (fixnump n) (raise "is not a fixnum (butlast)" n))
+  (when (fixnum< n 0) (raise "is not a positive fixnum (butlast)" n))
+  (cond
+   ((null list) ())
+   ((zerop n) ())
+   (:t ())))

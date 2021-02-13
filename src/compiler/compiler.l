@@ -4,6 +4,12 @@
 (defconstant compiler::version "0.0.1")
 
 ;;;
+;;;
+;;;
+(defun open-tmp-file (prefix)
+  (open-output-file (concatenate :string prefix ".tmp")))
+          
+;;;
 ;;; compile-file
 ;;;
 (defun compile-file (src-path obj-path)
