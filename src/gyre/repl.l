@@ -7,6 +7,7 @@
   (fmt :t "gyre repl (:? for help)~%")
   (fmt :t "versions:~%")
   (fmt :t "  mu      : ~A~%" mu::version)
+  (fmt :t "  core    : ~A~%" core::version)
   (fmt :t "  gyre    : ~A~%" gyre::version)
   (fmt :t "  common  : ~A~%" common::version)
   (fmt :t "  compiler: ~A~%" compiler::version)

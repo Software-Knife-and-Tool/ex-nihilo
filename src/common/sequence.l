@@ -5,7 +5,7 @@
 ;;; reverse - reverse sequence
 (defun reverse (src)
   (cond
-   ((listp src) (mu.foldl (:lambda (x r) (cons r x)) () src))
+   ((listp src) (mu:foldl (:lambda (x r) (cons r x)) () src))
    ((vectorp src)
      (mu.vector (mu.vec-type src) (reverse (vector-to-list src))))
    (:t (raise "must be a sequence (reverse)" src))))
@@ -14,9 +14,9 @@
 (defun reduce (fn src init)
   (check-type fn :func "is not a function (reverse)")
   (cond
-   ((listp src) (mu.foldl fn init src))
+   ((listp src) (mu:foldl fn init src))
    ((vectorp src)
-     (mu.vector (mu.vec-type src) (reduce fn (vector-to-list src) init)))
+     (mu.vector (mu:vec-type src) (reduce fn (vector-to-list src) init)))
    (:t (raise "must be a sequence (reduce)" src))))
 
 ;;; concatenate - concatenate sequences
@@ -26,14 +26,14 @@
                    (cond
                     ((eq type :string)
                      (cond
-                      ((stringp src) (mu.vec-mapc (:lambda (el) (fmt cat-str "~A" el)) src))
-                      ((listp src) (mu.mapc
+                      ((stringp src) (mu:vector-mapc (:lambda (el) (fmt cat-str "~A" el)) src))
+                      ((listp src) (mu:mapc
                                     (:lambda (el)
                                              (if (charp el)
                                                  (fmt cat-str "~A" el)
                                                (raise "must be a character (concatenate)" el)))
                                              src))
-                      ((vectorp src) (mu.vec-mapc
+                      ((vectorp src) (mu:vector-mapc
                                       (:lambda (el)
                                                (if (charp el)
                                                    (fmt cat-str "~A" el)
@@ -42,29 +42,29 @@
                       (:t (raise "must be a character sequence (concatenate)" src))))
                      ((eq type :vector)
                       (cond
-                       ((vectorp src) (mu.vec-mapc (:lambda (el) (fmt cat-str "~A " el)) src))
-                       ((listp src) (mu.mapc (:lambda (el) (fmt cat-str "~A " el)) src))
+                       ((vectorp src) (mu:vector-mapc (:lambda (el) (fmt cat-str "~A " el)) src))
+                       ((listp src) (mu:mapc (:lambda (el) (fmt cat-str "~A " el)) src))
                        (:t (raise "must be a sequence (concatenate)" src))))
                      ((eq type :list)
                       (cond
-                       ((vectorp src) (mu.vec-mapc (:lambda (el) (fmt cat-str "~A " el)) src))
-                       ((listp src) (mu.mapc (:lambda (el) (fmt cat-str "~A " el)) src))
+                       ((vectorp src) (mu:vector-mapc (:lambda (el) (fmt cat-str "~A " el)) src))
+                       ((listp src) (mu:mapc (:lambda (el) (fmt cat-str "~A " el)) src))
                        (:t (raise "must be a sequence (concatenate)" src))))))))
     (cond
      ((eq type :list)
       (fmt cat-str "(")
-      (mu.mapc concat sequences)
+      (mu:mapc concat sequences)
       (fmt cat-str ")"))
      ((eq type :vector)
       (fmt cat-str "#(:t ")
-      (mu.mapc concat sequences)
+      (mu:mapc concat sequences)
       (fmt cat-str ")"))
      ((eq type :string)
       (fmt cat-str "\"")
-      (mu.mapc concat sequences)
+      (mu:mapc concat sequences)
       (fmt cat-str "\""))
      (:t (raise "is not a sequence type (concatenate)" type)))
-    (mu:read (open-input-string (get-output-string-stream cat-str)))))
+    (mu:read (open-input-string (get-output-stream-string cat-str)))))
 
 ;;; count-if (inefficient for very large sequences) 
 (defun count-if (predicate sequence)
@@ -122,7 +122,7 @@
 (defun find-if* (predicate :rest sequences)
   (check-type predicate :func "is not a function (find-in)")
   (block :nil
-    (mu.mapc
+    (mu:mapc
      (:lambda (sequence)
        (cond
         ((vectorp sequence)

@@ -1,7 +1,7 @@
 ;;;
 ;;; lambda compiler
 ;;;
-(defun gyre:lambda (llist body)
+(defun compiler:lambda (llist body)
   (let ((rewrite (:lambda (llist rest body))
                  (fmt :t "rewriting symbols ~A,~A in ~A~%" llist rest body)))
     (and (not (listp llist)) (raise "lambda: lambda list is not a list" llist))

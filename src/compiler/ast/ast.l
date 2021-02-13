@@ -11,4 +11,4 @@
 |#
 
 (defun ast (src)
-  (compiler:read src))
+  (compiler:lex src))

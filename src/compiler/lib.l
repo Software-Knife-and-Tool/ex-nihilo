@@ -8,6 +8,7 @@
   (require compiler/ast "/src/compiler/ast/lib.l")
   (require compiler/asm "/src/compiler/asm/lib.l")
   (require compiler/emit "/src/compiler/emit/lib.l")
-  (require compiler/gyre "/src/compiler/form/lib.l")
+  (require compiler/form "/src/compiler/form/lib.l")
   (require compiler/opt "/src/compiler/opt/lib.l")
+  (require compiler/opt "/src/compiler/reg-model/lib.l")
   (in-ns ns))

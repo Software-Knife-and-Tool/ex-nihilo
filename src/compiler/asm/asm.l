@@ -2,13 +2,6 @@
 ;;; asm
 ;;;
 
-#| gyre syntax
-  (:liter form)
-  (:list form)
-  (:vector form)
-  (:fcall form)
-  (:scall form)
-|#
-
 (defun asm (src)
-  (gyre:read src))
+  (let ((aarch64-reg (make-aarch64)))))
+
