@@ -63,7 +63,7 @@
     (block :nil
       (letf ((last (n l ll)
         (cond
-         ((eq n (mu:length list)) (return (reverse ll)))
+         ((eq n (mu:length list)) (return (foldl (:lambda (x r) (cons r x)) () ll)))
          (:t (last (fixnum+ n 1) (cdr l) (cons (car l) ll))))))
         (last (fixnum- (fixnum- (mu:length list) n) 2) list ())))))))
 
