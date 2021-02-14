@@ -6,6 +6,11 @@
 `(a (list 1 2) c);(a (list 1 2) c)
 `(a ,(list 1 2) c);(a (1 2) c)
 `(a ,@(list 1 2) c);(a 1 2 c)
+(functionp acons);:t
+(functionp assq);:t
+(functionp butlast);:t
+(functionp last);:t
+(functionp pairlis);:t
 (functionp fmt);:t
 (functionp room);:t
 (functionp string=);:t

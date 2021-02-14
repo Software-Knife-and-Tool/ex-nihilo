@@ -35,6 +35,38 @@
   (unless (listp alist) (raise "is not a list (acons)" alist))
   (cons (cons key datum) alist)))
 
+;;; last
+(:defsym last (:lambda (list n)
+  (unless (listp list) (raise "is not a list (last)" list))
+  (unless (fixnump n) (raise "is not a fixnum (last)" n))
+  (when (fixnum< n 0) (raise "is not a positive fixnum (last)" n))
+  (cond
+   ((null list) ())
+   ((zerop n) ())
+   (:t
+    (block :nil
+      (letf ((last (n l)
+        (cond
+         ((eq n (mu:length list)) (return l))
+         (:t (last (fixnum+ n 1) (cdr l))))))
+        (last (fixnum- (fixnum- (mu:length list) n) 1) list)))))))
+
+;;; butlast
+(:defsym butlast (:lambda (list n)
+  (unless (listp list) (raise "is not a list (butlast)" list))
+  (unless (fixnump n) (raise "is not a fixnum (butlast)" n))
+  (when (fixnum< n 0) (raise "is not a positive fixnum (butlast)" n))
+  (cond
+   ((null list) ())
+   ((zerop n) list)
+   (:t
+    (block :nil
+      (letf ((last (n l ll)
+        (cond
+         ((eq n (mu:length list)) (return (reverse ll)))
+         (:t (last (fixnum+ n 1) (cdr l) (cons (car l) ll))))))
+        (last (fixnum- (fixnum- (mu:length list) n) 2) list ())))))))
+
 ;;; quasiquote
 (set-macro-character #\`
   (:lambda (stream ch)
