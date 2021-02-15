@@ -246,6 +246,17 @@
      vector)
     (foldl (:lambda (x r) (cons r x)) () lst)))
 
+;;; float - coerce object to float
+(defun float (object)
+  (cond
+   ((floatp object) object)
+   ((fixnump object)
+    (let ((out (open-output-string "")
+          (print object out :nil)
+          (print ".0" out :nil)))
+      (read (open-input-string (get-output-stream-string out)))))
+   (:t (raise "cannot coerce (float)" object))))
+
 ;;; fmt dest string args...
 (defun fmt (stream fmt-string :rest args)
   (unless (stringp fmt-string) (raise "format is not a string" fmt-string))
@@ -336,7 +347,7 @@
 ;;; time macro
 (defmacro time (form)
   (let ((now (:lambda ()
-         (let* ((now (runtime))
+         (let* ((now (mu::clocks))
            (sec (float (nth 0 now)))
            (usec (float/ (float (nth 1 now)) 1000000.0)))
            (float+ sec usec))))
@@ -409,7 +420,7 @@
                              ()
                              (mu:maplist
                               (:lambda (cdr)
-                                (when (evenp (mu:length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
+                                (when (eq (logand 1 (mu:length cdr)) 0) (cons (nth 0 cdr) (nth 1 cdr))))
                               values))))
                      (mu:mapcar
                       (:lambda (def)
