@@ -19,13 +19,13 @@
 #include <utility>
 
 #include "libmu/env.h"
+#include "libmu/macro.h"
 #include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/function.h"
-#include "libmu/types/macro.h"
 #include "libmu/types/namespace.h"
 #include "libmu/types/string.h"
 #include "libmu/types/symbol.h"
