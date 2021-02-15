@@ -101,8 +101,8 @@
             (list 'closure
               (list :letq fn (list* :lambda lambda body))))))
           (list g :nil)))
-        (error "is not a list (recur)" lambda))
-    (error "is not a symbol (recur)" fn))))
+        (raise "is not a list (recur)" lambda))
+    (raise "is not a symbol (recur)" fn))))
 
 ;;; let*
 (:defsym let* (:macro (bindings :rest body)

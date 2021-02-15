@@ -305,9 +305,11 @@ auto Compile(Env* env, Tag form) -> Tag {
             rval = Compile(env, Macro::MacroExpand(env, form));
           else if (IsSpecOp(fn))
             rval = kSpecMap.at(fn)(env, form);
+          else if (!Symbol::IsBound(fn))
+            Condition::Raise(env, Condition::CONDITION_CLASS::UNBOUND_VARIABLE,
+                             "compile: function symbol", fn);
           else
             rval = List(env, form);
-
           break;
         }
         case SYS_CLASS::FUNCTION: /* function */
