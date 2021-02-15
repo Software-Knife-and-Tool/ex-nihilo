@@ -19,13 +19,13 @@
 #include <utility>
 
 #include "libmu/env.h"
+#include "libmu/macro.h"
 #include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/function.h"
-#include "libmu/types/macro.h"
 #include "libmu/types/namespace.h"
 #include "libmu/types/string.h"
 #include "libmu/types/symbol.h"
@@ -169,11 +169,13 @@ auto DefSymbol(Env* env, Tag form) {
                      "symbol previously bound (:defsym)", sym);
 
   auto value = Eval(env, Compile(env, expr));
-  (void)Symbol::Bind(sym, value);
+  auto defsym = Namespace::Intern(env, Symbol::ns(sym), Symbol::name(sym));
 
-  if (Function::IsType(value)) Function::name(value, sym);
+  (void)Symbol::Bind(defsym, value);
 
-  return Cons::List(env, std::vector<Tag>{Symbol::Keyword("quote"), sym});
+  if (Function::IsType(value)) Function::name(value, defsym);
+
+  return Cons::List(env, std::vector<Tag>{Symbol::Keyword("quote"), defsym});
 }
 
 /** * (:lambda list . body) **/
@@ -305,9 +307,11 @@ auto Compile(Env* env, Tag form) -> Tag {
             rval = Compile(env, Macro::MacroExpand(env, form));
           else if (IsSpecOp(fn))
             rval = kSpecMap.at(fn)(env, form);
+          else if (!Symbol::IsBound(fn))
+            Condition::Raise(env, Condition::CONDITION_CLASS::UNBOUND_VARIABLE,
+                             "compile: function symbol", fn);
           else
             rval = List(env, form);
-
           break;
         }
         case SYS_CLASS::FUNCTION: /* function */

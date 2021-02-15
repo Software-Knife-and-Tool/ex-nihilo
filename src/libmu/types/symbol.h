@@ -93,7 +93,6 @@ class Symbol : public Type {
 
   static Tag Bind(Tag symbol, Tag value) {
     assert(IsType(symbol));
-    assert(!IsBound(symbol));
 
     Untag<Layout>(symbol)->value = value;
     return symbol;

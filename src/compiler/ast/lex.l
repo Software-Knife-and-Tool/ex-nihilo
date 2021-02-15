@@ -73,7 +73,7 @@
                      ((null ch) (raise "early eof in string" :nil) :nil)
                      ((eq ch #\") :nil)
                      (:t (princ ch str) :t))))
-              (cons :string (get-output-string-stream str))))
+              (cons :string (get-output-stream-string str))))
            ((eq ch #\()                      ;; list/cons
             (let ((el (lex src)))
               (cond

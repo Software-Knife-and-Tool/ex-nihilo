@@ -31,9 +31,9 @@
             (let* ((spacer (open-output-string ""))
                    (loop (:lambda (fn d)
                            (if (eq d 0)
-                               (get-output-string-stream spacer)
+                               (get-output-stream-string spacer)
                              (progn
-                               (mu::print "    " spacer :nil)
+                               (mu:print "    " spacer :nil)
                                (fn fn (fixnum- d 1)))))))
               (loop loop depth)))))
 
@@ -58,7 +58,7 @@
                                         spacer
                                         (describe-object (symbol-value object) (fixnum+ depth 1))))
                  ((stringp object) (fmt :nil "~A~S is a ~A string of length ~A (@~X)~%"
-                                        spacer object (if (fixnum< (mu:vector-length object) 8) "immediate" "heap") (mu::vector-length object) tagptr))
+                                        spacer object (if (fixnum< (mu:vector-length object) 8) "immediate" "heap") (mu:vector-length object) tagptr))
                  ((vectorp object) (fmt :nil "~A~S is a ~A :vector of length ~A (@~X)~%" spacer object (mu:vector-type object) (mu:vector-length object) tagptr))
                  ((fixnump object) (fmt :nil "~A~S is a fixnum (@~X)~%" spacer object tagptr))
                  ((floatp object) (fmt :nil "~A~S is a float (@~X)~%" spacer object tagptr))
@@ -66,7 +66,6 @@
                  ((streamp object) (fmt :nil "~A~S is a simple stream (@~X)~%" spacer object tagptr))
                  ((structp object) (fmt :nil "~A~S is a struct (@~X)~%" spacer object tagptr))
                  ((namespacep object) (fmt :nil "~A~S is a namespace (@~X)~%" spacer object tagptr))
-                 ((codep object) (fmt :nil "~A~S is a code object (@~X)~%" spacer object tagptr))
                  ((functionp object)
                   (fmt :nil
                        "~A~S is a function (@~X)~%~A    symbol: ~A~%~A    nreqs: ~A~%~A    lambda: ~A~%~A    body: ~A~%~A    frame-id: ~A~%~A    name: ~A~%"
@@ -86,7 +85,7 @@
                        spacer
                        (mu:vector-ref view 8)))
                  (:t (fmt :nil "~Aundecoded ~W type-of ~A (@~X)~%" spacer object (type-of object) tagptr))))))
-          (mu::print (describe-object object 0) :nil :nil)))
+          (mu:print (describe-object object 0) :nil :nil)))
     :nil)
 
 ;;; break loop
@@ -119,7 +118,7 @@
          ((eq tag :type) (fmt :t "type-error from ~A~%" source))
          ((eq tag :unfunc) (fmt :t "undefined-function ~A~%" source))
          ((eq tag :unslot) (fmt :t "unbound-slot ~A~%"))
-         ((eq tag :unsym) (fmt :t "the symbol ~A is unbound~%" source))
+         ((eq tag :unsym) (fmt :t "symbol ~S is unbound~%" source))
          ((eq tag :zerodiv) (fmt :t "arithmetic error division-by-zero~%"))
          (:t (fmt :t "undecoded-condition-type~%")))
         (fmt :t ":p for help~%~%")

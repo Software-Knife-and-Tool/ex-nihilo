@@ -6,8 +6,7 @@
 (defun reverse (src)
   (cond
    ((listp src) (mu:foldl (:lambda (x r) (cons r x)) () src))
-   ((vectorp src)
-     (mu.vector (mu.vec-type src) (reverse (vector-to-list src))))
+   ((vectorp src) (list-to-vector (reverse (vector-to-list src))))
    (:t (raise "must be a sequence (reverse)" src))))
 
 ;;; reduce - reduce sequence
@@ -15,8 +14,7 @@
   (check-type fn :func "is not a function (reverse)")
   (cond
    ((listp src) (mu:foldl fn init src))
-   ((vectorp src)
-     (mu.vector (mu:vec-type src) (reduce fn (vector-to-list src) init)))
+   ((vectorp src) (list-to-vector (reduce fn (vector-to-list src) init)))
    (:t (raise "must be a sequence (reduce)" src))))
 
 ;;; concatenate - concatenate sequences
@@ -72,7 +70,7 @@
   (typecase sequence
     (:vector (count-if predicate (vector-to-list sequence)))
     (:cons
-     (mu.foldl 
+     (mu:foldl 
       (:lambda (acc el) (if (predicate el) (1+ acc) acc))
       0
       sequence))

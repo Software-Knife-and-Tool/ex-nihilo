@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "libmu/env.h"
+#include "libmu/macro.h"
 #include "libmu/print.h"
 #include "libmu/type.h"
 
@@ -24,7 +25,6 @@
 #include "libmu/types/fixnum.h"
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
-#include "libmu/types/macro.h"
 #include "libmu/types/stream.h"
 #include "libmu/types/struct.h"
 #include "libmu/types/symbol.h"

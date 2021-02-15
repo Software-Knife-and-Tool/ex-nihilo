@@ -11,7 +11,7 @@
  **  macro.cc: library macros
  **
  **/
-#include "libmu/types/macro.h"
+#include "libmu/macro.h"
 
 #include <cassert>
 #include <functional>

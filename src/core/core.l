@@ -42,7 +42,7 @@
   (when (fixnum< n 0) (raise "is not a positive fixnum (last)" n))
   (cond
    ((null list) ())
-   ((zerop n) ())
+   ((eq 0 n) ())
    (:t
     (block :nil
       (letf ((last (n l)
@@ -58,7 +58,7 @@
   (when (fixnum< n 0) (raise "is not a positive fixnum (butlast)" n))
   (cond
    ((null list) ())
-   ((zerop n) list)
+   ((eq 0 n) list)
    (:t
     (block :nil
       (letf ((last (n l ll)
@@ -103,25 +103,8 @@
        ((eq ch #\@) (list :splice (read stream)))
        (:t (unread-char ch stream) (list :unquote (read stream)))))))
 
-;;; require/provide macro
-(:defsym require (:macro (tag path)
-  (let ((string-concat (:lambda (:rest strings)
-    (let ((ostream (open-output-string "")))
-      (mu:mapc (:lambda (str) (mu:print str ostream :nil)) strings)
-      (get-output-stream-string ostream)))))
-
-   ;;; (fmt :t "require: tag ~A path ~A~%" tag path)
-   (unless (boundp 'lib-base) (raise "require: lib-base is not bound" :nil))
-   (unless (symbolp tag) (raise "require: tag is not a symbol" tag))
-   (unless (stringp path) (raise "require: path is not a string" path))
-   (unless (boundp tag)
-     (let ((load-verbose (when (boundp 'load-verbose) load-verbose)))
-       (when load-verbose (fmt :t "require: loading ~A~%" path))
-       (list 'progn (list :defsym tag :nil)
-          (list 'load (string-concat lib-base path))))))))
-
 ;;; lambda
-(:defsym parse-lambda (:lambda (lambda-list)
+(:defsym mu::parse-lambda (:lambda (lambda-list)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
   (letf* ((inits (llist)
            (let ((terms ()))
@@ -182,31 +165,19 @@
                 (rest (rest (cdr keywords))))
            (list (car requireds) (car optionals) (car keywords) (car rest))))))
 
-(:defsym lambda (:macro (lambda-list :rest body)
-  (let* ((llist (parse-lambda lambda-list))
-          (reqs (nth 0 llist))
-          (opts (nth 1 llist))
-          (keys (nth 2 llist))
-          (rest (nth 3 llist)))
-     (cond
-      ((null rest)
-       (fmt :t "lambda: ~A~%" (list* :lambda reqs body))
-       (list* :lambda reqs body))
-      (:t)))))
-
 ;;; defun/defconstant/defmacro/lambda/letrec (now with added recursion)
 (:defsym defun (:macro (fn lambda :rest body)
-  (unless (symbolp fn) (error "is not a symbol (defun)" fn))
-  (unless (listp lambda) (error "is not a list (defun)" lambda))
+  (unless (symbolp fn) (raise "is not a symbol (defun)" fn))
+  (unless (listp lambda) (raise "is not a list (defun)" lambda))
   (list :defsym fn (list* 'recur fn lambda body))))
 
 (:defsym defconstant (:macro (name form)
-  (unless (symbolp name) (error "is not a symbol (defun)" name))
+  (unless (symbolp name) (raise "is not a symbol (defun)" name))
   (list :defsym name form)))
 
 (:defsym defmacro (:macro (name lambda :rest body)
-  (unless (symbolp name) (error "is not a symbol (defun)" name))
-  (unless (listp lambda) (error "is not a list (defun)" lambda))
+  (unless (symbolp name) (raise "is not a symbol (defun)" name))
+  (unless (listp lambda) (raise "is not a list (defun)" lambda))
   (list :defsym name (list* :macro lambda body))))
 
 (:defsym letrec (:macro (bindl :rest body)
@@ -244,7 +215,7 @@
 (defun string (object)
   (cond
    ((stringp object) object)
-   ((charp object) (fmt :nil "~A" object))
+   ;;; x((charp object) #(:char object))
    ((symbolp object) (symbol-name object))
    (:t (raise "illegal conversion (string)" object))))
 
@@ -275,6 +246,17 @@
      vector)
     (foldl (:lambda (x r) (cons r x)) () lst)))
 
+;;; float - coerce object to float
+(defun float (object)
+  (cond
+   ((floatp object) object)
+   ((fixnump object)
+    (let ((out (open-output-string "")
+          (print object out :nil)
+          (print ".0" out :nil)))
+      (read (open-input-string (get-output-stream-string out)))))
+   (:t (raise "cannot coerce (float)" object))))
+
 ;;; fmt dest string args...
 (defun fmt (stream fmt-string :rest args)
   (unless (stringp fmt-string) (raise "format is not a string" fmt-string))
@@ -291,7 +273,7 @@
              (letf ((radixf (fx)
                             (cond
                              ((eq fx 0) :nil)
-                             (:t (radixf (fixnum/ fx radix))
+                             (:t (radixf (car (truncate fx radix)))
                                  (write-char (mu:vector-ref digits
                                                             (logand fx (fixnum- radix 1)))
                                              out)))))
@@ -326,7 +308,7 @@
                          ((eq dir #\O) (let ((fix (car args)))
                                          (unless (fixnump fix) (raise "is not a fixnum (fmt)" fix))
                                          (mu:print (radix-string 8 fix) dest :nil)))
-                         ((eq dir #\W) (print-unreadable (car args) dest)))
+                         ((eq dir #\W) (mu:print (car args) dest :t)))
                         (loop (cdr args))))))
                 (:t (write-char ch dest) (loop args))))))
           (loop args))))
@@ -365,7 +347,7 @@
 ;;; time macro
 (defmacro time (form)
   (let ((now (:lambda ()
-         (let* ((now (runtime))
+         (let* ((now (mu::clocks))
            (sec (float (nth 0 now)))
            (usec (float/ (float (nth 1 now)) 1000000.0)))
            (float+ sec usec))))
@@ -438,7 +420,7 @@
                              ()
                              (mu:maplist
                               (:lambda (cdr)
-                                (when (evenp (mu:length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
+                                (when (eq (logand 1 (mu:length cdr)) 0) (cons (nth 0 cdr) (nth 1 cdr))))
                               values))))
                      (mu:mapcar
                       (:lambda (def)
@@ -496,3 +478,20 @@
   (list 'letf (list (list 'whilef ()
     (list 'when test (list (list* :lambda () body)) 'whilef)))
       (list 'mu:trampoline 'whilef)))
+
+;;; require/provide macro
+(:defsym require (:macro (tag path)
+  (let ((string-concat (:lambda (:rest strings)
+    (let ((ostream (open-output-string "")))
+      (mu:mapc (:lambda (str) (mu:print str ostream :nil)) strings)
+      (get-output-stream-string ostream)))))
+
+   ;;; (fmt :t "require: tag ~A path ~A~%" tag path)
+   (unless (boundp 'lib-base) (raise "require: lib-base is not bound" :nil))
+   (unless (symbolp tag) (raise "require: tag is not a symbol" tag))
+   (unless (stringp path) (raise "require: path is not a string" path))
+   (unless (boundp tag)
+     (let ((load-verbose (when (boundp 'load-verbose) load-verbose)))
+       (when load-verbose (fmt :t "require: loading ~A~%" path))
+       (list 'progn (list :defsym tag :nil)
+          (list 'load (string-concat lib-base path))))))))

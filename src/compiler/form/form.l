@@ -28,7 +28,7 @@
                 ((eq fn :nil) (fmt :t "special:nil: ~A~%" form))
                 ((eq fn :quote) (fmt :t "special:quote: ~A~%" form))
                 ((eq fn :t) (fmt :t "special:t: ~A~%" form))
-                (:t (error "special: what is you?" fn))))))
+                (:t (raise "special: what is you?" fn))))))
          (atomf
           (:lambda (expr)
             (cond
@@ -40,7 +40,7 @@
              ((floatp expr) expr)
              ((stringp expr) expr)
              ((vectorp expr) expr)
-             (:t (error "atom: what is youp" expr)))))
+             (:t (raise "atom: what is you" expr)))))
          (funcall
           (:lambda (form)
               ;;; (fmt :t "funcall: form ~A~%" form)

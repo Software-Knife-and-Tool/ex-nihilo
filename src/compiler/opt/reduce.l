@@ -4,7 +4,7 @@
 
 (defmacro vfmt (:rest args)
   (when (boundp '%verbose%)
-    (list '(list* 'apply args))))
+    (list '(list* 'mu:apply args))))
 
 (defun constant-fold (fn args)
   (let ((constantp (:lambda (form)
@@ -23,7 +23,7 @@
            :t
            args)
       (let ((fnc (assq fn folds)))
-        (when fnc (apply fnc args))))))
+        (when fnc (mu:apply fnc args))))))
 
 (defun compiler:reduce (sexpr)
   (let ((funcall
@@ -59,7 +59,7 @@
                       (fmt :t ";;;    function symbol substitution: ~S~%" fnc)
                       (list* fnc fold)))
                   (:t (fmt :t ";;;    constant fold: ~A~%" fold) fold)))) 
-             (:t (error "unimplemented funcall form" fn)))))))
+             (:t (raise "unimplemented funcall form" fn)))))))
 
     (cond
      ((or (null sexpr) (atom sexpr))

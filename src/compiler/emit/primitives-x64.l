@@ -4,7 +4,7 @@
 
 ;;; fixnum+ code generator
 (defun cg-fixnum+ (args)
-  (unless (eq (length args) 2) (error "requires 2 arguments (cg-fixnum+)" args))
+  (unless (eq (length args) 2) (raise "requires 2 arguments (cg-fixnum+)" args))
   (let ((arg1 (nth 0 args))
         (arg2 (nth 1 args)))
     (cond
