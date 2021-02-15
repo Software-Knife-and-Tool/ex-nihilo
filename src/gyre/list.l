@@ -1,8 +1,8 @@
 ;;; zip-1 - cons pairs of elements in a single list
 (defun zip-1 (fn values)
   (check-type fn :lambda "is not a function (zip-1)")
-  (when (oddp (length values)) (error "is not an even list" values))
-  (mu.foldl (:lambda (acc acons)
+  (when (oddp (length values)) (raise "is not an even list" values))
+  (mu:foldl (:lambda (acc acons)
            (if (null acons)
              acc
              (fn acons acc)))

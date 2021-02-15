@@ -117,7 +117,13 @@ auto Symbol::Print(Env* env, Tag sym, Tag stream, bool esc) -> void {
   } else if (esc) {
     auto ns = Symbol::ns(sym);
 
-    if (Null(ns)) core::PrintStdString(env, "#:", stream, false);
+    if (Null(ns)) {
+      core::PrintStdString(env, "#:", stream, false);
+    } else {
+      core::PrintStdString(env, String::StdStringOf(Namespace::name(ns)),
+                           stream, false);
+      core::PrintStdString(env, ":[:]", stream, false);
+    }
   }
 
   core::PrintStdString(env, String::StdStringOf(Symbol::name(sym)), stream,

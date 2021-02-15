@@ -41,7 +41,7 @@
             (fmt :t ":h - print history stack~%")
             (fmt :t ":n - eval nth history entry~%"))
            ((eq sexpr :h) (print-history))
-           ((eq sexpr :r) (fmt :t "~A~%" (get-output-string-stream results)))
+           ((eq sexpr :r) (fmt :t "~A~%" (get-output-stream-string results)))
            ((and (keywordp sexpr) (fixnump (read-from-string (symbol-name sexpr))))
             (let* ((n (read-from-string (symbol-name sexpr)))
                    (hist (history-list))

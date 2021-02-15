@@ -104,7 +104,7 @@
        (:t (unread-char ch stream) (list :unquote (read stream)))))))
 
 ;;; lambda
-(:defsym parse-lambda (:lambda (lambda-list)
+(:defsym mu::parse-lambda (:lambda (lambda-list)
   (unless (listp lambda-list) (raise "lambda list is not a list" lambda-list))
   (letf* ((inits (llist)
            (let ((terms ()))

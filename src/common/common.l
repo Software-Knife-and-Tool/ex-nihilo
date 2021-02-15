@@ -1,11 +1,6 @@
 ;;; version
 (defconstant common::version "0.0.1")
 
-;;; typep
-(defun typep (object type)
-  (unless (keywordp type) (error "is not a type keyword (typep)" type)) 
-  (or (eq type :t) (eq (type-of object) type)))
-
 ;;; eql
 (defun eql (x y)
   (let ((eql (:lambda (x y)
@@ -62,8 +57,13 @@
   (let ((fmt-string (car fmt-list))
         (args (cdr fmt-list)))
     (if (stringp fmt-string)
-      (raise (mu::apply fmt (list* :nil fmt-string args)) obj)
+      (raise (mu:apply fmt (list* :nil fmt-string args)) obj)
       (raise "error: " obj))))
+
+;;; typep
+(defun typep (object type)
+  (unless (keywordp type) (error "is not a type keyword (typep)" type)) 
+  (or (eq type :t) (eq (type-of object) type)))
 
 ;;; constantp
 (defun constantp (obj)

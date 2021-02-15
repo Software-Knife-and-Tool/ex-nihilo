@@ -9,7 +9,7 @@
                (car args)))
           (:t (error "improper argument list (print)" args)))))
     (cond
-     ((streamp stream) (terpri stream) (mu::print obj stream :nil))
+     ((streamp stream) (terpri stream) (mu:print obj stream :nil))
      (:t (error "is not a stream (print)" stream)))
   obj))
 
@@ -47,13 +47,13 @@
 (defun prin1-to-string (obj)
   (let ((stream (open-output-string "")))
     (mu:print obj stream :t)
-    (get-output-string-stream stream)))
+    (get-output-stream-string stream)))
 
 ;;; princ-to-string object
 (defun princ-to-string (obj)
   (let ((stream (open-output-string "")))
     (mu:print obj stream :nil)
-    (get-output-string-stream stream)))
+    (get-output-stream-string stream)))
 
 ;;; read-from-string string
 (defun read-from-string (str)
@@ -63,5 +63,4 @@
 ;;; read-from-string-stream string
 (defun read-from-string-stream (stream)
   (check-type stream :stream "read-from-string: is not a stream (read-from-string-stream)")
-  (read-from-string (get-output-string-stream stream)))
-
+  (read-from-string (get-output-stream-string stream)))

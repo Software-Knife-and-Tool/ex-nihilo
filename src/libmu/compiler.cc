@@ -169,11 +169,13 @@ auto DefSymbol(Env* env, Tag form) {
                      "symbol previously bound (:defsym)", sym);
 
   auto value = Eval(env, Compile(env, expr));
-  (void)Symbol::Bind(sym, value);
+  auto defsym = Namespace::Intern(env, Symbol::ns(sym), Symbol::name(sym));
 
-  if (Function::IsType(value)) Function::name(value, sym);
+  (void)Symbol::Bind(defsym, value);
 
-  return Cons::List(env, std::vector<Tag>{Symbol::Keyword("quote"), sym});
+  if (Function::IsType(value)) Function::name(value, defsym);
+
+  return Cons::List(env, std::vector<Tag>{Symbol::Keyword("quote"), defsym});
 }
 
 /** * (:lambda list . body) **/
