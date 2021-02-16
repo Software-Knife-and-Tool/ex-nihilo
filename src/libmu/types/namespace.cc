@@ -92,9 +92,9 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name, Tag value) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindSymbol(env, ns, name);
 
-  return Type::Null(sym) ?
-    Insert(Untag<Layout>(ns)->externs, key, Symbol(ns, name, value).Evict(env)) :
-    sym;
+  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
+                                  Symbol(ns, name, value).Evict(env))
+                         : sym;
 }
 
 /** * intern symbol in namespace **/
