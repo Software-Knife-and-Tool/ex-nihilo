@@ -169,7 +169,8 @@ auto DefSymbol(Env* env, Tag form) {
                      "symbol previously bound (:defsym)", sym);
 
   auto value = Eval(env, Compile(env, expr));
-  auto defsym = Namespace::Intern(env, Symbol::ns(sym), Symbol::name(sym));
+  auto defsym =
+      Namespace::Intern(env, Symbol::ns(sym), Symbol::name(sym), value);
 
   (void)Symbol::Bind(defsym, value);
 
