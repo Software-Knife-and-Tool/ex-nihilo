@@ -108,6 +108,7 @@ class Symbol : public Type {
   Tag Evict(Env*);
 
   explicit Symbol(Tag, Tag);
+  explicit Symbol(Tag, Tag, Tag);
 };
 
 } /* namespace core */

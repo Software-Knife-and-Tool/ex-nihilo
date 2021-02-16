@@ -162,6 +162,7 @@ class Namespace : public Type {
   static Tag Symbols(Env*, Tag);
   static void GcMark(Env*, Tag);
   static Tag Intern(Env*, Tag, Tag);
+  static Tag Intern(Env*, Tag, Tag, Tag);
   static Tag InternInNs(Env*, Tag, Tag);
   static Tag ExternInNs(Env*, Tag, Tag);
   static Tag FindSymbol(Env*, Tag, Tag);

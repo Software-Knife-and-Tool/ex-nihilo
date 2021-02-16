@@ -198,11 +198,23 @@ auto Symbol::Evict(Env* env) -> Tag {
 /** * allocate an unbound symbol from the heap **/
 Symbol::Symbol(Tag ns, Tag name) {
   assert(String::IsType(name));
-  assert(Namespace::IsType(ns) || Null(ns) || Eq(ns, T));
+  assert(Namespace::IsType(ns) || Null(ns));
 
   symbol_.ns = ns;
   symbol_.name = name;
   symbol_.value = static_cast<Tag>(core::SYNTAX_CHAR::UNBOUND);
+
+  tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
+}
+
+/** * allocate an unbound symbol from the heap **/
+Symbol::Symbol(Tag ns, Tag name, Tag value) {
+  assert(String::IsType(name));
+  assert(Namespace::IsType(ns) || Null(ns));
+
+  symbol_.ns = ns;
+  symbol_.name = name;
+  symbol_.value = value;
 
   tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
 }
