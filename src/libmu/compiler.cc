@@ -167,7 +167,7 @@ auto DefSymbol(Env* env, Tag form) {
   if (Symbol::IsBound(sym))
     Condition::Raise(env, Condition::CONDITION_CLASS::CELL_ERROR,
                      "symbol previously bound (:defsym)", sym);
-
+  env->src_ = form;
   auto value = Eval(env, Compile(env, expr));
   auto defsym =
       Namespace::Intern(env, Symbol::ns(sym), Symbol::name(sym), value);
@@ -193,7 +193,7 @@ auto DefLambda(Env* env, Tag form) {
                      lambda);
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
-
+  env->src_ = form;
   return Lambda(env, args);
 }
 
@@ -211,7 +211,7 @@ auto DefMacro(Env* env, Tag form) {
                      lambda);
 
   assert(!Type::Eq(Cons::car(lambda), Symbol::Keyword("quote")));
-
+  env->src_ = form;
   return Macro(Lambda(env, args)).Evict(env);
 }
 

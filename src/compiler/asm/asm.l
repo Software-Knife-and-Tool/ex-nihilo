@@ -2,6 +2,6 @@
 ;;; asm
 ;;;
 
-(defun asm (src)
-  (let ((aarch64-reg (make-aarch64)))))
+(defun asm (src))
+  ;;; (let ((aarch64-reg (make-aarch64)))))
 

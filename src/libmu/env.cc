@@ -240,9 +240,9 @@ auto Env::EnvView(Env* env) -> Tag {
   Platform::SystemTime(&st);
   Platform::ProcessTime(&rt);
 
-  auto view =
-      std::vector<Tag>{Symbol::Keyword("env"), env->namespace_, Namespaces(env),
-                       Fixnum(st).tag_,        Fixnum(rt).tag_, EnvStack(env)};
+  auto view = std::vector<Tag>{
+      Symbol::Keyword("env"), env->namespace_, Namespaces(env), Fixnum(st).tag_,
+      Fixnum(rt).tag_,        EnvStack(env),   env->src_};
 
   return Vector(env, view).tag_;
 }
@@ -326,6 +326,7 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   namespace_ = mu_;
   namespaces_["mu"] = mu_;
   nil_ = Type::NIL;
+  src_ = Type::NIL;
 
   standard_input_ =
       Namespace::Intern(this, mu_, String(this, "standard-input").tag_,
@@ -334,6 +335,7 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   standard_output_ =
       Namespace::Intern(this, mu_, String(this, "standard-output").tag_,
                         Stream(stdout).Evict(this));
+
   standard_error_ = Namespace::Intern(
       this, mu_, String(this, "error-output").tag_, Stream(stderr).Evict(this));
 

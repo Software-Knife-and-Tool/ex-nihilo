@@ -6,7 +6,7 @@
 
 (defun opencode (form ostream)
   (check-type form :cons "is not a list (opencode)")
-  (let ((out (stream ostream)))
+  (let ((out ostream))
     (check-type out :stream "is not a stream (opencode)")
     (let ((op (car form)))
       (when (null (find-if

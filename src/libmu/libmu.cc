@@ -111,6 +111,11 @@ auto withCondition(void* env, const std::function<void(void*)>& fn) -> void {
     core::PrintStdString((Env*)env, " on frame ", std_error, false);
     core::Print((Env*)env, frame, std_error, false);
     core::Terpri((Env*)env, std_error);
+
+    core::PrintStdString((Env*)env, "source: ", std_error, false);
+    core::Print((Env*)env, ev->src_, std_error, true);
+    core::Terpri((Env*)env, std_error);
+
     ev->frames_.resize(mark);
 
   } catch (...) {

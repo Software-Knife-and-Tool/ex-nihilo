@@ -36,7 +36,7 @@
               (opt-expr (macroexpand form)))
              ((functionp fn)
               (fmt :t ";;; reduce:funcall:function: ~A~%" fn)
-              (list* fn (mapcar-1 opt-expr args)))
+              (list* fn (mu:mapcar opt-expr args)))
              ((consp fn)
               (fmt :t ";;; reduce::funcall:cons: ~A~%" fn)
               form)
@@ -51,7 +51,7 @@
                (list :t form)))
              ((symbolp fn)
               (fmt :t ";;; reduce:funcall:symbol: ~A~%" fn)
-              (let ((fold (constant-fold fn (mapcar-1 opt-expr args))))
+              (let ((fold (constant-fold fn (mu:mapcar opt-expr args))))
                 (cond
                  ((null fold)
                     (let ((fnc (symbol-value fn)))
