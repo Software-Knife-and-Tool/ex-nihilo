@@ -240,9 +240,9 @@ auto Env::EnvView(Env* env) -> Tag {
   Platform::SystemTime(&st);
   Platform::ProcessTime(&rt);
 
-  auto view =
-      std::vector<Tag>{Symbol::Keyword("env"), env->namespace_, Namespaces(env),
-                       Fixnum(st).tag_,        Fixnum(rt).tag_, EnvStack(env)};
+  auto view = std::vector<Tag>{
+      Symbol::Keyword("env"), env->namespace_, Namespaces(env), Fixnum(st).tag_,
+      Fixnum(rt).tag_,        EnvStack(env),   env->src_};
 
   return Vector(env, view).tag_;
 }
