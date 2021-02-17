@@ -1,6 +1,7 @@
 ;;;
 ;;; function/closure compiler
 ;;;
+#|
 (defmacro s-function (form)
   (cond
    ((symbolp form)
@@ -12,3 +13,4 @@
         (compiler:lambda form)
         (raise "function: is not a lambda form" form)))
    (:t  (raise "function: is not a function symbol or lambda form" form))))
+|#

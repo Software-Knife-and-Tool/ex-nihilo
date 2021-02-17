@@ -15,11 +15,13 @@
                      (raise "lambda: lambda list element is not a symbol" sym)))
         llist)
       ;; check for duplicates
+      #|
       (mapl
        (:lambda (llist)
                 (and (not (null (list-find (car llist) (cdr llist))))
                      (raise "lambda: duplicate symbol in lambda list" (car llist))))
        llist)
+      |#
       ;; get rest symbol and rewrite body
       (mapl
        (:lambda (llist)

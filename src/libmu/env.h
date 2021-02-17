@@ -93,6 +93,7 @@ class Env {
   std::unordered_map<Tag, Tag> readtable_;
   Tag mu_;              /* mu namespace */
   Tag namespace_;       /* current namespace */
+  Tag src_;             /* source */
   Tag nil_;             /* nil */
   Tag standard_input_;  /* standard input */
   Tag standard_output_; /* standard output */
