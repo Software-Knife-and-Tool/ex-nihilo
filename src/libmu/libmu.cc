@@ -105,7 +105,7 @@ auto withCondition(void* env, const std::function<void(void*)>& fn) -> void {
     core::PrintStdString((Env*)env, "condition: ", std_error, false);
     core::Print((Env*)env, tag, std_error, true);
     core::PrintStdString((Env*)env, " ", std_error, false);
-    core::Print((Env*)env, source, std_error, false);
+    core::Print((Env*)env, source, std_error, true);
     core::PrintStdString((Env*)env, " ", std_error, false);
     core::Print((Env*)env, reason, std_error, false);
     core::PrintStdString((Env*)env, " on frame ", std_error, false);
