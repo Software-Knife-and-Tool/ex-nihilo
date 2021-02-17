@@ -169,8 +169,17 @@ auto DefSymbol(Env* env, Tag form) {
                      "symbol previously bound (:defsym)", sym);
   env->src_ = form;
   auto value = Eval(env, Compile(env, expr));
-  auto defsym =
-      Namespace::Intern(env, Symbol::ns(sym), Symbol::name(sym), value);
+
+  Tag defsym;
+
+  if (!Type::Null(
+          Namespace::FindExterns(env, Symbol::ns(sym), Symbol::name(sym))))
+    defsym = Namespace::ExternInNs(env, Symbol::ns(sym), Symbol::name(sym));
+  else if (!Type::Null(
+               Namespace::FindInterns(env, Symbol::ns(sym), Symbol::name(sym))))
+    defsym = Namespace::InternInNs(env, Symbol::ns(sym), Symbol::name(sym));
+  else
+    assert(false);
 
   (void)Symbol::Bind(defsym, value);
 
