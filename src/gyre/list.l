@@ -1,15 +1,15 @@
 ;;; zip-1 - cons pairs of elements in a single list
 (defun zip-1 (fn values)
   (check-type fn :lambda "is not a function (zip-1)")
-  (when (oddp (length values)) (raise "is not an even list" values))
+  (when (eq (logand (length values) 1) 1) (raise "is not an even list" values))
   (mu:foldl (:lambda (acc acons)
            (if (null acons)
              acc
              (fn acons acc)))
          ()
-         (mu.maplist
+         (mu:maplist
           (:lambda (cdr)
-            (unless (oddp (length cdr)) (cons (nth 0 cdr) (nth 1 cdr))))
+            (unless (eq (logand (length cdr) 1) 1) (cons (nth 0 cdr) (nth 1 cdr))))
             values)))
 
 ;;; zip-2 - cons pairs of elements in two lists

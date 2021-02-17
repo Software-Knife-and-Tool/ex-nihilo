@@ -103,7 +103,7 @@ auto withCondition(void* env, const std::function<void(void*)>& fn) -> void {
     auto frame = core::Condition::frame(condition);
 
     core::PrintStdString((Env*)env, "condition: ", std_error, false);
-    core::Print((Env*)env, tag, std_error, false);
+    core::Print((Env*)env, tag, std_error, true);
     core::PrintStdString((Env*)env, " ", std_error, false);
     core::Print((Env*)env, source, std_error, false);
     core::PrintStdString((Env*)env, " ", std_error, false);
