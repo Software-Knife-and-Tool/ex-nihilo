@@ -121,8 +121,24 @@ class Namespace : public Type {
     return *Untag<Layout>(ns)->interns.get();
   }
 
+  /** * is in namespace externs? **/
+  static bool IsExtern(Tag ns, Tag name) {
+    assert(IsType(ns));
+    assert(String::IsType(name));
+
+    return !Null(Namespace::FindExterns(ns, name));
+  }
+
+  /** * is in namespace interns? **/
+  static bool IsIntern(Tag ns, Tag name) {
+    assert(IsType(ns));
+    assert(String::IsType(name));
+
+    return !Null(Namespace::FindInterns(ns, name));
+  }
+
   /** * find symbol in namespace externs **/
-  static Tag FindExterns(Env*, Tag ns, Tag str) {
+  static Tag FindExterns(Tag ns, Tag str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -134,7 +150,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace interns **/
-  static Tag FindInterns(Env*, Tag ns, Tag str) {
+  static Tag FindInterns(Tag ns, Tag str) {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -143,20 +159,6 @@ class Namespace : public Type {
 
     return isFound(Untag<Layout>(ns)->interns, entry) ? entry->second
                                                       : Type::NIL;
-  }
-
-  /** * find symbol in namespace externs **/
-  static Tag FindExterns(Env* env, Tag ns, std::string str) {
-    assert(IsType(ns));
-
-    return FindExterns(env, ns, String(env, str).tag_);
-  }
-
-  /** * find symbol in namespace interns **/
-  static Tag FindInterns(Env* env, Tag ns, std::string str) {
-    assert(IsType(ns));
-
-    return FindInterns(env, ns, String(env, str).tag_);
   }
 
   static Tag Symbols(Env*, Tag);

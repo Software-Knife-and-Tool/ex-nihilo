@@ -172,11 +172,10 @@ auto DefSymbol(Env* env, Tag form) {
 
   Tag defsym;
 
-  if (!Type::Null(
-          Namespace::FindExterns(env, Symbol::ns(sym), Symbol::name(sym))))
+  if (!Type::Null(Namespace::FindExterns(Symbol::ns(sym), Symbol::name(sym))))
     defsym = Namespace::ExternInNs(env, Symbol::ns(sym), Symbol::name(sym));
   else if (!Type::Null(
-               Namespace::FindInterns(env, Symbol::ns(sym), Symbol::name(sym))))
+               Namespace::FindInterns(Symbol::ns(sym), Symbol::name(sym))))
     defsym = Namespace::InternInNs(env, Symbol::ns(sym), Symbol::name(sym));
   else
     assert(false);
@@ -243,7 +242,7 @@ auto Letq(Env* env, Tag form) {
     Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR, ":letq",
                      lsym);
 
-  auto letq = Namespace::FindInterns(env, env->mu_, String(env, "letq").tag_);
+  auto letq = Namespace::FindInterns(env->mu_, String(env, "letq").tag_);
   assert(!Type::Null(letq));
 
   return Cons::List(
@@ -342,14 +341,13 @@ auto Compile(Env* env, Tag form) -> Tag {
 
       rval =
           Function::IsType(fn)
-              ? Compile(
-                    env,
-                    Cons::List(
-                        env,
-                        std::vector<Tag>{
-                            Namespace::FindInterns(
-                                env, env->mu_, String(env, "frame-ref").tag_),
-                            Function::frame_id(fn), Fixnum(offset).tag_}))
+              ? Compile(env,
+                        Cons::List(
+                            env,
+                            std::vector<Tag>{
+                                Namespace::FindInterns(
+                                    env->mu_, String(env, "frame-ref").tag_),
+                                Function::frame_id(fn), Fixnum(offset).tag_}))
               : form;
       break;
     }
