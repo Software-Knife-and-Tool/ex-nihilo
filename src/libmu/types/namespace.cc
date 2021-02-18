@@ -59,7 +59,7 @@ auto Namespace::FindSymbol(Env* env, Tag ns, Tag str) -> Tag {
   assert(IsType(ns));
   assert(String::IsType(str));
 
-  auto sym = FindExterns(env, ns, str);
+  auto sym = FindExterns(ns, str);
   if (!Type::Null(sym)) return sym;
 
   Cons::cons_iter<Tag> iter(Namespace::imports(ns));
@@ -103,7 +103,7 @@ auto Namespace::InternInNs(Env* env, Tag ns, Tag name) -> Tag {
   assert(String::IsType(name));
 
   auto key = static_cast<Tag>(hash_id(name));
-  auto sym = FindInterns(env, ns, name);
+  auto sym = FindInterns(ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
                                   Symbol(ns, name).Evict(env))
@@ -116,7 +116,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
   assert(String::IsType(name));
 
   auto key = static_cast<Tag>(hash_id(name));
-  auto sym = FindExterns(env, ns, name);
+  auto sym = FindExterns(ns, name);
 
   return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))

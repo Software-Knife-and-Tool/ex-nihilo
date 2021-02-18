@@ -167,9 +167,9 @@ void FindInNamespace(Frame* fp) {
                      "find-in-ns", name);
 
   if (Type::Eq(Symbol::Keyword("intern"), type)) {
-    fp->value = Namespace::FindInterns(fp->env, ns, name);
+    fp->value = Namespace::FindInterns(ns, name);
   } else if (Type::Eq(Symbol::Keyword("extern"), type)) {
-    fp->value = Namespace::FindExterns(fp->env, ns, name);
+    fp->value = Namespace::FindExterns(ns, name);
   } else
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "find-in-ns", name);

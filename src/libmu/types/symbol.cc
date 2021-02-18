@@ -123,9 +123,9 @@ auto Symbol::Print(Env* env, Tag sym, Tag stream, bool esc) -> void {
       core::PrintStdString(env, String::StdStringOf(Namespace::name(ns)),
                            stream, false);
 
-      if (!Null(Namespace::FindExterns(env, ns, Symbol::name(sym))))
+      if (Namespace::IsExtern(ns, Symbol::name(sym)))
         core::PrintStdString(env, ":", stream, false);
-      else if (!Null(Namespace::FindInterns(env, ns, Symbol::name(sym))))
+      else if (Namespace::IsIntern(ns, Symbol::name(sym)))
         core::PrintStdString(env, "::", stream, false);
       else
         assert(false);
@@ -173,7 +173,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
         rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ":"));
       else {
         auto name = String(env, string).tag_;
-        rval = Namespace::FindInterns(env, env->namespace_, name);
+        rval = Namespace::FindInterns(env->namespace_, name);
         if (Null(rval)) rval = Namespace::Intern(env, env->namespace_, name);
       }
     } else if (Null(ext_ns) && Null(int_ns)) {
