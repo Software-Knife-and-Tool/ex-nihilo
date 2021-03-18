@@ -70,6 +70,7 @@ class Namespace : public Type {
 
     uint64_t hash = OFFSET_BASIS;
 
+    /* think: ranged for here? */
     Vector::vector_iter<char> iter(str);
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       hash ^= *it;

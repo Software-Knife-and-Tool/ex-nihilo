@@ -74,7 +74,7 @@ auto Macro::ViewOf(Env* env, Tag macro) -> Tag {
                                Fixnum(ToUint64(macro) >> 3).tag_,
                                macro,
                                fn,
-                               Function::core(fn),
+                               Function::mu(fn),
                                Function::form(fn),
                                Function::frame_id(fn),
                                Fixnum(Function::arity(fn)).tag_,

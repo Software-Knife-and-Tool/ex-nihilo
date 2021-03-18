@@ -35,12 +35,12 @@ namespace {
 /** * call function on frame **/
 auto CallFrame(Env::Frame* fp) -> void {
   fp->value = Type::NIL;
-  if (Type::Null(Function::core(fp->func))) {
+  if (Type::Null(Function::mu(fp->func))) {
     Cons::cons_iter<Tag> iter(Cons::cdr(Function::form(fp->func)));
     for (auto it = iter.begin(); it != iter.end(); it = ++iter)
       fp->value = core::Eval(fp->env, it->car);
   } else
-    Type::Untag<Env::TagFn>(Function::core(fp->func))->fn(fp);
+    Type::Untag<Env::TagFn>(Function::mu(fp->func))->fn(fp);
 }
 
 /** * run-time function call argument arity validation **/
@@ -113,7 +113,7 @@ auto Function::ViewOf(Env* env, Tag fn) -> Tag {
                                fn,
                                Fixnum(ToUint64(fn) >> 3).tag_,
                                name(fn),
-                               core(fn),
+                               mu(fn),
                                form(fn),
                                frame_id(fn),
                                Fixnum(arity(fn)).tag_};
@@ -169,13 +169,12 @@ auto Function::Funcall(Env* env, Tag fn, const std::vector<Tag>& argv) -> Tag {
 }
 
 /* core functions */
-Function::Function(Env* env, Tag name, const Env::TagFn* core) : Type() {
+Function::Function(Env* env, Tag name, const Env::TagFn* mu) : Type() {
   assert(Symbol::IsType(name));
 
-  function_.arity = core->nreqs << 1;
+  function_.arity = mu->nreqs << 1;
   function_.context = std::vector<Frame*>{};
-  function_.core =
-      Address(static_cast<void*>(const_cast<Env::TagFn*>(core))).tag_;
+  function_.mu = Address(static_cast<void*>(const_cast<Env::TagFn*>(mu))).tag_;
   function_.env = NIL;
   function_.form = NIL;
   function_.frame_id = Fixnum(env->frame_id_).tag_;
@@ -194,7 +193,7 @@ Function::Function(Env* env, Tag name, std::vector<Frame*> context, Tag lambda,
 
   function_.arity = arity_of(env, lambda);
   function_.context = context;
-  function_.core = NIL;
+  function_.mu = NIL;
   function_.env = Cons::List(env, env->lexenv_);
   function_.form = form;
   function_.frame_id = Fixnum(env->frame_id_).tag_;

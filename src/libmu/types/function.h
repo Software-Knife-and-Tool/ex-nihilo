@@ -40,11 +40,11 @@ class Function : public Type {
   typedef struct {
     size_t arity; /* arity checking */
     Tag name;     /* debugging */
-    Tag core;     /* as an address */
+    Tag mu;       /* as an address */
     Tag form;     /* as a lambda */
     Tag env;      /* closures */
-    std::vector<Frame*> context;
     Tag frame_id; /* lexical reference */
+    std::vector<Frame*> context;
   } HeapLayout;
 
   HeapLayout function_;
@@ -101,10 +101,10 @@ class Function : public Type {
     return Untag<HeapLayout>(fn)->form = form;
   }
 
-  static Tag core(Tag fn) {
+  static Tag mu(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<HeapLayout>(fn)->core;
+    return Untag<HeapLayout>(fn)->mu;
   }
 
   static Tag frame_id(Tag fn) {
@@ -156,8 +156,8 @@ class Function : public Type {
   static Tag ViewOf(Env*, Tag);
   static void Print(Env*, Tag, Tag, bool);
 
- public: /* object model */
-  Tag Evict(Env* env) {
+ public: /* type model */
+  auto Evict(Env* env) -> Tag {
     auto fp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
 
@@ -166,6 +166,7 @@ class Function : public Type {
     return tag_;
   }
 
+ public: /* object */
   explicit Function(Env*, Tag, const Env::TagFn*);
   explicit Function(Env*, Tag, std::vector<Frame*>, Tag, Tag);
 
