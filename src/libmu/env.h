@@ -100,37 +100,43 @@ class Env {
   Tag standard_error_;  /* standard error */
 
  public: /* frame stack */
-  constexpr void PushFrame(Frame* fp) { frames_.push_back(fp); }
-  constexpr void PopFrame() { frames_.pop_back(); }
-  constexpr void Cache(Frame* fp) { framecache_[fp->frame_id].push(fp); }
-  constexpr void UnCache(Frame* fp) { framecache_[fp->frame_id].pop(); }
+  constexpr auto PushFrame(Frame* fp) -> void { frames_.push_back(fp); }
+  constexpr auto PopFrame() -> void { frames_.pop_back(); }
+  constexpr auto Cache(Frame* fp) -> void {
+    framecache_[fp->frame_id].push(fp);
+  }
+  constexpr auto UnCache(Frame* fp) -> void { framecache_[fp->frame_id].pop(); }
 
   /** * map id to frame **/
-  constexpr Frame* MapFrame(Tag id) {
+  constexpr auto MapFrame(Tag id) -> Frame* {
     assert(!framecache_[id].empty());
     return framecache_[id].top();
   }
 
-  static Tag LastFrame(Env*);
+  static auto LastFrame(Env*) -> Tag;
 
  public: /* heap */
-  static size_t Gc(Env*);
-  static void GcFrame(Frame*);
-  static void GcMark(Env*, Tag);
+  static auto Gc(Env*) -> size_t;
+  static auto GcFrame(Frame*) -> void;
+  static auto GcMark(Env*, Tag) -> void;
 
-  static Tag MapNamespace(Env*, const std::string&);
-  static void AddNamespace(Env*, Tag);
+  static auto MapNamespace(Env*, const std::string&) -> Tag;
+  static auto AddNamespace(Env*, Tag) -> void;
 
-  static Tag EnvView(Env*);
+  static auto EnvView(Env*) -> Tag;
 
-  static bool InHeap(Env* env, Tag ptr) {
+  static auto IsInHeap(Env* env, Tag ptr) -> bool {
     return Type::IsImmediate(ptr) ? false
                                   : env->heap_->in_heap(Type::ToAddress(ptr));
   }
 
-  static Tag ViewOf(Env*, Tag);
+  static auto IsInEvicted(Env* env, Tag ptr) -> bool {
+    return Type::IsImmediate(ptr) || env->heap_->in_heap(Type::ToAddress(ptr));
+  }
 
- public: /* object model */
+  static auto ViewOf(Env*, Tag) -> Tag;
+
+ public: /* object */
   explicit Env(Platform*, Platform::StreamId, Platform::StreamId,
                Platform::StreamId);
   ~Env() {}
