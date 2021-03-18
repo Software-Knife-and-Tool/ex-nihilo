@@ -40,13 +40,15 @@ class Vector : public Type {
     size_t length;
   } HeapLayout;
 
- public: /* Tag */
+  HeapLayout vector_;
+
+ public: /* tag */
   static const size_t MAX_LENGTH = 1024;
 
-  static Tag Map(Env*, Tag, Tag);
-  static void MapC(Env*, Tag, Tag);
+  static auto Map(Env*, Tag, Tag) -> Tag;
+  static auto MapC(Env*, Tag, Tag) -> void;
 
-  static constexpr bool IsType(Tag ptr) {
+  static constexpr auto IsType(Tag ptr) -> bool {
     return (IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::VECTOR) ||
            (IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRING) ||
            (IsImmediate(ptr) && ImmediateClass(ptr) == IMMEDIATE_CLASS::STRING);
@@ -55,7 +57,7 @@ class Vector : public Type {
  public: /* iterator */
   /* fix: figure out how to const the ref */
   template <typename T>
-  static T* DataAddress(Tag& vector) {
+  static auto DataAddress(Tag& vector) -> T* {
     assert(IsType(vector));
 
     return IsImmediate(vector)
@@ -67,13 +69,13 @@ class Vector : public Type {
 
   /* figure out how to const the ref */
   template <typename T>
-  static T Ref(Tag& vector, Tag index) {
+  static auto Ref(Tag& vector, Tag index) -> T {
     assert(IsType(vector));
 
     return DataAddress<T>(vector)[Fixnum::Uint64Of(index)];
   }
 
-  static constexpr size_t Length(Tag vec) {
+  static constexpr auto Length(Tag vec) -> size_t {
     assert(IsType(vec));
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
@@ -81,7 +83,7 @@ class Vector : public Type {
                : Untag<HeapLayout>(vec)->length;
   }
 
-  static SYS_CLASS TypeOf(Tag vec) {
+  static auto TypeOf(Tag vec) -> SYS_CLASS {
     assert(IsType(vec));
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
@@ -89,23 +91,23 @@ class Vector : public Type {
                : Untag<HeapLayout>(vec)->type;
   }
 
-  static Tag VecType(Tag vec) {
+  static auto VecType(Tag vec) -> Tag {
     assert(IsType(vec));
 
     return Type::MapClassSymbol(TypeOf(vec));
   }
 
-  static constexpr Tag VSpecOf(Tag t) { return t; }
+  static constexpr auto VSpecOf(Tag t) -> Tag { return t; }
 
-  static Tag ListToVector(Env*, Tag, Tag);
-  static Tag Read(Env*, Tag);
-  static Tag ViewOf(Env*, Tag);
+  static auto ListToVector(Env*, Tag, Tag) -> Tag;
+  static auto Read(Env*, Tag) -> Tag;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
-  static void GcMark(Env*, Tag);
-  static void Print(Env*, Tag, Tag, bool);
+  static auto GcMark(Env*, Tag) -> void;
+  static auto Print(Env*, Tag, Tag, bool) -> void;
 
  public: /* type model */
-  Tag Evict(Env*) { return tag_; }
+  auto Evict(Env*) -> Tag { return tag_; }
 
  public: /* object */
   explicit Vector(Tag t) : Type() { tag_ = t; }

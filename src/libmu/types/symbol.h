@@ -39,43 +39,43 @@ class Symbol : public Type {
   HeapLayout symbol_;
 
  public:
-  static constexpr bool IsType(Tag ptr) {
+  static constexpr auto IsType(Tag ptr) -> bool {
     return (TagOf(ptr) == TAG::SYMBOL) || IsKeyword(ptr);
   }
 
   /* keywords */
-  static constexpr bool IsKeyword(Tag ptr) {
+  static constexpr auto IsKeyword(Tag ptr) -> bool {
     return IsImmediate(ptr) &&
            (ImmediateClass(ptr) == IMMEDIATE_CLASS::KEYWORD);
   }
 
-  static constexpr Tag Keyword(Tag name) {
+  static constexpr auto Keyword(Tag name) -> Tag {
     assert(String::IsType(name));
 
     return MakeImmediate(ImmediateData(name), ImmediateSize(name),
                          IMMEDIATE_CLASS::KEYWORD);
   }
 
-  static Tag Keyword(const std::string& name) {
+  static auto Keyword(const std::string& name) -> Tag {
     return Keyword(String::MakeImmediate(name));
   }
 
   /* accessors */
-  static Tag ns(Tag symbol) {
+  static auto ns(Tag symbol) -> Tag {
     assert(IsType(symbol));
 
     return IsKeyword(symbol) ? NIL : Untag<HeapLayout>(symbol)->ns;
   }
 
-  static void ns(Tag, Tag);
+  static auto ns(Tag symbol, Tag ns) -> void;
 
-  static Tag value(Tag symbol) {
+  static auto value(Tag symbol) -> Tag {
     assert(IsType(symbol));
 
     return IsKeyword(symbol) ? symbol : Untag<HeapLayout>(symbol)->value;
   }
 
-  static Tag name(Tag symbol) {
+  static auto name(Tag symbol) -> Tag {
     assert(IsType(symbol));
 
     return IsKeyword(symbol)
@@ -85,28 +85,29 @@ class Symbol : public Type {
   }
 
   /** * namespaces **/
-  static bool IsUninterned(Tag symbol) {
+  static auto IsUninterned(Tag symbol) -> bool {
     assert(IsType(symbol) && !IsKeyword(symbol));
 
     return Null(Symbol::ns(symbol));
   }
 
-  static Tag Bind(Tag symbol, Tag value) {
+  static auto Bind(Tag symbol, Tag value) -> Tag {
     assert(IsType(symbol));
 
     Untag<HeapLayout>(symbol)->value = value;
     return symbol;
   }
 
-  static void GcMark(Env*, Tag);
-  static bool IsBound(Tag);
-  static void Print(Env*, Tag, Tag, bool);
-  static Tag ParseSymbol(Env*, std::string, bool);
-  static Tag ViewOf(Env*, Tag);
+  static auto GcMark(Env*, Tag) -> void;
+  static auto IsBound(Tag) -> bool;
+  static auto Print(Env*, Tag, Tag, bool) -> void;
+  static auto ParseSymbol(Env*, std::string, bool) -> Tag;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
- public: /* object model */
-  Tag Evict(Env*);
+ public: /* type model */
+  auto Evict(Env*) -> Tag;
 
+ public: /* object */
   explicit Symbol(Tag, Tag);
   explicit Symbol(Tag, Tag, Tag);
 };

@@ -36,14 +36,14 @@ class Struct : public Type {
   HeapLayout struct_;
 
  public: /* Tag */
-  static constexpr bool IsType(Tag ptr) {
+  static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
-  static Tag stype(Tag str) { return Untag<HeapLayout>(str)->stype; }
-  static Tag slots(Tag str) { return Untag<HeapLayout>(str)->slots; }
+  static auto stype(Tag str) -> Tag { return Untag<HeapLayout>(str)->stype; }
+  static auto slots(Tag str) -> Tag { return Untag<HeapLayout>(str)->slots; }
 
-  static void GcMark(Env* env, Tag ptr) {
+  static auto GcMark(Env* env, Tag ptr) -> void {
     assert(IsType(ptr));
 
     if (!env->heap_->IsGcMarked(ptr)) {
@@ -54,7 +54,7 @@ class Struct : public Type {
   }
 
   /** * view of struct object **/
-  static Tag ViewOf(Env* env, Tag strct) {
+  static auto ViewOf(Env* env, Tag strct) -> Tag {
     assert(IsType(strct));
 
     auto view = std::vector<Tag>{Symbol::Keyword("struct"), strct,
@@ -64,8 +64,8 @@ class Struct : public Type {
     return Vector(env, view).tag_;
   }
 
- public: /* object model */
-  Tag Evict(Env* env) {
+ public: /* type model */
+  auto Evict(Env* env) -> Tag {
     auto sp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
 
@@ -75,6 +75,7 @@ class Struct : public Type {
     return tag_;
   }
 
+ public: /* object */
   explicit Struct(Tag name, Tag slots) {
     assert(Symbol::IsKeyword(name));
     assert(Cons::IsList(slots));

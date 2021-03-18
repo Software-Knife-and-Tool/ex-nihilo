@@ -89,7 +89,7 @@ auto Symbol::GcMark(Env* env, Tag symbol) -> void {
   }
 }
 
-/** * set symbol namespace **/
+/** * set namespace */
 auto Symbol::ns(Tag symbol, Tag ns) -> void {
   assert(IsType(symbol));
   assert(!IsKeyword(symbol));

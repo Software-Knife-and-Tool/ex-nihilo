@@ -33,11 +33,11 @@ class Env;
 /** * char vector **/
 class String : public Vector {
  public: /* Tag */
-  static constexpr bool IsType(Tag ptr) {
+  static constexpr auto IsType(Tag ptr) -> bool {
     return Vector::IsType(ptr) && Vector::TypeOf(ptr) == SYS_CLASS::CHAR;
   }
 
-  static bool Eql(Tag str1, Tag str2) {
+  static auto Eql(Tag str1, Tag str2) -> bool {
     assert(Vector::IsType(str2) && Vector::TypeOf(str2) == SYS_CLASS::CHAR);
     assert(Vector::IsType(str1) && Vector::TypeOf(str1) == SYS_CLASS::CHAR);
 
@@ -47,19 +47,19 @@ class String : public Vector {
                          Length(str1)) == 0));
   }
 
-  static std::string StdStringOf(Tag str) {
+  static auto StdStringOf(Tag str) -> std::string {
     assert(IsType(str));
 
     return std::string(DataAddress<char>(str), Length(str));
   }
 
-  static constexpr size_t Length(Tag str) {
+  static constexpr auto Length(Tag str) -> size_t {
     assert(IsType(str));
 
     return Vector::Length(str);
   }
 
-  static Tag MakeImmediate(const std::string& str) {
+  static auto MakeImmediate(const std::string& str) -> Tag {
     assert(str.size() <= IMMEDIATE_STR_MAX);
 
     uint64_t buffer = 0;
@@ -69,11 +69,11 @@ class String : public Vector {
     return Type::MakeImmediate(buffer, str.size(), IMMEDIATE_CLASS::STRING);
   }
 
-  static void Print(Env*, Tag, Tag, bool);
-  static Tag Read(Env*, Tag);
-  static Tag ViewOf(Env*, Tag);
+  static auto Print(Env*, Tag, Tag, bool) -> void;
+  static auto Read(Env*, Tag) -> Tag;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
- public: /* object model */
+ public: /* object */
   explicit String(Env* env, std::string str) : Vector(env, str) {}
 };
 
