@@ -266,6 +266,7 @@ auto Env::GcMark(Env* env, Tag ptr) -> void {
       {SYS_CLASS::SYMBOL, Symbol::GcMark},
       {SYS_CLASS::VECTOR, Vector::GcMark}};
 
+  assert(IsEvicted(env, ptr));
   assert(kGcTypeMap.count(Type::TypeOf(ptr)));
   kGcTypeMap.at(Type::TypeOf(ptr))(env, ptr);
 }

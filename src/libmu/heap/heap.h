@@ -39,7 +39,7 @@ using Tag = core::Type::Tag;
 
 class Heap {
  private:
-  typedef uint64_t HeapInfo;
+  typedef uint64_t HeapInfo; /* think: enum trick here? */
 
   std::string filename_; /* mapped file */
   size_t pagesz_;        /* page size for this heap */
@@ -121,14 +121,14 @@ class Heap {
 
   void* Alloc(size_t, SYS_CLASS);
 
-  size_t Gc();
-  bool IsGcMarked(Tag);
-  void GcMark(Tag);
-  void ClearRefBits();
-  HeapInfo* FindFree(size_t, SYS_CLASS);
+  auto Gc() -> size_t;
+  auto IsGcMarked(Tag) -> bool;
+  auto GcMark(Tag) -> void;
+  auto ClearRefBits() -> void;
+  auto FindFree(size_t, SYS_CLASS) -> HeapInfo*;
 
   /** * is this cadder in the heap? **/
-  bool in_heap(void* caddr) {
+  auto in_heap(void* caddr) -> bool {
     return (uint64_t)caddr >= (uint64_t)uaddr_ &&
            (uint64_t)caddr < (uint64_t)uaddr_ + npages_ * pagesz_;
   }

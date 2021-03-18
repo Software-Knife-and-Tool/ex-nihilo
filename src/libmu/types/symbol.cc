@@ -191,8 +191,8 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
 auto Symbol::Evict(Env* env) -> Tag {
   auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
 
-  assert(Null(symbol_.ns) || Env::InHeap(env, symbol_.ns));
-  assert(Type::IsImmediate(symbol_.name) || Env::InHeap(env, symbol_.name));
+  assert(Null(symbol_.ns) || Env::IsInHeap(env, symbol_.ns));
+  assert(Type::IsImmediate(symbol_.name) || Env::IsInHeap(env, symbol_.name));
 
   *sp = symbol_;
   tag_ = Type::Entag(sp, TAG::SYMBOL);
