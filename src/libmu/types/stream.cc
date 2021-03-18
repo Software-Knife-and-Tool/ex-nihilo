@@ -38,7 +38,7 @@ namespace core {
 
 /** * function stream? **/
 auto Stream::IsFunction(Tag ptr) -> bool {
-  return IsType(ptr) && Function::IsType(Untag<Layout>(ptr)->fn);
+  return IsType(ptr) && Function::IsType(Untag<HeapLayout>(ptr)->fn);
 }
 
 /** * garbage collection **/
@@ -67,7 +67,7 @@ auto Stream::IsEof(Tag stream) -> bool {
 
   if (IsFunction(stream)) return false;
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
 
   return Platform::IsEof(sp->stream);
 }
@@ -78,7 +78,7 @@ auto Stream::IsClosed(Tag stream) -> bool {
 
   if (IsFunction(stream)) return false;
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
 
   return (Platform::IsClosed(sp->stream));
 }
@@ -89,7 +89,7 @@ auto Stream::Flush(Tag stream) -> void {
 
   if (IsFunction(stream)) return;
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
 
   Platform::Flush(sp->stream);
 }
@@ -121,7 +121,7 @@ auto Stream::UnReadByte(Tag byte, Tag stream) -> Tag {
   assert(!Stream::IsFunction(stream));
   assert(Fixnum::IsType(byte));
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
   Platform::UnReadByte(Fixnum::Int64Of(byte), sp->stream);
 
   return byte;
@@ -133,7 +133,7 @@ auto Stream::WriteByte(Tag byte, Tag stream) -> void {
   assert(!Stream::IsFunction(stream));
   assert(Stream::IsType(stream));
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
 
   assert(Platform::IsOutput(sp->stream));
   assert(!Platform::IsClosed(sp->stream));
@@ -146,7 +146,7 @@ auto Stream::ReadByte(Env* env, Tag strm) -> Tag {
   auto stream = StreamDesignator(env, strm);
   assert(!Stream::IsFunction(stream));
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
   auto byte = Platform::ReadByte(sp->stream);
 
   if (byte == -1 || byte == 0x4) return NIL;
@@ -159,14 +159,14 @@ auto Stream::Close(Tag stream) -> Tag {
   assert(IsType(stream));
   assert(!Stream::IsFunction(stream));
 
-  auto sp = Untag<Layout>(stream);
+  auto sp = Untag<HeapLayout>(stream);
 
   Platform::Close(sp->stream);
   return T;
 }
 
 auto Stream::Evict(Env* env) -> Tag {
-  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM);
+  auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
 
   *sp = stream_;
   tag_ = Entag(sp, TAG::EXTEND);

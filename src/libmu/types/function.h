@@ -45,9 +45,9 @@ class Function : public Type {
     Tag env;      /* closures */
     std::vector<Frame*> context;
     Tag frame_id; /* lexical reference */
-  } Layout;
+  } HeapLayout;
 
-  Layout function_;
+  HeapLayout function_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::FUNCTION; }
@@ -56,74 +56,74 @@ class Function : public Type {
   static int arity(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->arity;
+    return Untag<HeapLayout>(fn)->arity;
   }
 
   static std::vector<Frame*> context(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->context;
+    return Untag<HeapLayout>(fn)->context;
   }
 
   static size_t ncontext(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->context.size();
+    return Untag<HeapLayout>(fn)->context.size();
   }
 
   static std::vector<Frame*> context(Tag fn, std::vector<Frame*> ctx) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->context = ctx;
+    return Untag<HeapLayout>(fn)->context = ctx;
   }
 
   static Tag env(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->env;
+    return Untag<HeapLayout>(fn)->env;
   }
 
   static Tag env(Tag fn, Tag env) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->env = env;
+    return Untag<HeapLayout>(fn)->env = env;
   }
 
   static Tag form(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->form;
+    return Untag<HeapLayout>(fn)->form;
   }
 
   static Tag form(Tag fn, Tag form) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->form = form;
+    return Untag<HeapLayout>(fn)->form = form;
   }
 
   static Tag core(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->core;
+    return Untag<HeapLayout>(fn)->core;
   }
 
   static Tag frame_id(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->frame_id;
+    return Untag<HeapLayout>(fn)->frame_id;
   }
 
   static Tag name(Tag fn) {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->name;
+    return Untag<HeapLayout>(fn)->name;
   }
 
   static Tag name(Tag fn, Tag symbol) {
     assert(IsType(fn));
     assert(Symbol::IsType(symbol));
 
-    return Untag<Layout>(fn)->name = symbol;
+    return Untag<HeapLayout>(fn)->name = symbol;
   }
 
   /* arity coding */
@@ -158,7 +158,8 @@ class Function : public Type {
 
  public: /* object model */
   Tag Evict(Env* env) {
-    auto fp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::FUNCTION);
+    auto fp =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
 
     *fp = function_;
     tag_ = Entag(fp, TAG::FUNCTION);

@@ -85,9 +85,9 @@ class Namespace : public Type {
     Tag imports; /* list of namespaces */
     std::shared_ptr<symbol_map> externs;
     std::shared_ptr<symbol_map> interns;
-  } Layout;
+  } HeapLayout;
 
-  Layout namespace_;
+  HeapLayout namespace_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
@@ -98,26 +98,26 @@ class Namespace : public Type {
   static Tag name(Tag ns) {
     assert(IsType(ns));
 
-    return Untag<Layout>(ns)->name;
+    return Untag<HeapLayout>(ns)->name;
   }
 
   /** * accessors **/
   static Tag imports(Tag ns) {
     assert(IsType(ns));
 
-    return Untag<Layout>(ns)->imports;
+    return Untag<HeapLayout>(ns)->imports;
   }
 
   static symbol_map externs(Tag ns) {
     assert(IsType(ns));
 
-    return *Untag<Layout>(ns)->externs.get();
+    return *Untag<HeapLayout>(ns)->externs.get();
   }
 
   static symbol_map interns(Tag ns) {
     assert(IsType(ns));
 
-    return *Untag<Layout>(ns)->interns.get();
+    return *Untag<HeapLayout>(ns)->interns.get();
   }
 
   /** * is in namespace externs? **/
@@ -142,10 +142,10 @@ class Namespace : public Type {
     assert(String::IsType(str));
 
     auto key = static_cast<Tag>(hash_id(str));
-    auto entry = find(Untag<Layout>(ns)->externs, key);
+    auto entry = find(Untag<HeapLayout>(ns)->externs, key);
 
-    return isFound(Untag<Layout>(ns)->externs, entry) ? entry->second
-                                                      : Type::NIL;
+    return isFound(Untag<HeapLayout>(ns)->externs, entry) ? entry->second
+                                                          : Type::NIL;
   }
 
   /** * find symbol in namespace interns **/
@@ -154,10 +154,10 @@ class Namespace : public Type {
     assert(String::IsType(str));
 
     auto key = static_cast<Tag>(hash_id(str));
-    auto entry = find(Untag<Layout>(ns)->interns, key);
+    auto entry = find(Untag<HeapLayout>(ns)->interns, key);
 
-    return isFound(Untag<Layout>(ns)->interns, entry) ? entry->second
-                                                      : Type::NIL;
+    return isFound(Untag<HeapLayout>(ns)->interns, entry) ? entry->second
+                                                          : Type::NIL;
   }
 
   static Tag Symbols(Env*, Tag);

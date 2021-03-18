@@ -39,9 +39,9 @@ class Stream : public Type {
   typedef struct {
     Platform::StreamId stream;
     Tag fn;
-  } Layout;
+  } HeapLayout;
 
-  Layout stream_;
+  HeapLayout stream_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
@@ -58,13 +58,13 @@ class Stream : public Type {
   static Platform::StreamId streamId(Tag stream) {
     assert(IsType(stream));
 
-    return Untag<Layout>(stream)->stream;
+    return Untag<HeapLayout>(stream)->stream;
   }
 
   static Tag func(Tag stream) {
     assert(IsType(stream));
 
-    return Untag<Layout>(stream)->fn;
+    return Untag<HeapLayout>(stream)->fn;
   }
 
   static Tag MakeInputFile(Env* env, std::string path) {

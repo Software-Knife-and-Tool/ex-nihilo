@@ -38,7 +38,7 @@ class Vector : public Type {
   typedef struct {
     SYS_CLASS type;
     size_t length;
-  } Layout;
+  } HeapLayout;
 
  public: /* Tag */
   static const size_t MAX_LENGTH = 1024;
@@ -61,8 +61,8 @@ class Vector : public Type {
     return IsImmediate(vector)
                ? reinterpret_cast<T*>(reinterpret_cast<char*>(&vector) + 1)
                : reinterpret_cast<T*>(
-                     reinterpret_cast<char*>(Untag<Layout>(vector)) +
-                     sizeof(Layout));
+                     reinterpret_cast<char*>(Untag<HeapLayout>(vector)) +
+                     sizeof(HeapLayout));
   }
 
   /* figure out how to const the ref */
@@ -78,7 +78,7 @@ class Vector : public Type {
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
                ? ImmediateSize(vec)
-               : Untag<Layout>(vec)->length;
+               : Untag<HeapLayout>(vec)->length;
   }
 
   static SYS_CLASS TypeOf(Tag vec) {
@@ -86,7 +86,7 @@ class Vector : public Type {
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
                ? SYS_CLASS::CHAR
-               : Untag<Layout>(vec)->type;
+               : Untag<HeapLayout>(vec)->type;
   }
 
   static Tag VecType(Tag vec) {
@@ -95,6 +95,8 @@ class Vector : public Type {
     return Type::MapClassSymbol(TypeOf(vec));
   }
 
+  static constexpr Tag VSpecOf(Tag t) { return t; }
+
   static Tag ListToVector(Env*, Tag, Tag);
   static Tag Read(Env*, Tag);
   static Tag ViewOf(Env*, Tag);
@@ -102,19 +104,14 @@ class Vector : public Type {
   static void GcMark(Env*, Tag);
   static void Print(Env*, Tag, Tag, bool);
 
- public: /* object model */
+ public: /* type model */
   Tag Evict(Env*) { return tag_; }
 
-  static constexpr Tag VSpecOf(Tag t) { return t; }
-
+ public: /* object */
   explicit Vector(Tag t) : Type() { tag_ = t; }
 
-  explicit Vector(Env*, const std::string&); /* string */
-  explicit Vector(Env* env, std::vector<char> srcv) {
-    std::string src(srcv.begin(), srcv.end());
-
-    tag_ = Vector(env, src).tag_;
-  }
+  explicit Vector(Env*, const std::string&);   /* string */
+  explicit Vector(Env*, std::vector<char>);    /* string */
   explicit Vector(Env*, std::vector<Tag>);     /* general */
   explicit Vector(Env*, std::vector<float>);   /* float */
   explicit Vector(Env*, std::vector<int64_t>); /* fixnum */

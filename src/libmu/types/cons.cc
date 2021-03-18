@@ -259,7 +259,7 @@ auto Cons::Read(Env* env, Tag stream) -> Tag {
 
 /** * evict cons to heap **/
 auto Cons::Evict(Env* env) -> Tag {
-  auto cp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS);
+  auto cp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
 
   *cp = cons_;
   tag_ = Entag(cp, TAG::CONS);
@@ -267,7 +267,7 @@ auto Cons::Evict(Env* env) -> Tag {
   return tag_;
 }
 
-/** * allocate cons from the heap **/
+/** * allocate cons **/
 Cons::Cons(Tag car, Tag cdr) : Type() {
   cons_.car = car;
   cons_.cdr = cdr;

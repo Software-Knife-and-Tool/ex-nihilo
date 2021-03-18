@@ -31,17 +31,17 @@ class Struct : public Type {
   typedef struct {
     Tag stype; /* keyword */
     Tag slots; /* slot values alist (slot-name . value)) */
-  } Layout;
+  } HeapLayout;
 
-  Layout struct_;
+  HeapLayout struct_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
-  static Tag stype(Tag str) { return Untag<Layout>(str)->stype; }
-  static Tag slots(Tag str) { return Untag<Layout>(str)->slots; }
+  static Tag stype(Tag str) { return Untag<HeapLayout>(str)->stype; }
+  static Tag slots(Tag str) { return Untag<HeapLayout>(str)->slots; }
 
   static void GcMark(Env* env, Tag ptr) {
     assert(IsType(ptr));
@@ -66,7 +66,8 @@ class Struct : public Type {
 
  public: /* object model */
   Tag Evict(Env* env) {
-    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STRUCT);
+    auto sp =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
 
     *sp = struct_;
     tag_ = Entag(sp, TAG::EXTEND);

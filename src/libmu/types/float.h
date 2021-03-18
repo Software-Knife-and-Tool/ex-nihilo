@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -24,7 +24,7 @@ namespace core {
 
 /** * float type class **/
 class Float : public Type {
- public: /* Tag */
+ public: /* tag */
   static constexpr bool IsType(Tag ptr) {
     return IsImmediate(ptr) && (ImmediateClass(ptr) == IMMEDIATE_CLASS::FLOAT);
   }
@@ -43,9 +43,10 @@ class Float : public Type {
   static void Print(Env*, Tag, Tag, bool);
   static Tag ViewOf(Env*, Tag);
 
- public: /* object model */
+ public: /* type model */
   Tag Evict(Env*) { return tag_; }
 
+ public: /* object */
   explicit Float(float fl) : Type() {
     uint64_t buf = 0;
 

@@ -227,7 +227,7 @@ void GetStringStream(Frame* fp) {
                      "argument must be a stream (get-output-string-stream)",
                      stream);
 
-  auto sp = Type::Untag<Stream::Layout>(stream);
+  auto sp = Type::Untag<Stream::HeapLayout>(stream);
 
   if (!Platform::IsString(sp->stream))
     Condition::Raise(
@@ -320,7 +320,7 @@ void Load(Frame* fp) {
 
   switch (Type::TypeOf(filespec)) {
     case Type::SYS_CLASS::STREAM: {
-      auto sp = Type::Untag<Stream::Layout>(filespec);
+      auto sp = Type::Untag<Stream::HeapLayout>(filespec);
       while (!Platform::IsEof(sp->stream))
         core::Eval(fp->env,
                    core::Compile(fp->env, core::Read(fp->env, filespec)));
@@ -335,7 +335,7 @@ void Load(Frame* fp) {
         Condition::Raise(fp->env, Condition::CONDITION_CLASS::FILE_ERROR,
                          "(load)", filespec);
 
-      auto sp = Type::Untag<Stream::Layout>(istream);
+      auto sp = Type::Untag<Stream::HeapLayout>(istream);
 
       while (!Platform::IsEof(sp->stream))
         core::Eval(fp->env,

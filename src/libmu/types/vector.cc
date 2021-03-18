@@ -81,8 +81,8 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
 
 /** * allocate a general vector from the heap **/
 Vector::Vector(Env* env, std::vector<Tag> src) {
-  auto vp = env->heap_alloc<Layout>(sizeof(Layout) + (src.size() * sizeof(Tag)),
-                                    SYS_CLASS::VECTOR);
+  auto vp = env->heap_alloc<HeapLayout>(
+      sizeof(HeapLayout) + (src.size() * sizeof(Tag)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::T;
   vp->length = src.size();
@@ -94,12 +94,19 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 }
 
 /** * allocate a char vector from the heap **/
+Vector::Vector(Env* env, std::vector<char> srcv) {
+  std::string src(srcv.begin(), srcv.end());
+
+  tag_ = Vector(env, src).tag_;
+}
+
+/** * allocate a char vector from the heap **/
 Vector::Vector(Env* env, const std::string& src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(src);
   } else {
-    auto vp = env->heap_alloc<Layout>(
-        sizeof(Layout) + (src.size() * sizeof(char)), SYS_CLASS::STRING);
+    auto vp = env->heap_alloc<HeapLayout>(
+        sizeof(HeapLayout) + (src.size() * sizeof(char)), SYS_CLASS::STRING);
 
     vp->type = SYS_CLASS::CHAR;
     vp->length = src.size();
@@ -113,8 +120,8 @@ Vector::Vector(Env* env, const std::string& src) {
 
 /** * allocate a byte vector from the heap **/
 Vector::Vector(Env* env, std::vector<uint8_t> src) {
-  auto vp = env->heap_alloc<Layout>(
-      sizeof(Layout) + (src.size() * sizeof(uint8_t)), SYS_CLASS::VECTOR);
+  auto vp = env->heap_alloc<HeapLayout>(
+      sizeof(HeapLayout) + (src.size() * sizeof(uint8_t)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::BYTE;
   vp->length = src.size();
@@ -127,8 +134,8 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
 /** * allocate a fixnum vector from the heap **/
 Vector::Vector(Env* env, std::vector<int64_t> src) {
-  auto vp = env->heap_alloc<Layout>(
-      sizeof(Layout) + (src.size() * sizeof(int64_t)), SYS_CLASS::VECTOR);
+  auto vp = env->heap_alloc<HeapLayout>(
+      sizeof(HeapLayout) + (src.size() * sizeof(int64_t)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::FIXNUM;
   vp->length = src.size();
@@ -141,8 +148,8 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
 /** * allocate a float vector from the heap **/
 Vector::Vector(Env* env, std::vector<float> src) {
-  auto vp = env->heap_alloc<Layout>(
-      sizeof(Layout) + (src.size() * sizeof(float)), SYS_CLASS::VECTOR);
+  auto vp = env->heap_alloc<HeapLayout>(
+      sizeof(HeapLayout) + (src.size() * sizeof(float)), SYS_CLASS::VECTOR);
 
   vp->type = SYS_CLASS::FLOAT;
   vp->length = src.size();

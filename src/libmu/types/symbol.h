@@ -34,9 +34,9 @@ class Symbol : public Type {
     Tag ns;
     Tag name;
     Tag value;
-  } Layout;
+  } HeapLayout;
 
-  Layout symbol_;
+  HeapLayout symbol_;
 
  public:
   static constexpr bool IsType(Tag ptr) {
@@ -64,7 +64,7 @@ class Symbol : public Type {
   static Tag ns(Tag symbol) {
     assert(IsType(symbol));
 
-    return IsKeyword(symbol) ? NIL : Untag<Layout>(symbol)->ns;
+    return IsKeyword(symbol) ? NIL : Untag<HeapLayout>(symbol)->ns;
   }
 
   static void ns(Tag, Tag);
@@ -72,7 +72,7 @@ class Symbol : public Type {
   static Tag value(Tag symbol) {
     assert(IsType(symbol));
 
-    return IsKeyword(symbol) ? symbol : Untag<Layout>(symbol)->value;
+    return IsKeyword(symbol) ? symbol : Untag<HeapLayout>(symbol)->value;
   }
 
   static Tag name(Tag symbol) {
@@ -81,7 +81,7 @@ class Symbol : public Type {
     return IsKeyword(symbol)
                ? MakeImmediate(ImmediateData(symbol), ImmediateSize(symbol),
                                IMMEDIATE_CLASS::STRING)
-               : Untag<Layout>(symbol)->name;
+               : Untag<HeapLayout>(symbol)->name;
   }
 
   /** * namespaces **/
@@ -94,7 +94,7 @@ class Symbol : public Type {
   static Tag Bind(Tag symbol, Tag value) {
     assert(IsType(symbol));
 
-    Untag<Layout>(symbol)->value = value;
+    Untag<HeapLayout>(symbol)->value = value;
     return symbol;
   }
 
