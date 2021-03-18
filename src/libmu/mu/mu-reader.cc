@@ -15,9 +15,8 @@
 #include <limits>
 #include <map>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/readtable.h"
 #include "libmu/type.h"
 

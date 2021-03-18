@@ -11,7 +11,7 @@
  **  eval.cc: library eval/apply
  **
  **/
-#include "libmu/eval.h"
+#include "libmu/core.h"
 
 #include <cassert>
 #include <functional>
@@ -19,10 +19,9 @@
 #include <map>
 #include <vector>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
 #include "libmu/macro.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/type.h"
 
 #include "libmu/compiler.h"

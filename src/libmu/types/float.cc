@@ -21,8 +21,8 @@
 #include <sstream>
 #include <utility>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/types/stream.h"

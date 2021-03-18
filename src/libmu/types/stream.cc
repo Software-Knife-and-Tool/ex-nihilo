@@ -21,10 +21,8 @@
 
 #include "libmu/platform/platform.h"
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/eval.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/readtable.h"
 #include "libmu/type.h"
 

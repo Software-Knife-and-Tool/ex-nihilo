@@ -18,10 +18,8 @@
 #include <vector>
 
 #include "libmu/compiler.h"
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/eval.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"

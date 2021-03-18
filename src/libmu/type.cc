@@ -19,9 +19,8 @@
 #include <map>
 #include <vector>
 
+#include "libmu/core.h"
 #include "libmu/macro.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 
 #include "libmu/types/address.h"
 #include "libmu/types/condition.h"

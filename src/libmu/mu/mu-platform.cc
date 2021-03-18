@@ -19,9 +19,8 @@
 
 #include "libmu/platform/platform.h"
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"

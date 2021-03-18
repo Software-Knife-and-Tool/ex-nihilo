@@ -11,16 +11,16 @@
  **  read.cc: library reader
  **
  **/
-#include "libmu/read.h"
+#include "libmu/core.h"
 
 #include <cassert>
 #include <limits>
 #include <map>
 
 #include "libmu/compiler.h"
+#include "libmu/core.h"
 #include "libmu/env.h"
 #include "libmu/macro.h"
-#include "libmu/print.h"
 #include "libmu/readtable.h"
 #include "libmu/type.h"
 

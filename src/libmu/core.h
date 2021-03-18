@@ -2,18 +2,17 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
 /********
  **
- **  eval.h: eval/apply
+ **  core.h: core functions
  **
  **/
-
-#if !defined(LIBMU_EVAL_H_)
-#define LIBMU_EVAL_H_
+#if !defined(LIBMU_CORE_H_)
+#define LIBMU_CORE_H_
 
 #include <cassert>
 #include <cinttypes>
@@ -34,7 +33,15 @@ using Tag = Type::Tag;
 Tag Apply(Env*, Tag, Tag);
 Tag Eval(Env*, Tag);
 
+void Print(Env*, Tag, Tag, bool);
+void PrintStdString(Env*, const std::string&, Tag, bool);
+void Terpri(Env*, Tag);
+
+Tag Read(Env*, Tag);
+Tag ReadForm(Env*, Tag);
+bool ReadWSUntilEof(Env*, Tag);
+
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* LIBMU_EVAL_H_ */
+#endif /* LIBMU_CORE_H_ */
