@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -23,7 +23,7 @@ namespace core {
 
 /** * fixnum type class **/
 class Fixnum : public Type {
- public: /* Tag */
+ public: /* tag */
   static constexpr bool IsType(Tag ptr) {
     return (TagOf(ptr) == TAG::EFIXNUM) || (TagOf(ptr) == TAG::OFIXNUM);
   }
@@ -46,9 +46,10 @@ class Fixnum : public Type {
   static void Print(Env*, Tag, Tag, bool);
   static Tag ViewOf(Env*, Tag);
 
- public: /* object model */
+ public: /* type model */
   Tag Evict(Env*) { return tag_; }
 
+ public: /* object */
   explicit Fixnum(int64_t val) : Type() {
     tag_ = Entag(static_cast<Tag>(val << 2), TAG::EFIXNUM);
   }

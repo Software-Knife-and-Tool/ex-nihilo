@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -13,8 +13,8 @@
  **/
 #include <cassert>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"

@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -15,9 +15,8 @@
 
 #include <cassert>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/readtable.h"
 #include "libmu/type.h"
 
@@ -90,13 +89,13 @@ auto Symbol::GcMark(Env* env, Tag symbol) -> void {
   }
 }
 
-/** * set symbol namespace **/
+/** * set namespace */
 auto Symbol::ns(Tag symbol, Tag ns) -> void {
   assert(IsType(symbol));
   assert(!IsKeyword(symbol));
   assert(Namespace::IsType(ns));
 
-  Untag<Layout>(symbol)->ns = ns;
+  Untag<HeapLayout>(symbol)->ns = ns;
 }
 
 /** * is symbol bound to a value? */
@@ -190,7 +189,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
 
 /** * evict symbol to the heap **/
 auto Symbol::Evict(Env* env) -> Tag {
-  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL);
+  auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
 
   assert(Null(symbol_.ns) || Env::InHeap(env, symbol_.ns));
   assert(Type::IsImmediate(symbol_.name) || Env::InHeap(env, symbol_.name));

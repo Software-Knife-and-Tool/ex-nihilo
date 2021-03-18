@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -35,39 +35,39 @@ class Env;
 
 /** * stream type class **/
 class Stream : public Type {
- public:
+ private:
   typedef struct {
-    Platform::StreamId stream;
+    Platform::StreamId streamId;
     Tag fn;
-  } Layout;
+  } HeapLayout;
 
-  Layout stream_;
+  HeapLayout stream_;
 
- public: /* Tag */
-  static constexpr bool IsType(Tag ptr) {
+ public: /* tag */
+  static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
            heap::Heap::SysClass(ptr) == Type::SYS_CLASS::STREAM;
   }
 
-  static bool IsFunction(Tag);
+  static auto IsFunction(Tag) -> bool;
 
-  static constexpr bool IsStreamDesignator(Tag ptr) {
+  static constexpr auto IsStreamDesignator(Tag ptr) -> bool {
     return Eq(ptr, T) || Eq(ptr, NIL) || IsType(ptr);
   }
 
-  static Platform::StreamId streamId(Tag stream) {
+  static auto streamId(Tag stream) -> Platform::StreamId {
     assert(IsType(stream));
 
-    return Untag<Layout>(stream)->stream;
+    return Untag<HeapLayout>(stream)->streamId;
   }
 
-  static Tag func(Tag stream) {
+  static auto func(Tag stream) -> Tag {
     assert(IsType(stream));
 
-    return Untag<Layout>(stream)->fn;
+    return Untag<HeapLayout>(stream)->fn;
   }
 
-  static Tag MakeInputFile(Env* env, std::string path) {
+  static auto MakeInputFile(Env* env, std::string path) -> Tag {
     auto stream = Platform::OpenInputFile(path);
 
     if (stream == -1) return NIL;
@@ -75,35 +75,36 @@ class Stream : public Type {
     return Stream(stream).Evict(env);
   }
 
-  static Tag MakeOutputFile(Env* env, std::string path) {
+  static auto MakeOutputFile(Env* env, std::string path) -> Tag {
     return Stream(Platform::OpenOutputFile(path)).Evict(env);
   }
 
-  static Tag MakeInputString(Env* env, std::string str) {
+  static auto MakeInputString(Env* env, std::string str) -> Tag {
     return Stream(Platform::OpenInputString(str)).Evict(env);
   }
 
-  static Tag MakeOutputString(Env* env, std::string init_string) {
+  static auto MakeOutputString(Env* env, std::string init_string) -> Tag {
     return Stream(Platform::OpenOutputString(init_string)).Evict(env);
   }
 
-  static Tag StreamDesignator(Env*, Tag);
-  static Tag Close(Tag);
+  static auto StreamDesignator(Env*, Tag) -> Tag;
+  static auto Close(Tag) -> Tag;
 
-  static Tag ReadByte(Env*, Tag);
-  static Tag UnReadByte(Tag, Tag);
-  static void WriteByte(Tag, Tag);
+  static auto ReadByte(Env*, Tag) -> Tag;
+  static auto UnReadByte(Tag, Tag) -> Tag;
+  static auto WriteByte(Tag, Tag) -> void;
 
-  static bool IsClosed(Tag);
-  static bool IsEof(Tag);
-  static void Flush(Tag);
+  static auto IsClosed(Tag) -> bool;
+  static auto IsEof(Tag) -> bool;
+  static auto Flush(Tag) -> void;
 
-  static void GcMark(Env*, Tag);
-  static Tag ViewOf(Env*, Tag);
+  static auto GcMark(Env*, Tag) -> void;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
- public: /* object model */
-  Tag Evict(Env*);
+ public: /* type model */
+  auto Evict(Env*) -> Tag;
 
+ public: /* object */
   explicit Stream(Platform::StreamId);
   explicit Stream(Tag);
 

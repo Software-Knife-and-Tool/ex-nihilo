@@ -3,7 +3,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -21,10 +21,8 @@
 
 #include "libmu/platform/platform.h"
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/eval.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/readtable.h"
 #include "libmu/type.h"
 
@@ -40,7 +38,7 @@ namespace core {
 
 /** * function stream? **/
 auto Stream::IsFunction(Tag ptr) -> bool {
-  return IsType(ptr) && Function::IsType(Untag<Layout>(ptr)->fn);
+  return IsType(ptr) && Function::IsType(func(ptr));
 }
 
 /** * garbage collection **/
@@ -69,9 +67,7 @@ auto Stream::IsEof(Tag stream) -> bool {
 
   if (IsFunction(stream)) return false;
 
-  auto sp = Untag<Layout>(stream);
-
-  return Platform::IsEof(sp->stream);
+  return Platform::IsEof(streamId(stream));
 }
 
 /** * stream closed predicate **/
@@ -80,9 +76,7 @@ auto Stream::IsClosed(Tag stream) -> bool {
 
   if (IsFunction(stream)) return false;
 
-  auto sp = Untag<Layout>(stream);
-
-  return (Platform::IsClosed(sp->stream));
+  return Platform::IsClosed(streamId(stream));
 }
 
 /** * flush stream **/
@@ -91,9 +85,7 @@ auto Stream::Flush(Tag stream) -> void {
 
   if (IsFunction(stream)) return;
 
-  auto sp = Untag<Layout>(stream);
-
-  Platform::Flush(sp->stream);
+  Platform::Flush(streamId(stream));
 }
 
 /** * map stream designator onto a kernel stream **/
@@ -123,8 +115,7 @@ auto Stream::UnReadByte(Tag byte, Tag stream) -> Tag {
   assert(!Stream::IsFunction(stream));
   assert(Fixnum::IsType(byte));
 
-  auto sp = Untag<Layout>(stream);
-  Platform::UnReadByte(Fixnum::Int64Of(byte), sp->stream);
+  Platform::UnReadByte(Fixnum::Int64Of(byte), streamId(stream));
 
   return byte;
 }
@@ -135,12 +126,11 @@ auto Stream::WriteByte(Tag byte, Tag stream) -> void {
   assert(!Stream::IsFunction(stream));
   assert(Stream::IsType(stream));
 
-  auto sp = Untag<Layout>(stream);
+  assert(Platform::IsOutput(streamId(stream)));
+  assert(!Platform::IsClosed(streamId(stream)));
 
-  assert(Platform::IsOutput(sp->stream));
-  assert(!Platform::IsClosed(sp->stream));
-
-  Platform::WriteByte(static_cast<int>(Fixnum::Uint64Of(byte)), sp->stream);
+  Platform::WriteByte(static_cast<int>(Fixnum::Uint64Of(byte)),
+                      streamId(stream));
 }
 
 /** * read byte from stream, returns a fixnum or nil **/
@@ -148,8 +138,7 @@ auto Stream::ReadByte(Env* env, Tag strm) -> Tag {
   auto stream = StreamDesignator(env, strm);
   assert(!Stream::IsFunction(stream));
 
-  auto sp = Untag<Layout>(stream);
-  auto byte = Platform::ReadByte(sp->stream);
+  auto byte = Platform::ReadByte(streamId(stream));
 
   if (byte == -1 || byte == 0x4) return NIL;
 
@@ -161,14 +150,12 @@ auto Stream::Close(Tag stream) -> Tag {
   assert(IsType(stream));
   assert(!Stream::IsFunction(stream));
 
-  auto sp = Untag<Layout>(stream);
-
-  Platform::Close(sp->stream);
+  Platform::Close(streamId(stream));
   return T;
 }
 
 auto Stream::Evict(Env* env) -> Tag {
-  auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM);
+  auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
 
   *sp = stream_;
   tag_ = Entag(sp, TAG::EXTEND);
@@ -177,7 +164,7 @@ auto Stream::Evict(Env* env) -> Tag {
 }
 
 Stream::Stream(Platform::StreamId streamid) : Type() {
-  stream_.stream = streamid;
+  stream_.streamId = streamid;
   stream_.fn = NIL;
 
   tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);
@@ -186,7 +173,7 @@ Stream::Stream(Platform::StreamId streamid) : Type() {
 Stream::Stream(Tag fn) : Type() {
   assert(Function::IsType(fn));
 
-  stream_.stream = Platform::STREAM_ERROR;
+  stream_.streamId = Platform::STREAM_ERROR;
   stream_.fn = fn;
 
   tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);

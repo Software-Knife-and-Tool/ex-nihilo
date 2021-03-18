@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -21,7 +21,7 @@
 #include <sstream>
 #include <utility>
 
-#include "libmu/print.h"
+#include "libmu/core.h"
 #include "libmu/type.h"
 
 #include "libmu/types/stream.h"

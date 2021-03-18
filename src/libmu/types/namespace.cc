@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -16,8 +16,8 @@
 #include <cassert>
 #include <vector>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -79,7 +79,7 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindSymbol(env, ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
+  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
 }
@@ -92,7 +92,7 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name, Tag value) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindSymbol(env, ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
+  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
                                   Symbol(ns, name, value).Evict(env))
                          : sym;
 }
@@ -105,7 +105,7 @@ auto Namespace::InternInNs(Env* env, Tag ns, Tag name) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindInterns(ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
+  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->interns, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
 }
@@ -118,7 +118,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindExterns(ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
+  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
 }
@@ -127,7 +127,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
 auto Namespace::Symbols(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
 
-  auto syms = Untag<Layout>(ns)->externs;
+  auto syms = Untag<HeapLayout>(ns)->externs;
   auto list = *syms.get();
 
   std::vector<Tag> symv;
@@ -139,7 +139,8 @@ auto Namespace::Symbols(Env* env, Tag ns) -> Tag {
 
 /** evict namespace to heap **/
 auto Namespace::Evict(Env* env) -> Tag {
-  auto np = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE);
+  auto np =
+      env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::NAMESPACE);
 
   *np = namespace_;
   tag_ = Entag(np, TAG::EXTEND);

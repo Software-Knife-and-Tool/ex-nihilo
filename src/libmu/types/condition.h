@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -20,7 +20,6 @@
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
-
 #include "libmu/types/cons.h"
 
 namespace libmu {
@@ -60,53 +59,58 @@ class Condition : public Type {
     Tag frame;  /* frame */
     Tag source; /* on source object */
     Tag reason; /* condition string */
-  } Layout;
+  } HeapLayout;
 
-  Layout condition_;
+  HeapLayout condition_;
 
  public:
-  static Tag frame(Tag condition) {
+  static auto frame(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<Layout>(condition)->frame;
+    return Untag<HeapLayout>(condition)->frame;
   }
 
-  static Tag tag(Tag condition) {
+  static auto tag(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<Layout>(condition)->tag;
+    return Untag<HeapLayout>(condition)->tag;
   }
 
-  static Tag source(Tag condition) {
+  static auto source(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<Layout>(condition)->source;
+    return Untag<HeapLayout>(condition)->source;
   }
 
-  static Tag reason(Tag condition) {
+  static auto reason(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<Layout>(condition)->reason;
+    return Untag<HeapLayout>(condition)->reason;
   }
 
-  static constexpr bool IsType(Tag ptr) {
+  static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::CONDITION;
   }
 
-  static void GcMark(Env*, Tag);
+  static auto GcMark(Env*, Tag) -> void;
 
-  [[noreturn]] static void Raise(Env*, CONDITION_CLASS, const std::string&,
-                                 Tag);
-  static Tag ViewOf(Env*, Tag);
+  [[noreturn]] static auto Raise(Env*, CONDITION_CLASS, const std::string&, Tag)
+      -> void;
 
- public: /* object model */
-  Tag Evict(Env* env) {
-    auto ep = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONDITION);
+  static auto ViewOf(Env*, Tag) -> Tag;
+
+ public: /* type model */
+  auto Evict(Env* env) -> Tag {
+    auto ep =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
 
     *ep = condition_;
-    return Entag(ep, TAG::EXTEND);
+    tag_ = Entag(ep, TAG::EXTEND);
+
+    return tag_;
   }
 
+ public: /* object */
   explicit Condition(Tag tag, Tag frame, Tag source, Tag reason) : Type() {
     assert(Symbol::IsKeyword(tag));
 

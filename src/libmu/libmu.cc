@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -21,10 +21,8 @@
 #include "libmu/platform/platform.h"
 
 #include "libmu/compiler.h"
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/eval.h"
-#include "libmu/print.h"
-#include "libmu/read.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -75,9 +73,7 @@ auto print_cstr(void* env, void* ptr, bool esc) -> const char* {
 
   core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS), stream, esc);
 
-  auto sp = Type::Untag<core::Stream::Layout>(stream);
-
-  auto cp = Platform::GetStdString(sp->stream);
+  auto cp = Platform::GetStdString(core::Stream::streamId(stream));
   auto cstr = new char[strlen(cp.c_str()) + 1];
 
   return strcpy(cstr, cp.c_str());

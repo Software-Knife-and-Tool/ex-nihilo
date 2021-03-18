@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -21,9 +21,8 @@
 #include <vector>
 
 #include "libmu/compiler.h"
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/eval.h"
-#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/types/address.h"
@@ -41,134 +40,153 @@ class Function : public Type {
   typedef struct {
     size_t arity; /* arity checking */
     Tag name;     /* debugging */
-    Tag core;     /* as an address */
+    Tag mu;       /* as an address */
     Tag form;     /* as a lambda */
     Tag env;      /* closures */
-    std::vector<Frame*> context;
     Tag frame_id; /* lexical reference */
-  } Layout;
+    std::vector<Frame*> context;
+  } HeapLayout;
 
-  Layout function_;
+  HeapLayout function_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::FUNCTION; }
 
   /* accessors */
-  static int arity(Tag fn) {
+  static auto arity(Tag fn) -> size_t {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->arity;
+    return Untag<HeapLayout>(fn)->arity;
   }
 
-  static std::vector<Frame*> context(Tag fn) {
+  static auto context(Tag fn) -> std::vector<Frame*> {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->context;
+    return Untag<HeapLayout>(fn)->context;
   }
 
-  static size_t ncontext(Tag fn) {
+  static auto ncontext(Tag fn) -> size_t {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->context.size();
+    return Untag<HeapLayout>(fn)->context.size();
   }
 
-  static std::vector<Frame*> context(Tag fn, std::vector<Frame*> ctx) {
+  static auto context(Tag fn, std::vector<Frame*> ctx) -> std::vector<Frame*> {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->context = ctx;
+    Untag<HeapLayout>(fn)->context = ctx;
+    return ctx;
   }
 
-  static Tag env(Tag fn) {
+  static auto env(Tag fn) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->env;
+    return Untag<HeapLayout>(fn)->env;
   }
 
-  static Tag env(Tag fn, Tag env) {
+  static auto env(Tag fn, Tag env) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->env = env;
+    Untag<HeapLayout>(fn)->env = env;
+    return env;
   }
 
-  static Tag form(Tag fn) {
+  static auto form(Tag fn) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->form;
+    return Untag<HeapLayout>(fn)->form;
   }
 
-  static Tag form(Tag fn, Tag form) {
+  static auto form(Tag fn, Tag form) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->form = form;
+    Untag<HeapLayout>(fn)->form = form;
+    return form;
   }
 
-  static Tag core(Tag fn) {
+  static auto mu(Tag fn) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->core;
+    return Untag<HeapLayout>(fn)->mu;
   }
 
-  static Tag frame_id(Tag fn) {
+  static auto frame_id(Tag fn) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->frame_id;
+    return Untag<HeapLayout>(fn)->frame_id;
   }
 
-  static Tag name(Tag fn) {
+  static auto name(Tag fn) -> Tag {
     assert(IsType(fn));
 
-    return Untag<Layout>(fn)->name;
+    return Untag<HeapLayout>(fn)->name;
   }
 
-  static Tag name(Tag fn, Tag symbol) {
+  static auto name(Tag fn, Tag symbol) -> Tag {
     assert(IsType(fn));
     assert(Symbol::IsType(symbol));
 
-    return Untag<Layout>(fn)->name = symbol;
+    Untag<HeapLayout>(fn)->name = symbol;
+    return symbol;
   }
 
-  /* arity coding */
-  static constexpr size_t arity_nreqs(size_t arity) { return arity >> 1; }
-  static constexpr bool arity_rest(size_t arity) { return arity & 1; }
+  static auto Funcall(Env*, Tag, const std::vector<Tag>&) -> Tag;
+  static auto GcMark(Env*, Tag) -> void;
+  static auto ViewOf(Env*, Tag) -> Tag;
+  static auto Print(Env*, Tag, Tag, bool) -> void;
 
-  static size_t arity_nreqs(Tag fn) {
-    assert(IsType(fn));
-
-    return arity_nreqs(arity(fn));
-  }
-
-  static bool arity_rest(Tag fn) {
-    assert(IsType(fn));
-
-    return arity_rest(arity(fn));
-  }
-
-  static size_t arity_of(Env* env, Tag lambda) {
-    assert(Cons::IsList(lambda));
-
-    auto nsyms = Cons::Length(env, Cons::car(lambda));
-    auto rest = !Null(Cons::cdr(lambda));
-
-    return static_cast<size_t>(((nsyms - rest) << 1) | rest);
-  }
-
-  static Tag Funcall(Env*, Tag, const std::vector<Tag>&);
-  static void GcMark(Env*, Tag);
-  static Tag ViewOf(Env*, Tag);
-  static void Print(Env*, Tag, Tag, bool);
-
- public: /* object model */
-  Tag Evict(Env* env) {
-    auto fp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::FUNCTION);
+ public: /* type model */
+  auto Evict(Env* env) -> Tag {
+    auto fp =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
 
     *fp = function_;
     tag_ = Entag(fp, TAG::FUNCTION);
     return tag_;
   }
 
-  explicit Function(Env*, Tag, const Env::TagFn*);
-  explicit Function(Env*, Tag, std::vector<Frame*>, Tag, Tag);
+ public: /* object */
+  explicit Function(Env* env, Tag name, const Env::TagFn* mu) : Type() {
+    assert(Symbol::IsType(name));
 
+    function_.arity = mu->nreqs << 1;
+    function_.context = std::vector<Frame*>{};
+    function_.mu =
+        Address(static_cast<void*>(const_cast<Env::TagFn*>(mu))).tag_;
+    function_.env = NIL;
+    function_.form = NIL;
+    function_.frame_id = Fixnum(env->frame_id_).tag_;
+    function_.name = name;
+
+    env->frame_id_++;
+
+    tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
+  }
+
+  explicit Function(Env* env, Tag name, std::vector<Frame*> context, Tag lambda,
+                    Tag form)
+      : Type() {
+    assert(Cons::IsList(form));
+
+    auto arity_of = [env, lambda]() -> size_t {
+      auto nsyms = Cons::Length(env, Cons::car(lambda));
+      auto rest = !Type::Null(Cons::cdr(lambda));
+
+      return static_cast<size_t>(((nsyms - rest) << 1) | rest);
+    };
+
+    function_.arity = arity_of();
+    function_.context = context;
+    function_.mu = NIL;
+    function_.env = Cons::List(env, env->lexenv_);
+    function_.form = form;
+    function_.frame_id = Fixnum(env->frame_id_).tag_;
+    function_.name = name;
+
+    env->frame_id_++;
+
+    tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
+  }
 }; /* class Function */
 
 } /* namespace core */

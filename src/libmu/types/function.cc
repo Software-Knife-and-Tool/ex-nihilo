@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -16,9 +16,8 @@
 #include <cassert>
 #include <sstream>
 
+#include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/eval.h"
-#include "libmu/print.h"
 #include "libmu/type.h"
 
 #include "libmu/compiler.h"
@@ -36,20 +35,36 @@ namespace {
 /** * call function on frame **/
 auto CallFrame(Env::Frame* fp) -> void {
   fp->value = Type::NIL;
-  if (Type::Null(Function::core(fp->func))) {
+  if (Type::Null(Function::mu(fp->func))) {
     Cons::cons_iter<Tag> iter(Cons::cdr(Function::form(fp->func)));
     for (auto it = iter.begin(); it != iter.end(); it = ++iter)
       fp->value = core::Eval(fp->env, it->car);
   } else
-    Type::Untag<Env::TagFn>(Function::core(fp->func))->fn(fp);
+    Type::Untag<Env::TagFn>(Function::mu(fp->func))->fn(fp);
+}
+
+/** * arity checking **/
+constexpr auto arity_nreqs(size_t arity) -> size_t { return arity >> 1; }
+constexpr auto arity_rest(size_t arity) -> bool { return arity & 1; }
+
+auto arity_nreqs(Tag fn) -> size_t {
+  assert(Function::IsType(fn));
+
+  return arity_nreqs(Function::arity(fn));
+}
+
+auto arity_rest(Tag fn) -> bool {
+  assert(Function::IsType(fn));
+
+  return arity_rest(Function::arity(fn));
 }
 
 /** * run-time function call argument arity validation **/
 auto CheckArity(Env* env, Tag fn, const std::vector<Tag>& args) -> void {
   assert(Function::IsType(fn));
 
-  size_t nreqs = Function::arity_nreqs(fn);
-  auto rest = Function::arity_rest(fn);
+  size_t nreqs = arity_nreqs(fn);
+  auto rest = arity_rest(fn);
   auto nargs = args.size();
 
   if (nargs < nreqs)
@@ -114,7 +129,7 @@ auto Function::ViewOf(Env* env, Tag fn) -> Tag {
                                fn,
                                Fixnum(ToUint64(fn) >> 3).tag_,
                                name(fn),
-                               core(fn),
+                               mu(fn),
                                form(fn),
                                frame_id(fn),
                                Fixnum(arity(fn)).tag_};
@@ -167,43 +182,6 @@ auto Function::Funcall(Env* env, Tag fn, const std::vector<Tag>& argv) -> Tag {
   env->PopFrame();
 
   return fp.value;
-}
-
-/* core functions */
-Function::Function(Env* env, Tag name, const Env::TagFn* core) : Type() {
-  assert(Symbol::IsType(name));
-
-  function_.arity = core->nreqs << 1;
-  function_.context = std::vector<Frame*>{};
-  function_.core =
-      Address(static_cast<void*>(const_cast<Env::TagFn*>(core))).tag_;
-  function_.env = NIL;
-  function_.form = NIL;
-  function_.frame_id = Fixnum(env->frame_id_).tag_;
-  function_.name = name;
-
-  env->frame_id_++;
-
-  tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
-}
-
-/* closures */
-Function::Function(Env* env, Tag name, std::vector<Frame*> context, Tag lambda,
-                   Tag form)
-    : Type() {
-  assert(Cons::IsList(form));
-
-  function_.arity = arity_of(env, lambda);
-  function_.context = context;
-  function_.core = NIL;
-  function_.env = Cons::List(env, env->lexenv_);
-  function_.form = form;
-  function_.frame_id = Fixnum(env->frame_id_).tag_;
-  function_.name = name;
-
-  env->frame_id_++;
-
-  tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
 }
 
 } /* namespace core */

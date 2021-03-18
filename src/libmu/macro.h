@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -34,9 +34,9 @@ class Macro : public Type {
  private:
   typedef struct {
     Tag func;
-  } Layout;
+  } HeapLayout;
 
-  Layout macro_;
+  HeapLayout macro_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
@@ -46,7 +46,7 @@ class Macro : public Type {
   static Tag func(Tag ptr) {
     assert(IsType(ptr));
 
-    return Untag<Layout>(ptr)->func;
+    return Untag<HeapLayout>(ptr)->func;
   }
 
   static Tag MacroExpand(Env*, Tag);
@@ -57,7 +57,7 @@ class Macro : public Type {
 
  public: /* object model */
   Tag Evict(Env* env) {
-    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::MACRO);
+    auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
 
     *sp = macro_;
     tag_ = Entag(sp, TAG::EXTEND);

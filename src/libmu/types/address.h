@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -32,8 +32,10 @@ namespace core {
 
 /** * address class type **/
 class Address : public Type {
- public: /* Tag */
-  static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::ADDRESS; }
+ public: /* tag */
+  static constexpr auto IsType(Tag ptr) -> bool {
+    return TagOf(ptr) == TAG::ADDRESS;
+  }
 
   static auto ViewOf(Env* env, Tag addr) {
     assert(IsType(addr));
@@ -47,9 +49,10 @@ class Address : public Type {
     return Vector(env, view).tag_;
   }
 
- public: /* object model */
-  Tag Evict(Env*) { return tag_; }
+ public: /* type model */
+  auto Evict(Env*) -> Tag { return tag_; }
 
+ public: /* object */
   explicit Address(void* caddr) : Type() {
     tag_ = Type::Entag(caddr, TAG::ADDRESS);
   }
