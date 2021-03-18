@@ -43,12 +43,28 @@ auto CallFrame(Env::Frame* fp) -> void {
     Type::Untag<Env::TagFn>(Function::mu(fp->func))->fn(fp);
 }
 
+/** * arity checking **/
+constexpr auto arity_nreqs(size_t arity) -> size_t { return arity >> 1; }
+constexpr auto arity_rest(size_t arity) -> bool { return arity & 1; }
+
+auto arity_nreqs(Tag fn) -> size_t {
+  assert(Function::IsType(fn));
+
+  return arity_nreqs(Function::arity(fn));
+}
+
+auto arity_rest(Tag fn) -> bool {
+  assert(Function::IsType(fn));
+
+  return arity_rest(Function::arity(fn));
+}
+
 /** * run-time function call argument arity validation **/
 auto CheckArity(Env* env, Tag fn, const std::vector<Tag>& args) -> void {
   assert(Function::IsType(fn));
 
-  size_t nreqs = Function::arity_nreqs(fn);
-  auto rest = Function::arity_rest(fn);
+  size_t nreqs = arity_nreqs(fn);
+  auto rest = arity_rest(fn);
   auto nargs = args.size();
 
   if (nargs < nreqs)
@@ -166,42 +182,6 @@ auto Function::Funcall(Env* env, Tag fn, const std::vector<Tag>& argv) -> Tag {
   env->PopFrame();
 
   return fp.value;
-}
-
-/* core functions */
-Function::Function(Env* env, Tag name, const Env::TagFn* mu) : Type() {
-  assert(Symbol::IsType(name));
-
-  function_.arity = mu->nreqs << 1;
-  function_.context = std::vector<Frame*>{};
-  function_.mu = Address(static_cast<void*>(const_cast<Env::TagFn*>(mu))).tag_;
-  function_.env = NIL;
-  function_.form = NIL;
-  function_.frame_id = Fixnum(env->frame_id_).tag_;
-  function_.name = name;
-
-  env->frame_id_++;
-
-  tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
-}
-
-/* closures */
-Function::Function(Env* env, Tag name, std::vector<Frame*> context, Tag lambda,
-                   Tag form)
-    : Type() {
-  assert(Cons::IsList(form));
-
-  function_.arity = arity_of(env, lambda);
-  function_.context = context;
-  function_.mu = NIL;
-  function_.env = Cons::List(env, env->lexenv_);
-  function_.form = form;
-  function_.frame_id = Fixnum(env->frame_id_).tag_;
-  function_.name = name;
-
-  env->frame_id_++;
-
-  tag_ = Entag(reinterpret_cast<void*>(&function_), TAG::FUNCTION);
 }
 
 } /* namespace core */

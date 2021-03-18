@@ -2,7 +2,7 @@
  **
  **  SPDX-License-Identifier: MIT
  **
- **  Copyright (c) 2017-2021 James M. Putnam <putnamjm.design@gmail.com>
+ **  Copyright (c) 2017-2022 James M. Putnam <putnamjm.design@gmail.com>
  **
  **/
 
@@ -51,26 +51,27 @@ class Namespace : public Type {
   static const size_t FNV_prime = 16777619;
   static const uint64_t OFFSET_BASIS = 2166136261UL;
 
-  static symbol_iter find(const std::shared_ptr<symbol_map>& map, Tag key) {
+  static auto find(const std::shared_ptr<symbol_map>& map, Tag key)
+      -> symbol_iter {
     return map->find(static_cast<uint64_t>(key));
   }
 
-  static bool isFound(const std::shared_ptr<symbol_map>& map, symbol_iter el) {
+  static auto isFound(const std::shared_ptr<symbol_map>& map, symbol_iter el)
+      -> bool {
     return el != map->end();
   }
 
-  static Tag Insert(const std::shared_ptr<symbol_map>& map, Tag key,
-                    Tag symbol) {
+  static auto Insert(const std::shared_ptr<symbol_map>& map, Tag key,
+                     Tag symbol) -> Tag {
     (*map.get())[static_cast<uint64_t>(key)] = symbol;
     return symbol;
   }
 
-  static uint64_t hash_id(Tag str) {
+  static auto hash_id(Tag str) -> uint64_t {
     assert(String::IsType(str));
 
     uint64_t hash = OFFSET_BASIS;
 
-    /* think: ranged for here? */
     Vector::vector_iter<char> iter(str);
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       hash ^= *it;
@@ -91,38 +92,38 @@ class Namespace : public Type {
   HeapLayout namespace_;
 
  public: /* Tag */
-  static constexpr bool IsType(Tag ptr) {
+  static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::NAMESPACE;
   }
 
   /** * accessor **/
-  static Tag name(Tag ns) {
+  static auto name(Tag ns) -> Tag {
     assert(IsType(ns));
 
     return Untag<HeapLayout>(ns)->name;
   }
 
   /** * accessors **/
-  static Tag imports(Tag ns) {
+  static auto imports(Tag ns) -> Tag {
     assert(IsType(ns));
 
     return Untag<HeapLayout>(ns)->imports;
   }
 
-  static symbol_map externs(Tag ns) {
+  static auto externs(Tag ns) -> symbol_map {
     assert(IsType(ns));
 
     return *Untag<HeapLayout>(ns)->externs.get();
   }
 
-  static symbol_map interns(Tag ns) {
+  static auto interns(Tag ns) -> symbol_map {
     assert(IsType(ns));
 
     return *Untag<HeapLayout>(ns)->interns.get();
   }
 
   /** * is in namespace externs? **/
-  static bool IsExtern(Tag ns, Tag name) {
+  static auto IsExtern(Tag ns, Tag name) -> bool {
     assert(IsType(ns));
     assert(String::IsType(name));
 
@@ -130,7 +131,7 @@ class Namespace : public Type {
   }
 
   /** * is in namespace interns? **/
-  static bool IsIntern(Tag ns, Tag name) {
+  static auto IsIntern(Tag ns, Tag name) -> bool {
     assert(IsType(ns));
     assert(String::IsType(name));
 
@@ -138,7 +139,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace externs **/
-  static Tag FindExterns(Tag ns, Tag str) {
+  static auto FindExterns(Tag ns, Tag str) -> Tag {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -150,7 +151,7 @@ class Namespace : public Type {
   }
 
   /** * find symbol in namespace interns **/
-  static Tag FindInterns(Tag ns, Tag str) {
+  static auto FindInterns(Tag ns, Tag str) -> Tag {
     assert(IsType(ns));
     assert(String::IsType(str));
 
@@ -161,20 +162,21 @@ class Namespace : public Type {
                                                           : Type::NIL;
   }
 
-  static Tag Symbols(Env*, Tag);
-  static void GcMark(Env*, Tag);
-  static Tag Intern(Env*, Tag, Tag);
-  static Tag Intern(Env*, Tag, Tag, Tag);
-  static Tag InternInNs(Env*, Tag, Tag);
-  static Tag ExternInNs(Env*, Tag, Tag);
-  static Tag FindSymbol(Env*, Tag, Tag);
-  static Tag ViewOf(Env*, Tag);
+  static auto Symbols(Env*, Tag) -> Tag;
+  static auto GcMark(Env*, Tag) -> void;
+  static auto Intern(Env*, Tag, Tag) -> Tag;
+  static auto Intern(Env*, Tag, Tag, Tag) -> Tag;
+  static auto InternInNs(Env*, Tag, Tag) -> Tag;
+  static auto ExternInNs(Env*, Tag, Tag) -> Tag;
+  static auto FindSymbol(Env*, Tag, Tag) -> Tag;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
-  static void Print(Env*, Tag, Tag, bool);
+  static auto Print(Env*, Tag, Tag, bool) -> void;
 
- public: /* object model */
+ public: /* type model */
   Tag Evict(Env*);
 
+ public: /* object */
   explicit Namespace(Tag, Tag);
 }; /* class Namespace */
 

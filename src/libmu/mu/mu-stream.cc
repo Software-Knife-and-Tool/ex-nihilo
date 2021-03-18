@@ -227,14 +227,13 @@ void GetStringStream(Frame* fp) {
                      "argument must be a stream (get-output-string-stream)",
                      stream);
 
-  auto sp = Type::Untag<Stream::HeapLayout>(stream);
-
-  if (!Platform::IsString(sp->stream))
+  if (!Platform::IsString(Stream::streamId(stream)))
     Condition::Raise(
         fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
         "argument must be a string stream (get-output-string-stream)", stream);
 
-  fp->value = String(fp->env, Platform::GetStdString(sp->stream)).tag_;
+  fp->value =
+      String(fp->env, Platform::GetStdString(Stream::streamId(stream))).tag_;
 }
 
 /** * (open-socket-server port) **/
@@ -319,14 +318,12 @@ void Load(Frame* fp) {
                      "argument must be a filespec (load)", filespec);
 
   switch (Type::TypeOf(filespec)) {
-    case Type::SYS_CLASS::STREAM: {
-      auto sp = Type::Untag<Stream::HeapLayout>(filespec);
-      while (!Platform::IsEof(sp->stream))
+    case Type::SYS_CLASS::STREAM:
+      while (!Platform::IsEof(Stream::streamId(filespec)))
         core::Eval(fp->env,
                    core::Compile(fp->env, core::Read(fp->env, filespec)));
 
       break;
-    }
     case Type::SYS_CLASS::STRING: {
       auto istream =
           Stream::MakeInputFile(fp->env, String::StdStringOf(filespec));
@@ -335,9 +332,7 @@ void Load(Frame* fp) {
         Condition::Raise(fp->env, Condition::CONDITION_CLASS::FILE_ERROR,
                          "(load)", filespec);
 
-      auto sp = Type::Untag<Stream::HeapLayout>(istream);
-
-      while (!Platform::IsEof(sp->stream))
+      while (!Platform::IsEof(Stream::streamId(istream)))
         core::Eval(fp->env,
                    core::Compile(fp->env, core::Read(fp->env, istream)));
 

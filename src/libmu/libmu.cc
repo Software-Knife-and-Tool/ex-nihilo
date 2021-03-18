@@ -73,9 +73,7 @@ auto print_cstr(void* env, void* ptr, bool esc) -> const char* {
 
   core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS), stream, esc);
 
-  auto sp = Type::Untag<core::Stream::HeapLayout>(stream);
-
-  auto cp = Platform::GetStdString(sp->stream);
+  auto cp = Platform::GetStdString(core::Stream::streamId(stream));
   auto cstr = new char[strlen(cp.c_str()) + 1];
 
   return strcpy(cstr, cp.c_str());
