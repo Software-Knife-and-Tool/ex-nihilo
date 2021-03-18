@@ -22,6 +22,8 @@
 
 #include "libmu/heap/heap.h"
 #include "libmu/type.h"
+
+#include "libmu/types/fixnum.h"
 #include "libmu/types/namespace.h"
 
 namespace libmu {
@@ -39,7 +41,7 @@ class Env {
  public:
   /** * allocate from heap **/
   template <typename T>
-  T* heap_alloc(size_t len, SYS_CLASS tag) {
+  auto heap_alloc(size_t len, SYS_CLASS tag) -> T* {
     return reinterpret_cast<T*>(heap_->Alloc(len, tag));
   }
 
@@ -77,7 +79,7 @@ class Env {
   } TagFn;
 
   /** * map address to core function **/
-  TagFn* CoreFunction(Tag caddr) { return Type::Untag<TagFn>(caddr); }
+  auto CoreFunction(Tag caddr) -> TagFn* { return Type::Untag<TagFn>(caddr); }
 
  private:
   std::unordered_map<Tag, std::stack<Frame*>> framecache_;
@@ -130,8 +132,9 @@ class Env {
                                   : env->heap_->in_heap(Type::ToAddress(ptr));
   }
 
-  static auto IsInEvicted(Env* env, Tag ptr) -> bool {
-    return Type::IsImmediate(ptr) || env->heap_->in_heap(Type::ToAddress(ptr));
+  static auto IsEvicted(Env* env, Tag ptr) -> bool {
+    return Type::IsImmediate(ptr) || Fixnum::IsType(ptr) ||
+           env->heap_->in_heap(Type::ToAddress(ptr));
   }
 
   static auto ViewOf(Env*, Tag) -> Tag;
@@ -139,7 +142,6 @@ class Env {
  public: /* object */
   explicit Env(Platform*, Platform::StreamId, Platform::StreamId,
                Platform::StreamId);
-  ~Env() {}
 
 }; /* class Env */
 
