@@ -38,12 +38,29 @@ class Vector : public Type {
   typedef struct {
     SYS_CLASS type;
     size_t length;
+    uint64_t base;
   } HeapLayout;
 
   HeapLayout vector_;
 
  public: /* tag */
+  /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
+
+  static auto type(Tag vec) -> SYS_CLASS {
+    return Untag<HeapLayout>(vec)->type;
+  }
+
+  static auto length(Tag vec) -> size_t {
+    return Untag<HeapLayout>(vec)->length;
+  }
+
+  static auto base(Tag vec) -> uint64_t { return Untag<HeapLayout>(vec)->base; }
+
+  static auto base(Tag vec, uint8_t base) -> uint64_t {
+    Untag<HeapLayout>(vec)->base = base;
+    return base;
+  }
 
   static auto Map(Env*, Tag, Tag) -> Tag;
   static auto MapC(Env*, Tag, Tag) -> void;
@@ -54,8 +71,6 @@ class Vector : public Type {
            (IsImmediate(ptr) && ImmediateClass(ptr) == IMMEDIATE_CLASS::STRING);
   }
 
- public: /* iterator */
-  /* fix: figure out how to const the ref */
   template <typename T>
   static auto DataAddress(Tag& vector) -> T* {
     assert(IsType(vector));
@@ -67,7 +82,6 @@ class Vector : public Type {
                      sizeof(HeapLayout));
   }
 
-  /* figure out how to const the ref */
   template <typename T>
   static auto Ref(Tag& vector, Tag index) -> T {
     assert(IsType(vector));

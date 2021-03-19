@@ -34,9 +34,10 @@ namespace core {
 auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
 
-  auto view =
-      std::vector<Tag>{Symbol::Keyword("vector"), vector,
-                       Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector)};
+  auto view = std::vector<Tag>{
+      Symbol::Keyword("vector"),          vector,
+      Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector),
+      Fixnum(length(vector)).tag_,        Fixnum(base(vector)).tag_};
 
   return Vector(env, view).tag_;
 }
