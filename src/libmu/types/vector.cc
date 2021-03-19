@@ -87,6 +87,7 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 
   vp->type = SYS_CLASS::T;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 
@@ -111,6 +112,7 @@ Vector::Vector(Env* env, const std::string& src) {
 
     vp->type = SYS_CLASS::CHAR;
     vp->length = src.size();
+    vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
     tag_ = Entag(vp, TAG::EXTEND);
 
@@ -126,6 +128,7 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
   vp->type = SYS_CLASS::BYTE;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 
@@ -140,6 +143,7 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
   vp->type = SYS_CLASS::FIXNUM;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 
@@ -154,6 +158,7 @@ Vector::Vector(Env* env, std::vector<float> src) {
 
   vp->type = SYS_CLASS::FLOAT;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 

@@ -36,9 +36,9 @@ class Env;
 class Vector : public Type {
  private:
   typedef struct {
-    SYS_CLASS type;
-    size_t length;
-    uint64_t base;
+    SYS_CLASS type; /* vector type */
+    size_t length;  /* length of vector in units */
+    uint64_t base;  /* base of data */
   } HeapLayout;
 
   HeapLayout vector_;
@@ -77,9 +77,7 @@ class Vector : public Type {
 
     return IsImmediate(vector)
                ? reinterpret_cast<T*>(reinterpret_cast<char*>(&vector) + 1)
-               : reinterpret_cast<T*>(
-                     reinterpret_cast<char*>(Untag<HeapLayout>(vector)) +
-                     sizeof(HeapLayout));
+               : reinterpret_cast<T*>(base(vector));
   }
 
   template <typename T>
