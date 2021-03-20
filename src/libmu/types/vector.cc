@@ -99,6 +99,7 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 Vector::Vector(Env* env, std::vector<char> srcv) {
   std::string src(srcv.begin(), srcv.end());
 
+  auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
   tag_ = Vector(env, src).tag_;
 }
 

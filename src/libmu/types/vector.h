@@ -43,8 +43,8 @@ class VectorT : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-  uint64_t base_;
-  
+  std::vector<V> base_;
+
  public: /* tag */
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
@@ -59,7 +59,7 @@ class VectorT : public Type {
 
   static auto base(Tag vec) -> uint64_t { return Untag<HeapLayout>(vec)->base; }
 
-  static auto base(Tag vec, uint8_t base) -> uint64_t {
+  static auto base(Tag vec, uint64_t base) -> uint64_t {
     Untag<HeapLayout>(vec)->base = base;
     return base;
   }
@@ -124,7 +124,56 @@ class VectorT : public Type {
   auto Evict(Env*) -> Tag { return tag_; }
 
  public: /* object */
-  explicit VectorT(Tag t) : Type() { tag_ = t; }
+  explicit VectorT(Env*, std::vector<V> src) : Type() {
+    vector_.type = S;
+    vector_.length = src.size();
+    vector_.base = reinterpret_cast<uint64_t>(src.data());
+
+    tag_ = Entag(&vector_, TAG::EXTEND);
+  }
+
+ public:
+  /** * vector iterator **/
+  template <typename T>
+  struct vector_iter {
+    typedef T* iterator;
+
+    iterator vector_;
+    std::ptrdiff_t length_;
+    iterator current_;
+
+    /* because the vector might be an immediate, we need to ref it */
+    /* fix: figure out how to const the ref */
+    vector_iter(Tag& vec)
+        : vector_(DataAddress<T>(vec)),
+          length_(Length(vec)),
+          current_(begin()) {}
+
+    iterator begin() { return length_ ? vector_ : end(); }
+    iterator end() { return nullptr; }
+
+    iterator& operator++() { /* operator++ */
+      std::ptrdiff_t curlen = current_ - vector_;
+
+      if (curlen < (length_ - 1))
+        ++current_;
+      else
+        current_ = end();
+
+      return *&current_;
+    }
+
+    iterator operator++(int) { /* ++operator */
+
+      iterator retn = current_;
+
+      operator++();
+      return retn;
+    }
+
+    T operator*() { return *current_; }
+  };
+
 }; /* class VectorT */
 
 /** vector class type **/
@@ -138,7 +187,7 @@ class Vector : public Type {
 
   HeapLayout vector_;
   uint64_t base_;
-  
+
  public: /* tag */
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
