@@ -75,7 +75,8 @@ class Cons : public Type {
   static auto ViewOf(Env*, Tag) -> Tag;
 
  public: /* type model */
-  Tag Evict(Env*);
+  auto Evict(Env*) -> Tag;
+  auto Evict(Env*, Tag) -> Tag;
 
  public: /* object */
   explicit Cons(Tag, Tag);
