@@ -56,13 +56,20 @@ class Macro : public Type {
   static Tag ViewOf(Env*, Tag);
 
  public: /* object model */
-  Tag Evict(Env* env) {
+  auto Evict(Env* env) -> Tag {
     auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
 
     *sp = macro_;
     tag_ = Entag(sp, TAG::EXTEND);
 
     return tag_;
+  }
+
+  static auto EvictTag(Env* env, Tag macro) -> void {
+    assert(IsType(macro));
+    assert(!Env::IsEvicted(env, macro));
+
+    printf("not evicitng macro\n");
   }
 
   explicit Macro(Tag func) : Type() {

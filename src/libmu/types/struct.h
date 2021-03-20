@@ -75,6 +75,13 @@ class Struct : public Type {
     return tag_;
   }
 
+  static auto EvictTag(Env* env, Tag strct) -> void {
+    assert(IsType(strct));
+    assert(!Env::IsEvicted(env, strct));
+
+    printf("not evicting struct\n");
+  }
+
  public: /* object */
   explicit Struct(Tag name, Tag slots) {
     assert(Symbol::IsKeyword(name));

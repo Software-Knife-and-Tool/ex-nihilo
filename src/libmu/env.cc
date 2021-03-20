@@ -233,6 +233,31 @@ auto Env::LastFrame(Env* env) -> Tag {
                               : FrameView(env, env->frames_.front());
 }
 
+/** * eviction **/
+auto Env::Evict(Env* env, Tag ptr) -> void {
+  if (Env::IsEvicted(env, ptr)) return;
+
+  std::function<void(Env*, Tag)> noEvict = [](Env*, Tag) -> void {};
+  static const std::map<SYS_CLASS, std::function<void(Env*, Tag)>> kGcEvictMap{
+      {SYS_CLASS::ADDRESS, noEvict},
+      {SYS_CLASS::CHAR, noEvict},
+      {SYS_CLASS::CONS, Cons::EvictTag},
+      {SYS_CLASS::CONDITION, Condition::EvictTag},
+      {SYS_CLASS::FIXNUM, noEvict},
+      {SYS_CLASS::FLOAT, noEvict},
+      {SYS_CLASS::FUNCTION, Function::EvictTag},
+      {SYS_CLASS::MACRO, Macro::EvictTag},
+      {SYS_CLASS::NAMESPACE, Namespace::EvictTag},
+      {SYS_CLASS::STREAM, Stream::EvictTag},
+      {SYS_CLASS::STRING, Vector::EvictTag},
+      {SYS_CLASS::STRUCT, Struct::EvictTag},
+      {SYS_CLASS::SYMBOL, Symbol::EvictTag},
+      {SYS_CLASS::VECTOR, Vector::EvictTag}};
+
+  assert(kGcEvictMap.count(Type::TypeOf(ptr)));
+  return kGcEvictMap.at(Type::TypeOf(ptr))(env, ptr);
+}
+
 /** * env view **/
 auto Env::EnvView(Env* env) -> Tag {
   uint64_t st, rt;

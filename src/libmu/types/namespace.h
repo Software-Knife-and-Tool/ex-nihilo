@@ -174,7 +174,8 @@ class Namespace : public Type {
   static auto Print(Env*, Tag, Tag, bool) -> void;
 
  public: /* type model */
-  Tag Evict(Env*);
+  auto Evict(Env*) -> Tag;
+  static auto EvictTag(Env*, Tag) -> void;
 
  public: /* object */
   explicit Namespace(Tag, Tag);

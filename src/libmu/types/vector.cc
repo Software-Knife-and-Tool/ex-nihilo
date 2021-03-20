@@ -30,13 +30,22 @@
 namespace libmu {
 namespace core {
 
+/** * eviction **/
+auto Vector::EvictTag(Env* env, Tag vec) -> void {
+  assert(IsType(vec));
+  assert(!Env::IsEvicted(env, vec));
+
+  printf("not evicting vector\n");
+}
+
 /** * view of vector object **/
 auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
 
-  auto view =
-      std::vector<Tag>{Symbol::Keyword("vector"), vector,
-                       Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector)};
+  auto view = std::vector<Tag>{
+      Symbol::Keyword("vector"),          vector,
+      Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector),
+      Fixnum(length(vector)).tag_,        Fixnum(base(vector)).tag_};
 
   return Vector(env, view).tag_;
 }
@@ -86,6 +95,7 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 
   vp->type = SYS_CLASS::T;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 
@@ -97,6 +107,7 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 Vector::Vector(Env* env, std::vector<char> srcv) {
   std::string src(srcv.begin(), srcv.end());
 
+  // auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
   tag_ = Vector(env, src).tag_;
 }
 
@@ -110,6 +121,7 @@ Vector::Vector(Env* env, const std::string& src) {
 
     vp->type = SYS_CLASS::CHAR;
     vp->length = src.size();
+    vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
     tag_ = Entag(vp, TAG::EXTEND);
 
@@ -125,6 +137,7 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
   vp->type = SYS_CLASS::BYTE;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 
@@ -139,6 +152,7 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
   vp->type = SYS_CLASS::FIXNUM;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 
@@ -153,6 +167,7 @@ Vector::Vector(Env* env, std::vector<float> src) {
 
   vp->type = SYS_CLASS::FLOAT;
   vp->length = src.size();
+  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
 
   tag_ = Entag(vp, TAG::EXTEND);
 

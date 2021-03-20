@@ -145,6 +145,13 @@ class Function : public Type {
     return tag_;
   }
 
+  static auto EvictTag(Env* env, Tag fn) -> void {
+    assert(IsType(fn));
+    assert(!Env::IsEvicted(env, fn));
+
+    printf("not evicting function\n");
+  }
+
  public: /* object */
   explicit Function(Env* env, Tag name, const Env::TagFn* mu) : Type() {
     assert(Symbol::IsType(name));

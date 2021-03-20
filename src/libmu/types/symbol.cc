@@ -200,6 +200,13 @@ auto Symbol::Evict(Env* env) -> Tag {
   return tag_;
 }
 
+auto Symbol::EvictTag(Env* env, Tag symbol) -> void {
+  assert(IsType(symbol));
+  assert(!Env::IsEvicted(env, symbol));
+
+  printf("not evicting symbol\n");
+}
+
 /** * allocate an unbound symbol from the heap **/
 Symbol::Symbol(Tag ns, Tag name) {
   assert(String::IsType(name));
