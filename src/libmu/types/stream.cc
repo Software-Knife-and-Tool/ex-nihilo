@@ -163,6 +163,13 @@ auto Stream::Evict(Env* env) -> Tag {
   return tag_;
 }
 
+auto Stream::EvictTag(Env* env, Tag stream) -> void {
+  assert(IsType(stream));
+  assert(!Env::IsEvicted(env, stream));
+
+  printf("not evicting stream\n");
+}
+
 Stream::Stream(Platform::StreamId streamid) : Type() {
   stream_.streamId = streamid;
   stream_.fn = NIL;

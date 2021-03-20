@@ -122,6 +122,8 @@ class Env {
   static auto GcFrame(Frame*) -> void;
   static auto GcMark(Env*, Tag) -> void;
 
+  static auto Evict(Env*, Tag) -> void;
+
   static auto MapNamespace(Env*, const std::string&) -> Tag;
   static auto AddNamespace(Env*, Tag) -> void;
 

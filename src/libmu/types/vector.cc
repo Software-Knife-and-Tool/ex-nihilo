@@ -30,6 +30,14 @@
 namespace libmu {
 namespace core {
 
+/** * eviction **/
+auto Vector::EvictTag(Env* env, Tag vec) -> void {
+  assert(IsType(vec));
+  assert(!Env::IsEvicted(env, vec));
+
+  printf("not evicting vector\n");
+}
+
 /** * view of vector object **/
 auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
@@ -99,7 +107,7 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 Vector::Vector(Env* env, std::vector<char> srcv) {
   std::string src(srcv.begin(), srcv.end());
 
-  auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
+  // auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
   tag_ = Vector(env, src).tag_;
 }
 

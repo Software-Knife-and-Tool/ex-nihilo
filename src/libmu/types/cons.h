@@ -76,7 +76,7 @@ class Cons : public Type {
 
  public: /* type model */
   auto Evict(Env*) -> Tag;
-  auto Evict(Env*, Tag) -> Tag;
+  static auto EvictTag(Env*, Tag) -> void;
 
  public: /* object */
   explicit Cons(Tag, Tag);

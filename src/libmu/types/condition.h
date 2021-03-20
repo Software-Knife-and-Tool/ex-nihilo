@@ -110,6 +110,13 @@ class Condition : public Type {
     return tag_;
   }
 
+  static auto EvictTag(Env* env, Tag condition) -> void {
+    assert(IsType(condition));
+    assert(!Env::IsEvicted(env, condition));
+
+    printf("not evicitng condition\n");
+  }
+
  public: /* object */
   explicit Condition(Tag tag, Tag frame, Tag source, Tag reason) : Type() {
     assert(Symbol::IsKeyword(tag));

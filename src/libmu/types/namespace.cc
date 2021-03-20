@@ -148,6 +148,13 @@ auto Namespace::Evict(Env* env) -> Tag {
   return tag_;
 }
 
+auto Namespace::EvictTag(Env* env, Tag ns) -> void {
+  assert(IsType(ns));
+  assert(!Env::IsEvicted(env, ns));
+
+  printf("not evicting ns\n");
+}
+
 /** * print namespace **/
 auto Namespace::Print(Env* env, Tag ns, Tag str, bool) -> void {
   assert(IsType(ns));

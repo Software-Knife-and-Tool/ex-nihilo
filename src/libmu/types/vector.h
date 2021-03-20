@@ -32,6 +32,7 @@ using heap::Heap;
 
 class Env;
 
+#if 0
 /** vector class type **/
 template <class V, Type::SYS_CLASS S>
 class VectorT : public Type {
@@ -122,6 +123,7 @@ class VectorT : public Type {
 
  public: /* type model */
   auto Evict(Env*) -> Tag { return tag_; }
+  static auto EvictTag(Env*, Tag) -> Tag;
 
  public: /* object */
   explicit VectorT(Env*, std::vector<V> src) : Type() {
@@ -175,6 +177,7 @@ class VectorT : public Type {
   };
 
 }; /* class VectorT */
+#endif
 
 /** vector class type **/
 class Vector : public Type {
@@ -265,6 +268,7 @@ class Vector : public Type {
 
  public: /* type model */
   auto Evict(Env*) -> Tag { return tag_; }
+  static auto EvictTag(Env*, Tag) -> void;
 
  public: /* object */
   explicit Vector(Tag t) : Type() { tag_ = t; }

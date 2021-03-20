@@ -106,6 +106,7 @@ class Symbol : public Type {
 
  public: /* type model */
   auto Evict(Env*) -> Tag;
+  static auto EvictTag(Env*, Tag) -> void;
 
  public: /* object */
   explicit Symbol(Tag, Tag);
