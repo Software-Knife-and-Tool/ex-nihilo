@@ -42,7 +42,8 @@ class Vector : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-
+  uint64_t base_;
+  
  public: /* tag */
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
@@ -122,7 +123,7 @@ class Vector : public Type {
   auto Evict(Env*) -> Tag { return tag_; }
 
  public: /* object */
-  explicit Vector(Tag t) : Type() { tag_ = t; }
+  explicit Vector(Tag t) : Type() { base_ = nullptr; tag_ = t; }
 
   explicit Vector(Env*, const std::string&);   /* string */
   explicit Vector(Env*, std::vector<char>);    /* string */
