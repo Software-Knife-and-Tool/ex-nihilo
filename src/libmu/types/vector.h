@@ -32,7 +32,6 @@ using heap::Heap;
 
 class Env;
 
-#if 0
 /** vector class type **/
 template <class V, Type::SYS_CLASS S>
 class VectorT : public Type {
@@ -75,7 +74,7 @@ class VectorT : public Type {
   }
 
   template <typename T>
-  static auto DataAddress(Tag& vector) -> T* {
+  static auto Data(Tag& vector) -> T* {
     assert(IsType(vector));
 
     return IsImmediate(vector)
@@ -87,7 +86,7 @@ class VectorT : public Type {
   static auto Ref(Tag& vector, Tag index) -> T {
     assert(IsType(vector));
 
-    return DataAddress<T>(vector)[Fixnum::Uint64Of(index)];
+    return Data<T>(vector)[Fixnum::Uint64Of(index)];
   }
 
   static constexpr auto Length(Tag vec) -> size_t {
@@ -147,9 +146,7 @@ class VectorT : public Type {
     /* because the vector might be an immediate, we need to ref it */
     /* fix: figure out how to const the ref */
     vector_iter(Tag& vec)
-        : vector_(DataAddress<T>(vec)),
-          length_(Length(vec)),
-          current_(begin()) {}
+        : vector_(Data<T>(vec)), length_(Length(vec)), current_(begin()) {}
 
     iterator begin() { return length_ ? vector_ : end(); }
     iterator end() { return nullptr; }
@@ -177,7 +174,6 @@ class VectorT : public Type {
   };
 
 }; /* class VectorT */
-#endif
 
 /** vector class type **/
 class Vector : public Type {
@@ -220,7 +216,7 @@ class Vector : public Type {
   }
 
   template <typename T>
-  static auto DataAddress(Tag& vector) -> T* {
+  static auto Data(Tag& vector) -> T* {
     assert(IsType(vector));
 
     return IsImmediate(vector)
@@ -232,7 +228,7 @@ class Vector : public Type {
   static auto Ref(Tag& vector, Tag index) -> T {
     assert(IsType(vector));
 
-    return DataAddress<T>(vector)[Fixnum::Uint64Of(index)];
+    return Data<T>(vector)[Fixnum::Uint64Of(index)];
   }
 
   static constexpr auto Length(Tag vec) -> size_t {
@@ -293,9 +289,7 @@ class Vector : public Type {
     /* because the vector might be an immediate, we need to ref it */
     /* fix: figure out how to const the ref */
     vector_iter(Tag& vec)
-        : vector_(DataAddress<T>(vec)),
-          length_(Length(vec)),
-          current_(begin()) {}
+        : vector_(Data<T>(vec)), length_(Length(vec)), current_(begin()) {}
 
     iterator begin() { return length_ ? vector_ : end(); }
     iterator end() { return nullptr; }

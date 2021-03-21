@@ -100,15 +100,14 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 
   tag_ = Entag(vp, TAG::EXTEND);
 
-  std::memcpy(Vector::DataAddress<Tag>(tag_), src.data(),
-              src.size() * sizeof(Tag));
+  std::memcpy(Vector::Data<Tag>(tag_), src.data(), src.size() * sizeof(Tag));
 }
 
 /** * allocate a char vector from the heap **/
 Vector::Vector(Env* env, std::vector<char> srcv) {
   std::string src(srcv.begin(), srcv.end());
 
-  // auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
+  auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
   tag_ = Vector(env, src).tag_;
 }
 
@@ -126,7 +125,7 @@ Vector::Vector(Env* env, const std::string& src) {
 
     tag_ = Entag(vp, TAG::EXTEND);
 
-    std::memcpy(Vector::DataAddress<char>(tag_), src.data(),
+    std::memcpy(Vector::Data<char>(tag_), src.data(),
                 src.size() * sizeof(char));
   }
 }
@@ -142,7 +141,7 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
   tag_ = Entag(vp, TAG::EXTEND);
 
-  std::memcpy(Vector::DataAddress<uint8_t>(tag_), src.data(),
+  std::memcpy(Vector::Data<uint8_t>(tag_), src.data(),
               src.size() * sizeof(uint8_t));
 }
 
@@ -157,7 +156,7 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
   tag_ = Entag(vp, TAG::EXTEND);
 
-  std::memcpy(Vector::DataAddress<int64_t>(tag_), src.data(),
+  std::memcpy(Vector::Data<int64_t>(tag_), src.data(),
               src.size() * sizeof(int64_t));
 }
 
@@ -172,7 +171,7 @@ Vector::Vector(Env* env, std::vector<float> src) {
 
   tag_ = Entag(vp, TAG::EXTEND);
 
-  std::memcpy(Vector::DataAddress<float>(tag_), src.data(),
+  std::memcpy(Vector::Data<float>(tag_), src.data(),
               src.size() * sizeof(float));
 }
 
