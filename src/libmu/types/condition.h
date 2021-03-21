@@ -110,11 +110,12 @@ class Condition : public Type {
     return tag_;
   }
 
-  static auto EvictTag(Env* env, Tag condition) -> void {
+  static auto EvictTag(Env* env, Tag condition) -> Tag {
     assert(IsType(condition));
     assert(!Env::IsEvicted(env, condition));
 
     printf("not evicitng condition\n");
+    return condition;
   }
 
  public: /* object */

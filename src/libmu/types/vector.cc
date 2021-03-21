@@ -31,11 +31,12 @@ namespace libmu {
 namespace core {
 
 /** * eviction **/
-auto Vector::EvictTag(Env* env, Tag vec) -> void {
+auto Vector::EvictTag(Env* env, Tag vec) -> Tag {
   assert(IsType(vec));
   assert(!Env::IsEvicted(env, vec));
 
   printf("not evicting vector\n");
+  return vec;
 }
 
 /** * view of vector object **/

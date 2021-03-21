@@ -65,11 +65,12 @@ class Macro : public Type {
     return tag_;
   }
 
-  static auto EvictTag(Env* env, Tag macro) -> void {
+  static auto EvictTag(Env* env, Tag macro) -> Tag {
     assert(IsType(macro));
     assert(!Env::IsEvicted(env, macro));
 
     printf("not evicitng macro\n");
+    return macro;
   }
 
   explicit Macro(Tag func) : Type() {

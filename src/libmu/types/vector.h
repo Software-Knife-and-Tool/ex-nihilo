@@ -268,7 +268,7 @@ class Vector : public Type {
 
  public: /* type model */
   auto Evict(Env*) -> Tag { return tag_; }
-  static auto EvictTag(Env*, Tag) -> void;
+  static auto EvictTag(Env*, Tag) -> Tag;
 
  public: /* object */
   explicit Vector(Tag t) : Type() { tag_ = t; }
