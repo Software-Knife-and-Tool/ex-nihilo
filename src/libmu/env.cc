@@ -269,7 +269,7 @@ auto Env::EnvView(Env* env) -> Tag {
 
   auto view = std::vector<Tag>{
       Symbol::Keyword("env"), env->namespace_, Namespaces(env), Fixnum(st).tag_,
-      Fixnum(rt).tag_,        EnvStack(env),   env->src_};
+      Fixnum(rt).tag_,        EnvStack(env),   env->src_form_};
 
   return Vector(env, view).tag_;
 }
@@ -354,7 +354,7 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   namespace_ = mu_;
   namespaces_["mu"] = mu_;
   nil_ = Type::NIL;
-  src_ = Type::NIL;
+  src_form_ = Type::NIL;
 
   standard_input_ =
       Namespace::Intern(this, mu_, String(this, "standard-input").tag_,

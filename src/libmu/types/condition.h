@@ -27,6 +27,16 @@ namespace core {
 
 /** * condition type class **/
 class Condition : public Type {
+ private:
+  typedef struct {
+    Tag tag;    /* condition tag */
+    Tag frame;  /* frame */
+    Tag source; /* on source object */
+    Tag reason; /* condition string */
+  } HeapLayout;
+
+  HeapLayout condition_;
+
  public:
   enum class CONDITION_CLASS : uint8_t {
     ARITHMETIC_ERROR,
@@ -53,17 +63,11 @@ class Condition : public Type {
     UNDEFINED_FUNCTION
   };
 
- private:
-  typedef struct {
-    Tag tag;    /* condition tag */
-    Tag frame;  /* frame */
-    Tag source; /* on source object */
-    Tag reason; /* condition string */
-  } HeapLayout;
+  static constexpr auto IsType(Tag ptr) -> bool {
+    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::CONDITION;
+  }
 
-  HeapLayout condition_;
-
- public:
+  /** * accessors **/
   static auto frame(Tag condition) -> Tag {
     assert(IsType(condition));
 
@@ -88,37 +92,48 @@ class Condition : public Type {
     return Untag<HeapLayout>(condition)->reason;
   }
 
-  static constexpr auto IsType(Tag ptr) -> bool {
-    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::CONDITION;
-  }
-
-  static auto GcMark(Env*, Tag) -> void;
-
-  [[noreturn]] static auto Raise(Env*, CONDITION_CLASS, const std::string&, Tag)
-      -> void;
-
-  static auto ViewOf(Env*, Tag) -> Tag;
-
  public: /* type model */
   auto Evict(Env* env) -> Tag {
-    auto ep =
+    auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
 
-    *ep = condition_;
-    tag_ = Entag(ep, TAG::EXTEND);
+    *hp = condition_;
+
+    hp->tag = Env::Evict(env, condition_.tag);
+    hp->frame = Env::Evict(env, condition_.frame);
+    hp->source = Env::Evict(env, condition_.source);
+    hp->reason = Env::Evict(env, condition_.reason);
+
+    tag_ = Entag(hp, TAG::EXTEND);
 
     return tag_;
   }
 
+ public: /* object */
   static auto EvictTag(Env* env, Tag condition) -> Tag {
     assert(IsType(condition));
     assert(!Env::IsEvicted(env, condition));
 
-    printf("not evicitng condition\n");
-    return condition;
+    auto hp =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
+    auto cp = Untag<HeapLayout>(condition);
+
+    *hp = *cp;
+
+    hp->tag = Env::Evict(env, cp->tag);
+    hp->frame = Env::Evict(env, cp->frame);
+    hp->source = Env::Evict(env, cp->source);
+    hp->reason = Env::Evict(env, cp->reason);
+
+    return Entag(hp, TAG::EXTEND);
   }
 
- public: /* object */
+  static auto GcMark(Env*, Tag) -> void;
+  static auto ViewOf(Env*, Tag) -> Tag;
+
+  [[noreturn]] static auto Raise(Env*, CONDITION_CLASS, const std::string&, Tag)
+      -> void;
+
   explicit Condition(Tag tag, Tag frame, Tag source, Tag reason) : Type() {
     assert(Symbol::IsKeyword(tag));
 

@@ -259,10 +259,14 @@ auto Cons::Read(Env* env, Tag stream) -> Tag {
 
 /** * evict cons to heap **/
 auto Cons::Evict(Env* env) -> Tag {
-  auto cp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
 
-  *cp = cons_;
-  tag_ = Entag(cp, TAG::CONS);
+  *hp = cons_;
+
+  hp->car = Env::Evict(env, cons_.car);
+  hp->cdr = Env::Evict(env, cons_.cdr);
+
+  tag_ = Entag(hp, TAG::CONS);
 
   return tag_;
 }
@@ -271,7 +275,15 @@ auto Cons::EvictTag(Env* env, Tag cons) -> Tag {
   assert(IsType(cons));
   assert(!Env::IsEvicted(env, cons));
 
-  return Cons(car(cons), cdr(cons)).Evict(env);
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
+  auto cp = Untag<HeapLayout>(cons);
+
+  *hp = *cp;
+
+  hp->car = Env::Evict(env, cp->car);
+  hp->cdr = Env::Evict(env, cp->cdr);
+
+  return Entag(hp, TAG::CONS);
 }
 
 /** * allocate cons **/
