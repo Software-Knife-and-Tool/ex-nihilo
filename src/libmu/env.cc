@@ -234,11 +234,13 @@ auto Env::LastFrame(Env* env) -> Tag {
 }
 
 /** * eviction **/
-auto Env::Evict(Env* env, Tag ptr) -> void {
-  if (Env::IsEvicted(env, ptr)) return;
+auto Env::Evict(Env* env, Tag ptr) -> Tag {
+  if (Env::IsEvicted(env, ptr)) return ptr;
 
-  std::function<void(Env*, Tag)> noEvict = [](Env*, Tag) -> void {};
-  static const std::map<SYS_CLASS, std::function<void(Env*, Tag)>> kGcEvictMap{
+  std::function<Tag(Env*, Tag)> noEvict = [](Env*, Tag ptr) -> Tag {
+    return ptr;
+  };
+  static const std::map<SYS_CLASS, std::function<Tag(Env*, Tag)>> kGcEvictMap{
       {SYS_CLASS::ADDRESS, noEvict},
       {SYS_CLASS::CHAR, noEvict},
       {SYS_CLASS::CONS, Cons::EvictTag},

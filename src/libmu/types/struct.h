@@ -75,11 +75,12 @@ class Struct : public Type {
     return tag_;
   }
 
-  static auto EvictTag(Env* env, Tag strct) -> void {
+  static auto EvictTag(Env* env, Tag strct) -> Tag {
     assert(IsType(strct));
     assert(!Env::IsEvicted(env, strct));
 
     printf("not evicting struct\n");
+    return strct;
   }
 
  public: /* object */

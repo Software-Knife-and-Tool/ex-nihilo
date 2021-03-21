@@ -145,11 +145,12 @@ class Function : public Type {
     return tag_;
   }
 
-  static auto EvictTag(Env* env, Tag fn) -> void {
+  static auto EvictTag(Env* env, Tag fn) -> Tag {
     assert(IsType(fn));
     assert(!Env::IsEvicted(env, fn));
 
     printf("not evicting function\n");
+    return fn;
   }
 
  public: /* object */

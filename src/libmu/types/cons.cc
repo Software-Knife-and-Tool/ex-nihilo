@@ -267,11 +267,11 @@ auto Cons::Evict(Env* env) -> Tag {
   return tag_;
 }
 
-auto Cons::EvictTag(Env* env, Tag cons) -> void {
+auto Cons::EvictTag(Env* env, Tag cons) -> Tag {
   assert(IsType(cons));
   assert(!Env::IsEvicted(env, cons));
 
-  Cons(car(cons), cdr(cons)).Evict(env);
+  return Cons(car(cons), cdr(cons)).Evict(env);
 }
 
 /** * allocate cons **/
