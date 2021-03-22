@@ -33,13 +33,13 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 using Vector = core::Vector;
 
-/** * (vector? form) => bool**/
-void IsVector(Frame* fp) {
+/** * (vectorp form) => bool**/
+auto IsVector(Frame* fp) -> void {
   fp->value = Type::Bool(Vector::IsType(fp->argv[0]));
 }
 
-/** * (svref vector) => object **/
-void VectorRef(Frame* fp) {
+/** * (vector-refx vector) => object **/
+auto VectorRef(Frame* fp) -> void {
   auto vector = fp->argv[0];
   auto index = fp->argv[1];
 
@@ -81,7 +81,7 @@ void VectorRef(Frame* fp) {
 }
 
 /** * (svlength vector) => fixnum **/
-void VectorLength(Frame* fp) {
+auto VectorLength(Frame* fp) -> void {
   auto vector = fp->argv[0];
 
   if (!Vector::IsType(vector))
@@ -92,7 +92,7 @@ void VectorLength(Frame* fp) {
 }
 
 /** * (svtype vector) => symbol **/
-void VectorType(Frame* fp) {
+auto VectorType(Frame* fp) -> void {
   if (!Vector::IsType(fp->argv[0]))
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "svtype)",
                      fp->argv[0]);
@@ -101,7 +101,7 @@ void VectorType(Frame* fp) {
 }
 
 /** * (vector-map function vector) => vector **/
-void VectorMap(Frame* fp) {
+auto VectorMap(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
@@ -117,7 +117,7 @@ void VectorMap(Frame* fp) {
 }
 
 /** * (vector-mapc function vector) => vector **/
-void VectorMapC(Frame* fp) {
+auto VectorMapC(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto vector = fp->argv[1];
 
@@ -134,7 +134,7 @@ void VectorMapC(Frame* fp) {
 }
 
 /** * (vector type list) => vector **/
-void VectorCons(Frame* fp) {
+auto VectorCons(Frame* fp) -> void {
   auto type = fp->argv[0];
   auto list = fp->argv[1];
 

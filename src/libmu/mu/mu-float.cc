@@ -35,7 +35,7 @@ auto IsFloat(Frame* fp) -> void {
 }
 
 /** * (float+ float float) => float **/
-void FloatAdd(Frame* fp) {
+auto FloatAdd(Frame* fp) -> void {
   auto fl0 = fp->argv[0];
   auto fl1 = fp->argv[1];
 
@@ -125,7 +125,7 @@ auto Sqrt(Frame* fp) -> void {
 }
 
 /** * (pow float float') => float **/
-void Pow(Frame* fp) {
+auto Pow(Frame* fp) -> void {
   auto base = fp->argv[0];
   auto exp = fp->argv[1];
 

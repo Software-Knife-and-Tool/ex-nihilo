@@ -35,7 +35,7 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (gc bool) => fixnum **/
-void Gc(Frame* fp) {
+auto Gc(Frame* fp) -> void {
   auto arg = fp->argv[0];
 
   switch (arg) {
@@ -50,8 +50,8 @@ void Gc(Frame* fp) {
   fp->value = core::Fixnum(fp->env->Gc(fp->env)).tag_;
 }
 
-/** * mu function (heap-info type) => vector **/
-void HeapInfo(Frame* fp) {
+/** * (heap-info type) => vector **/
+auto HeapInfo(Frame* fp) -> void {
   auto type = fp->argv[0];
 
   if (!core::Symbol::IsKeyword(type) || !Type::IsClassSymbol(type))

@@ -29,12 +29,12 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (fixnum? fixnum) => bool **/
-void IsFixnum(Frame* fp) {
+auto IsFixnum(Frame* fp) -> void {
   fp->value = Type::Bool(Fixnum::IsType(fp->argv[0]));
 }
 
 /** * (fixnum+ fixnum fixnum) => fixnum **/
-void FixAdd(Frame* fp) {
+auto FixAdd(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -50,7 +50,7 @@ void FixAdd(Frame* fp) {
 }
 
 /** * (fixnum- fixnum fixnum) => fixnum **/
-void FixSub(Frame* fp) {
+auto FixSub(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -65,7 +65,7 @@ void FixSub(Frame* fp) {
 }
 
 /** * (fixnum* fixnum fixnum) => fixnum **/
-void FixMul(Frame* fp) {
+auto FixMul(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -80,7 +80,7 @@ void FixMul(Frame* fp) {
 }
 
 /** * (fixnum< fixnum fixnum) => bool **/
-void FixLessThan(Frame* fp) {
+auto FixLessThan(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -96,7 +96,7 @@ void FixLessThan(Frame* fp) {
 }
 
 /** * (truncate fixnum fixnum) => (fixnum . fixnum) **/
-void Truncate(Frame* fp) {
+auto Truncate(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -121,12 +121,11 @@ void Truncate(Frame* fp) {
 }
 
 /** * (floor fixnum fixnum) => (fixnum . fixnum) **/
-void Floor(Frame* fp) {
+auto Floor(Frame* fp) -> void {
   auto number = fp->argv[0];
   auto divisor = fp->argv[1];
 
   /* quotient * divisor + remainder = number */
-
   if (!Fixnum::IsType(number))
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, "floor",
                      number);
@@ -149,7 +148,7 @@ void Floor(Frame* fp) {
 }
 
 /** * (logand fixnum fixnum) => fixnum **/
-void Logand(Frame* fp) {
+auto Logand(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 
@@ -165,7 +164,7 @@ void Logand(Frame* fp) {
 }
 
 /** * (logor fixnum fixnum) => fixnum **/
-void Logor(Frame* fp) {
+auto Logor(Frame* fp) -> void {
   auto fx0 = fp->argv[0];
   auto fx1 = fp->argv[1];
 

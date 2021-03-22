@@ -39,12 +39,12 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (eval object) => object **/
-void Eval(Frame* fp) {
+auto Eval(Frame* fp) -> void {
   fp->value = core::Eval(fp->env, core::Compile(fp->env, fp->argv[0]));
 }
 
 /** * (env-view) => vector **/
-void EnvView(Frame* fp) {
+auto EnvView(Frame* fp) -> void {
   auto view =
       std::vector<core::Tag>{core::Symbol::Keyword("env"), fp->env->namespace_,
                              core::Env::Namespaces(fp->env),
@@ -68,7 +68,7 @@ auto ClockView(Frame* fp) -> void {
 }
 
 /** * (apply func list) => object **/
-void Apply(Frame* fp) {
+auto Apply(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto args = fp->argv[1];
 

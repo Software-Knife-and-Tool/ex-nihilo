@@ -42,13 +42,13 @@ using Stream = core::Stream;
 using String = core::String;
 using Type = core::Type;
 
-/** * mu function (stream? form) => bool **/
-void IsStream(Frame* fp) {
+/** * (stream? form) => bool **/
+auto IsStream(Frame* fp) -> void {
   fp->value = Type::Bool(Stream::IsType(fp->argv[0]));
 }
 
-/** * mu function (eof? stream) **/
-void IsEof(Frame* fp) {
+/** * (eof? stream) **/
+auto IsEof(Frame* fp) -> void {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
   if (!Stream::IsType(stream))
@@ -59,7 +59,7 @@ void IsEof(Frame* fp) {
 }
 
 /** * (read-char stream) => char **/
-void ReadChar(Frame* fp) {
+auto ReadChar(Frame* fp) -> void {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
   if (!Stream::IsType(stream))
@@ -86,7 +86,7 @@ void ReadChar(Frame* fp) {
 }
 
 /** * (unread-char ch stream) => char **/
-void UnReadChar(Frame* fp) {
+auto UnReadChar(Frame* fp) -> void {
   auto ch = fp->argv[0];
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[1]);
 
@@ -108,7 +108,7 @@ void UnReadChar(Frame* fp) {
 }
 
 /** * (read-byte stream) => fixnum **/
-void ReadByte(Frame* fp) {
+auto ReadByte(Frame* fp) -> void {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
   if (!Stream::IsType(stream))
@@ -134,7 +134,7 @@ void ReadByte(Frame* fp) {
 }
 
 /** * (write-char char stream) => char  **/
-void WriteChar(Frame* fp) {
+auto WriteChar(Frame* fp) -> void {
   auto ch = fp->argv[0];
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[1]);
 
@@ -153,7 +153,7 @@ void WriteChar(Frame* fp) {
 }
 
 /** * (write-byte fixnum stream) => fixnum  **/
-void WriteByte(Frame* fp) {
+auto WriteByte(Frame* fp) -> void {
   auto byte = fp->argv[0];
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[1]);
 
@@ -172,7 +172,7 @@ void WriteByte(Frame* fp) {
 }
 
 /** *  (input-file path) => stream **/
-void InFileStream(Frame* fp) {
+auto InFileStream(Frame* fp) -> void {
   auto pathname = fp->argv[0];
 
   if (!String::IsType(pathname))
@@ -183,7 +183,7 @@ void InFileStream(Frame* fp) {
 }
 
 /** *  (make-input-string string) => stream **/
-void InStringStream(Frame* fp) {
+auto InStringStream(Frame* fp) -> void {
   auto in_string = fp->argv[0];
 
   if (!String::IsType(in_string))
@@ -195,7 +195,7 @@ void InStringStream(Frame* fp) {
 }
 
 /** *  (make-output-string string) => stream **/
-void OutStringStream(Frame* fp) {
+auto OutStringStream(Frame* fp) -> void {
   auto init_string = fp->argv[0];
 
   if (!String::IsType(init_string))
@@ -208,7 +208,7 @@ void OutStringStream(Frame* fp) {
 }
 
 /** * (output-file path) => stream **/
-void OutFileStream(Frame* fp) {
+auto OutFileStream(Frame* fp) -> void {
   auto path = fp->argv[0];
 
   if (!String::IsType(path))
@@ -219,7 +219,7 @@ void OutFileStream(Frame* fp) {
 }
 
 /** * (get-output-string-stream stream) => string **/
-void GetStringStream(Frame* fp) {
+auto GetStringStream(Frame* fp) -> void {
   auto stream = fp->argv[0];
 
   if (!Stream::IsType(stream))
@@ -237,7 +237,7 @@ void GetStringStream(Frame* fp) {
 }
 
 /** * (open-socket-server port) **/
-void SocketServerStream(Frame* fp) {
+auto SocketServerStream(Frame* fp) -> void {
   auto port = fp->argv[0];
 
   if (!Fixnum::IsType(port))
@@ -248,7 +248,7 @@ void SocketServerStream(Frame* fp) {
 };
 
 /** * (open-function-stream fn) **/
-void FunctionStream(Frame* fp) {
+auto FunctionStream(Frame* fp) -> void {
   auto fn = fp->argv[0];
 
   if (!core::Function::IsType(fn))
@@ -259,7 +259,7 @@ void FunctionStream(Frame* fp) {
 };
 
 /** * (accept-socket-stream stream) **/
-void AcceptSocketStream(Frame* fp) {
+auto AcceptSocketStream(Frame* fp) -> void {
   auto socket = fp->argv[0];
 
   if (!Stream::IsType(socket))
@@ -271,7 +271,7 @@ void AcceptSocketStream(Frame* fp) {
 };
 
 /** * (open-socket-stream ipaddr port) **/
-void SocketStream(Frame* fp) {
+auto SocketStream(Frame* fp) -> void {
   auto ipaddr = fp->argv[0];
   auto port = fp->argv[1];
 
@@ -287,7 +287,7 @@ void SocketStream(Frame* fp) {
 };
 
 /** * (connect-socket-stream stream) **/
-void ConnectSocketStream(Frame* fp) {
+auto ConnectSocketStream(Frame* fp) -> void {
   auto socket = fp->argv[0];
 
   if (!Stream::IsType(socket))
@@ -298,7 +298,7 @@ void ConnectSocketStream(Frame* fp) {
 };
 
 /** * (close stream) =>  **/
-void Close(Frame* fp) {
+auto Close(Frame* fp) -> void {
   auto stream = fp->argv[0];
 
   if (!Stream::IsType(stream))
@@ -310,7 +310,7 @@ void Close(Frame* fp) {
 }
 
 /** * (load path) => bool **/
-void Load(Frame* fp) {
+auto Load(Frame* fp) -> void {
   auto filespec = fp->argv[0];
 
   if (!String::IsType(filespec))

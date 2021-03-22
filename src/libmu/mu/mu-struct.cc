@@ -28,13 +28,13 @@ using Struct = core::Struct;
 using Frame = core::Env::Frame;
 using Type = core::Type;
 
-/** * mu function (struct? obj) => bool **/
-void IsStruct(Frame* fp) {
+/** * (structp obj) => bool **/
+auto IsStruct(Frame* fp) -> void {
   fp->value = Type::Bool(Struct::IsType(fp->argv[0]));
 }
 
-/** * mu function (struct keyword vector) => object **/
-void MakeStruct(Frame* fp) {
+/** * (struct keyword vector) => object **/
+auto MakeStruct(Frame* fp) -> void {
   auto name = fp->argv[0];
   auto values = fp->argv[1];
 
@@ -50,7 +50,7 @@ void MakeStruct(Frame* fp) {
 }
 
 /** * implements (struct-type struct) => symbol **/
-void StructType(Frame* fp) {
+auto StructType(Frame* fp) -> void {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))
@@ -60,8 +60,8 @@ void StructType(Frame* fp) {
   fp->value = Struct::stype(strct);
 }
 
-/** * mu function (struct-values struct) => vector */
-void StructValues(Frame* fp) {
+/** * (struct-values struct) => vector */
+auto StructValues(Frame* fp) -> void {
   auto strct = fp->argv[0];
 
   if (!Struct::IsType(strct))

@@ -40,7 +40,7 @@ using Frame = core::Env::Frame;
 using Stream = core::Stream;
 using Type = core::Type;
 
-/** * mu function (read stream) => object **/
+/** * (read stream) => object **/
 void Read(Frame* fp) {
   auto stream = Stream::StreamDesignator(fp->env, fp->argv[0]);
 
@@ -55,7 +55,7 @@ void Read(Frame* fp) {
   fp->value = core::Read(fp->env, stream);
 }
 
-/** * mu function (set-macro-character char function) => object **/
+/** * (set-macro-character char function) => object **/
 void SetMacroChar(Frame* fp) {
   auto macro_char = fp->argv[0];
   auto reader = fp->argv[1];

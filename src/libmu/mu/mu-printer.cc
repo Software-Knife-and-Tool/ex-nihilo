@@ -42,7 +42,7 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (print object stream) => object **/
-void PrintEscape(Frame* fp) {
+auto PrintEscape(Frame* fp) -> auto {
   auto obj = fp->argv[0];
   auto stream = fp->argv[1];
   auto escape = fp->argv[2];
@@ -57,7 +57,7 @@ void PrintEscape(Frame* fp) {
 }
 
 /** * (terpri stream) => :nil **/
-void Terpri(Frame* fp) {
+auto Terpri(Frame* fp) -> auto {
   auto stream = fp->argv[0];
 
   if (!core::Stream::IsStreamDesignator(stream))

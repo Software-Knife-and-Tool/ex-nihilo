@@ -37,7 +37,7 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (type-of object) => symbol **/
-void TypeOf(Frame* fp) {
+auto TypeOf(Frame* fp) -> void {
   auto obj = fp->argv[0];
 
   fp->value = core::Struct::IsType(obj)
@@ -46,12 +46,12 @@ void TypeOf(Frame* fp) {
 }
 
 /** * (eq object object) => bool **/
-void Eq(Frame* fp) {
+auto Eq(Frame* fp) -> void {
   fp->value = Type::Bool(Type::Eq(fp->argv[0], fp->argv[1]));
 }
 
-/** * (special-operator? form) => bool **/
-void IsSpecOp(Frame* fp) {
+/** * (special-operatorp form) => bool **/
+auto IsSpecOp(Frame* fp) -> void {
   auto symbol = fp->argv[0];
 
   if (!core::Symbol::IsType(symbol))
@@ -62,7 +62,7 @@ void IsSpecOp(Frame* fp) {
 }
 
 /** * (make-view object) => vector **/
-void MakeView(Frame* fp) {
+auto MakeView(Frame* fp) -> void {
   fp->value = core::Env::ViewOf(fp->env, fp->argv[0]);
 }
 

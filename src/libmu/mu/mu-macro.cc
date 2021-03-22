@@ -38,7 +38,7 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (macro-function symbol) => function **/
-void MacroFunction(Frame* fp) {
+auto MacroFunction(Frame* fp) -> void {
   auto macsym = fp->argv[0];
 
   if (!core::Symbol::IsType(macsym))
@@ -49,7 +49,7 @@ void MacroFunction(Frame* fp) {
 }
 
 /** * (macroexpand form) => object **/
-void MacroExpand(Frame* fp) {
+auto MacroExpand(Frame* fp) -> void {
   fp->value = Macro::MacroExpand(fp->env, fp->argv[0]);
 }
 
