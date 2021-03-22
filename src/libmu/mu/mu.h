@@ -29,7 +29,7 @@ void Atan(Frame*);
 void Block(Frame*);
 void Car(Frame*);
 void Cdr(Frame*);
-void Clocks(Frame*);
+void ClockView(Frame*);
 void Close(Frame*);
 void Closure(Frame*);
 void ConnectSocketStream(Frame*);

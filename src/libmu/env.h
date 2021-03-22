@@ -124,10 +124,11 @@ class Env {
 
   static auto Evict(Env*, Tag) -> Tag;
 
+  static auto EnvStack(Env*) -> Tag;
+  static auto Namespaces(Env*) -> Tag;
+
   static auto MapNamespace(Env*, const std::string&) -> Tag;
   static auto AddNamespace(Env*, Tag) -> void;
-
-  static auto EnvView(Env*) -> Tag;
 
   static auto IsInHeap(Env* env, Tag ptr) -> bool {
     return Type::IsImmediate(ptr) ? false

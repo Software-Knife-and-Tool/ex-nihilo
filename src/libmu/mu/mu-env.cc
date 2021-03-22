@@ -43,8 +43,29 @@ void Eval(Frame* fp) {
   fp->value = core::Eval(fp->env, core::Compile(fp->env, fp->argv[0]));
 }
 
-/** * (.env) => vector **/
-void EnvView(Frame* fp) { fp->value = core::Env::EnvView(fp->env); }
+/** * (env-view) => vector **/
+void EnvView(Frame* fp) {
+  auto view =
+      std::vector<core::Tag>{core::Symbol::Keyword("env"), fp->env->namespace_,
+                             core::Env::Namespaces(fp->env),
+                             core::Env::EnvStack(fp->env), fp->env->src_form_};
+
+  fp->value = core::Vector(fp->env, view).tag_;
+}
+
+/** * (clock-view) => vector **/
+auto ClockView(Frame* fp) -> void {
+  uint64_t st, rt;
+
+  core::Platform::SystemTime(&st);
+  core::Platform::ProcessTime(&rt);
+
+  auto view =
+      std::vector<core::Tag>{core::Symbol::Keyword("clock"),
+                             core::Fixnum(st).tag_, core::Fixnum(rt).tag_};
+
+  fp->value = core::Vector(fp->env, view).tag_;
+}
 
 /** * (apply func list) => object **/
 void Apply(Frame* fp) {

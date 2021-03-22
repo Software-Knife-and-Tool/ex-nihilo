@@ -55,6 +55,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
     {"car", mu::Car, 1},
     {"cdr", mu::Cdr, 1},
     {"charp", mu::IsChar, 1},
+    {"clock-view", mu::ClockView, 0},
     {"close", mu::Close, 1},
     {"closure", mu::Closure, 1},
     {"condition", mu::MakeCondition, 3},
@@ -157,7 +158,7 @@ static const std::vector<Env::TagFn> kExtFuncTab{
 
 /** * library intern core functions **/
 static const std::vector<Env::TagFn> kIntFuncTab{
-    {"block", mu::Block, 2},        {"clocks", mu::Clocks, 0},
+    {"block", mu::Block, 2},        {"clock-view", mu::ClockView, 0},
     {"env-view", mu::EnvView, 0},   {"exit", mu::Exit, 1},
     {"frame-ref", mu::FrameRef, 2}, {"heap-view", mu::HeapInfo, 1},
     {"invoke", mu::Invoke, 2},      {"letq", mu::Letq, 3},
@@ -176,8 +177,10 @@ auto FrameView(Env* env, Frame* fp) {
   return Vector(env, frame).tag_;
 }
 
+} /* anonymous namespace */
+
 /** * make vector of env stack **/
-auto EnvStack(Env* env) {
+auto Env::EnvStack(Env* env) -> Tag {
   std::vector<Tag> stack;
 
   for (auto fp : env->frames_) {
@@ -200,15 +203,13 @@ auto EnvStack(Env* env) {
 }
 
 /** * make list of namespaces **/
-auto Namespaces(Env* env) {
+auto Env::Namespaces(Env* env) -> Tag {
   std::vector<Tag> nslist;
 
   for (auto& ns : env->namespaces_) nslist.push_back(ns.second);
 
   return Cons::List(env, nslist);
 }
-
-} /* anonymous namespace */
 
 /** * gc frame **/
 void Env::GcFrame(Frame* fp) {
@@ -258,20 +259,6 @@ auto Env::Evict(Env* env, Tag ptr) -> Tag {
 
   assert(kGcEvictMap.count(Type::TypeOf(ptr)));
   return kGcEvictMap.at(Type::TypeOf(ptr))(env, ptr);
-}
-
-/** * env view **/
-auto Env::EnvView(Env* env) -> Tag {
-  uint64_t st, rt;
-
-  Platform::SystemTime(&st);
-  Platform::ProcessTime(&rt);
-
-  auto view = std::vector<Tag>{
-      Symbol::Keyword("env"), env->namespace_, Namespaces(env), Fixnum(st).tag_,
-      Fixnum(rt).tag_,        EnvStack(env),   env->src_form_};
-
-  return Vector(env, view).tag_;
 }
 
 /** * garbage collection **/
