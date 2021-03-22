@@ -95,7 +95,7 @@ class Env {
   std::unordered_map<Tag, Tag> readtable_;
   Tag mu_;              /* mu namespace */
   Tag namespace_;       /* current namespace */
-  Tag src_;             /* source */
+  Tag src_form_;        /* source form for compiler exceptions */
   Tag nil_;             /* nil */
   Tag standard_input_;  /* standard input */
   Tag standard_output_; /* standard output */
@@ -124,10 +124,11 @@ class Env {
 
   static auto Evict(Env*, Tag) -> Tag;
 
+  static auto EnvStack(Env*) -> Tag;
+  static auto Namespaces(Env*) -> Tag;
+
   static auto MapNamespace(Env*, const std::string&) -> Tag;
   static auto AddNamespace(Env*, Tag) -> void;
-
-  static auto EnvView(Env*) -> Tag;
 
   static auto IsInHeap(Env* env, Tag ptr) -> bool {
     return Type::IsImmediate(ptr) ? false

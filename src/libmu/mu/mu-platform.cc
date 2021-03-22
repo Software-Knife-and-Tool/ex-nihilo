@@ -42,18 +42,8 @@ using Platform = core::Platform;
 using String = core::String;
 using Type = core::Type;
 
-/** *  (clocks fixnum) => (systime-msec . runtime-usec)  **/
-void Clocks(Frame* fp) {
-  uint64_t st, rt;
-
-  Platform::SystemTime(&st);
-  Platform::ProcessTime(&rt);
-
-  fp->value = core::Cons(Fixnum(st).tag_, Fixnum(rt).tag_).Evict(fp->env);
-}
-
 /** *  (exit fixnum) never returns **/
-void Exit(Frame* fp) {
+[[noreturn]] auto Exit(Frame* fp) -> void {
   auto rc = fp->argv[0];
 
   if (!Fixnum::IsType(rc))
@@ -64,7 +54,7 @@ void Exit(Frame* fp) {
 }
 
 /** * (system string) **/
-void System(Frame* fp) {
+auto System(Frame* fp) -> void {
   auto cmd = fp->argv[0];
 
   if (!String::IsType(cmd))
@@ -74,8 +64,8 @@ void System(Frame* fp) {
   fp->value = Fixnum(Platform::System(String::StdStringOf(cmd))).tag_;
 }
 
-/** * (.invoke fixnum string) => string **/
-void Invoke(Frame* fp) {
+/** * (invoke fixnum string) => string **/
+auto Invoke(Frame* fp) -> void {
   auto fn = fp->argv[0];
   auto arg = fp->argv[1];
 

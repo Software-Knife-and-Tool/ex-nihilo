@@ -77,7 +77,7 @@ auto Vector::Map(Env* env, Tag func, Tag vector) -> Tag {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
-  switch (Type::MapSymbolClass(Vector::VecType(vector))) {
+  switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::T:
       return VMap<Vector, Tag>(env, func, vector);
     case SYS_CLASS::FLOAT:
@@ -98,7 +98,7 @@ auto Vector::MapC(Env* env, Tag func, Tag vector) -> void {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
-  switch (Type::MapSymbolClass(Vector::VecType(vector))) {
+  switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::T:
       return VMapC<Vector, Tag>(env, func, vector);
     case SYS_CLASS::FLOAT:

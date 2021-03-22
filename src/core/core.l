@@ -347,7 +347,7 @@
 ;;; time macro
 (defmacro time (form)
   (let ((now (:lambda ()
-         (let* ((now (mu::clocks))
+         (let* ((now (mu::clock-view))
            (sec (float (nth 0 now)))
            (usec (float/ (float (nth 1 now)) 1000000.0)))
            (float+ sec usec))))

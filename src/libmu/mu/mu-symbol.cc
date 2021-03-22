@@ -33,7 +33,7 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (symbol-value symbol) => object **/
-void SymbolValue(Frame* fp) {
+auto SymbolValue(Frame* fp) -> void {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -48,7 +48,7 @@ void SymbolValue(Frame* fp) {
 }
 
 /** * (symbol-name symbol) => string **/
-void SymbolName(Frame* fp) {
+auto SymbolName(Frame* fp) -> void {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -59,7 +59,7 @@ void SymbolName(Frame* fp) {
 }
 
 /** * (symbol-namespace symbol) => namespace **/
-void SymbolNamespace(Frame* fp) {
+auto SymbolNamespace(Frame* fp) -> void {
   auto symbol = fp->argv[0];
 
   if (!Symbol::IsType(symbol))
@@ -70,22 +70,22 @@ void SymbolNamespace(Frame* fp) {
 }
 
 /** * (symbolp object) => bool **/
-void IsSymbol(Frame* fp) {
+auto IsSymbol(Frame* fp) -> void {
   fp->value = Type::Bool(Symbol::IsType(fp->argv[0]));
 }
 
 /** * (keyword? object) => bool **/
-void IsKeyword(Frame* fp) {
+auto IsKeyword(Frame* fp) -> void {
   fp->value = Type::Bool(Symbol::IsKeyword(fp->argv[0]));
 }
 
 /** * (bound? symbol) => bool **/
-void IsBound(Frame* fp) {
+auto IsBound(Frame* fp) -> auto {
   fp->value = Type::Bool(Symbol::IsBound(fp->argv[0]));
 }
 
 /** * (uninterned-symbol string) => symbol **/
-void UninternedSymbol(Frame* fp) {
+auto UninternedSymbol(Frame* fp) -> void {
   if (!String::IsType(fp->argv[0]))
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "uninterned-symbol", fp->argv[0]);
@@ -94,7 +94,7 @@ void UninternedSymbol(Frame* fp) {
 }
 
 /** * (keyword string) */
-void MakeKeyword(Frame* fp) {
+auto MakeKeyword(Frame* fp) -> void {
   if (!String::IsType(fp->argv[0]))
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "make-keyword", fp->argv[0]);

@@ -62,7 +62,7 @@
 (eq apply mu:apply);:t
 (functionp apply);:t
 (functionp mu::block);:t
-(functionp mu::clocks);:t
+(functionp mu::clock-view);:t
 (functionp mu::frame-ref);:t
 (functionp mu::letq);:t
 (functionp print);:t

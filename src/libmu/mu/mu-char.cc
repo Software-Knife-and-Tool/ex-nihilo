@@ -28,8 +28,10 @@ using Condition = core::Condition;
 using Frame = core::Env::Frame;
 using Type = core::Type;
 
-/** * mu function (char? object) => bool */
-void IsChar(Frame* fp) { fp->value = Type::Bool(Char::IsType(fp->argv[0])); }
+/** * (char? object) => bool */
+auto IsChar(Frame* fp) -> void {
+  fp->value = Type::Bool(Char::IsType(fp->argv[0]));
+}
 
 } /* namespace mu */
 } /* namespace libmu */

@@ -34,10 +34,12 @@ using Frame = core::Env::Frame;
 using Type = core::Type;
 
 /** * (consp vector) => generalized bool **/
-void IsCons(Frame* fp) { fp->value = Type::Bool(Cons::IsType(fp->argv[0])); }
+auto IsCons(Frame* fp) -> void {
+  fp->value = Type::Bool(Cons::IsType(fp->argv[0]));
+}
 
 /** * (.mapcar function list) => list **/
-void MapCar(Frame* fp) {
+auto MapCar(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -53,7 +55,7 @@ void MapCar(Frame* fp) {
 }
 
 /** * (mapc function list) => list **/
-void MapC(Frame* fp) {
+auto MapC(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -70,7 +72,7 @@ void MapC(Frame* fp) {
 }
 
 /** * (maplist function list) => list **/
-void MapList(Frame* fp) {
+auto MapList(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -86,7 +88,7 @@ void MapList(Frame* fp) {
 }
 
 /** * (mapl function list)) => list **/
-void MapL(Frame* fp) {
+auto MapL(Frame* fp) -> void {
   auto func = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -102,8 +104,8 @@ void MapL(Frame* fp) {
   fp->value = list;
 }
 
-/** * (length list) => fixnum**/
-void ListLength(Frame* fp) {
+/** * (length list) => fixnum **/
+auto ListLength(Frame* fp) -> void {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
@@ -114,12 +116,12 @@ void ListLength(Frame* fp) {
 }
 
 /** * (cons object object) => cons **/
-void MakeCons(Frame* fp) {
+auto MakeCons(Frame* fp) -> void {
   fp->value = Cons(fp->argv[0], fp->argv[1]).Evict(fp->env);
 }
 
 /** * (car list) => object **/
-void Car(Frame* fp) {
+auto Car(Frame* fp) -> void {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
@@ -129,8 +131,8 @@ void Car(Frame* fp) {
   fp->value = Cons::car(list);
 }
 
-/** *  (cdr list) => object **/
-void Cdr(Frame* fp) {
+/** * (cdr list) => object **/
+auto Cdr(Frame* fp) -> void {
   auto list = fp->argv[0];
 
   if (!Cons::IsList(list))
@@ -141,7 +143,7 @@ void Cdr(Frame* fp) {
 }
 
 /** * (nth fixnum list) => object **/
-void Nth(Frame* fp) {
+auto Nth(Frame* fp) -> void {
   auto nth = fp->argv[0];
   auto list = fp->argv[1];
 
@@ -161,7 +163,7 @@ void Nth(Frame* fp) {
 }
 
 /** * (nthcdr fixnum list) => object **/
-void Nthcdr(Frame* fp) {
+auto Nthcdr(Frame* fp) -> void {
   auto nth = fp->argv[0];
   auto list = fp->argv[1];
 

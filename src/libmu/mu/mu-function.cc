@@ -37,12 +37,12 @@ using Function = core::Function;
 using Type = core::Type;
 
 /** * (functionp object) => bool **/
-void IsFunction(Frame* fp) {
+auto IsFunction(Frame* fp) -> void {
   fp->value = Type::Bool(Function::IsType(fp->argv[0]));
 }
 
 /** * (trampoline thunk) => object **/
-void Trampoline(Frame* fp) {
+auto Trampoline(Frame* fp) -> void {
   fp->value = fp->argv[0];
 
   if (!Function::IsType(fp->value))
@@ -55,7 +55,7 @@ void Trampoline(Frame* fp) {
 }
 
 /** * (closure function) => function **/
-void Closure(Frame* fp) {
+auto Closure(Frame* fp) -> void {
   auto fn = fp->argv[0];
 
   if (!Function::IsType(fn))
@@ -85,7 +85,7 @@ void Closure(Frame* fp) {
 }
 
 /** * (.frame-ref fixnum fixnum) => object **/
-void FrameRef(Frame* fp) {
+auto FrameRef(Frame* fp) -> void {
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];
 
@@ -103,7 +103,7 @@ void FrameRef(Frame* fp) {
 }
 
 /** * (letq frame-id offset value) => value **/
-void Letq(Frame* fp) {
+auto Letq(Frame* fp) -> void {
   auto frame_id = fp->argv[0];
   auto offset = fp->argv[1];
   auto value = fp->argv[2];

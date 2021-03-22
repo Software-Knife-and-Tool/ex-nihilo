@@ -31,13 +31,13 @@ using Function = core::Function;
 using Symbol = core::Symbol;
 using Type = core::Type;
 
-/** * mu function (condition? object) => bool **/
-void IsCondition(Frame* fp) {
+/** * (condition? object) => bool **/
+auto IsCondition(Frame* fp) -> void {
   fp->value = Type::Bool(Condition::IsType(fp->argv[0]));
 }
 
-/** * mu function (raise string object) never returns **/
-[[noreturn]] void Raise(Frame* fp) {
+/** * (raise string object) never returns **/
+[[noreturn]] auto Raise(Frame* fp) -> void {
   auto reason = fp->argv[0];
   auto object = fp->argv[1];
 
@@ -50,7 +50,7 @@ void IsCondition(Frame* fp) {
 }
 
 /** * (raise-condition condition) **/
-[[noreturn]] void RaiseCondition(Frame* fp) {
+[[noreturn]] auto RaiseCondition(Frame* fp) -> void {
   auto condition = fp->argv[0];
 
   if (!Condition::IsType(condition))
@@ -61,7 +61,7 @@ void IsCondition(Frame* fp) {
 }
 
 /** * (condition tag source) **/
-void MakeCondition(Frame* fp) {
+auto MakeCondition(Frame* fp) -> void {
   auto tag = fp->argv[0];
   auto reason = fp->argv[1];
   auto source = fp->argv[2];
@@ -79,7 +79,7 @@ void MakeCondition(Frame* fp) {
 }
 
 /** * (with-condition func func) **/
-void WithCondition(Frame* fp) {
+auto WithCondition(Frame* fp) -> void {
   auto thunk = fp->argv[0];
   auto handler = fp->argv[1];
   auto mark = fp->env->frames_.size();
@@ -107,7 +107,7 @@ void WithCondition(Frame* fp) {
 }
 
 /** * (block :symbol :func) => object **/
-void Block(Frame* fp) {
+auto Block(Frame* fp) -> void {
   auto tag = fp->argv[0];
   auto fn = fp->argv[1];
   auto mark = fp->env->frames_.size();
@@ -136,7 +136,7 @@ void Block(Frame* fp) {
 }
 
 /** * (return :keyword object) **/
-void Return(Frame* fp) {
+auto Return(Frame* fp) -> void {
   auto tag = fp->argv[0];
   auto value = fp->argv[1];
 

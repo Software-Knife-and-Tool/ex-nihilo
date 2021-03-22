@@ -137,23 +137,38 @@ class Function : public Type {
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
-    auto fp =
+    auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
 
-    *fp = function_;
-    tag_ = Entag(fp, TAG::FUNCTION);
+    *hp = function_;
+
+    hp->name = Env::Evict(env, function_.name);
+    hp->form = Env::Evict(env, function_.form);
+    hp->env = Env::Evict(env, function_.env);
+
+    tag_ = Entag(hp, TAG::FUNCTION);
+
     return tag_;
   }
 
+ public: /* object */
   static auto EvictTag(Env* env, Tag fn) -> Tag {
     assert(IsType(fn));
     assert(!Env::IsEvicted(env, fn));
 
-    printf("not evicting function\n");
-    return fn;
+    auto hp =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
+    auto fp = Untag<HeapLayout>(fn);
+
+    *hp = *fp;
+
+    hp->name = Env::Evict(env, fp->name);
+    hp->form = Env::Evict(env, fp->form);
+    hp->env = Env::Evict(env, fp->env);
+
+    return Entag(hp, TAG::FUNCTION);
   }
 
- public: /* object */
   explicit Function(Env* env, Tag name, const Env::TagFn* mu) : Type() {
     assert(Symbol::IsType(name));
 

@@ -55,22 +55,30 @@ class Macro : public Type {
   static void GcMark(Env*, Tag);
   static Tag ViewOf(Env*, Tag);
 
- public: /* object model */
+ public: /* type model */
   auto Evict(Env* env) -> Tag {
     auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
 
     *sp = macro_;
+    sp->func = Env::Evict(env, sp->func);
+
     tag_ = Entag(sp, TAG::EXTEND);
 
     return tag_;
   }
 
+ public: /* object */
   static auto EvictTag(Env* env, Tag macro) -> Tag {
     assert(IsType(macro));
     assert(!Env::IsEvicted(env, macro));
 
-    printf("not evicitng macro\n");
-    return macro;
+    auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
+    auto mp = Untag<HeapLayout>(macro);
+
+    *sp = *mp;
+    sp->func = Env::Evict(env, sp->func);
+
+    return Entag(sp, TAG::EXTEND);
   }
 
   explicit Macro(Tag func) : Type() {
