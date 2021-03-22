@@ -263,7 +263,7 @@ class Vector : public Type {
   static auto Print(Env*, Tag, Tag, bool) -> void;
 
  public: /* type model */
-  auto Evict(Env*) -> Tag { return tag_; }
+  auto Evict(Env*) -> Tag;
   static auto EvictTag(Env*, Tag) -> Tag;
 
  public: /* object */

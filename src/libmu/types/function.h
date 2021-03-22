@@ -49,7 +49,7 @@ class Function : public Type {
 
   HeapLayout function_;
 
- public: /* Tag */
+ public: /* tag */
   static constexpr bool IsType(Tag ptr) { return TagOf(ptr) == TAG::FUNCTION; }
 
   /* accessors */

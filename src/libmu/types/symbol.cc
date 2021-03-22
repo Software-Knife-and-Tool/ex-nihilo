@@ -187,15 +187,16 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
   return rval;
 }
 
-/** * evict symbol to the heap **/
+/** evict symbol to heap **/
 auto Symbol::Evict(Env* env) -> Tag {
-  auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
 
-  assert(Null(symbol_.ns) || Env::IsInHeap(env, symbol_.ns));
-  assert(Type::IsImmediate(symbol_.name) || Env::IsInHeap(env, symbol_.name));
+  *hp = symbol_;
+  hp->ns = Env::Evict(env, hp->ns);
+  hp->name = Env::Evict(env, hp->name);
+  hp->value = Env::Evict(env, hp->value);
 
-  *sp = symbol_;
-  tag_ = Type::Entag(sp, TAG::SYMBOL);
+  tag_ = Entag(hp, TAG::SYMBOL);
 
   return tag_;
 }
@@ -204,8 +205,15 @@ auto Symbol::EvictTag(Env* env, Tag symbol) -> Tag {
   assert(IsType(symbol));
   assert(!Env::IsEvicted(env, symbol));
 
-  printf("not evicting symbol\n");
-  return symbol;
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
+  auto sp = Untag<HeapLayout>(symbol);
+
+  *hp = *sp;
+  hp->ns = Env::Evict(env, hp->ns);
+  hp->name = Env::Evict(env, hp->name);
+  hp->value = Env::Evict(env, hp->value);
+
+  return Entag(hp, TAG::SYMBOL);
 }
 
 /** * allocate an unbound symbol from the heap **/
