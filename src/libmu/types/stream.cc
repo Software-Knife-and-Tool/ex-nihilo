@@ -154,11 +154,14 @@ auto Stream::Close(Tag stream) -> Tag {
   return T;
 }
 
+/** evict stream to heap **/
 auto Stream::Evict(Env* env) -> Tag {
-  auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
 
-  *sp = stream_;
-  tag_ = Entag(sp, TAG::EXTEND);
+  *hp = stream_;
+  hp->fn = Env::Evict(env, hp->fn);
+
+  tag_ = Entag(hp, TAG::EXTEND);
 
   return tag_;
 }
@@ -167,8 +170,13 @@ auto Stream::EvictTag(Env* env, Tag stream) -> Tag {
   assert(IsType(stream));
   assert(!Env::IsEvicted(env, stream));
 
-  printf("not evicting stream\n");
-  return stream;
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
+  auto sp = Untag<HeapLayout>(stream);
+
+  *hp = *sp;
+  hp->fn = Env::Evict(env, hp->fn);
+
+  return Entag(hp, TAG::EXTEND);
 }
 
 Stream::Stream(Platform::StreamId streamid) : Type() {

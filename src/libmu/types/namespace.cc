@@ -139,11 +139,14 @@ auto Namespace::Symbols(Env* env, Tag ns) -> Tag {
 
 /** evict namespace to heap **/
 auto Namespace::Evict(Env* env) -> Tag {
-  auto np =
+  auto hp =
       env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::NAMESPACE);
 
-  *np = namespace_;
-  tag_ = Entag(np, TAG::EXTEND);
+  *hp = namespace_;
+  hp->name = Env::Evict(env, hp->name);
+  hp->imports = Env::Evict(env, hp->imports);
+
+  tag_ = Entag(hp, TAG::EXTEND);
 
   return tag_;
 }
@@ -152,8 +155,15 @@ auto Namespace::EvictTag(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
   assert(!Env::IsEvicted(env, ns));
 
-  printf("not evicting ns\n");
-  return ns;
+  auto hp =
+      env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::NAMESPACE);
+  auto np = Untag<HeapLayout>(ns);
+
+  *hp = *np;
+  hp->name = Env::Evict(env, hp->name);
+  hp->imports = Env::Evict(env, hp->imports);
+
+  return Entag(hp, TAG::EXTEND);
 }
 
 /** * print namespace **/

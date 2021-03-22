@@ -66,24 +66,34 @@ class Struct : public Type {
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
-    auto sp =
+    auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
 
-    *sp = struct_;
-    tag_ = Entag(sp, TAG::EXTEND);
+    *hp = struct_;
+    hp->slots = Env::Evict(env, hp->slots);
+    hp->stype = Env::Evict(env, hp->stype);
+
+    tag_ = Entag(hp, TAG::EXTEND);
 
     return tag_;
   }
 
+ public: /* object */
   static auto EvictTag(Env* env, Tag strct) -> Tag {
     assert(IsType(strct));
     assert(!Env::IsEvicted(env, strct));
 
-    printf("not evicting struct\n");
-    return strct;
+    auto hp =
+        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
+    auto sp = Untag<HeapLayout>(strct);
+
+    *hp = *sp;
+    hp->slots = Env::Evict(env, hp->slots);
+    hp->stype = Env::Evict(env, hp->stype);
+
+    return Entag(hp, TAG::EXTEND);
   }
 
- public: /* object */
   explicit Struct(Tag name, Tag slots) {
     assert(Symbol::IsKeyword(name));
     assert(Cons::IsList(slots));

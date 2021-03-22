@@ -30,13 +30,29 @@
 namespace libmu {
 namespace core {
 
-/** * eviction **/
-auto Vector::EvictTag(Env* env, Tag vec) -> Tag {
-  assert(IsType(vec));
-  assert(!Env::IsEvicted(env, vec));
+/** evict vector to heap **/
+auto Vector::Evict(Env* env) -> Tag {
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::VECTOR);
 
-  printf("not evicting vector\n");
-  return vec;
+  *hp = vector_;
+  // evict data
+
+  tag_ = Entag(hp, TAG::EXTEND);
+
+  return tag_;
+}
+
+auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
+  assert(IsType(vector));
+  assert(!Env::IsEvicted(env, vector));
+
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::VECTOR);
+  auto sp = Untag<HeapLayout>(vector);
+
+  *hp = *sp;
+
+  // evict data
+  return Entag(hp, TAG::EXTEND);
 }
 
 /** * view of vector object **/
