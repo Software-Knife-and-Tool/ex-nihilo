@@ -114,6 +114,8 @@ class Condition : public Type {
     assert(IsType(condition));
     assert(!Env::IsEvicted(env, condition));
 
+    printf("EvictTag: condition\n");
+
     auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
     auto cp = Untag<HeapLayout>(condition);

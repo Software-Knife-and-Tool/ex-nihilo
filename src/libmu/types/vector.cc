@@ -46,6 +46,7 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
   assert(!Env::IsEvicted(env, vector));
 
+  printf("EvictTag: vector\n");
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::VECTOR);
   auto sp = Untag<HeapLayout>(vector);
 
