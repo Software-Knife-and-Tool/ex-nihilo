@@ -83,6 +83,7 @@ class Struct : public Type {
     assert(IsType(strct));
     assert(!Env::IsEvicted(env, strct));
 
+    printf("EvictTag: struct\n");
     auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
     auto sp = Untag<HeapLayout>(strct);

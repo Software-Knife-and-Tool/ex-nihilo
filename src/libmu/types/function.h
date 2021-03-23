@@ -156,6 +156,7 @@ class Function : public Type {
     assert(IsType(fn));
     assert(!Env::IsEvicted(env, fn));
 
+    printf("EvictTag: function\n");
     auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
     auto fp = Untag<HeapLayout>(fn);
