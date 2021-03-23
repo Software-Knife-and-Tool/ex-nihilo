@@ -275,7 +275,7 @@ auto Cons::EvictTag(Env* env, Tag cons) -> Tag {
   assert(IsType(cons));
   assert(!Env::IsEvicted(env, cons));
 
-  printf("EvictTag: cons\n");
+  // printf("EvictTag: cons\n");
 
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
   auto cp = Untag<HeapLayout>(cons);

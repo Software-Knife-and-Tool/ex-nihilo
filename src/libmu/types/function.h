@@ -38,12 +38,12 @@ using Frame = Env::Frame;
 class Function : public Type {
  private:
   typedef struct {
-    size_t arity; /* arity checking */
     Tag name;     /* debugging */
     Tag mu;       /* as an address */
     Tag form;     /* as a lambda */
     Tag env;      /* closures */
     Tag frame_id; /* lexical reference */
+    size_t arity; /* arity checking */
     std::vector<Frame*> context;
   } HeapLayout;
 
@@ -156,7 +156,7 @@ class Function : public Type {
     assert(IsType(fn));
     assert(!Env::IsEvicted(env, fn));
 
-    printf("EvictTag: function\n");
+    // printf("EvictTag: function\n");
     auto hp =
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
     auto fp = Untag<HeapLayout>(fn);

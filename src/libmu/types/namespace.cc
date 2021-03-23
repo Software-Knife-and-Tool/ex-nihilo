@@ -155,7 +155,7 @@ auto Namespace::EvictTag(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
   assert(!Env::IsEvicted(env, ns));
 
-  printf("EvictTag: namespace\n");
+  // printf("EvictTag: namespace\n");
   auto hp =
       env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::NAMESPACE);
   auto np = Untag<HeapLayout>(ns);
