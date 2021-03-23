@@ -72,7 +72,7 @@ class Macro : public Type {
     assert(IsType(macro));
     assert(!Env::IsEvicted(env, macro));
 
-    printf("EvictTag: macro\n");
+    // printf("EvictTag: macro\n");
     auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
     auto mp = Untag<HeapLayout>(macro);
 

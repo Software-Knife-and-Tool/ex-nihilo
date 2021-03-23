@@ -170,7 +170,7 @@ auto Stream::EvictTag(Env* env, Tag stream) -> Tag {
   assert(IsType(stream));
   assert(!Env::IsEvicted(env, stream));
 
-  printf("EvictTag: stream\n");
+  // printf("EvictTag: stream\n");
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
   auto sp = Untag<HeapLayout>(stream);
 

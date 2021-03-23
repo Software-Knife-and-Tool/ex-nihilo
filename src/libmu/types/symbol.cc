@@ -205,7 +205,7 @@ auto Symbol::EvictTag(Env* env, Tag symbol) -> Tag {
   assert(IsType(symbol));
   assert(!Env::IsEvicted(env, symbol));
 
-  printf("EvictTag: symbol\n");
+  // printf("EvictTag: symbol\n");
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
   auto sp = Untag<HeapLayout>(symbol);
 

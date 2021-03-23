@@ -5,8 +5,14 @@ MAKE = make
 
 .PHONY: release format debug dist profile tests install
 .PHONY: uninstall clean perf-base perf perf-diff commit
+.PHONY: all
+
+all: release dist
+	@echo "---- make help for options"
 
 help:
+	@echo "---- default/all"
+	@echo "     release dist"
 	@echo "---- build options"
 	@echo "debug - build debug"
 	@echo "profile - build profile"
