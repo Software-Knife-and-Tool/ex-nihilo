@@ -1,1 +1,0 @@
-run  -l /opt/gyre/src/core/mu.l -l /opt/gyre/src/core/core.l -q '(:defsym lib-base "/opt/gyre")' -q '(require gyre/canon "/src/gyre/lib.l")' -q '(in-ns (ns "user" (list (find-ns "gyre"))))' -q '(compile-file "c.l" "/dev/null")' -e '(repl)'
