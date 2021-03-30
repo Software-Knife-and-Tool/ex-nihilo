@@ -33,19 +33,19 @@ commit: perf-base format
 	@cat perf/base.perf
 
 release:
-	@$(MAKE) -C build release --no-print-directory
+	@$(MAKE) -C dist release --no-print-directory
 
 profile:
-	@$(MAKE) -C build profile --no-print-directory
+	@$(MAKE) -C dist profile --no-print-directory
 
 debug:
-	@$(MAKE) -C build debug --no-print-directory
+	@$(MAKE) -C dist debug --no-print-directory
 
 dist:
 	@$(MAKE) -C dist -f release.mk release --no-print-directory
 
 format:
-	@$(MAKE) -C build format --no-print-directory
+	@$(MAKE) -C dist format --no-print-directory
 
 perf-base:
 	@$(MAKE) -C perf base --no-print-directory
@@ -64,5 +64,5 @@ uninstall:
 	@$(MAKE) -C dist -f install.mk uninstall --no-print-directory
 
 clean:
-	@$(MAKE) -C build clean --no-print-directory
+	@$(MAKE) -C dist clean --no-print-directory
 	@$(MAKE) -C dist -f release.mk clean --no-print-directory

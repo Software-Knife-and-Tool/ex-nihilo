@@ -1,7 +1,7 @@
 #
 # posix release makefile
 #
-BUILD = ../build
+BUILD = ./
 COMMON = ../src/common
 COMPILER = ../src/compiler
 CORE = ../src/core
