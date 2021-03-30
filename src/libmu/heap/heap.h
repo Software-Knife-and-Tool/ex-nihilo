@@ -38,9 +38,27 @@ using SYS_CLASS = core::Type::SYS_CLASS;
 using Tag = core::Type::Tag;
 
 class Heap {
- private:
+ public:
   typedef uint64_t HeapInfo; /* think: enum trick here? */
 
+  /** * make HeapInfo **/
+  /* reloc offset (uint32_t), size (uint16_t), ref bits (uint8_t), and tag
+   * (uint8_t) */
+  static constexpr HeapInfo MakeHeapInfo(size_t size, SYS_CLASS tag) {
+    return (static_cast<uint16_t>((size + 7) / 8) << 16) |
+           static_cast<uint8_t>(tag);
+  }
+
+  /** * print HeapInfo **/
+  static void Print(HeapInfo) {
+#if 0
+    printf("\n0" PRIx64 ": reloc: " PRIx64 " size 0x%llx refbits 0x%x tag 0x%x\n",
+           hinfo, Reloc(hinfo), Size(hinfo), RefBits(hinfo),
+           static_cast<uint8_t>(SysClass(hinfo)));
+#endif
+  }
+  
+ private:
   std::string filename_; /* mapped file */
   size_t pagesz_;        /* page size for this heap */
   size_t npages_;        /* number of pages in the heap */
@@ -89,23 +107,6 @@ class Heap {
   static HeapInfo Reloc(HeapInfo hinfo, uint64_t reloc) {
     return (hinfo & ~(0xffffffffULL << 32)) |
            (((reloc / 8) & 0xffffffff) << 32);
-  }
-
-  /** * make HeapInfo **/
-  /* reloc offset (uint32_t), size (uint16_t), ref bits (uint8_t), and tag
-   * (uint8_t) */
-  static constexpr HeapInfo MakeHeapInfo(size_t size, SYS_CLASS tag) {
-    return (static_cast<uint16_t>((size + 7) / 8) << 16) |
-           static_cast<uint8_t>(tag);
-  }
-
-  /** * print HeapInfo **/
-  static void Print(HeapInfo) {
-#if 0
-    printf("\n0" PRIx64 ": reloc: " PRIx64 " size 0x%llx refbits 0x%x tag 0x%x\n",
-           hinfo, Reloc(hinfo), Size(hinfo), RefBits(hinfo),
-           static_cast<uint8_t>(SysClass(hinfo)));
-#endif
   }
 
  public:

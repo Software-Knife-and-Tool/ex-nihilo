@@ -43,8 +43,9 @@ class VectorT : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-  std::vector<V> base_;
 
+  std::unique_ptr<std::vector<uint64_t>> hImage_;
+  
  public: /* tag */
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;

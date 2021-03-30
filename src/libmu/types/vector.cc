@@ -19,6 +19,8 @@
 #include "libmu/env.h"
 #include "libmu/type.h"
 
+#include "libmu/heap/heap.h"
+
 #include "libmu/types/char.h"
 #include "libmu/types/cons.h"
 
@@ -106,18 +108,20 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
   return ListToVector(env, vectype, Cons::Read(env, stream));
 }
 
-/** * allocate a general vector from the heap **/
-Vector::Vector(Env* env, std::vector<Tag> src) {
-  auto vp = env->heap_alloc<HeapLayout>(
-      sizeof(HeapLayout) + (src.size() * sizeof(Tag)), SYS_CLASS::VECTOR);
+/** * allocate a general vector from the machine heap **/
+Vector::Vector(Env*, std::vector<Tag> src) {
+  size_t nalloc = sizeof (Heap::HeapInfo) + (((src.size() * 8) + 7) & ~7);
+  uint64_t hInfo = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
-  vp->type = SYS_CLASS::T;
-  vp->length = src.size();
-  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
+  auto hImage = std::make_unique<std::vector<uint64_t>>(1 + src.size());
+  hImage->at(0) = hInfo;
+  std::memcpy(hImage->data() + 1, src.data(), src.size() * sizeof (Tag));
 
-  tag_ = Entag(vp, TAG::EXTEND);
+  vector_.type = SYS_CLASS::T;
+  vector_.length = src.size();
+  vector_.base = reinterpret_cast<uint64_t>(hImage->data() + 1);
 
-  std::memcpy(Vector::Data<Tag>(tag_), src.data(), src.size() * sizeof(Tag));
+  tag_ = Entag(hImage->data() + 1, TAG::EXTEND);
 }
 
 /** * allocate a char vector from the heap **/
