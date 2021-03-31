@@ -32,7 +32,7 @@
 namespace libmu {
 namespace core {
 namespace {
-  constexpr uint32_t nof_uint64(uint32_t nbytes) {
+  constexpr size_t nof_uint64(uint32_t nbytes) {
     return (nbytes + 7) / 8;
   }
 }
@@ -117,15 +117,17 @@ Vector::Vector(Env*, std::vector<Tag> src) {
   size_t nalloc = sizeof (Heap::HeapInfo) + nof_uint64(sizeof (HeapLayout)) * 8;
   uint64_t hInfo = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
-  hImage = std::make_unique<std::vector<uint64_t>>(1 + nof_uint64(sizeof (HeapLayout)));
-  hImage->at(0) = hInfo;
+  hImage_ = std::make_unique<std::vector<uint64_t>>(1 + nof_uint64(sizeof (HeapLayout)));
+  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
+  src_ = src;
+  
   vector_.type = SYS_CLASS::T;
   vector_.length = src.size();
   vector_.base = reinterpret_cast<uint64_t*>(src_.data());
   
-  std::memcpy(hImage->data() + 1, vector_);
-  tag_ = Entag(hImage->data() + 1, TAG::EXTEND);
+  std::memcpy(this->hImage_->data() + 1, vector_);
+  tag_ = Entag(this->hImage_->data() + 1, TAG::EXTEND);
 }
 
 /** * allocate a char vector from the heap **/
