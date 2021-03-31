@@ -45,6 +45,7 @@ class VectorT : public Type {
   HeapLayout vector_;
 
   std::unique_ptr<std::vector<uint64_t>> hImage_;
+  std::vector<V> src_;
   
  public: /* tag */
   /** * accessors **/
