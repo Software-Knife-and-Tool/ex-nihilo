@@ -115,7 +115,7 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
 /** * allocate a general vector from the machine heap **/
 Vector::Vector(Env*, std::vector<Tag> src) {
   size_t nalloc = sizeof (Heap::HeapInfo) + nof_uint64(sizeof (HeapLayout)) * 8;
-  uint64_t hInfo = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+  //  uint64_t hInfo = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
   this->hImage_ = std::make_unique<std::vector<uint64_t>>(1 + nof_uint64(sizeof (HeapLayout)));
   this->hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
@@ -139,7 +139,7 @@ Vector::Vector(Env* env, std::vector<char> srcv) {
 }
 
 /** * allocate a char vector from the heap **/
-Vector::Vector(Env* env, const std::string& src) {
+Vector::Vector(Env*, const std::string& src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(src);
   } else {
