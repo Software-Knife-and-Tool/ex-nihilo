@@ -32,9 +32,10 @@ using heap::Heap;
 
 class Env;
 
+#if 0
 /** vector class type **/
 template <class V, Type::SYS_CLASS S>
-class VectorT : public Type {
+class Vector : public Type {
  private:
   typedef struct {
     SYS_CLASS type; /* vector type */
@@ -44,7 +45,6 @@ class VectorT : public Type {
 
   HeapLayout vector_;
 
- public:
   std::vector<V> src_;
   std::unique_ptr<std::vector<uint64_t>> hImage_;
 
@@ -176,8 +176,8 @@ class VectorT : public Type {
     T operator*() { return *current_; }
   };
 
-}; /* class VectorT */
-
+}; /* class Vector */
+#else
 /** vector class type **/
 class Vector : public Type {
  private:
@@ -188,7 +188,9 @@ class Vector : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-  uint64_t base_;
+
+  std::vector<Tag> src_;
+  std::unique_ptr<std::vector<uint64_t>> hImage_;
 
  public: /* tag */
   /** * accessors **/
@@ -318,9 +320,9 @@ class Vector : public Type {
 
     T operator*() { return *current_; }
   };
-
 }; /* class Vector */
-
+#endif
+  
 } /* namespace core */
 } /* namespace libmu */
 
