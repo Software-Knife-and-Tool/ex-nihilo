@@ -58,7 +58,7 @@ auto Stream::ViewOf(Tag stream) -> Tag {
       Symbol::Keyword("stream"), stream, Fixnum(ToUint64(stream) >> 3).tag_,
       Fixnum(streamId(stream)).tag_, Fixnum(ToUint64(func(stream))).tag_};
 
-  return VectorT<Tag>(view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * stream eof predicate **/

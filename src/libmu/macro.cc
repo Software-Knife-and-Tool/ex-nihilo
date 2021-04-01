@@ -80,7 +80,7 @@ auto Macro::ViewOf(Tag macro) -> Tag {
                                Fixnum(Function::arity(fn)).tag_,
                                Function::name(fn)};
 
-  return VectorT<Tag>(view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * macro printer **/

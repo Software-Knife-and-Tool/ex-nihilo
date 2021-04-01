@@ -110,8 +110,6 @@ class Vector : public Type {
     return Type::MapClassSymbol(TypeOf(vec));
   }
 
-  static constexpr auto VSpecOf(Tag t) -> Tag { return t; }
-
   static auto ListToVector(Env*, Tag, Tag) -> Tag;
 
   static auto GcMark(Env*, Tag) -> void;
@@ -123,18 +121,14 @@ class Vector : public Type {
   auto Evict(Env*) -> Tag { return tag_; }
   static auto EvictTag(Env*, Tag) -> Tag;
 
-}; /* class Vector */
+  explicit Vector(std::vector<char>);
+  explicit Vector(std::vector<float>);
+  explicit Vector(std::vector<uint8_t>);
+  explicit Vector(std::vector<uint64_t>);
+  explicit Vector(std::vector<Tag>);
 
-/** * typed vectors **/
-template <class V>
-class VectorT : public Vector {
- private:
-  std::vector<V> src_;
-
- public: /* object */
-  explicit VectorT<V>(std::vector<V>);
-  
   /** * vector iterator **/
+  template <typename V>
   struct vector_iter {
     typedef V* iterator;
 
@@ -171,6 +165,15 @@ class VectorT : public Vector {
 
     V operator*() { return *current_; }
   };
+
+}; /* class Vector */
+
+/** * typed vectors **/
+template <class V>
+class VectorT : public Vector {
+ private:
+  std::vector<V> src_;
+
 }; /* class VectorT */
 
 } /* namespace core */

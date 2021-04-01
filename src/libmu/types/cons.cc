@@ -45,7 +45,7 @@ auto Cons::ViewOf(Tag cons) -> Tag {
       std::vector<Tag>{Symbol::Keyword("cons"), cons,
                        Fixnum(ToUint64(cons) >> 3).tag_, car(cons), cdr(cons)};
 
-  return VectorT<Tag>(view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * listToVec list to vector **/

@@ -50,7 +50,7 @@ auto EnvView(Frame* fp) -> void {
                              core::Env::Namespaces(fp->env),
                              core::Env::EnvStack(fp->env), fp->env->src_form_};
 
-  fp->value = core::VectorT<Type::Tag>(view).tag_;
+  fp->value = core::Vector(view).tag_;
 }
 
 /** * (clock-view) => vector **/
@@ -64,7 +64,7 @@ auto ClockView(Frame* fp) -> void {
       std::vector<core::Tag>{core::Symbol::Keyword("clock"),
                              core::Fixnum(st).tag_, core::Fixnum(rt).tag_};
 
-  fp->value = core::VectorT<Type::Tag>(view).tag_;
+  fp->value = core::Vector(view).tag_;
 }
 
 /** * (apply func list) => object **/

@@ -51,7 +51,7 @@ auto Namespace::ViewOf(Tag ns) -> Tag {
       std::vector<Tag>{Symbol::Keyword("ns"), ns,
                        Fixnum(ToUint64(ns) >> 3).tag_, name(ns), imports(ns)};
 
-  return VectorT<Tag>(view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * find symbol in namespace/imports **/

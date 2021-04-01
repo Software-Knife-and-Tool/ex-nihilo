@@ -84,7 +84,7 @@ auto HeapInfo(Frame* fp) -> void {
       break;
     case Type::SYS_CLASS::T:
       fp->value =
-          core::VectorT<Type::Tag>(
+          core::Vector(
               std::vector<Type::Tag>{
                   Fixnum(fp->env->heap_->size()).tag_,
                   Fixnum(fp->env->heap_->alloc()).tag_,

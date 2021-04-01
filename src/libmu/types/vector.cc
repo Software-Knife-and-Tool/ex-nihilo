@@ -69,7 +69,7 @@ auto Vector::ViewOf(Tag vector) -> Tag {
       Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector),
       Fixnum(length(vector)).tag_,        Fixnum(base(vector)).tag_};
 
-  return VectorT<Tag>(view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * garbage collection **/
@@ -86,7 +86,7 @@ auto Vector::GcMark(Env* env, Tag vec) -> void {
       case SYS_CLASS::FLOAT:
         break;
       case SYS_CLASS::T: {
-        VectorT<Tag>::vector_iter iter(vec);
+        Vector::vector_iter<Tag> iter(vec);
         for (auto it = iter.begin(); it != iter.end(); it = ++iter)
           env->GcMark(env, *it);
         break;
@@ -111,7 +111,7 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
 }
 
 /** * allocate a general vector from the machine heap **/
-VectorT<Tag>::VectorT<Tag>(std::vector<Tag> src) {
+Vector::Vector(std::vector<Tag> src) {
   size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
   this->hImage_ = std::make_unique<std::vector<uint64_t>>(
@@ -129,7 +129,7 @@ VectorT<Tag>::VectorT<Tag>(std::vector<Tag> src) {
 }
 
 /** * allocate a char vector from the heap **/
-VectorT<Tag>::VectorT<char>(std::vector<char> src) {
+Vector::Vector(std::vector<char> src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(src);
   } else {
@@ -150,7 +150,7 @@ VectorT<Tag>::VectorT<char>(std::vector<char> src) {
 }
 
 /** * allocate a byte vector from the heap **/
-VectorT<Tag>::VectorT<uint8_t>(std::vector<uint8_t> src) {
+Vector::Vector(std::vector<uint8_t> src) {
   auto vp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + (src.size() * sizeof(uint8_t)), SYS_CLASS::VECTOR);
 
@@ -165,7 +165,7 @@ VectorT<Tag>::VectorT<uint8_t>(std::vector<uint8_t> src) {
 }
 
 /** * allocate a fixnum vector from the heap **/
-VectorT<Tag>::VectorT<int64_t>(std::vector<int64_t> src) {
+Vector::Vector(std::vector<int64_t> src) {
   auto vp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + (src.size() * sizeof(int64_t)), SYS_CLASS::VECTOR);
 
@@ -180,7 +180,7 @@ VectorT<Tag>::VectorT<int64_t>(std::vector<int64_t> src) {
 }
 
 /** * allocate a float vector from the heap **/
-VectorT<Tag>::VectorT<float>(std::vector<float> src) {
+Vector::Vector(std::vector<float> src) {
   auto vp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + (src.size() * sizeof(float)), SYS_CLASS::VECTOR);
 

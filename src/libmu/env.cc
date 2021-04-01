@@ -174,7 +174,7 @@ auto FrameView(Env* env, Frame* fp) {
                                 Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
                                 Cons::List(env, args), fp->frame_id};
 
-  return VectorT<Tag>(frame).tag_;
+  return Vector(frame).tag_;
 }
 
 } /* anonymous namespace */
@@ -196,7 +196,7 @@ auto Env::EnvStack(Env* env) -> Tag {
     frame.push_back(Cons::List(fp->env, args));
     frame.push_back(fp->frame_id);
 
-    stack.push_back(VectorT<Tag>(frame).tag_);
+    stack.push_back(Vector(frame).tag_);
   }
 
   return Cons::List(env, stack);

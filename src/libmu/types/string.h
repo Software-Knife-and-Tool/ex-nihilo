@@ -31,11 +31,10 @@ namespace core {
 class Env;
 
 /** * char vector **/
-class String : public VectorT<char> {
+class String : public Vector {
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
-    return Vector::IsType(ptr) &&
-           Vector::TypeOf(ptr) == Type::SYS_CLASS::CHAR;
+    return Vector::IsType(ptr) && Vector::TypeOf(ptr) == Type::SYS_CLASS::CHAR;
   }
 
   static auto Eql(Tag str1, Tag str2) -> bool {
@@ -77,7 +76,7 @@ class String : public VectorT<char> {
   static auto ViewOf(Tag) -> Tag;
 
  public: /* object */
-  explicit String(std::string src) : VectorT<char>(src(src.begin(), src.end()));
+  explicit String(std::string src) : Vector(src(src.begin(), src.end()));
 };
 
 } /* namespace core */

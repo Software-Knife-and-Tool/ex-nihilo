@@ -37,7 +37,7 @@ auto String::ViewOf(Tag string) -> Tag {
       Fixnum(ToUint64(string) >> 3).tag_,
   };
 
-  return VectorT<Tag>(view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * print string **/
@@ -47,7 +47,7 @@ auto String::Print(Env* env, Tag string, Tag stream, bool esc) -> void {
 
   if (esc) core::PrintStdString(env, "\"", stream, false);
 
-  vector_iter iter(string);
+  Vector::vector_iter<char> iter(string);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     core::Print(env, Char(*it).tag_, stream, false);
 

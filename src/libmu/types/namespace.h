@@ -72,7 +72,7 @@ class Namespace : public Type {
 
     uint64_t hash = OFFSET_BASIS;
 
-    VectorT<char>::vector_iter iter(str);
+    Vector::vector_iter<char> iter(str);
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       hash ^= *it;
       hash *= FNV_prime;
