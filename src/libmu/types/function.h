@@ -131,9 +131,10 @@ class Function : public Type {
   }
 
   static auto Funcall(Env*, Tag, const std::vector<Tag>&) -> Tag;
+
   static auto GcMark(Env*, Tag) -> void;
-  static auto ViewOf(Env*, Tag) -> Tag;
   static auto Print(Env*, Tag, Tag, bool) -> void;
+  static auto ViewOf(Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {

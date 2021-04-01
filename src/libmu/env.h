@@ -140,7 +140,7 @@ class Env {
            env->heap_->in_heap(Type::ToAddress(ptr));
   }
 
-  static auto ViewOf(Env*, Tag) -> Tag;
+  static auto ViewOf(Tag) -> Tag;
 
  public: /* object */
   explicit Env(Platform*, Platform::StreamId, Platform::StreamId,

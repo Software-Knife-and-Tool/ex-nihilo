@@ -54,14 +54,14 @@ class Struct : public Type {
   }
 
   /** * view of struct object **/
-  static auto ViewOf(Env* env, Tag strct) -> Tag {
+  static auto ViewOf(Tag strct) -> Tag {
     assert(IsType(strct));
 
     auto view = std::vector<Tag>{Symbol::Keyword("struct"), strct,
                                  Fixnum(ToUint64(strct) >> 3).tag_,
                                  stype(strct), slots(strct)};
 
-    return Vector(env, view).tag_;
+    return Vector<Tag>(view).tag_;
   }
 
  public: /* type model */

@@ -72,7 +72,7 @@ class Cons : public Type {
   static auto Read(Env*, Tag) -> Tag;
 
   static auto GcMark(Env*, Tag) -> void;
-  static auto ViewOf(Env*, Tag) -> Tag;
+  static auto ViewOf(Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env*) -> Tag;

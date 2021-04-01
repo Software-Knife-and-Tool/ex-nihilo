@@ -121,7 +121,7 @@ auto Function::Print(Env* env, Tag fn, Tag str, bool) -> void {
 }
 
 /** * make view of function **/
-auto Function::ViewOf(Env* env, Tag fn) -> Tag {
+auto Function::ViewOf(Tag fn) -> Tag {
   assert(IsType(fn));
 
   /* think: add context */
@@ -134,7 +134,7 @@ auto Function::ViewOf(Env* env, Tag fn) -> Tag {
                                frame_id(fn),
                                Fixnum(arity(fn)).tag_};
 
-  return Vector(env, view).tag_;
+  return Vector<Tag>(view).tag_;
 }
 
 /** * call function with argument vector **/

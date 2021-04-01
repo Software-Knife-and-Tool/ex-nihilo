@@ -64,7 +64,7 @@ auto Macro::GcMark(Env* env, Tag macro) -> void {
 }
 
 /** * make view of macro **/
-auto Macro::ViewOf(Env* env, Tag macro) -> Tag {
+auto Macro::ViewOf(Tag macro) -> Tag {
   assert(IsType(macro));
 
   auto fn = func(macro);
@@ -80,7 +80,7 @@ auto Macro::ViewOf(Env* env, Tag macro) -> Tag {
                                Fixnum(Function::arity(fn)).tag_,
                                Function::name(fn)};
 
-  return Vector(env, view).tag_;
+  return Vector<Tag>(view).tag_;
 }
 
 /** * macro printer **/

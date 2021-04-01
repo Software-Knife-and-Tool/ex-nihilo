@@ -32,13 +32,11 @@
 namespace libmu {
 namespace core {
 namespace {
-  constexpr size_t nof_uint64(uint32_t nbytes) {
-    return (nbytes + 7) / 8;
-  }
-}
-  
+constexpr size_t nof_uint64(uint32_t nbytes) { return (nbytes + 7) / 8; }
+}  // namespace
+
 /** evict vector to heap **/
-auto Vector::Evict(Env* env) -> Tag {
+auto Vector<Tag>::Evict(Env* env) -> Tag {
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::VECTOR);
 
   *hp = vector_;
@@ -48,7 +46,7 @@ auto Vector::Evict(Env* env) -> Tag {
   return tag_;
 }
 
-auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
+auto Vector<Tag>::EvictTag(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
   assert(!Env::IsEvicted(env, vector));
 
@@ -63,7 +61,7 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
 }
 
 /** * view of vector object **/
-auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
+auto Vector<Tag>::ViewOf(Tag vector) -> Tag {
   assert(IsType(vector));
 
   auto view = std::vector<Tag>{
@@ -71,11 +69,11 @@ auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
       Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector),
       Fixnum(length(vector)).tag_,        Fixnum(base(vector)).tag_};
 
-  return Vector(env, view).tag_;
+  return Vector<Tag>(view).tag_;
 }
 
 /** * garbage collection **/
-auto Vector::GcMark(Env* env, Tag vec) -> void {
+auto Vector<Tag>::GcMark(Env* env, Tag vec) -> void {
   assert(IsType(vec));
 
   if (!Type::IsImmediate(vec) && !env->heap_->IsGcMarked(vec)) {
@@ -88,7 +86,7 @@ auto Vector::GcMark(Env* env, Tag vec) -> void {
       case SYS_CLASS::FLOAT:
         break;
       case SYS_CLASS::T: {
-        Vector::vector_iter<Tag> iter(vec);
+        Vector<Tag>::vector_iter iter(vec);
         for (auto it = iter.begin(); it != iter.end(); it = ++iter)
           env->GcMark(env, *it);
         break;
@@ -100,6 +98,7 @@ auto Vector::GcMark(Env* env, Tag vec) -> void {
 }
 
 /** * vector parser **/
+template <>
 auto Vector::Read(Env* env, Tag stream) -> Tag {
   assert(Stream::IsType(stream));
 
@@ -113,52 +112,46 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
 }
 
 /** * allocate a general vector from the machine heap **/
-Vector::Vector(Env*, std::vector<Tag> src) {
-  size_t nalloc = sizeof (Heap::HeapInfo) + nof_uint64(sizeof (HeapLayout)) * 8;
+Vector<Tag>::Vector<Tag>(std::vector<Tag> src) {
+  size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-  this->hImage_ = std::make_unique<std::vector<uint64_t>>(1 + nof_uint64(sizeof (HeapLayout)));
+  this->hImage_ = std::make_unique<std::vector<uint64_t>>(
+      1 + nof_uint64(sizeof(HeapLayout)));
   this->hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
   this->src_ = src;
-  
+
   vector_.type = SYS_CLASS::T;
   vector_.length = src.size();
   vector_.base = reinterpret_cast<uint64_t>(src_.data());
-  
-  std::memcpy(this->hImage_->data() + 1, &vector_, sizeof (HeapLayout));
+
+  std::memcpy(this->hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(this->hImage_->data() + 1, TAG::EXTEND);
 }
 
 /** * allocate a char vector from the heap **/
-Vector::Vector(Env* env, std::vector<char> srcv) {
-  std::string src(srcv.begin(), srcv.end());
-
-  // auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
-  tag_ = Vector(env, src).tag_;
-}
-
-/** * allocate a char vector from the heap **/
-Vector::Vector(Env*, const std::string& src) {
+Vector<Tag>::Vector<char>(std::vector<char> src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(src);
   } else {
-    size_t nalloc = sizeof (Heap::HeapInfo) + nof_uint64(sizeof (HeapLayout)) * 8;
+    size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-    hImage_ = std::make_unique<std::vector<uint64_t>>(1 + nof_uint64(sizeof (HeapLayout)));
+    hImage_ = std::make_unique<std::vector<uint64_t>>(
+        1 + nof_uint64(sizeof(HeapLayout)));
     hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::STRING);
 
-    // src_ = src;
+    src_ = src;
     vector_.type = SYS_CLASS::CHAR;
     vector_.length = src.size();
-    vector_.base = reinterpret_cast<uint64_t>(src.c_str());
-  
-    std::memcpy(hImage_->data() + 1, &vector_, sizeof (HeapLayout));
+    vector_.base = reinterpret_cast<uint64_t>(src.data());
+
+    std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
     tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
   }
 }
 
 /** * allocate a byte vector from the heap **/
-Vector::Vector(Env* env, std::vector<uint8_t> src) {
+Vector::Vector<uint8_t>(std::vector<uint8_t> src) {
   auto vp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + (src.size() * sizeof(uint8_t)), SYS_CLASS::VECTOR);
 
@@ -173,7 +166,7 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 }
 
 /** * allocate a fixnum vector from the heap **/
-Vector::Vector(Env* env, std::vector<int64_t> src) {
+Vector::Vector<int64_t>(std::vector<int64_t> src) {
   auto vp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + (src.size() * sizeof(int64_t)), SYS_CLASS::VECTOR);
 
@@ -188,7 +181,7 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 }
 
 /** * allocate a float vector from the heap **/
-Vector::Vector(Env* env, std::vector<float> src) {
+Vector<Tag>::Vector<float>(std::vector<float> src) {
   auto vp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + (src.size() * sizeof(float)), SYS_CLASS::VECTOR);
 

@@ -49,11 +49,12 @@ class Macro : public Type {
     return Untag<HeapLayout>(ptr)->func;
   }
 
-  static Tag MacroExpand(Env*, Tag);
-  static Tag MacroFunction(Env*, Tag);
-  static void Print(Env*, Tag, Tag, bool);
-  static void GcMark(Env*, Tag);
-  static Tag ViewOf(Env*, Tag);
+  static auto MacroExpand(Env*, Tag) -> Tag;
+  static auto MacroFunction(Env*, Tag) -> Tag;
+
+  static auto GcMark(Env*, Tag) -> void;
+  static auto Print(Env*, Tag, Tag, bool) -> void;
+  static auto ViewOf(Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {

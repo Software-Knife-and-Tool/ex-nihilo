@@ -31,19 +31,23 @@ namespace core {
 class Env;
 
 /** * char vector **/
-class String : public Vector {
+class String : public Vector<char> {
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
-    return Vector::IsType(ptr) && Vector::TypeOf(ptr) == SYS_CLASS::CHAR;
+    return Vector<Tag>::IsType(ptr) &&
+           Vector<Tag>::TypeOf(ptr) == Type::SYS_CLASS::CHAR;
   }
 
   static auto Eql(Tag str1, Tag str2) -> bool {
-    assert(Vector::IsType(str2) && Vector::TypeOf(str2) == SYS_CLASS::CHAR);
-    assert(Vector::IsType(str1) && Vector::TypeOf(str1) == SYS_CLASS::CHAR);
+    assert(Vector<Tag>::IsType(str2) &&
+           Vector<Tag>::TypeOf(str2) == Type::SYS_CLASS::CHAR);
+    assert(Vector<Tag>::IsType(str1) &&
+           Vector<Tag>::TypeOf(str1) == Type::SYS_CLASS::CHAR);
 
-    return Eq(str1, str2) || ((Vector::Length(str1) == Vector::Length(str2)) &&
-                              (std::memcmp(Data<char>(str1), Data<char>(str2),
-                                           Length(str1)) == 0));
+    return Type::Eq(str1, str2) ||
+           ((Vector::Length(str1) == Vector::Length(str2)) &&
+            (std::memcmp(Data<char>(str1), Data<char>(str2), Length(str1)) ==
+             0));
   }
 
   static auto StdStringOf(Tag str) -> std::string {
@@ -70,10 +74,10 @@ class String : public Vector {
 
   static auto Print(Env*, Tag, Tag, bool) -> void;
   static auto Read(Env*, Tag) -> Tag;
-  static auto ViewOf(Env*, Tag) -> Tag;
+  static auto ViewOf(Tag) -> Tag;
 
  public: /* object */
-  explicit String(Env* env, std::string str) : Vector(env, str) {}
+  explicit String(std::string src) : Vector<char>(src(src.begin(), src.end()));
 };
 
 } /* namespace core */

@@ -57,7 +57,7 @@ class Heap {
            static_cast<uint8_t>(SysClass(hinfo)));
 #endif
   }
-  
+
  private:
   std::string filename_; /* mapped file */
   size_t pagesz_;        /* page size for this heap */

@@ -72,7 +72,7 @@ class Namespace : public Type {
 
     uint64_t hash = OFFSET_BASIS;
 
-    Vector::vector_iter<char> iter(str);
+    Vector<char>::vector_iter iter(str);
     for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
       hash ^= *it;
       hash *= FNV_prime;
@@ -169,7 +169,7 @@ class Namespace : public Type {
   static auto InternInNs(Env*, Tag, Tag) -> Tag;
   static auto ExternInNs(Env*, Tag, Tag) -> Tag;
   static auto FindSymbol(Env*, Tag, Tag) -> Tag;
-  static auto ViewOf(Env*, Tag) -> Tag;
+  static auto ViewOf(Tag) -> Tag;
 
   static auto Print(Env*, Tag, Tag, bool) -> void;
 

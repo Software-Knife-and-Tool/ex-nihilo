@@ -25,14 +25,14 @@ namespace libmu {
 namespace core {
 
 /** * view of char object **/
-auto Char::ViewOf(Env* env, Tag ch) -> Tag {
+auto Char::ViewOf(Tag ch) -> Tag {
   assert(IsType(ch));
 
   auto view = std::vector<Tag>{Symbol::Keyword("char"), ch,
                                Fixnum(ToUint64(ch) >> 3).tag_,
                                Fixnum(Uint8Of(ch)).tag_};
 
-  return Vector(env, view).tag_;
+  return Vector<Tag>(view).tag_;
 }
 
 /** * print char object to stream **/
@@ -106,7 +106,7 @@ auto Char::Read(Env* env, Tag stream) -> Tag {
     value = Char(kCharLit.at(buffer)).tag_;
   else
     Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
-                     "unmapped char", String(env, buffer).tag_);
+                     "unmapped char", String(buffer).tag_);
 
   return value;
 }

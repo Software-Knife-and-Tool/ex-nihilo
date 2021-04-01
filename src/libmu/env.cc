@@ -174,7 +174,7 @@ auto FrameView(Env* env, Frame* fp) {
                                 Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
                                 Cons::List(env, args), fp->frame_id};
 
-  return Vector(env, frame).tag_;
+  return Vector<Tag>(frame).tag_;
 }
 
 } /* anonymous namespace */
@@ -196,7 +196,7 @@ auto Env::EnvStack(Env* env) -> Tag {
     frame.push_back(Cons::List(fp->env, args));
     frame.push_back(fp->frame_id);
 
-    stack.push_back(Vector(fp->env, frame).tag_);
+    stack.push_back(Vector<Tag>(frame).tag_);
   }
 
   return Cons::List(env, stack);
@@ -252,10 +252,10 @@ auto Env::Evict(Env* env, Tag ptr) -> Tag {
       {SYS_CLASS::MACRO, Macro::EvictTag},
       {SYS_CLASS::NAMESPACE, Namespace::EvictTag},
       {SYS_CLASS::STREAM, Stream::EvictTag},
-      {SYS_CLASS::STRING, Vector::EvictTag},
+      {SYS_CLASS::STRING, Vector<Tag>::EvictTag},
       {SYS_CLASS::STRUCT, Struct::EvictTag},
       {SYS_CLASS::SYMBOL, Symbol::EvictTag},
-      {SYS_CLASS::VECTOR, Vector::EvictTag}};
+      {SYS_CLASS::VECTOR, Vector<Tag>::EvictTag}};
 
   assert(kGcEvictMap.count(Type::TypeOf(ptr)));
   return kGcEvictMap.at(Type::TypeOf(ptr))(env, ptr);
@@ -275,10 +275,10 @@ auto Env::GcMark(Env* env, Tag ptr) -> void {
       {SYS_CLASS::MACRO, Macro::GcMark},
       {SYS_CLASS::NAMESPACE, Namespace::GcMark},
       {SYS_CLASS::STREAM, Stream::GcMark},
-      {SYS_CLASS::STRING, Vector::GcMark},
+      {SYS_CLASS::STRING, Vector<Tag>::GcMark},
       {SYS_CLASS::STRUCT, Struct::GcMark},
       {SYS_CLASS::SYMBOL, Symbol::GcMark},
-      {SYS_CLASS::VECTOR, Vector::GcMark}};
+      {SYS_CLASS::VECTOR, Vector<Tag>::GcMark}};
 
   assert(IsEvicted(env, ptr));
   assert(kGcTypeMap.count(Type::TypeOf(ptr)));
@@ -286,8 +286,8 @@ auto Env::GcMark(Env* env, Tag ptr) -> void {
 }
 
 /** * make a view vector of pointer's contents **/
-auto Env::ViewOf(Env* env, Tag object) -> Tag {
-  static const std::map<SYS_CLASS, std::function<Tag(Env*, Tag)>> kViewMap{
+auto Env::ViewOf(Tag object) -> Tag {
+  static const std::map<SYS_CLASS, std::function<Tag(Tag)>> kViewMap{
       {SYS_CLASS::ADDRESS, Address::ViewOf},
       {SYS_CLASS::CHAR, Char::ViewOf},
       {SYS_CLASS::CONS, Cons::ViewOf},
@@ -301,10 +301,10 @@ auto Env::ViewOf(Env* env, Tag object) -> Tag {
       {SYS_CLASS::STREAM, Stream::ViewOf},
       {SYS_CLASS::STRUCT, Struct::ViewOf},
       {SYS_CLASS::SYMBOL, Symbol::ViewOf},
-      {SYS_CLASS::VECTOR, Vector::ViewOf}};
+      {SYS_CLASS::VECTOR, Vector<Tag>::ViewOf}};
 
   auto view = kViewMap.count(Type::TypeOf(object)) != 0;
-  return view ? kViewMap.at(Type::TypeOf(object))(env, object) : Type::NIL;
+  return view ? kViewMap.at(Type::TypeOf(object))(object) : Type::NIL;
 }
 
 /** look up namespace by name in environment map **/
@@ -336,31 +336,29 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
 
   platform_ = platform;
   heap_ = std::make_unique<Heap>();
-  mu_ = Namespace(String(this, "mu").tag_, Type::NIL).Evict(this);
+  mu_ = Namespace(String("mu").tag_, Type::NIL).Evict(this);
   frame_id_ = 0;
   namespace_ = mu_;
   namespaces_["mu"] = mu_;
   nil_ = Type::NIL;
   src_form_ = Type::NIL;
 
-  standard_input_ =
-      Namespace::Intern(this, mu_, String(this, "standard-input").tag_,
-                        Stream(stdin).Evict(this));
+  standard_input_ = Namespace::Intern(this, mu_, String("standard-input").tag_,
+                                      Stream(stdin).Evict(this));
 
-  standard_output_ =
-      Namespace::Intern(this, mu_, String(this, "standard-output").tag_,
-                        Stream(stdout).Evict(this));
+  standard_output_ = Namespace::Intern(
+      this, mu_, String("standard-output").tag_, Stream(stdout).Evict(this));
 
-  standard_error_ = Namespace::Intern(
-      this, mu_, String(this, "error-output").tag_, Stream(stderr).Evict(this));
+  standard_error_ = Namespace::Intern(this, mu_, String("error-output").tag_,
+                                      Stream(stderr).Evict(this));
 
   for (auto& el : kExtFuncTab) {
-    auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
+    auto sym = Namespace::Intern(this, mu_, String(el.name).tag_);
     (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this));
   }
 
   for (auto& el : kIntFuncTab) {
-    auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
+    auto sym = Namespace::InternInNs(this, mu_, String(el.name).tag_);
     (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this));
   }
 }

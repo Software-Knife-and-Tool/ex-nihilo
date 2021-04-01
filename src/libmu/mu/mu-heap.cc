@@ -58,10 +58,9 @@ auto HeapInfo(Frame* fp) -> void {
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
                      "is not a system class keyword (heap-info)", type);
 
-  std::function<Type::Tag(Type::SYS_CLASS, int)> type_vec =
-      [fp](Type::SYS_CLASS sys_class, int size) {
-        return core::Vector(
-                   fp->env,
+  std::function<Type::Tag(size_t, Type::SYS_CLASS)> type_vec =
+      [fp](size_t size, Type::SYS_CLASS sys_class) {
+        return core::Vector<Type::Tag>(
                    std::vector<Type::Tag>{
                        Fixnum(-1).tag_, /* figure out per object size */
                        Fixnum(size).tag_,
@@ -85,8 +84,7 @@ auto HeapInfo(Frame* fp) -> void {
       break;
     case Type::SYS_CLASS::T:
       fp->value =
-          core::Vector(
-              fp->env,
+          core::Vector<Type::Tag>(
               std::vector<Type::Tag>{
                   Fixnum(fp->env->heap_->size()).tag_,
                   Fixnum(fp->env->heap_->alloc()).tag_,
@@ -99,7 +97,7 @@ auto HeapInfo(Frame* fp) -> void {
               .tag_;
       break;
     default:
-      fp->value = type_vec(sys_class, fp->env->heap_->room(sys_class));
+      fp->value = type_vec(fp->env->heap_->room(sys_class), sys_class);
       break;
   }
 }

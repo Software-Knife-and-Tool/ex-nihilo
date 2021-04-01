@@ -51,14 +51,14 @@ auto Stream::GcMark(Env* env, Tag stream) -> void {
 }
 
 /** * view of struct object **/
-auto Stream::ViewOf(Env* env, Tag stream) -> Tag {
+auto Stream::ViewOf(Tag stream) -> Tag {
   assert(IsType(stream));
 
   auto view = std::vector<Tag>{
       Symbol::Keyword("stream"), stream, Fixnum(ToUint64(stream) >> 3).tag_,
       Fixnum(streamId(stream)).tag_, Fixnum(ToUint64(func(stream))).tag_};
 
-  return Vector(env, view).tag_;
+  return Vector<Tag>(view).tag_;
 }
 
 /** * stream eof predicate **/
