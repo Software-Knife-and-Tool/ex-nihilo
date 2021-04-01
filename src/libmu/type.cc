@@ -113,7 +113,7 @@ auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
       {String::IsType, SYS_CLASS::STRING},
       {Struct::IsType, SYS_CLASS::STRUCT},
       {Symbol::IsType, SYS_CLASS::SYMBOL},
-      {Vector<Tag>::IsType, SYS_CLASS::VECTOR}};
+      {Vector::IsType, SYS_CLASS::VECTOR}};
 
   auto el =
       std::find_if(kPredMap.begin(), kPredMap.end(),

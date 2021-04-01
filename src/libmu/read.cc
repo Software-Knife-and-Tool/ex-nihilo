@@ -96,7 +96,7 @@ auto Atom(Env* env, Tag stream) -> std::string {
   for (size_t len = 0;
        !Type::Null(ch) && MapSyntaxType(ch) == SYNTAX_TYPE::CONSTITUENT;
        len++) {
-    if (len >= Vector<Tag>::MAX_LENGTH)
+    if (len >= Vector::MAX_LENGTH)
       Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "atom exceeds maximum size (read-atom)", Type::NIL);
 
@@ -253,7 +253,7 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
             rval = Char::Read(env, stream);
             break;
           case SYNTAX_CHAR::OPAREN: /* vector syntax */
-            rval = Vector<Tag>::Read(env, stream);
+            rval = Vector::Read(env, stream);
             break;
           case SYNTAX_CHAR::QUOTE: { /* closure syntax */
             auto fn = ReadForm(env, stream);

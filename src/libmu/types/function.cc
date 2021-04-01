@@ -134,7 +134,7 @@ auto Function::ViewOf(Tag fn) -> Tag {
                                frame_id(fn),
                                Fixnum(arity(fn)).tag_};
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * call function with argument vector **/

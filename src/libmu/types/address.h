@@ -46,7 +46,7 @@ class Address : public Type {
         Fixnum(ToUint64(addr)).tag_,
     };
 
-    return Vector<Tag>(view).tag_;
+    return VectorT<Tag>(view).tag_;
   }
 
  public: /* type model */

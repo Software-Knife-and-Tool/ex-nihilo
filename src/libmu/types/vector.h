@@ -33,7 +33,6 @@ using heap::Heap;
 class Env;
 
 /** vector class type **/
-template <class V>
 class Vector : public Type {
  private:
   typedef struct {
@@ -43,11 +42,9 @@ class Vector : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-
-  std::vector<V> src_;
   std::unique_ptr<std::vector<uint64_t>> hImage_;
 
- public: /* tag */
+ public: /* Tag */
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
 
@@ -126,11 +123,17 @@ class Vector : public Type {
   auto Evict(Env*) -> Tag { return tag_; }
   static auto EvictTag(Env*, Tag) -> Tag;
 
- public: /* object */
-  template <>
-  explicit Vector<V>(std::vector<V>);
+}; /* class Vector */
 
- public:
+/** * typed vectors **/
+template <class V>
+class VectorT : public Vector {
+ private:
+  std::vector<V> src_;
+
+ public: /* object */
+  explicit VectorT<V>(std::vector<V>);
+  
   /** * vector iterator **/
   struct vector_iter {
     typedef V* iterator;
@@ -168,8 +171,7 @@ class Vector : public Type {
 
     V operator*() { return *current_; }
   };
-
-}; /* class Vector */
+}; /* class VectorT */
 
 } /* namespace core */
 } /* namespace libmu */

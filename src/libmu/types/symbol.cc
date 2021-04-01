@@ -75,7 +75,7 @@ auto Symbol::ViewOf(Tag symbol) -> Tag {
                                ns(symbol),
                                value(symbol)};
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * garbage collection **/

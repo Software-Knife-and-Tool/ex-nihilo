@@ -54,7 +54,7 @@ auto Condition::ViewOf(Tag ex) -> Tag {
                                reason(ex),
                                frame(ex)};
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * raise condition **/

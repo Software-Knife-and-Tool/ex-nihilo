@@ -174,7 +174,7 @@ auto FrameView(Env* env, Frame* fp) {
                                 Fixnum(static_cast<uint64_t>(fp->nargs)).tag_,
                                 Cons::List(env, args), fp->frame_id};
 
-  return Vector<Tag>(frame).tag_;
+  return VectorT<Tag>(frame).tag_;
 }
 
 } /* anonymous namespace */
@@ -196,7 +196,7 @@ auto Env::EnvStack(Env* env) -> Tag {
     frame.push_back(Cons::List(fp->env, args));
     frame.push_back(fp->frame_id);
 
-    stack.push_back(Vector<Tag>(frame).tag_);
+    stack.push_back(VectorT<Tag>(frame).tag_);
   }
 
   return Cons::List(env, stack);
@@ -252,10 +252,10 @@ auto Env::Evict(Env* env, Tag ptr) -> Tag {
       {SYS_CLASS::MACRO, Macro::EvictTag},
       {SYS_CLASS::NAMESPACE, Namespace::EvictTag},
       {SYS_CLASS::STREAM, Stream::EvictTag},
-      {SYS_CLASS::STRING, Vector<Tag>::EvictTag},
+      {SYS_CLASS::STRING, Vector::EvictTag},
       {SYS_CLASS::STRUCT, Struct::EvictTag},
       {SYS_CLASS::SYMBOL, Symbol::EvictTag},
-      {SYS_CLASS::VECTOR, Vector<Tag>::EvictTag}};
+      {SYS_CLASS::VECTOR, Vector::EvictTag}};
 
   assert(kGcEvictMap.count(Type::TypeOf(ptr)));
   return kGcEvictMap.at(Type::TypeOf(ptr))(env, ptr);
@@ -275,10 +275,10 @@ auto Env::GcMark(Env* env, Tag ptr) -> void {
       {SYS_CLASS::MACRO, Macro::GcMark},
       {SYS_CLASS::NAMESPACE, Namespace::GcMark},
       {SYS_CLASS::STREAM, Stream::GcMark},
-      {SYS_CLASS::STRING, Vector<Tag>::GcMark},
+      {SYS_CLASS::STRING, Vector::GcMark},
       {SYS_CLASS::STRUCT, Struct::GcMark},
       {SYS_CLASS::SYMBOL, Symbol::GcMark},
-      {SYS_CLASS::VECTOR, Vector<Tag>::GcMark}};
+      {SYS_CLASS::VECTOR, Vector::GcMark}};
 
   assert(IsEvicted(env, ptr));
   assert(kGcTypeMap.count(Type::TypeOf(ptr)));
@@ -301,7 +301,7 @@ auto Env::ViewOf(Tag object) -> Tag {
       {SYS_CLASS::STREAM, Stream::ViewOf},
       {SYS_CLASS::STRUCT, Struct::ViewOf},
       {SYS_CLASS::SYMBOL, Symbol::ViewOf},
-      {SYS_CLASS::VECTOR, Vector<Tag>::ViewOf}};
+      {SYS_CLASS::VECTOR, Vector::ViewOf}};
 
   auto view = kViewMap.count(Type::TypeOf(object)) != 0;
   return view ? kViewMap.at(Type::TypeOf(object))(object) : Type::NIL;

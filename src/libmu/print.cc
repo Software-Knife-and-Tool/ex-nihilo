@@ -80,7 +80,7 @@ void Print(Env* env, Tag object, Tag str, bool esc) {
                {SYS_CLASS::NAMESPACE, Namespace::Print},
                {SYS_CLASS::STRING, String::Print},
                {SYS_CLASS::SYMBOL, Symbol::Print},
-               {SYS_CLASS::VECTOR, Vector<Tag>::Print}};
+               {SYS_CLASS::VECTOR, Vector::Print}};
 
   auto printh = kPrinMap.count(Type::TypeOf(object)) != 0;
 

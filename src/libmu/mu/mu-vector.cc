@@ -31,7 +31,7 @@ using Condition = core::Condition;
 using Fixnum = core::Fixnum;
 using Frame = core::Env::Frame;
 using Type = core::Type;
-using Vector = core::Vector<Type::Tag>;
+using Vector = core::Vector;
 
 /** * (vectorp form) => bool**/
 auto IsVector(Frame* fp) -> void {

@@ -36,7 +36,7 @@ auto Fixnum::ViewOf(Tag fix) -> Tag {
   auto view = std::vector<Tag>{Symbol::Keyword("fixnum"), fix,
                                Fixnum(ToUint64(fix) >> 3).tag_};
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * print fixnum to stream **/

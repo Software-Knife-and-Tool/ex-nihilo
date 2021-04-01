@@ -60,7 +60,7 @@ auto HeapInfo(Frame* fp) -> void {
 
   std::function<Type::Tag(size_t, Type::SYS_CLASS)> type_vec =
       [fp](size_t size, Type::SYS_CLASS sys_class) {
-        return core::Vector<Type::Tag>(
+        return core::VectorT<Type::Tag>(
                    std::vector<Type::Tag>{
                        Fixnum(-1).tag_, /* figure out per object size */
                        Fixnum(size).tag_,
@@ -84,7 +84,7 @@ auto HeapInfo(Frame* fp) -> void {
       break;
     case Type::SYS_CLASS::T:
       fp->value =
-          core::Vector<Type::Tag>(
+          core::VectorT<Type::Tag>(
               std::vector<Type::Tag>{
                   Fixnum(fp->env->heap_->size()).tag_,
                   Fixnum(fp->env->heap_->alloc()).tag_,

@@ -32,7 +32,7 @@ auto Char::ViewOf(Tag ch) -> Tag {
                                Fixnum(ToUint64(ch) >> 3).tag_,
                                Fixnum(Uint8Of(ch)).tag_};
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * print char object to stream **/

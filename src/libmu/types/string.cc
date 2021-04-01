@@ -37,7 +37,7 @@ auto String::ViewOf(Tag string) -> Tag {
       Fixnum(ToUint64(string) >> 3).tag_,
   };
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * print string **/

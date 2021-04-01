@@ -61,7 +61,7 @@ class Struct : public Type {
                                  Fixnum(ToUint64(strct) >> 3).tag_,
                                  stype(strct), slots(strct)};
 
-    return Vector<Tag>(view).tag_;
+    return VectorT<Tag>(view).tag_;
   }
 
  public: /* type model */

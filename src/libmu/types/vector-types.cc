@@ -33,23 +33,23 @@ namespace {
 template <typename T>
 static auto VMap(Env* env, Tag func, Tag vector) -> Tag {
   assert(Function::IsType(func));
-  assert(Vector<Tag>::IsType(vector));
+  assert(Vector::IsType(vector));
 
   std::vector<T> vlist;
-  Vector<T>::vector_iter iter(vector);
+  VectorT<T>::vector_iter iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     vlist.push_back(T::VSpecOf(
         Function::Funcall(env, func, std::vector<Tag>{T(*it).tag_})));
 
-  return Vector<T>(vlist).tag_;
+  return VectorT<T>(vlist).tag_;
 }
 
 template <typename T>
 static auto VMapC(Env* env, Tag func, Tag vector) -> void {
   assert(Function::IsType(func));
-  assert(Vector<Tag>::IsType(vector));
+  assert(Vector::IsType(vector));
 
-  Vector<T>::vector_iter iter(vector);
+  VectorT<T>::vector_iter iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     (void)Function::Funcall(env, func, std::vector<Tag>{T(*it).tag_});
 }
@@ -68,15 +68,15 @@ static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
     vec.push_back(T::VSpecOf(form));
   }
 
-  return Vector<T>(vec).tag_;
+  return VectorT<T>(vec).tag_;
 }
 
 } /* anonymous namespace */
 
 /** * map a function onto a vector **/
-auto Vector<Tag>::Map(Env* env, Tag func, Tag vector) -> Tag {
+auto Vector::Map(Env* env, Tag func, Tag vector) -> Tag {
   assert(Function::IsType(func));
-  assert(Vector<Tag>::IsType(vector));
+  assert(Vector::IsType(vector));
 
   switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::T:
@@ -95,7 +95,7 @@ auto Vector<Tag>::Map(Env* env, Tag func, Tag vector) -> Tag {
 }
 
 /** * map a function over a vector **/
-auto Vector<Tag>::MapC(Env* env, Tag func, Tag vector) -> void {
+auto Vector::MapC(Env* env, Tag func, Tag vector) -> void {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
@@ -116,7 +116,7 @@ auto Vector<Tag>::MapC(Env* env, Tag func, Tag vector) -> void {
 }
 
 /** * list to vector **/
-auto Vector<Tag>::ListToVector(Env* env, Tag vectype, Tag list) -> Tag {
+auto Vector::ListToVector(Env* env, Tag vectype, Tag list) -> Tag {
   assert(Cons::IsList(list));
 
   auto vtype = Type::MapSymbolClass(vectype);
@@ -139,7 +139,6 @@ auto Vector<Tag>::ListToVector(Env* env, Tag vectype, Tag list) -> Tag {
 }
 
 /** * print vector to stream **/
-template <>
 auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
   assert(IsType(vector));
   assert(Stream::IsType(stream));
@@ -148,7 +147,7 @@ auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
     case SYS_CLASS::BYTE: {
       core::PrintStdString(env, "#(:byte", stream, false);
 
-      vector_iter iter(vector);
+      VectorT<uint8_t>::vector_iter iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         core::PrintStdString(env, " ", stream, false);
         core::Print(env, Fixnum(*iter).tag_, stream, esc);
@@ -160,7 +159,7 @@ auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
     case SYS_CLASS::CHAR: {
       if (esc) core::PrintStdString(env, "\"", stream, false);
 
-      vector_iter iter(vector);
+      VectorT<char>::vector_iter iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter)
         core::Print(env, Char(*it).tag_, stream, false);
 
@@ -170,7 +169,7 @@ auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
     case SYS_CLASS::FIXNUM: {
       core::PrintStdString(env, "#(:fixnum", stream, false);
 
-      vector_iter iter(vector);
+      VectorT<int64_t>::vector_iter iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         core::PrintStdString(env, " ", stream, false);
         core::Print(env, Fixnum(*iter).tag_, stream, esc);
@@ -182,7 +181,7 @@ auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
     case SYS_CLASS::FLOAT: {
       core::PrintStdString(env, "#(:float", stream, false);
 
-      vector_iter iter(vector);
+      VectorT<float>::vector_iter iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         core::PrintStdString(env, " ", stream, false);
         core::Print(env, Float(*iter).tag_, stream, esc);
@@ -194,7 +193,7 @@ auto Vector::Print(Env* env, Tag vector, Tag stream, bool esc) -> void {
     case SYS_CLASS::T: {
       core::PrintStdString(env, "#(:t", stream, false);
 
-      vector_iter iter(vector);
+      VectorT<Tag>::vector_iter iter(vector);
       for (auto it = iter.begin(); it != iter.end(); it = ++iter) {
         core::PrintStdString(env, " ", stream, false);
         core::Print(env, *iter, stream, esc);

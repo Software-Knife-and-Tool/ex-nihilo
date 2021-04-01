@@ -37,7 +37,7 @@ auto Float::ViewOf(Tag flt) -> Tag {
   auto view = std::vector<Tag>{Symbol::Keyword("float"),
                                Fixnum(ToUint64(flt) >> 3).tag_, flt};
 
-  return Vector<Tag>(view).tag_;
+  return VectorT<Tag>(view).tag_;
 }
 
 /** * print float object to stream **/
