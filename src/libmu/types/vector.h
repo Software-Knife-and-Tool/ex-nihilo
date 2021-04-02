@@ -121,6 +121,8 @@ class Vector : public Type {
   auto Evict(Env*) -> Tag { return tag_; }
   static auto EvictTag(Env*, Tag) -> Tag;
 
+  explicit Vector(Tag tag) { tag_ = tag; }
+
   explicit Vector(std::vector<char>);
   explicit Vector(std::vector<float>);
   explicit Vector(std::vector<uint8_t>);

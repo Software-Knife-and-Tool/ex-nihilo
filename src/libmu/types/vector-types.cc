@@ -1,3 +1,4 @@
+
 /********
  **
  **  SPDX-License-Identifier: MIT
@@ -30,7 +31,7 @@ namespace libmu {
 namespace core {
 namespace {
 
-template <typename T>
+template <typename T, typename S>
 static auto VMap(Env* env, Tag func, Tag vector) -> Tag {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
@@ -39,7 +40,7 @@ static auto VMap(Env* env, Tag func, Tag vector) -> Tag {
   Vector::vector_iter<T> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     vlist.push_back(
-        Function::Funcall(env, func, std::vector<Tag>{T(*it).tag_}));
+        Function::Funcall(env, func, std::vector<Tag>{S(*it).tag_}));
 
   return Vector(vlist).tag_;
 }
@@ -57,6 +58,7 @@ static auto VMapC(Env* env, Tag func, Tag vector) -> void {
 template <typename T>
 static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
     -> Tag {
+  assert(Cons::IsList(list));
   std::vector<T> vec;
 
   Cons::cons_iter<Tag> iter(list);
@@ -65,7 +67,23 @@ static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
     if (!isType(form))
       Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                        "type mismatch in vector initialization", form);
-    vec.push_back(ValueOf(form));
+
+    switch (Type::TypeOf(form)) {
+      case SYS_CLASS::T:
+        vec.push_back(form);
+        break;
+      case SYS_CLASS::FLOAT:
+        vec.push_back(Float::FloatOf(form));
+        break;
+      case SYS_CLASS::FIXNUM:
+        vec.push_back(Fixnum::Int64Of(form));
+        break;
+      case SYS_CLASS::CHAR:
+        vec.push_back(static_cast<char>(Char::Uint8Of(form)));
+        break;
+      default:
+        assert(!"vector type botch");
+    }
   }
 
   return Vector(vec).tag_;
@@ -80,15 +98,15 @@ auto Vector::Map(Env* env, Tag func, Tag vector) -> Tag {
 
   switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::T:
-      return VMap<Tag>(env, func, vector);
+      return VMap<Tag, Vector>(env, func, vector);
     case SYS_CLASS::FLOAT:
-      return VMap<float>(env, func, vector);
+      return VMap<float, Float>(env, func, vector);
     case SYS_CLASS::FIXNUM:
-      return VMap<int64_t>(env, func, vector);
+      return VMap<int64_t, Fixnum>(env, func, vector);
     case SYS_CLASS::CHAR:
-      return VMap<char>(env, func, vector);
+      return VMap<char, Char>(env, func, vector);
     case SYS_CLASS::BYTE:
-      return VMap<uint8_t>(env, func, vector);
+      return VMap<uint8_t, Fixnum>(env, func, vector);
     default:
       assert(!"vector type botch");
   }

@@ -76,7 +76,8 @@ class String : public Vector {
   static auto ViewOf(Tag) -> Tag;
 
  public: /* object */
-  explicit String(std::string src) : Vector(src(src.begin(), src.end()));
+  explicit String(std::string src)
+      : Vector(std::vector<char>(src.begin(), src.end())) {}
 };
 
 } /* namespace core */

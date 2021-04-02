@@ -53,8 +53,7 @@ auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep)
 }
 
 /** * parse symbol name string **/
-auto NameOf(Env* env, const std::string& symbol, const std::string& sep)
-    -> Tag {
+auto NameOf(Env*, const std::string& symbol, const std::string& sep) -> Tag {
   auto cpos = symbol.find(sep);
 
   return String((cpos < symbol.size()) ? symbol.substr(cpos + sep.length())
