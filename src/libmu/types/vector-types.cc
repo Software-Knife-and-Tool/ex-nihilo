@@ -32,32 +32,33 @@ namespace core {
 namespace {
 
 template <typename T, typename S>
-static auto VMap(Env* env, Tag func, Tag vector) -> Tag {
+static auto VMap(Env* env, Tag func, const std::function<T(Tag)>& unbox,
+                 Tag vector) -> Tag {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
-  std::vector<T> vlist;
+  std::vector<T> vec;
   Vector::vector_iter<T> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    vlist.push_back(
-        Function::Funcall(env, func, std::vector<Tag>{S(*it).tag_}));
+    vec.push_back(
+        unbox(Function::Funcall(env, func, std::vector<Tag>{S(*it).tag_})));
 
-  return Vector(vlist).tag_;
+  return Vector(vec).tag_;
 }
 
-template <typename T>
+template <typename T, typename S>
 static auto VMapC(Env* env, Tag func, Tag vector) -> void {
   assert(Function::IsType(func));
   assert(Vector::IsType(vector));
 
   Vector::vector_iter<T> iter(vector);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
-    (void)Function::Funcall(env, func, std::vector<Tag>{T(*it).tag_});
+    (void)Function::Funcall(env, func, std::vector<Tag>{S(*it).tag_});
 }
 
 template <typename T>
-static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
-    -> Tag {
+static auto VList(Env* env, const std::function<bool(Tag)>& isType,
+                  const std::function<T(Tag)>& unbox, Tag list) -> Tag {
   assert(Cons::IsList(list));
   std::vector<T> vec;
 
@@ -67,23 +68,7 @@ static auto VList(Env* env, const std::function<bool(Tag)>& isType, Tag list)
     if (!isType(form))
       Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR,
                        "type mismatch in vector initialization", form);
-
-    switch (Type::TypeOf(form)) {
-      case SYS_CLASS::T:
-        vec.push_back(form);
-        break;
-      case SYS_CLASS::FLOAT:
-        vec.push_back(Float::FloatOf(form));
-        break;
-      case SYS_CLASS::FIXNUM:
-        vec.push_back(Fixnum::Int64Of(form));
-        break;
-      case SYS_CLASS::CHAR:
-        vec.push_back(static_cast<char>(Char::Uint8Of(form)));
-        break;
-      default:
-        assert(!"vector type botch");
-    }
+    vec.push_back(unbox(form));
   }
 
   return Vector(vec).tag_;
@@ -98,15 +83,27 @@ auto Vector::Map(Env* env, Tag func, Tag vector) -> Tag {
 
   switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::T:
-      return VMap<Tag, Vector>(env, func, vector);
+      return VMap<Tag, Vector>(
+          env, func, [](Tag t) -> Tag { return t; }, vector);
     case SYS_CLASS::FLOAT:
-      return VMap<float, Float>(env, func, vector);
-    case SYS_CLASS::FIXNUM:
-      return VMap<int64_t, Fixnum>(env, func, vector);
+      return VMap<float, Float>(
+          env, func, [](Tag t) -> float { return Float::FloatOf(t); }, vector);
     case SYS_CLASS::CHAR:
-      return VMap<char, Char>(env, func, vector);
+      return VMap<char, Char>(
+          env, func,
+          [](Tag t) -> char { return static_cast<char>(Char::Uint8Of(t)); },
+          vector);
     case SYS_CLASS::BYTE:
-      return VMap<uint8_t, Fixnum>(env, func, vector);
+      return VMap<uint8_t, Fixnum>(
+          env, func,
+          [](Tag t) -> uint8_t {
+            return static_cast<uint8_t>(Fixnum::Uint64Of(t));
+          },
+          vector);
+    case SYS_CLASS::FIXNUM:
+      return VMap<int64_t, Fixnum>(
+          env, func, [](Tag t) -> int64_t { return Fixnum::Int64Of(t); },
+          vector);
     default:
       assert(!"vector type botch");
   }
@@ -119,15 +116,15 @@ auto Vector::MapC(Env* env, Tag func, Tag vector) -> void {
 
   switch (Vector::TypeOf(vector)) {
     case SYS_CLASS::T:
-      return VMapC<Tag>(env, func, vector);
+      return VMapC<Tag, Vector>(env, func, vector);
     case SYS_CLASS::FLOAT:
-      return VMapC<float>(env, func, vector);
+      return VMapC<float, Float>(env, func, vector);
     case SYS_CLASS::FIXNUM:
-      return VMapC<uint64_t>(env, func, vector);
+      return VMapC<uint64_t, Fixnum>(env, func, vector);
     case SYS_CLASS::CHAR:
-      return VMapC<char>(env, func, vector);
+      return VMapC<char, Char>(env, func, vector);
     case SYS_CLASS::BYTE:
-      return VMapC<uint8_t>(env, func, vector);
+      return VMapC<uint8_t, Fixnum>(env, func, vector);
     default:
       assert(!"vector type botch");
   }
@@ -138,19 +135,25 @@ auto Vector::ListToVector(Env* env, Tag vectype, Tag list) -> Tag {
   assert(Cons::IsList(list));
 
   auto vtype = Type::MapSymbolClass(vectype);
-
   switch (vtype) {
     case SYS_CLASS::T:
       return VList<Tag>(
-          env, [](Tag) { return true; }, list);
+          env, [](Tag) { return true; }, [](Tag t) { return t; }, list);
     case SYS_CLASS::FLOAT:
-      return VList<float>(env, Float::IsType, list);
+      return VList<float>(
+          env, Float::IsType, [](Tag t) { return Float::FloatOf(t); }, list);
     case SYS_CLASS::FIXNUM:
-      return VList<int64_t>(env, Fixnum::IsType, list);
+      return VList<int64_t>(
+          env, Fixnum::IsType, [](Tag t) { return Fixnum::Int64Of(t); }, list);
     case SYS_CLASS::BYTE:
-      return VList<uint8_t>(env, Fixnum::IsType, list);
+      return VList<uint8_t>(
+          env, Fixnum::IsType,
+          [](Tag t) { return static_cast<uint8_t>(Fixnum::Uint64Of(t)); },
+          list);
     case SYS_CLASS::CHAR:
-      return VList<char>(env, Char::IsType, list);
+      return VList<char>(
+          env, Char::IsType,
+          [](Tag t) { return static_cast<char>(Char::Uint8Of(t)); }, list);
     default:
       assert(!"vector type botch");
   }

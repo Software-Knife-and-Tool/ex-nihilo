@@ -126,7 +126,7 @@ class Vector : public Type {
   explicit Vector(std::vector<char>);
   explicit Vector(std::vector<float>);
   explicit Vector(std::vector<uint8_t>);
-  explicit Vector(std::vector<uint64_t>);
+  explicit Vector(std::vector<int64_t>);
   explicit Vector(std::vector<Tag>);
 
   /** * vector iterator **/
