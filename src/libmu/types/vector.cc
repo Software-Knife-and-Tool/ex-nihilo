@@ -37,9 +37,17 @@ constexpr size_t nof_uint64(uint32_t nbytes) { return (nbytes + 7) / 8; }
 
 /** * evict vector to heap **/
 auto Vector::Evict(Env* env) -> Tag {
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::VECTOR);
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout) + vector_.length * 8,
+                                        SYS_CLASS::VECTOR);
 
   *hp = vector_;
+
+  vector_.base = reinterpret_cast<uint64_t>(this->hImage_->data() + 1 +
+                                            nof_uint64(sizeof(HeapLayout)) * 8);
+
+  std::memcpy(this->hImage_->data() + 1, &vector_, sizeof(HeapLayout));
+  std::memcpy(this->hImage_->data() + 1 + nof_uint64(sizeof(HeapLayout)) * 8,
+              srcTag_.data(), vector_.length * 8);
 
   tag_ = Entag(hp, TAG::EXTEND);
 
