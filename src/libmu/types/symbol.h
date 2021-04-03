@@ -102,7 +102,7 @@ class Symbol : public Type {
   static auto IsBound(Tag) -> bool;
   static auto Print(Env*, Tag, Tag, bool) -> void;
   static auto ParseSymbol(Env*, std::string, bool) -> Tag;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env* env, Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env*) -> Tag;

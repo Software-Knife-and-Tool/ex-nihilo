@@ -121,6 +121,9 @@ auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
                      return predicate.first(ptr);
                    });
 
+  if (el == kPredMap.end())
+    printf("0x%llx: heapInfo 0x%llx\n", ptr, *(Untag<Tag>(ptr) - 1));
+
   assert(el != kPredMap.end());
 
   return el->second;

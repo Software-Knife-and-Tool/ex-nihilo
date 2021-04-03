@@ -62,7 +62,9 @@ auto IsSpecOp(Frame* fp) -> void {
 }
 
 /** * (make-view object) => vector **/
-auto MakeView(Frame* fp) -> void { fp->value = core::Env::ViewOf(fp->argv[0]); }
+auto MakeView(Frame* fp) -> void {
+  fp->value = core::Env::ViewOf(fp->env, fp->argv[0]);
+}
 
 } /* namespace mu */
 } /* namespace libmu */

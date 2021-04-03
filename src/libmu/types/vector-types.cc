@@ -43,7 +43,7 @@ static auto VMap(Env* env, Tag func, const std::function<T(Tag)>& unbox,
     vec.push_back(
         unbox(Function::Funcall(env, func, std::vector<Tag>{S(*it).tag_})));
 
-  return Vector(vec).tag_;
+  return Vector(env, vec).tag_;
 }
 
 template <typename T, typename S>
@@ -71,7 +71,7 @@ static auto VList(Env* env, const std::function<bool(Tag)>& isType,
     vec.push_back(unbox(form));
   }
 
-  return Vector(vec).tag_;
+  return Vector(env, vec).tag_;
 }
 
 } /* anonymous namespace */

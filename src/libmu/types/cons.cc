@@ -38,14 +38,14 @@ auto Cons::GcMark(Env* env, Tag ptr) -> void {
 }
 
 /** * view of cons object **/
-auto Cons::ViewOf(Tag cons) -> Tag {
+auto Cons::ViewOf(Env* env, Tag cons) -> Tag {
   assert(IsType(cons));
 
   auto view =
       std::vector<Tag>{Symbol::Keyword("cons"), cons,
                        Fixnum(ToUint64(cons) >> 3).tag_, car(cons), cdr(cons)};
 
-  return Vector(view).tag_;
+  return Vector(env, view).tag_;
 }
 
 /** * listToVec list to vector **/

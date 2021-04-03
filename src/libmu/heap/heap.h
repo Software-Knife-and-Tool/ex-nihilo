@@ -117,6 +117,9 @@ class Heap {
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }
 
+  constexpr size_t HeapWords(uint32_t nbytes) { return (nbytes + 7) / 8; }
+  typedef std::vector<uint64_t> HeapImage;
+
   /** * SYS_CLASS of Tag **/
   static SYS_CLASS SysClass(Tag ptr) { return SysClass(*GetHeapInfo(ptr)); }
 

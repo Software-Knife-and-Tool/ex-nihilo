@@ -54,7 +54,7 @@ class Macro : public Type {
 
   static auto GcMark(Env*, Tag) -> void;
   static auto Print(Env*, Tag, Tag, bool) -> void;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
