@@ -44,6 +44,12 @@ class Vector : public Type {
   HeapLayout vector_;
   std::unique_ptr<std::vector<uint64_t>> hImage_;
 
+  std::vector<Tag> srcTag_;
+  std::vector<char> srcChar_;
+  std::vector<float> srcFloat_;
+  std::vector<uint8_t> srcByte_;
+  std::vector<int64_t> srcFixnum_;
+
  public: /* Tag */
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
@@ -118,7 +124,7 @@ class Vector : public Type {
   static auto ViewOf(Tag) -> Tag;
 
  public: /* type model */
-  auto Evict(Env*) -> Tag { return tag_; }
+  auto Evict(Env*) -> Tag;
   static auto EvictTag(Env*, Tag) -> Tag;
 
   explicit Vector(Tag tag) { tag_ = tag; }
@@ -169,14 +175,6 @@ class Vector : public Type {
   };
 
 }; /* class Vector */
-
-/** * typed vectors **/
-template <class V>
-class VectorT : public Vector {
- private:
-  std::vector<V> src_;
-
-}; /* class VectorT */
 
 } /* namespace core */
 } /* namespace libmu */

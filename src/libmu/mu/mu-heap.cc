@@ -60,7 +60,7 @@ auto HeapInfo(Frame* fp) -> void {
 
   std::function<Type::Tag(size_t, Type::SYS_CLASS)> type_vec =
       [fp](size_t size, Type::SYS_CLASS sys_class) {
-        return core::VectorT<Type::Tag>(
+        return core::Vector(
                    std::vector<Type::Tag>{
                        Fixnum(-1).tag_, /* figure out per object size */
                        Fixnum(size).tag_,
@@ -70,6 +70,7 @@ auto HeapInfo(Frame* fp) -> void {
                        Fixnum(fp->env->heap_->nfree_->at(
                                   static_cast<int>(sys_class)))
                            .tag_})
+
             .tag_;
       };
 
