@@ -77,9 +77,9 @@ auto Invoke(Frame* fp) -> void {
     Condition::Raise(fp->env, Condition::CONDITION_CLASS::TYPE_ERROR, ".invoke",
                      arg);
 
-  fp->value = String(fp->env, Platform::Invoke(Fixnum::Uint64Of(fn),
-                                               String::StdStringOf(arg)))
-                  .tag_;
+  fp->value =
+      String(Platform::Invoke(Fixnum::Uint64Of(fn), String::StdStringOf(arg)))
+          .tag_;
 }
 
 } /* namespace mu */

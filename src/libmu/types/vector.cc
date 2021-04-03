@@ -31,13 +31,15 @@
 
 namespace libmu {
 namespace core {
+namespace {
+constexpr size_t nof_uint64(uint32_t nbytes) { return (nbytes + 7) / 8; }
+} /* anonymous namespace */
 
-/** evict vector to heap **/
+/** * evict vector to heap **/
 auto Vector::Evict(Env* env) -> Tag {
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::VECTOR);
 
   *hp = vector_;
-  // evict data
 
   tag_ = Entag(hp, TAG::EXTEND);
 
@@ -59,7 +61,7 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
 }
 
 /** * view of vector object **/
-auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
+auto Vector::ViewOf(Tag vector) -> Tag {
   assert(IsType(vector));
 
   auto view = std::vector<Tag>{
@@ -67,7 +69,7 @@ auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
       Fixnum(ToUint64(vector) >> 3).tag_, VecType(vector),
       Fixnum(length(vector)).tag_,        Fixnum(base(vector)).tag_};
 
-  return Vector(env, view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * garbage collection **/
@@ -109,91 +111,97 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
 }
 
 /** * allocate a general vector from the machine heap **/
-Vector::Vector(Env*, std::vector<Tag> src) {
-  size_t nalloc = sizeof (Heap::HeapInfo) + (((src.size() * 8) + 7) & ~7);
-  uint64_t hInfo = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+Vector::Vector(std::vector<Tag> src) {
+  size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-  auto hImage = std::make_unique<std::vector<uint64_t>>(1 + src.size());
-  hImage->at(0) = hInfo;
-  std::memcpy(hImage->data() + 1, src.data(), src.size() * sizeof (Tag));
+  hImage_ = std::make_unique<std::vector<uint64_t>>(
+      1 + nof_uint64(sizeof(HeapLayout)));
+  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+
+  srcTag_ = src;
 
   vector_.type = SYS_CLASS::T;
   vector_.length = src.size();
-  vector_.base = reinterpret_cast<uint64_t>(hImage->data() + 1);
+  vector_.base = reinterpret_cast<uint64_t>(srcTag_.data());
 
-  tag_ = Entag(hImage->data() + 1, TAG::EXTEND);
+  std::memcpy(this->hImage_->data() + 1, &vector_, sizeof(HeapLayout));
+  tag_ = Entag(this->hImage_->data() + 1, TAG::EXTEND);
 }
 
 /** * allocate a char vector from the heap **/
-Vector::Vector(Env* env, std::vector<char> srcv) {
-  std::string src(srcv.begin(), srcv.end());
-
-  // auto v = VectorT<char, SYS_CLASS::CHAR>(env, srcv);
-  tag_ = Vector(env, src).tag_;
-}
-
-/** * allocate a char vector from the heap **/
-Vector::Vector(Env* env, const std::string& src) {
+Vector::Vector(std::vector<char> src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
-    tag_ = String::MakeImmediate(src);
+    tag_ = String::MakeImmediate(std::string(src.begin(), src.end()));
   } else {
-    auto vp = env->heap_alloc<HeapLayout>(
-        sizeof(HeapLayout) + (src.size() * sizeof(char)), SYS_CLASS::STRING);
+    size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-    vp->type = SYS_CLASS::CHAR;
-    vp->length = src.size();
-    vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
+    hImage_ = std::make_unique<std::vector<uint64_t>>(
+        1 + nof_uint64(sizeof(HeapLayout)));
+    hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::STRING);
 
-    tag_ = Entag(vp, TAG::EXTEND);
+    srcChar_ = src;
 
-    std::memcpy(Vector::Data<char>(tag_), src.data(),
-                src.size() * sizeof(char));
+    vector_.type = SYS_CLASS::CHAR;
+    vector_.length = src.size();
+    vector_.base = reinterpret_cast<uint64_t>(srcChar_.data());
+
+    std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
+    tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
   }
 }
 
 /** * allocate a byte vector from the heap **/
-Vector::Vector(Env* env, std::vector<uint8_t> src) {
-  auto vp = env->heap_alloc<HeapLayout>(
-      sizeof(HeapLayout) + (src.size() * sizeof(uint8_t)), SYS_CLASS::VECTOR);
+Vector::Vector(std::vector<uint8_t> src) {
+  size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-  vp->type = SYS_CLASS::BYTE;
-  vp->length = src.size();
-  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
+  hImage_ = std::make_unique<std::vector<uint64_t>>(
+      1 + nof_uint64(sizeof(HeapLayout)));
+  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
-  tag_ = Entag(vp, TAG::EXTEND);
+  srcByte_ = src;
 
-  std::memcpy(Vector::Data<uint8_t>(tag_), src.data(),
-              src.size() * sizeof(uint8_t));
+  vector_.type = SYS_CLASS::BYTE;
+  vector_.length = src.size();
+  vector_.base = reinterpret_cast<uint64_t>(srcByte_.data());
+
+  std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
+  tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
 }
 
 /** * allocate a fixnum vector from the heap **/
-Vector::Vector(Env* env, std::vector<int64_t> src) {
-  auto vp = env->heap_alloc<HeapLayout>(
-      sizeof(HeapLayout) + (src.size() * sizeof(int64_t)), SYS_CLASS::VECTOR);
+Vector::Vector(std::vector<int64_t> src) {
+  size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-  vp->type = SYS_CLASS::FIXNUM;
-  vp->length = src.size();
-  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
+  hImage_ = std::make_unique<std::vector<uint64_t>>(
+      1 + nof_uint64(sizeof(HeapLayout)));
+  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
-  tag_ = Entag(vp, TAG::EXTEND);
+  srcFixnum_ = src;
 
-  std::memcpy(Vector::Data<int64_t>(tag_), src.data(),
-              src.size() * sizeof(int64_t));
+  vector_.type = SYS_CLASS::FIXNUM;
+  vector_.length = src.size();
+  vector_.base = reinterpret_cast<uint64_t>(srcFixnum_.data());
+
+  std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
+  tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
 }
 
 /** * allocate a float vector from the heap **/
-Vector::Vector(Env* env, std::vector<float> src) {
-  auto vp = env->heap_alloc<HeapLayout>(
-      sizeof(HeapLayout) + (src.size() * sizeof(float)), SYS_CLASS::VECTOR);
+Vector::Vector(std::vector<float> src) {
+  size_t nalloc = sizeof(Heap::HeapInfo) + nof_uint64(sizeof(HeapLayout)) * 8;
 
-  vp->type = SYS_CLASS::FLOAT;
-  vp->length = src.size();
-  vp->base = reinterpret_cast<uint64_t>(vp) + sizeof(HeapLayout);
+  hImage_ = std::make_unique<std::vector<uint64_t>>(
+      1 + nof_uint64(sizeof(HeapLayout)));
+  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
 
-  tag_ = Entag(vp, TAG::EXTEND);
+  srcFloat_ = src;
 
-  std::memcpy(Vector::Data<float>(tag_), src.data(),
-              src.size() * sizeof(float));
+  vector_.type = SYS_CLASS::FLOAT;
+  vector_.length = src.size();
+  vector_.base = reinterpret_cast<uint64_t>(srcFloat_.data());
+
+  std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
+  tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
 }
 
 } /* namespace core */

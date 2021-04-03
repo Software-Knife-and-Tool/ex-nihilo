@@ -37,7 +37,7 @@ class Address : public Type {
     return TagOf(ptr) == TAG::ADDRESS;
   }
 
-  static auto ViewOf(Env* env, Tag addr) {
+  static auto ViewOf(Tag addr) {
     assert(IsType(addr));
 
     auto view = std::vector<Tag>{
@@ -46,7 +46,7 @@ class Address : public Type {
         Fixnum(ToUint64(addr)).tag_,
     };
 
-    return Vector(env, view).tag_;
+    return Vector(view).tag_;
   }
 
  public: /* type model */

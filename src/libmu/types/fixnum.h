@@ -42,9 +42,9 @@ class Fixnum : public Type {
     return static_cast<uint64_t>((static_cast<uint64_t>(fx) >> 2));
   }
 
-  static float VSpecOf(Tag fx) { return Int64Of(fx); }
-  static void Print(Env*, Tag, Tag, bool);
-  static Tag ViewOf(Env*, Tag);
+  static auto VSpecOf(Tag fx) -> int64_t { return Int64Of(fx); }
+  static auto Print(Env*, Tag, Tag, bool) -> void;
+  static auto ViewOf(Tag) -> Tag;
 
  public: /* type model */
   Tag Evict(Env*) { return tag_; }

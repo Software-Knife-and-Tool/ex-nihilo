@@ -169,7 +169,7 @@ class Namespace : public Type {
   static auto InternInNs(Env*, Tag, Tag) -> Tag;
   static auto ExternInNs(Env*, Tag, Tag) -> Tag;
   static auto FindSymbol(Env*, Tag, Tag) -> Tag;
-  static auto ViewOf(Env*, Tag) -> Tag;
+  static auto ViewOf(Tag) -> Tag;
 
   static auto Print(Env*, Tag, Tag, bool) -> void;
 

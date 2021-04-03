@@ -44,7 +44,7 @@ auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep)
     if (Type::Null(ns))
       Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "unmapped namespace",
-                       String(env, symbol.substr(0, cpos)).tag_);
+                       String(symbol.substr(0, cpos)).tag_);
   } else {
     ns = Type::NIL;
   }
@@ -53,19 +53,18 @@ auto NamespaceOf(Env* env, const std::string& symbol, const std::string& sep)
 }
 
 /** * parse symbol name string **/
-auto NameOf(Env* env, const std::string& symbol, const std::string& sep)
-    -> Tag {
+auto NameOf(Env*, const std::string& symbol, const std::string& sep) -> Tag {
   auto cpos = symbol.find(sep);
 
-  return String(env, (cpos < symbol.size()) ? symbol.substr(cpos + sep.length())
-                                            : symbol)
+  return String((cpos < symbol.size()) ? symbol.substr(cpos + sep.length())
+                                       : symbol)
       .tag_;
 }
 
 } /* anonymous namespace */
 
 /** * view of symbol object **/
-auto Symbol::ViewOf(Env* env, Tag symbol) -> Tag {
+auto Symbol::ViewOf(Tag symbol) -> Tag {
   assert(IsType(symbol));
 
   auto view = std::vector<Tag>{Symbol::Keyword("symbol"),
@@ -75,7 +74,7 @@ auto Symbol::ViewOf(Env* env, Tag symbol) -> Tag {
                                ns(symbol),
                                value(symbol)};
 
-  return Vector(env, view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * garbage collection **/
@@ -157,7 +156,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
     if (string.size() - 1 > Type::IMMEDIATE_STR_MAX)
       Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "keyword symbols may not exceed seven characters",
-                       String(env, string).tag_);
+                       String(string).tag_);
 
     auto key = string;
     rval = Symbol::Keyword(key.erase(0, 1));
@@ -171,17 +170,17 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
       else if (!Null(ext_ns))
         rval = Namespace::ExternInNs(env, ext_ns, NameOf(env, string, ":"));
       else {
-        auto name = String(env, string).tag_;
+        auto name = String(string).tag_;
         rval = Namespace::FindInterns(env->namespace_, name);
         if (Null(rval)) rval = Namespace::Intern(env, env->namespace_, name);
       }
     } else if (Null(ext_ns) && Null(int_ns)) {
-      auto name = String(env, string).tag_;
+      auto name = String(string).tag_;
       rval = Symbol(NIL, name).Evict(env);
     } else
       Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
                        "uninterned symbols may not be qualified (read)",
-                       String(env, string).tag_);
+                       String(string).tag_);
   }
 
   return rval;

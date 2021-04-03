@@ -127,18 +127,18 @@ auto RadixFixnum(Env* env, int radix, Tag stream) -> Tag {
     if (n == str.length()) {
       if (((fxval >> 62) & 1) ^ ((fxval >> 63) & 1))
         Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
-                         "parse-number", String(env, str).tag_);
+                         "parse-number", String(str).tag_);
       number = Fixnum(fxval).tag_;
     }
   } catch (std::invalid_argument& ex) {
     Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
-                     "parse-number", String(env, str).tag_);
+                     "parse-number", String(str).tag_);
   } catch (std::out_of_range& ex) {
     Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
-                     "parse-number", String(env, str).tag_);
+                     "parse-number", String(str).tag_);
   } catch (std::exception& ex) {
     Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
-                     "parse-number", String(env, str).tag_);
+                     "parse-number", String(str).tag_);
   }
 
   return number;
@@ -155,7 +155,7 @@ auto Number(Env* env, const std::string& str) -> Tag {
     if (n == str.length()) {
       if (((fxval >> 62) & 1) ^ ((fxval >> 63) & 1))
         Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
-                         "parse-number:fixnum", String(env, str).tag_);
+                         "parse-number:fixnum", String(str).tag_);
 
       number = Fixnum(fxval).tag_;
     } else {
@@ -169,7 +169,7 @@ auto Number(Env* env, const std::string& str) -> Tag {
     return Type::NIL;
   } catch (std::exception& ex) {
     Condition::Raise(env, Condition::CONDITION_CLASS::PARSE_ERROR,
-                     "malformed float", String(env, str).tag_);
+                     "malformed float", String(str).tag_);
   }
 
   return number;
@@ -260,11 +260,10 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
             if (Type::Null(ch))
               Condition::Raise(env, Condition::CONDITION_CLASS::END_OF_FILE,
                                "read", stream);
-            rval = Cons::List(
-                env, std::vector<Tag>{
-                         Namespace::FindSymbol(env, env->mu_,
-                                               String(env, "closure").tag_),
-                         fn});
+            rval = Cons::List(env, std::vector<Tag>{Namespace::FindSymbol(
+                                                        env, env->mu_,
+                                                        String("closure").tag_),
+                                                    fn});
             break;
           }
           case SYNTAX_CHAR::COLON: { /* uninterned symbol */
@@ -272,7 +271,7 @@ auto ReadForm(Env* env, Tag stream_designator) -> Tag {
             rval = Number(env, atom);
             if (!Type::Null(rval))
               Condition::Raise(env, Condition::CONDITION_CLASS::READER_ERROR,
-                               "uninterned symbol", String(env, atom).tag_);
+                               "uninterned symbol", String(atom).tag_);
             rval = Symbol::ParseSymbol(env, atom, false);
             break;
           }

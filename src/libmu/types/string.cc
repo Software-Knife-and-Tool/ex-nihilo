@@ -28,7 +28,7 @@ namespace libmu {
 namespace core {
 
 /** * view of string object **/
-auto String::ViewOf(Env* env, Tag string) -> Tag {
+auto String::ViewOf(Tag string) -> Tag {
   assert(IsType(string));
 
   auto view = std::vector<Tag>{
@@ -37,7 +37,7 @@ auto String::ViewOf(Env* env, Tag string) -> Tag {
       Fixnum(ToUint64(string) >> 3).tag_,
   };
 
-  return Vector(env, view).tag_;
+  return Vector(view).tag_;
 }
 
 /** * print string **/
@@ -47,7 +47,7 @@ auto String::Print(Env* env, Tag string, Tag stream, bool esc) -> void {
 
   if (esc) core::PrintStdString(env, "\"", stream, false);
 
-  vector_iter<char> iter(string);
+  Vector::vector_iter<char> iter(string);
   for (auto it = iter.begin(); it != iter.end(); it = ++iter)
     core::Print(env, Char(*it).tag_, stream, false);
 
@@ -82,7 +82,7 @@ auto String::Read(Env* env, Tag stream) -> Tag {
                        "EOF in string", stream);
   }
 
-  return String(env, str).tag_;
+  return String(str).tag_;
 }
 
 } /* namespace core */
