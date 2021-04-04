@@ -37,8 +37,6 @@ auto Vector::Evict(Env* env) -> Tag {
       sizeof(HeapLayout) + Heap::HeapWords(vector_.length) * 8,
       SYS_CLASS::VECTOR);
 
-  printf("evict: in\n");
-
   *hp = vector_;
   hp->base = reinterpret_cast<uint64_t>(
       (char*)hp + env->heap_->HeapWords(sizeof(HeapLayout)) * 8);
@@ -48,7 +46,6 @@ auto Vector::Evict(Env* env) -> Tag {
 
   tag_ = Entag(hp, TAG::EXTEND);
 
-  printf("evict: out\n");
   return tag_;
 }
 
@@ -61,15 +58,12 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout) + length(vector) * 8,
                                         SYS_CLASS::VECTOR);
 
-  printf("--- HeapInfo: 0x%016llx\n", *(uint64_t*)(hp - 8));
   *hp = *hl;
   hp->base = reinterpret_cast<uint64_t>(
       (char*)hp + env->heap_->HeapWords(sizeof(HeapLayout)) * 8);
 
   std::memcpy(hp + env->heap_->HeapWords(sizeof(HeapLayout)) * 8,
               reinterpret_cast<char*>(base(vector)), length(vector) * 8);
-
-  printf("evict-tag: out\n");
 
   env->heap_->GetHeapInfo(Entag(hp, TAG::EXTEND));
   return Entag(hp, TAG::EXTEND);
@@ -142,10 +136,6 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 
   std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
-
-  printf("--- vector: Tag 0x%016llx\n", tag_);
-  printf("--- vector hinfo 0x%016llx\n", hImage_->at(0));
-  heap::Heap::Print(*Heap::GetHeapInfo(tag_));
 }
 
 /** * allocate a char vector from the heap **/
@@ -168,8 +158,6 @@ Vector::Vector(Env* env, std::vector<char> src) {
 
     std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
     tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
-    printf("vector: char 0x%016llx", tag_);
-    heap::Heap::Print(Heap::MakeHeapInfo(nalloc, SYS_CLASS::STRING));
   }
 }
 
@@ -190,8 +178,6 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
   std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
-  printf("vector: byte 0x%016llx", tag_);
-  heap::Heap::Print(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 }
 
 /** * allocate a fixnum vector from the heap **/
@@ -211,8 +197,6 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
   std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
-  printf("vector: Fixnum 0x%016llx", tag_);
-  heap::Heap::Print(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 }
 
 /** * allocate a float vector from the heap **/
@@ -232,8 +216,6 @@ Vector::Vector(Env* env, std::vector<float> src) {
 
   std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
-  printf("vector: float 0x%016llx", tag_);
-  heap::Heap::Print(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 }
 
 } /* namespace core */

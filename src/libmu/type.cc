@@ -122,8 +122,8 @@ auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
                    });
 
   if (el == kPredMap.end()) {
-    printf("TypeOf: 0x%llx: heapInfo 0x016%llx", ptr, *(Untag<Tag>(ptr) - 8));
-    heap::Heap::Print(*(reinterpret_cast<uint64_t*>(Untag<Tag>(ptr) - 8)));
+    printf("TypeOf: 0x%llx: heapInfo 0x016%llx", ptr, *(Untag<Tag>(ptr) - 1));
+    heap::Heap::Print(*(reinterpret_cast<uint64_t*>(Untag<Tag>(ptr) - 1)));
   }
 
   assert(el != kPredMap.end());
