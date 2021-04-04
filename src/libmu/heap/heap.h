@@ -50,12 +50,18 @@ class Heap {
   }
 
   /** * print HeapInfo **/
-  static void Print(HeapInfo) {
-#if 0
-    printf("\n0" PRIx64 ": reloc: " PRIx64 " size 0x%llx refbits 0x%x tag 0x%x\n",
-           hinfo, Reloc(hinfo), Size(hinfo), RefBits(hinfo),
-           static_cast<uint8_t>(SysClass(hinfo)));
-#endif
+  static void Print(HeapInfo hinfo) {
+    printf(
+        "\n0x%016llx: reloc: 0x%llx size: %u refbits: 0x%x sys class: 0x%x\n",
+        hinfo, Reloc(hinfo), Size(hinfo), RefBits(hinfo),
+        static_cast<uint8_t>(SysClass(hinfo)));
+  }
+
+  /** * HeapInfo from Tag **/
+  static HeapInfo* GetHeapInfo(Tag ptr) {
+    auto t = core::Type::Untag<HeapInfo>(ptr);
+
+    return t - 1;
   }
 
  private:
@@ -65,11 +71,6 @@ class Heap {
   char* uaddr_;          /* user virtual address */
   char* alloc_;          /* alloc barrier */
   HeapInfo* conses_;     /* gc caching */
-
-  /** * HeapInfo from Tag **/
-  static HeapInfo* GetHeapInfo(Tag ptr) {
-    return reinterpret_cast<HeapInfo*>((static_cast<uint64_t>(ptr) & ~7) - 8);
-  }
 
   /** * SYS_CLASS from HeapInfo **/
   static constexpr SYS_CLASS SysClass(HeapInfo hinfo) {
@@ -117,7 +118,9 @@ class Heap {
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }
 
-  constexpr size_t HeapWords(uint32_t nbytes) { return (nbytes + 7) / 8; }
+  static constexpr size_t HeapWords(uint32_t nbytes) {
+    return (nbytes + 7) / 8;
+  }
   typedef std::vector<uint64_t> HeapImage;
 
   /** * SYS_CLASS of Tag **/

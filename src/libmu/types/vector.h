@@ -42,7 +42,7 @@ class Vector : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-  std::unique_ptr<heap::Heap::HeapImage> hImage_;
+  heap::Heap::HeapImage* hImage_;
 
   std::vector<Tag> srcTag_;
   std::vector<char> srcChar_;

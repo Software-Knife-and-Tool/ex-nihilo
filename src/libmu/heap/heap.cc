@@ -79,6 +79,7 @@ auto Heap::Alloc(size_t nbytes, SYS_CLASS tag) -> void* {
 
     if (alloc_ > uaddr_ + (pagesz_ * npages_)) assert(!"heap capacity botch");
 
+    printf("Alloc: HeapInfo 0x%016llx\n", MakeHeapInfo(nalloc, tag));
     *reinterpret_cast<HeapInfo*>(halloc) = MakeHeapInfo(nalloc, tag);
 
     nobjects_++;
@@ -123,6 +124,7 @@ auto Heap::room(SYS_CLASS tag) -> size_t {
 
 /** * heap object marked? **/
 auto Heap::IsGcMarked(Tag ptr) -> bool {
+  printf("isMarked: ");
   auto hinfo = GetHeapInfo(ptr);
 
   return RefBits(*hinfo) == 0 ? false : true;
@@ -130,6 +132,7 @@ auto Heap::IsGcMarked(Tag ptr) -> bool {
 
 /** * mark heap object **/
 auto Heap::GcMark(Tag ptr) -> void {
+  printf("GcMark: ");
   auto hinfo = GetHeapInfo(ptr);
 
   *hinfo = RefBits(*hinfo, 1);

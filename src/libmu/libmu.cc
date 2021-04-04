@@ -44,7 +44,7 @@ auto t() -> void* { return (void*)Type::T; }
 auto nil() -> void* { return (void*)Type::NIL; }
 auto version() -> const char* { return "0.0.22"; }
 
-/** * read_stdin interface **/
+/** * read interface **/
 auto read_stream(void* env, void* stream) -> void* {
   return (void*)core::Type::ToAddress(
       core::Read((Env*)env, core::Type::Entag(stream, Type::TAG::ADDRESS)));

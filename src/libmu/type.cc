@@ -42,7 +42,7 @@ static const std::map<Tag, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
     {Symbol::Keyword("cons"), SYS_CLASS::CONS},
-    {Symbol::Keyword("condtn"), SYS_CLASS::CONDITION},
+    {Symbol::Keyword("cond"), SYS_CLASS::CONDITION},
     {Symbol::Keyword("fixnum"), SYS_CLASS::FIXNUM},
     {Symbol::Keyword("float"), SYS_CLASS::FLOAT},
     {Symbol::Keyword("func"), SYS_CLASS::FUNCTION},
@@ -79,7 +79,7 @@ auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
       {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
       {SYS_CLASS::CHAR, Symbol::Keyword("char")},
       {SYS_CLASS::CONS, Symbol::Keyword("cons")},
-      {SYS_CLASS::CONDITION, Symbol::Keyword("condtn")},
+      {SYS_CLASS::CONDITION, Symbol::Keyword("cond")},
       {SYS_CLASS::FIXNUM, Symbol::Keyword("fixnum")},
       {SYS_CLASS::FLOAT, Symbol::Keyword("float")},
       {SYS_CLASS::FUNCTION, Symbol::Keyword("func")},
@@ -121,8 +121,10 @@ auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
                      return predicate.first(ptr);
                    });
 
-  if (el == kPredMap.end())
-    printf("0x%llx: heapInfo 0x%llx\n", ptr, *(Untag<Tag>(ptr) - 1));
+  if (el == kPredMap.end()) {
+    printf("TypeOf: 0x%llx: heapInfo 0x016%llx", ptr, *(Untag<Tag>(ptr) - 8));
+    heap::Heap::Print(*(reinterpret_cast<uint64_t*>(Untag<Tag>(ptr) - 8)));
+  }
 
   assert(el != kPredMap.end());
 
