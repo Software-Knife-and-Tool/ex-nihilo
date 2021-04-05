@@ -53,7 +53,6 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
   assert(IsType(vector));
   assert(!Env::IsEvicted(env, vector));
 
-  printf("evict-tag: in\n");
   HeapLayout* hl = Untag<HeapLayout>(vector);
   auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout) + length(vector) * 8,
                                         SYS_CLASS::VECTOR);
@@ -65,7 +64,8 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
   std::memcpy(hp + env->heap_->HeapWords(sizeof(HeapLayout)) * 8,
               reinterpret_cast<char*>(base(vector)), length(vector) * 8);
 
-  env->heap_->GetHeapInfo(Entag(hp, TAG::EXTEND));
+  env->heap_->DumpHeapImage<HeapLayout>(Entag(hp, TAG::EXTEND));
+  
   return Entag(hp, TAG::EXTEND);
 }
 
@@ -136,6 +136,7 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 
   std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
+  env->heap_->DumpHeapImage<HeapLayout>(tag_);
 }
 
 /** * allocate a char vector from the heap **/

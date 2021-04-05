@@ -38,7 +38,7 @@ using SYS_CLASS = core::Type::SYS_CLASS;
 using Tag = core::Type::Tag;
 
 class Heap {
- public:
+public: /* tag */
   typedef uint64_t HeapInfo; /* think: enum trick here? */
 
   /** * make HeapInfo **/
@@ -59,9 +59,7 @@ class Heap {
 
   /** * HeapInfo from Tag **/
   static HeapInfo* GetHeapInfo(Tag ptr) {
-    auto t = core::Type::Untag<HeapInfo>(ptr);
-
-    return t - 1;
+    return core::Type::Untag<HeapInfo>(ptr) - 1;
   }
 
  private:
@@ -121,10 +119,26 @@ class Heap {
   static constexpr size_t HeapWords(uint32_t nbytes) {
     return (nbytes + 7) / 8;
   }
+
   typedef std::vector<uint64_t> HeapImage;
 
-  /** * SYS_CLASS of Tag **/
-  static SYS_CLASS SysClass(Tag ptr) { return SysClass(*GetHeapInfo(ptr)); }
+  /** * dump heap image **/
+  template<typename T>
+  void DumpHeapImage(Tag ptr) {
+    if (!core::Type::IsImmediate(ptr)) {
+      printf("HeapImage: tag 0x%016llx", ptr);
+      auto heapInfo = GetHeapInfo(ptr);
+      auto size = Size(*heapInfo);
+      // auto refbits = RefBits(*heapInfo);
+      // auto reloc = Reloc(*heapInfo);
+      auto sys_class = SysClass(*heapInfo);
+
+      Print(*heapInfo);
+      printf("image: %d(%d words), layout %d(%d words)\n", size, HeapWords(size));
+      printf("layout: layout %d(%d words)\n", size, HeapWords(size), sizeof (T), HeapWords(sizeof (T)));
+      printf("system class: %s\n", core::Type::SysClassOf(sys_class).c_str());
+    }
+  }
 
   void* Alloc(size_t, SYS_CLASS);
 

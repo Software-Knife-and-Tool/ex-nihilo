@@ -29,6 +29,7 @@
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
 #include "libmu/types/stream.h"
+#include "libmu/types/string.h"
 #include "libmu/types/struct.h"
 #include "libmu/types/symbol.h"
 #include "libmu/types/vector.h"
@@ -70,6 +71,14 @@ auto Type::MapSymbolClass(Tag type_sym) -> SYS_CLASS {
   assert(kSymbolMap.count(type_sym));
 
   return kSymbolMap.at(type_sym);
+}
+
+/** * std::string of SYS_CLASS */
+auto SysClassOf(Tag ptr) -> std::string {
+  auto sc = SysClass(*GetHeapInfo(ptr));
+  auto ms = MapClassSymbol(sc);
+
+  return String::StdStringOf(Symbol::name(sc));
 }
 
 /** * class symbol map */
