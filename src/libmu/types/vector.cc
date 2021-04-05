@@ -36,7 +36,7 @@ auto Vector::Evict(Env* env) -> Tag {
   auto hp = env->heap_alloc<HeapLayout>(
       sizeof(HeapLayout) + Heap::HeapWords(vector_.length) * 8,
       SYS_CLASS::VECTOR);
-
+  
   *hp = vector_;
   hp->base = reinterpret_cast<uint64_t>(
       (char*)hp + env->heap_->HeapWords(sizeof(HeapLayout)) * 8);

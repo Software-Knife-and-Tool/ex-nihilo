@@ -343,6 +343,8 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
   nil_ = Type::NIL;
   src_form_ = Type::NIL;
 
+  printf("--- env namespace complete\n");
+  
   standard_input_ =
       Namespace::Intern(this, mu_, String(this, "standard-input").tag_,
                         Stream(stdin).Evict(this));
@@ -358,11 +360,11 @@ Env::Env(Platform* platform, Platform::StreamId stdin,
     auto sym = Namespace::Intern(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this));
   }
-
+    
   for (auto& el : kIntFuncTab) {
     auto sym = Namespace::InternInNs(this, mu_, String(this, el.name).tag_);
     (void)Symbol::Bind(sym, Function(this, sym, &el).Evict(this));
-  }
+  }  
 }
 
 } /* namespace core */

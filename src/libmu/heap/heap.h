@@ -57,6 +57,12 @@ public: /* tag */
         static_cast<uint8_t>(SysClass(hinfo)));
   }
 
+  static SYS_CLASS SysClass(Tag ptr) {
+    auto hinfo = *GetHeapInfo(ptr);
+
+    return SysClass(hinfo);
+  }
+
   /** * HeapInfo from Tag **/
   static HeapInfo* GetHeapInfo(Tag ptr) {
     return core::Type::Untag<HeapInfo>(ptr) - 1;
@@ -116,7 +122,7 @@ public: /* tag */
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }
 
-  static constexpr size_t HeapWords(uint32_t nbytes) {
+  static constexpr size_t HeapWords(size_t nbytes) {
     return (nbytes + 7) / 8;
   }
 
@@ -134,9 +140,11 @@ public: /* tag */
       auto sys_class = SysClass(*heapInfo);
 
       Print(*heapInfo);
-      printf("image: %d(%d words), layout %d(%d words)\n", size, HeapWords(size));
-      printf("layout: layout %d(%d words)\n", size, HeapWords(size), sizeof (T), HeapWords(sizeof (T)));
+      printf("image: %u(%lu words), layout %lu(%lu words)\n", size, HeapWords(size),
+             sizeof (T), HeapWords(sizeof (T)));
       printf("system class: %s\n", core::Type::SysClassOf(sys_class).c_str());
+      for (uint32_t i = 0; i < HeapWords(size); ++i)
+        if (heapInfo[i + 1]) printf("% 2d: 0x%016llx\n", i, heapInfo[i + 1]);
     }
   }
 

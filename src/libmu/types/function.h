@@ -142,7 +142,6 @@ class Function : public Type {
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
 
     *hp = function_;
-
     hp->name = Env::Evict(env, function_.name);
     hp->form = Env::Evict(env, function_.form);
     hp->env = Env::Evict(env, function_.env);

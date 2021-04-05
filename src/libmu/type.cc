@@ -74,13 +74,12 @@ auto Type::MapSymbolClass(Tag type_sym) -> SYS_CLASS {
 }
 
 /** * std::string of SYS_CLASS */
-auto SysClassOf(Tag ptr) -> std::string {
-  auto sc = SysClass(*GetHeapInfo(ptr));
-  auto ms = MapClassSymbol(sc);
-
-  return String::StdStringOf(Symbol::name(sc));
+auto Type::SysClassOf(SYS_CLASS sc) -> std::string {
+  auto typesym = MapClassSymbol(sc);
+  
+  return String::StdStringOf(Symbol::name(typesym));
 }
-
+  
 /** * class symbol map */
 auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
   static const std::map<SYS_CLASS, Tag> kTypeMap{
