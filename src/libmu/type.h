@@ -169,7 +169,7 @@ class Type {
   static constexpr bool Eq(Tag p0, Tag p1) { return p0 == p1; }
   static constexpr bool Null(Tag ptr) { return Eq(ptr, NIL); }
   static std::string SysClassOf(SYS_CLASS);
-  
+
  public:    /* object model */
   Tag tag_; /* tagged pointer for type constructors */
 

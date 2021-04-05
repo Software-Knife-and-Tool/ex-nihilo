@@ -79,6 +79,7 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindSymbol(env, ns, name);
 
+  /* symbols assigned to namespaces are automatically evicted */
   return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
@@ -92,9 +93,11 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name, Tag value) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindSymbol(env, ns, name);
 
-  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
-                                  Symbol(ns, name, value).Evict(env))
-                         : sym;
+  /* symbols assigned to namespaces are automatically evicted */
+  auto foo = Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
+                                      Symbol(ns, name, value).Evict(env))
+                             : sym;
+  return foo;
 }
 
 /** * intern symbol in namespace **/
@@ -105,6 +108,7 @@ auto Namespace::InternInNs(Env* env, Tag ns, Tag name) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindInterns(ns, name);
 
+  /* symbols assigned to namespaces are automatically evicted */
   return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->interns, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
@@ -118,6 +122,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
   auto key = static_cast<Tag>(hash_id(name));
   auto sym = FindExterns(ns, name);
 
+  /* symbols assigned to namespaces are automatically evicted */
   return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
