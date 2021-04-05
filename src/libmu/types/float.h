@@ -41,7 +41,7 @@ class Float : public Type {
 
   static float VSpecOf(Tag fl) { return FloatOf(fl); }
   static void Print(Env*, Tag, Tag, bool);
-  static Tag ViewOf(Tag);
+  static Tag ViewOf(Env* env, Tag);
 
  public: /* type model */
   Tag Evict(Env*) { return tag_; }

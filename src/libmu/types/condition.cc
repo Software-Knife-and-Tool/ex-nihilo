@@ -43,10 +43,10 @@ auto Condition::GcMark(Env* env, Tag condition) -> void {
 }
 
 /** * make view of condition **/
-auto Condition::ViewOf(Tag ex) -> Tag {
+auto Condition::ViewOf(Env* env, Tag ex) -> Tag {
   assert(IsType(ex));
 
-  auto view = std::vector<Tag>{Symbol::Keyword("condtn"),
+  auto view = std::vector<Tag>{Symbol::Keyword("cond"),
                                ex,
                                Fixnum(ToUint64(ex) >> 3).tag_,
                                tag(ex),
@@ -54,7 +54,7 @@ auto Condition::ViewOf(Tag ex) -> Tag {
                                reason(ex),
                                frame(ex)};
 
-  return Vector(view).tag_;
+  return Vector(env, view).tag_;
 }
 
 /** * raise condition **/
@@ -105,7 +105,8 @@ auto Condition::Raise(Env* env, CONDITION_CLASS ctype,
 
   auto ex = kExceptMap.at(ctype);
 
-  throw Condition(ex.second, Env::LastFrame(env), source, String(reason).tag_)
+  throw Condition(ex.second, Env::LastFrame(env), source,
+                  String(env, reason).tag_)
       .Evict(env);
 }
 

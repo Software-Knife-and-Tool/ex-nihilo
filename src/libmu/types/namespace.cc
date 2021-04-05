@@ -44,14 +44,14 @@ auto Namespace::GcMark(Env* env, Tag ns) -> void {
 }
 
 /** * view of namespace object **/
-auto Namespace::ViewOf(Tag ns) -> Tag {
+auto Namespace::ViewOf(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
 
   auto view =
       std::vector<Tag>{Symbol::Keyword("ns"), ns,
                        Fixnum(ToUint64(ns) >> 3).tag_, name(ns), imports(ns)};
 
-  return Vector(view).tag_;
+  return Vector(env, view).tag_;
 }
 
 /** * find symbol in namespace/imports **/

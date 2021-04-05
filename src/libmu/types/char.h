@@ -39,7 +39,7 @@ class Char : public Type {
   static auto VSpecOf(Tag ch) -> float { return Uint8Of(ch); }
   static auto Print(Env*, Tag, Tag, bool) -> void;
   static auto Read(Env*, Tag) -> Tag;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env* env, Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env*) -> Tag { return tag_; }

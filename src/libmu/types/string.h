@@ -73,11 +73,11 @@ class String : public Vector {
 
   static auto Print(Env*, Tag, Tag, bool) -> void;
   static auto Read(Env*, Tag) -> Tag;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env* env, Tag) -> Tag;
 
  public: /* object */
-  explicit String(std::string src)
-      : Vector(std::vector<char>(src.begin(), src.end())) {}
+  explicit String(Env* env, std::string src)
+      : Vector(env, std::vector<char>(src.begin(), src.end())) {}
 };
 
 } /* namespace core */

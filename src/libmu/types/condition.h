@@ -131,7 +131,7 @@ class Condition : public Type {
   }
 
   static auto GcMark(Env*, Tag) -> void;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env* env, Tag) -> Tag;
 
   [[noreturn]] static auto Raise(Env*, CONDITION_CLASS, const std::string&, Tag)
       -> void;

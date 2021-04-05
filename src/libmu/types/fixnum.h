@@ -44,7 +44,7 @@ class Fixnum : public Type {
 
   static auto VSpecOf(Tag fx) -> int64_t { return Int64Of(fx); }
   static auto Print(Env*, Tag, Tag, bool) -> void;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env* env, Tag) -> Tag;
 
  public: /* type model */
   Tag Evict(Env*) { return tag_; }

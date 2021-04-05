@@ -134,7 +134,7 @@ class Function : public Type {
 
   static auto GcMark(Env*, Tag) -> void;
   static auto Print(Env*, Tag, Tag, bool) -> void;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env* env, Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
@@ -142,7 +142,6 @@ class Function : public Type {
         env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::FUNCTION);
 
     *hp = function_;
-
     hp->name = Env::Evict(env, function_.name);
     hp->form = Env::Evict(env, function_.form);
     hp->env = Env::Evict(env, function_.env);

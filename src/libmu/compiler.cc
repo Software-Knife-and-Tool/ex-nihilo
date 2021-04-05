@@ -242,7 +242,7 @@ auto Letq(Env* env, Tag form) {
     Condition::Raise(env, Condition::CONDITION_CLASS::TYPE_ERROR, ":letq",
                      lsym);
 
-  auto letq = Namespace::FindInterns(env->mu_, String("letq").tag_);
+  auto letq = Namespace::FindInterns(env->mu_, String(env, "letq").tag_);
   assert(!Type::Null(letq));
 
   return Cons::List(
@@ -339,15 +339,16 @@ auto Compile(Env* env, Tag form) -> Tag {
 
       std::tie<Tag, size_t>(fn, offset) = LexicalEnv(env, form);
 
-      rval = Function::IsType(fn)
-                 ? Compile(env, Cons::List(
-                                    env,
-                                    std::vector<Tag>{
-                                        Namespace::FindInterns(
-                                            env->mu_, String("frame-ref").tag_),
-                                        Function::frame_id(fn),
-                                        Fixnum(offset).tag_}))
-                 : form;
+      rval =
+          Function::IsType(fn)
+              ? Compile(env,
+                        Cons::List(
+                            env,
+                            std::vector<Tag>{
+                                Namespace::FindInterns(
+                                    env->mu_, String(env, "frame-ref").tag_),
+                                Function::frame_id(fn), Fixnum(offset).tag_}))
+              : form;
       break;
     }
     default: /* constant */

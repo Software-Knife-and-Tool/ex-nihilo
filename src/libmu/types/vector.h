@@ -42,7 +42,7 @@ class Vector : public Type {
   } HeapLayout;
 
   HeapLayout vector_;
-  std::unique_ptr<std::vector<uint64_t>> hImage_;
+  heap::Heap::HeapImage* hImage_;
 
   std::vector<Tag> srcTag_;
   std::vector<char> srcChar_;
@@ -121,7 +121,7 @@ class Vector : public Type {
   static auto GcMark(Env*, Tag) -> void;
   static auto Print(Env*, Tag, Tag, bool) -> void;
   static auto Read(Env*, Tag) -> Tag;
-  static auto ViewOf(Tag) -> Tag;
+  static auto ViewOf(Env*, Tag) -> Tag;
 
  public: /* type model */
   auto Evict(Env*) -> Tag;
@@ -129,11 +129,11 @@ class Vector : public Type {
 
   explicit Vector(Tag tag) { tag_ = tag; }
 
-  explicit Vector(std::vector<char>);
-  explicit Vector(std::vector<float>);
-  explicit Vector(std::vector<uint8_t>);
-  explicit Vector(std::vector<int64_t>);
-  explicit Vector(std::vector<Tag>);
+  explicit Vector(Env*, std::vector<char>);
+  explicit Vector(Env*, std::vector<float>);
+  explicit Vector(Env*, std::vector<uint8_t>);
+  explicit Vector(Env*, std::vector<int64_t>);
+  explicit Vector(Env*, std::vector<Tag>);
 
   /** * vector iterator **/
   template <typename V>

@@ -232,7 +232,8 @@ auto GetStringStream(Frame* fp) -> void {
         fp->env, Condition::CONDITION_CLASS::TYPE_ERROR,
         "argument must be a string stream (get-output-string-stream)", stream);
 
-  fp->value = String(Platform::GetStdString(Stream::streamId(stream))).tag_;
+  fp->value =
+      String(fp->env, Platform::GetStdString(Stream::streamId(stream))).tag_;
 }
 
 /** * (open-socket-server port) **/

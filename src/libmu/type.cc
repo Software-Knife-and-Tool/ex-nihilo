@@ -29,6 +29,7 @@
 #include "libmu/types/float.h"
 #include "libmu/types/function.h"
 #include "libmu/types/stream.h"
+#include "libmu/types/string.h"
 #include "libmu/types/struct.h"
 #include "libmu/types/symbol.h"
 #include "libmu/types/vector.h"
@@ -42,7 +43,7 @@ static const std::map<Tag, SYS_CLASS> kSymbolMap{
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
     {Symbol::Keyword("cons"), SYS_CLASS::CONS},
-    {Symbol::Keyword("condtn"), SYS_CLASS::CONDITION},
+    {Symbol::Keyword("cond"), SYS_CLASS::CONDITION},
     {Symbol::Keyword("fixnum"), SYS_CLASS::FIXNUM},
     {Symbol::Keyword("float"), SYS_CLASS::FLOAT},
     {Symbol::Keyword("func"), SYS_CLASS::FUNCTION},
@@ -72,6 +73,13 @@ auto Type::MapSymbolClass(Tag type_sym) -> SYS_CLASS {
   return kSymbolMap.at(type_sym);
 }
 
+/** * std::string of SYS_CLASS */
+auto Type::SysClassOf(SYS_CLASS sc) -> std::string {
+  auto typesym = MapClassSymbol(sc);
+  
+  return String::StdStringOf(Symbol::name(typesym));
+}
+  
 /** * class symbol map */
 auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
   static const std::map<SYS_CLASS, Tag> kTypeMap{
@@ -79,7 +87,7 @@ auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
       {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
       {SYS_CLASS::CHAR, Symbol::Keyword("char")},
       {SYS_CLASS::CONS, Symbol::Keyword("cons")},
-      {SYS_CLASS::CONDITION, Symbol::Keyword("condtn")},
+      {SYS_CLASS::CONDITION, Symbol::Keyword("cond")},
       {SYS_CLASS::FIXNUM, Symbol::Keyword("fixnum")},
       {SYS_CLASS::FLOAT, Symbol::Keyword("float")},
       {SYS_CLASS::FUNCTION, Symbol::Keyword("func")},
@@ -120,6 +128,11 @@ auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
                    [ptr](const std::pair<bool (*)(Tag), SYS_CLASS> predicate) {
                      return predicate.first(ptr);
                    });
+
+  if (el == kPredMap.end()) {
+    printf("TypeOf: 0x%llx: heapInfo 0x016%llx", ptr, *(Untag<Tag>(ptr) - 1));
+    heap::Heap::Print(*(reinterpret_cast<uint64_t*>(Untag<Tag>(ptr) - 1)));
+  }
 
   assert(el != kPredMap.end());
 
