@@ -25,7 +25,7 @@ void repl(Platform *platform, int) {
   auto env = reinterpret_cast<void *>(libmu::api::env_default(platform));
 
   libmu::api::withCondition(env, [platform](void *env) {
-    auto repl = false;
+    auto repl = platform->options_->size() == 0;
 
     for (const Platform::OptMap &opt : *platform->options_) {
       switch (platform->name(opt)[0]) {
@@ -42,7 +42,7 @@ void repl(Platform *platform, int) {
             "  -l SRCFILE           load SRCFILE in sequence\n"
             "  -e SEXPR             evaluate SEXPR and print result\n"
             "  -q SEXPR             evaluate SEXPR quietly\n"
-            "  src-file             load source file\n";
+            "  src-file...          load source files\n";
 
         std::cout << helpmsg << std::endl;
         if (platform->name(opt)[0] == '?') {

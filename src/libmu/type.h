@@ -41,12 +41,12 @@ class Type {
  public: /* Tag layout */
   /** * 3 bit staged low tag **/
   enum class TAG : uint8_t {
-    NOPE = 0,      /* machine address */
-    EFIXNUM = 1,   /* even fixnum (62 bits) */
+    EFIXNUM = 0,   /* even fixnum (62 bits) */
+    DOUBLE = 1,    /* floating double */
     SYMBOL = 2,    /* symbol/keyword */
     FUNCTION = 3,  /* function */
-    CONS = 4,      /* cons */
-    OFIXNUM = 5,   /* odd fixnum (62 bits) */
+    OFIXNUM = 4,   /* odd fixnum (62 bits) */
+    CONS = 5,      /* cons */
     IMMEDIATE = 6, /* immediate */
     EXTEND = 7     /* extended */
   };
@@ -71,11 +71,6 @@ class Type {
   template <typename T>
   static T* Untag(Tag ptr) {
     return reinterpret_cast<T*>(to_underlying(ptr) & ~0x7);
-  }
-
-  /** * as an address **/
-  static auto ToAddress(Tag ptr) {
-    return reinterpret_cast<void*>(to_underlying(ptr));
   }
 
   /** * from uint64_t **/
@@ -136,6 +131,7 @@ class Type {
     CHAR,
     CONDITION,
     CONS,
+    DOUBLE,
     FIXNUM,
     FLOAT,
     FUNCTION,

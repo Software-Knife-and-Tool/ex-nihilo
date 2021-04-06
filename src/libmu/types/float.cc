@@ -51,5 +51,26 @@ auto Float::Print(Env* env, Tag lfloat, Tag stream, bool) -> void {
   core::PrintStdString(env, str.str(), stream, false);
 }
 
+/** * view of float object **/
+auto Double::ViewOf(Env* env, Tag dbl) -> Tag {
+  assert(IsType(dbl));
+
+  auto view = std::vector<Tag>{Symbol::Keyword("double"),
+                               Fixnum(ToUint64(dbl) >> 3).tag_, dbl};
+
+  return Vector(env, view).tag_;
+}
+
+/** * print float object to stream **/
+auto Double::Print(Env* env, Tag dbl, Tag stream, bool) -> void {
+  assert(IsType(dbl));
+  assert(Stream::IsType(stream));
+
+  std::ostringstream str;
+
+  str << std::fixed << std::setprecision(6) << Double::DoubleOf(dbl);
+  core::PrintStdString(env, str.str(), stream, false);
+}
+
 } /* namespace core */
 } /* namespace libmu */
