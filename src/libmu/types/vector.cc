@@ -132,7 +132,8 @@ Vector::Vector(Env* env, std::vector<Tag> src) {
 
   hImage_ =
       new std::vector<uint64_t>(1 + env->heap_->HeapWords(sizeof(HeapLayout)));
-  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+  hImage_->at(0) =
+      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 
   std::memcpy(hImage_->data() + 1, &vector_, sizeof(HeapLayout));
   tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
@@ -149,7 +150,8 @@ Vector::Vector(Env* env, std::vector<char> src) {
 
     hImage_ = new std::vector<uint64_t>(
         1 + env->heap_->HeapWords(sizeof(HeapLayout)));
-    hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::STRING);
+    hImage_->at(0) =
+        static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::STRING));
 
     srcChar_ = src;
 
@@ -169,7 +171,8 @@ Vector::Vector(Env* env, std::vector<uint8_t> src) {
 
   hImage_ =
       new std::vector<uint64_t>(1 + env->heap_->HeapWords(sizeof(HeapLayout)));
-  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+  hImage_->at(0) =
+      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 
   srcByte_ = src;
 
@@ -188,7 +191,8 @@ Vector::Vector(Env* env, std::vector<int64_t> src) {
 
   hImage_ =
       new std::vector<uint64_t>(1 + env->heap_->HeapWords(sizeof(HeapLayout)));
-  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+  hImage_->at(0) =
+      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 
   srcFixnum_ = src;
 
@@ -207,7 +211,8 @@ Vector::Vector(Env* env, std::vector<float> src) {
 
   hImage_ =
       new std::vector<uint64_t>(1 + env->heap_->HeapWords(sizeof(HeapLayout)));
-  hImage_->at(0) = Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR);
+  hImage_->at(0) =
+      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
 
   srcFloat_ = src;
 

@@ -38,21 +38,21 @@ using SYS_CLASS = core::Type::SYS_CLASS;
 using Tag = core::Type::Tag;
 
 class Heap {
- public:                     /* tag */
-  typedef uint64_t HeapInfo; /* think: enum trick here? */
+ public: /* tag */
+  enum class HeapInfo : uint64_t {};
 
   /** * make HeapInfo **/
   /* reloc offset (uint32_t), size (uint16_t), ref bits (uint8_t), and tag
    * (uint8_t) */
   static constexpr HeapInfo MakeHeapInfo(size_t size, SYS_CLASS tag) {
-    return (static_cast<uint16_t>((size + 7) / 8) << 16) |
-           static_cast<uint8_t>(tag);
+    return static_cast<HeapInfo>((static_cast<uint16_t>((size + 7) / 8) << 16) |
+                                 static_cast<uint8_t>(tag));
   }
 
   /** * print HeapInfo **/
   static void Print(HeapInfo hinfo) {
     printf(
-        "\n0x%016llx: reloc: 0x%llx size: %u refbits: 0x%x sys class: 0x%x\n",
+        "\n0x%016llx: reloc: 0x%llx size: %zu refbits: 0x%x sys class: 0x%x\n",
         hinfo, Reloc(hinfo), Size(hinfo), RefBits(hinfo),
         static_cast<uint8_t>(SysClass(hinfo)));
   }
@@ -78,40 +78,46 @@ class Heap {
 
   /** * SYS_CLASS from HeapInfo **/
   static constexpr SYS_CLASS SysClass(HeapInfo hinfo) {
-    return static_cast<SYS_CLASS>(hinfo & 0xff);
+    return static_cast<SYS_CLASS>(static_cast<uint64_t>(hinfo) & 0xff);
   }
 
   /** * HeapInfo from HeapInfo, SYS_CLASS **/
   static constexpr HeapInfo SysClass(HeapInfo hinfo, SYS_CLASS tag) {
-    return (hinfo & ~(0xffULL)) | static_cast<uint8_t>(tag);
+    return static_cast<HeapInfo>((static_cast<uint64_t>(hinfo) & ~(0xffULL)) |
+                                 static_cast<uint8_t>(tag));
   }
 
   /** * get ref bits **/
   static constexpr uint8_t RefBits(HeapInfo hinfo) {
-    return (hinfo >> 8) & 0xff;
+    return (static_cast<uint64_t>(hinfo) >> 8) & 0xff;
   }
+
   /** * set ref bits **/
   static constexpr HeapInfo RefBits(HeapInfo hinfo, uint8_t refbits) {
-    return (hinfo & ~(0xffULL << 8)) | refbits << 8;
+    return static_cast<HeapInfo>(
+        (static_cast<uint64_t>(hinfo) & ~(0xffULL << 8)) | refbits << 8);
   }
 
   /** * get heap object size **/
-  static constexpr uint32_t Size(HeapInfo hinfo) {
-    return 8 * ((hinfo >> 16) & 0xffff);
+  static constexpr size_t Size(HeapInfo hinfo) {
+    return 8 * ((static_cast<uint64_t>(hinfo) >> 16) & 0xffff);
   }
   /** * set heap object size **/
   static constexpr HeapInfo Size(HeapInfo hinfo, uint32_t size) {
-    return (hinfo & ~(0xffffULL << 16)) | ((((size + 7) / 8) & 0xffff) << 16);
+    return static_cast<HeapInfo>(
+        (static_cast<uint64_t>(hinfo) & ~(0xffffULL << 16)) |
+        ((((size + 7) / 8) & 0xffff) << 16));
   }
 
   /** * get reloc **/
   static constexpr uint64_t Reloc(HeapInfo hinfo) {
-    return 8 * ((hinfo >> 32) & 0xffffffff);
+    return 8 * ((static_cast<uintptr_t>(hinfo) >> 32) & 0xffffffff);
   }
   /** * set reloc **/
   static HeapInfo Reloc(HeapInfo hinfo, uint64_t reloc) {
-    return (hinfo & ~(0xffffffffULL << 32)) |
-           (((reloc / 8) & 0xffffffff) << 32);
+    return static_cast<HeapInfo>(
+        (static_cast<uint64_t>(hinfo) & ~(0xffffffffULL << 32)) |
+        (((reloc / 8) & 0xffffffff) << 32));
   }
 
  public:
@@ -142,7 +148,8 @@ class Heap {
              HeapWords(size), sizeof(T), HeapWords(sizeof(T)));
       printf("system class: %s\n", core::Type::SysClassOf(sys_class).c_str());
       for (uint32_t i = 0; i < HeapWords(size); ++i)
-        if (heapInfo[i + 1]) printf("% 2d: 0x%016llx\n", i, heapInfo[i + 1]);
+        if (static_cast<uint64_t>(heapInfo[i + 1]))
+          printf("% 2d: 0x%016llx\n", i, heapInfo[i + 1]);
     }
   }
 
