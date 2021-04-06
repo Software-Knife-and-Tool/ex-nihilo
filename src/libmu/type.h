@@ -41,7 +41,7 @@ class Type {
  public: /* Tag layout */
   /** * 3 bit staged low tag **/
   enum class TAG : uint8_t {
-    ADDRESS = 0,   /* machine address */
+    NOPE = 0,      /* machine address */
     EFIXNUM = 1,   /* even fixnum (62 bits) */
     SYMBOL = 2,    /* symbol/keyword */
     FUNCTION = 3,  /* function */
@@ -132,7 +132,6 @@ class Type {
 
   /** * system classes **/
   enum class SYS_CLASS : uint8_t {
-    ADDRESS,
     BYTE,
     CHAR,
     CONDITION,

@@ -28,20 +28,20 @@ namespace libmu {
 namespace api {
 
 extern "C" {
-void* t();
-void* nil();
+uintptr_t t();
+uintptr_t nil();
 const char* version();
-void* eval(void*, void*);
-void* read_stream(void*, void*);
-void* read_string(void*, const std::string&);
-void* read_cstr(void*, const char*);
-void print(void*, void*, void*, bool);
-const char* print_cstr(void*, void*, bool);
-void terpri(void*, void*);
+uintptr_t eval(void*, uintptr_t);
+uintptr_t read_stream(void*, uintptr_t);
+uintptr_t read_string(void*, const std::string&);
+uintptr_t read_cstr(void*, const char*);
+void print(void*, uintptr_t, uintptr_t, bool);
+const char* print_cstr(void*, uintptr_t, bool);
+void terpri(void*, uintptr_t);
 void withCondition(void*, const std::function<void(void*)>&);
-void* env_default(Platform*);
-void* env(Platform*, Platform::StreamId, Platform::StreamId,
-          Platform::StreamId);
+uintptr_t env_default(Platform*);
+uintptr_t env(Platform*, Platform::StreamId, Platform::StreamId,
+              Platform::StreamId);
 }
 
 } /* namespace api */

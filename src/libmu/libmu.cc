@@ -14,6 +14,7 @@
 #include "libmu/libmu.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstdio>
 #include <functional>
 #include <memory>
@@ -40,38 +41,39 @@ using Type = core::Type;
 using Env = core::Env;
 
 /** * constants interface **/
-auto t() -> void* { return (void*)Type::T; }
-auto nil() -> void* { return (void*)Type::NIL; }
-auto version() -> const char* { return "0.0.22"; }
+auto t() -> uintptr_t { return static_cast<uintptr_t>(Type::T); }
+auto nil() -> uintptr_t { return static_cast<uintptr_t>(Type::NIL); }
+auto version() -> const char* { return "0.0.23"; }
 
 /** * read interface **/
-auto read_stream(void* env, void* stream) -> void* {
-  return (void*)core::Type::ToAddress(
-      core::Read((Env*)env, core::Type::Entag(stream, Type::TAG::ADDRESS)));
+auto read_stream(void* env, uintptr_t stream) -> uintptr_t {
+  return static_cast<uintptr_t>(
+      core::Read((Env*)env, static_cast<Type::Tag>(stream)));
 }
 
 /** * read interface **/
-auto read_cstr(void* env, const char* src) -> void* {
-  return (void*)Type::ToAddress(
+auto read_cstr(void* env, const char* src) -> uintptr_t {
+  return static_cast<uintptr_t>(
       core::Read((Env*)env, core::Stream::MakeInputString((Env*)env, src)));
 }
 
 /** * read interface **/
-auto read_string(void* env, const std::string& src) -> void* {
+auto read_string(void* env, const std::string& src) -> uintptr_t {
   return read_cstr(env, src.c_str());
 }
 
 /** * princ/prin1 interface **/
-auto print(void* env, void* ptr, void* stream, bool esc) -> void {
-  core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS),
-              Type::Entag(stream, Type::TAG::ADDRESS), esc);
+auto print(void* env, uintptr_t ptr, uintptr_t stream, bool esc) -> void {
+  core::Print((Env*)env, static_cast<Type::Tag>(ptr),
+              static_cast<Type::Tag>(stream), esc);
 }
 
 /** * print to a cstring **/
-auto print_cstr(void* env, void* ptr, bool esc) -> const char* {
+auto print_cstr(void* env, uintptr_t ptr, bool esc) -> const char* {
   auto stream = core::Stream::MakeOutputString((Env*)env, "");
 
-  core::Print((Env*)env, Type::Entag(ptr, Type::TAG::ADDRESS), stream, esc);
+  core::Print((Env*)env, static_cast<Type::Tag>(ptr),
+              static_cast<Type::Tag>(stream), esc);
 
   auto cp = Platform::GetStdString(core::Stream::streamId(stream));
   auto cstr = new char[strlen(cp.c_str()) + 1];
@@ -80,13 +82,13 @@ auto print_cstr(void* env, void* ptr, bool esc) -> const char* {
 }
 
 /** * print end of line **/
-auto terpri(void* env, void* stream) -> void {
-  core::Terpri((Env*)env, Type::Entag(stream, Type::TAG::ADDRESS));
+auto terpri(void* env, uintptr_t stream) -> void {
+  core::Terpri((Env*)env, static_cast<Type::Tag>(stream));
 }
 
 /** * catch library throws **/
 auto withCondition(void* env, const std::function<void(void*)>& fn) -> void {
-  auto ev = static_cast<Env*>(env);
+  auto ev = reinterpret_cast<Env*>(env);
   auto mark = ev->frames_.size();
 
   try {
@@ -121,25 +123,24 @@ auto withCondition(void* env, const std::function<void(void*)>& fn) -> void {
 }
 
 /** * eval **/
-auto eval(void* env, void* form) -> void* {
-  return reinterpret_cast<void*>(core::Eval(
-      (Env*)env,
-      core::Compile((Env*)env, Type::Entag(form, Type::TAG::ADDRESS))));
+auto eval(void* env, uintptr_t form) -> uintptr_t {
+  return static_cast<uintptr_t>(core::Eval(
+      (Env*)env, core::Compile((Env*)env, static_cast<Type::Tag>(form))));
 }
 
 /** * env - allocate an environment **/
-auto env_default(Platform* platform) -> void* {
+auto env_default(Platform* platform) -> uintptr_t {
   auto stdin = Platform::OpenStandardStream(Platform::STD_STREAM::STDIN);
   auto stdout = Platform::OpenStandardStream(Platform::STD_STREAM::STDOUT);
   auto stderr = Platform::OpenStandardStream(Platform::STD_STREAM::STDERR);
 
-  return (void*)new Env(platform, stdin, stdout, stderr);
+  return (uintptr_t) new Env(platform, stdin, stdout, stderr);
 }
 
 /** * env - allocate an environment **/
 auto env(Platform* platform, Platform::StreamId stdin,
-         Platform::StreamId stdout, Platform::StreamId stderr) -> void* {
-  return (void*)new Env(platform, stdin, stdout, stderr);
+         Platform::StreamId stdout, Platform::StreamId stderr) -> uintptr_t {
+  return (uintptr_t) new Env(platform, stdin, stdout, stderr);
 }
 
 } /* namespace api */

@@ -28,7 +28,6 @@
 
 #include "libmu/mu/mu.h"
 
-#include "libmu/types/address.h"
 #include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/fixnum.h"
@@ -242,7 +241,6 @@ auto Env::Evict(Env* env, Tag ptr) -> Tag {
     return ptr;
   };
   static const std::map<SYS_CLASS, std::function<Tag(Env*, Tag)>> kGcEvictMap{
-      {SYS_CLASS::ADDRESS, noEvict},
       {SYS_CLASS::CHAR, noEvict},
       {SYS_CLASS::CONS, Cons::EvictTag},
       {SYS_CLASS::CONDITION, Condition::EvictTag},
@@ -265,7 +263,6 @@ auto Env::Evict(Env* env, Tag ptr) -> Tag {
 auto Env::GcMark(Env* env, Tag ptr) -> void {
   std::function<void(Env*, Tag)> noGc = [](Env*, Tag) {};
   static const std::map<SYS_CLASS, std::function<void(Env*, Tag)>> kGcTypeMap{
-      {SYS_CLASS::ADDRESS, noGc},
       {SYS_CLASS::CHAR, noGc},
       {SYS_CLASS::CONS, Cons::GcMark},
       {SYS_CLASS::CONDITION, Condition::GcMark},
@@ -288,7 +285,6 @@ auto Env::GcMark(Env* env, Tag ptr) -> void {
 /** * make a view vector of pointer's contents **/
 auto Env::ViewOf(Env* env, Tag object) -> Tag {
   static const std::map<SYS_CLASS, std::function<Tag(Env*, Tag)>> kViewMap{
-      {SYS_CLASS::ADDRESS, Address::ViewOf},
       {SYS_CLASS::CHAR, Char::ViewOf},
       {SYS_CLASS::CONS, Cons::ViewOf},
       {SYS_CLASS::CONDITION, Condition::ViewOf},

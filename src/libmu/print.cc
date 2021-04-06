@@ -24,7 +24,6 @@
 #include "libmu/macro.h"
 #include "libmu/type.h"
 
-#include "libmu/types/address.h"
 #include "libmu/types/char.h"
 #include "libmu/types/condition.h"
 #include "libmu/types/cons.h"

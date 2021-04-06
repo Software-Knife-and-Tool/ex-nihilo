@@ -22,7 +22,7 @@
 using libmu::platform::Platform;
 
 void repl(Platform *platform, int) {
-  auto env = libmu::api::env_default(platform);
+  auto env = reinterpret_cast<void *>(libmu::api::env_default(platform));
 
   libmu::api::withCondition(env, [platform](void *env) {
     auto repl = false;
