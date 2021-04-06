@@ -25,7 +25,6 @@
 #include "libmu/env.h"
 #include "libmu/type.h"
 
-#include "libmu/types/address.h"
 #include "libmu/types/cons.h"
 
 namespace libmu {
@@ -176,7 +175,7 @@ class Function : public Type {
     function_.arity = mu->nreqs << 1;
     function_.context = std::vector<Frame*>{};
     function_.mu =
-        Address(static_cast<void*>(const_cast<Env::TagFn*>(mu))).tag_;
+        Fixnum(reinterpret_cast<uintptr_t>(const_cast<Env::TagFn*>(mu))).tag_;
     function_.env = NIL;
     function_.form = NIL;
     function_.frame_id = Fixnum(env->frame_id_).tag_;

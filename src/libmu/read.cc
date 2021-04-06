@@ -66,11 +66,6 @@ auto ReadBroketSyntax(Env* env, Tag stream) -> Tag {
                      "broket syntax (type)", tagptr);
 
   switch (sysclass) {
-    case SYS_CLASS::ADDRESS: {
-      auto caddr = reinterpret_cast<void*>(tagptr_bits);
-
-      return Address(caddr).tag_;
-    }
     case SYS_CLASS::CONDITION:
     case SYS_CLASS::FUNCTION:
     case SYS_CLASS::MACRO:

@@ -22,7 +22,6 @@
 #include "libmu/core.h"
 #include "libmu/macro.h"
 
-#include "libmu/types/address.h"
 #include "libmu/types/condition.h"
 #include "libmu/types/cons.h"
 #include "libmu/types/fixnum.h"
@@ -39,7 +38,6 @@ namespace core {
 namespace {
 
 static const std::map<Tag, SYS_CLASS> kSymbolMap{
-    {Symbol::Keyword("address"), SYS_CLASS::ADDRESS},
     {Symbol::Keyword("byte"), SYS_CLASS::BYTE},
     {Symbol::Keyword("char"), SYS_CLASS::CHAR},
     {Symbol::Keyword("cons"), SYS_CLASS::CONS},
@@ -83,7 +81,6 @@ auto Type::SysClassOf(SYS_CLASS sc) -> std::string {
 /** * class symbol map */
 auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
   static const std::map<SYS_CLASS, Tag> kTypeMap{
-      {SYS_CLASS::ADDRESS, Symbol::Keyword("address")},
       {SYS_CLASS::BYTE, Symbol::Keyword("byte")},
       {SYS_CLASS::CHAR, Symbol::Keyword("char")},
       {SYS_CLASS::CONS, Symbol::Keyword("cons")},
@@ -108,7 +105,6 @@ auto Type::MapClassSymbol(SYS_CLASS sys_class) -> Tag {
 /** * type of tagged pointer **/
 auto Type::TypeOf(Tag ptr) -> SYS_CLASS {
   static const std::vector<std::pair<bool (*)(Tag), SYS_CLASS>> kPredMap{
-      {Address::IsType, SYS_CLASS::ADDRESS},
       {Char::IsType, SYS_CLASS::CHAR},
       {Cons::IsType, SYS_CLASS::CONS},
       {Condition::IsType, SYS_CLASS::CONDITION},
