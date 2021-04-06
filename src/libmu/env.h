@@ -131,13 +131,14 @@ class Env {
   static auto AddNamespace(Env*, Tag) -> void;
 
   static auto IsInHeap(Env* env, Tag ptr) -> bool {
-    return Type::IsImmediate(ptr) ? false
-                                  : env->heap_->in_heap(Type::ToAddress(ptr));
+    return Type::IsImmediate(ptr)
+               ? false
+               : env->heap_->in_heap(reinterpret_cast<void*>(ptr));
   }
 
   static auto IsEvicted(Env* env, Tag ptr) -> bool {
     return Type::IsImmediate(ptr) || Fixnum::IsType(ptr) ||
-           env->heap_->in_heap(Type::ToAddress(ptr));
+           env->heap_->in_heap(reinterpret_cast<void*>(ptr));
   }
 
   static auto ViewOf(Env*, Tag) -> Tag;
