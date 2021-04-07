@@ -29,6 +29,45 @@ namespace core {
 
 using Tag = Type::Tag;
 
+/** * condition vector to heap **/
+auto Condition::Evict(Env* env) -> Tag {
+
+  size_t nalloc =
+    sizeof(Heap::HeapInfo) + env->heap_->HeapWords(sizeof(HeapLayout)) * 8;
+
+  hImage_ = new std::vector<uint64_t>(1 + env->heap_->HeapWords(sizeof(HeapLayout)));
+  hImage_->at(0) =
+    static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::CONDITION));
+
+  HeapLayout* hi = reinterpret_cast<HeapLayout*>(hImage_->data() + 1);
+
+  hi->tag = Env::Evict(env, condition_.tag);
+  hi->frame = Env::Evict(env, condition_.frame);
+  hi->source = Env::Evict(env, condition_.source);
+  hi->reason = Env::Evict(env, condition_.reason);
+
+  tag_ = Entag(hImage_->data() + 1, TAG::EXTEND);
+
+  return tag_;
+}
+
+auto Condition::EvictTag(Env* env, Tag cond) -> Tag {
+  assert(IsType(cond));
+  assert(!Env::IsEvicted(env, cond));
+
+  HeapLayout* hi = Untag<HeapLayout>(cond);
+  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
+
+  *hp = *hi;
+
+  hp->tag = Env::Evict(env, hi->tag);
+  hp->frame = Env::Evict(env, hi->frame);
+  hp->source = Env::Evict(env, hi->source);
+  hp->reason = Env::Evict(env, hi->reason);
+
+  return Entag(hp, TAG::EXTEND);
+}
+
 /** * garbage collection **/
 auto Condition::GcMark(Env* env, Tag condition) -> void {
   assert(IsType(condition));

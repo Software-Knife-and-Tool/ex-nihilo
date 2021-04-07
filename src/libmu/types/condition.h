@@ -36,7 +36,8 @@ class Condition : public Type {
   } HeapLayout;
 
   HeapLayout condition_;
-
+  heap::Heap::HeapImage* hImage_;
+  
  public:
   enum class CONDITION_CLASS : uint8_t {
     ARITHMETIC_ERROR,
@@ -93,43 +94,10 @@ class Condition : public Type {
   }
 
  public: /* type model */
-  auto Evict(Env* env) -> Tag {
-    auto hp =
-        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
-
-    *hp = condition_;
-
-    hp->tag = Env::Evict(env, condition_.tag);
-    hp->frame = Env::Evict(env, condition_.frame);
-    hp->source = Env::Evict(env, condition_.source);
-    hp->reason = Env::Evict(env, condition_.reason);
-
-    tag_ = Entag(hp, TAG::EXTEND);
-
-    return tag_;
-  }
+  auto Evict(Env*) -> Tag;
 
  public: /* object */
-  static auto EvictTag(Env* env, Tag condition) -> Tag {
-    assert(IsType(condition));
-    assert(!Env::IsEvicted(env, condition));
-
-    // printf("EvictTag: condition\n");
-
-    auto hp =
-        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
-    auto cp = Untag<HeapLayout>(condition);
-
-    *hp = *cp;
-
-    hp->tag = Env::Evict(env, cp->tag);
-    hp->frame = Env::Evict(env, cp->frame);
-    hp->source = Env::Evict(env, cp->source);
-    hp->reason = Env::Evict(env, cp->reason);
-
-    return Entag(hp, TAG::EXTEND);
-  }
-
+  static auto EvictTag(Env*, Tag) -> Tag;
   static auto GcMark(Env*, Tag) -> void;
   static auto ViewOf(Env* env, Tag) -> Tag;
 
