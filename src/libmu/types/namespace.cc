@@ -80,7 +80,7 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name) -> Tag {
   auto sym = FindSymbol(env, ns, name);
 
   /* symbols assigned to namespaces are automatically evicted */
-  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
+  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
 }
@@ -94,7 +94,7 @@ auto Namespace::Intern(Env* env, Tag ns, Tag name, Tag value) -> Tag {
   auto sym = FindSymbol(env, ns, name);
 
   /* symbols assigned to namespaces are automatically evicted */
-  auto foo = Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
+  auto foo = Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
                                       Symbol(ns, name, value).Evict(env))
                              : sym;
   return foo;
@@ -109,7 +109,7 @@ auto Namespace::InternInNs(Env* env, Tag ns, Tag name) -> Tag {
   auto sym = FindInterns(ns, name);
 
   /* symbols assigned to namespaces are automatically evicted */
-  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->interns, key,
+  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->interns, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
 }
@@ -123,7 +123,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
   auto sym = FindExterns(ns, name);
 
   /* symbols assigned to namespaces are automatically evicted */
-  return Type::Null(sym) ? Insert(Untag<HeapLayout>(ns)->externs, key,
+  return Type::Null(sym) ? Insert(Untag<Layout>(ns)->externs, key,
                                   Symbol(ns, name).Evict(env))
                          : sym;
 }
@@ -132,7 +132,7 @@ auto Namespace::ExternInNs(Env* env, Tag ns, Tag name) -> Tag {
 auto Namespace::Symbols(Env* env, Tag ns) -> Tag {
   assert(IsType(ns));
 
-  auto syms = Untag<HeapLayout>(ns)->externs;
+  auto syms = Untag<Layout>(ns)->externs;
   auto list = *syms.get();
 
   std::vector<Tag> symv;
@@ -144,8 +144,7 @@ auto Namespace::Symbols(Env* env, Tag ns) -> Tag {
 
 /** evict namespace to heap **/
 auto Namespace::Evict(Env* env) -> Tag {
-  auto hp =
-      env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::NAMESPACE);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE);
 
   *hp = namespace_;
   hp->name = Env::Evict(env, hp->name);
@@ -161,9 +160,8 @@ auto Namespace::EvictTag(Env* env, Tag ns) -> Tag {
   assert(!Env::IsEvicted(env, ns));
 
   // printf("EvictTag: namespace\n");
-  auto hp =
-      env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::NAMESPACE);
-  auto np = Untag<HeapLayout>(ns);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::NAMESPACE);
+  auto np = Untag<Layout>(ns);
 
   *hp = *np;
   hp->name = Env::Evict(env, hp->name);

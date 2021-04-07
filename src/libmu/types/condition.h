@@ -33,11 +33,11 @@ class Condition : public Type {
     Tag frame;  /* frame */
     Tag source; /* on source object */
     Tag reason; /* condition string */
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout condition_;
-  heap::Heap::HeapImage* hImage_;
-  
+  Layout condition_;
+  HeapFmt<Layout>* hImage_;
+
  public:
   enum class CONDITION_CLASS : uint8_t {
     ARITHMETIC_ERROR,
@@ -65,32 +65,33 @@ class Condition : public Type {
   };
 
   static constexpr auto IsType(Tag ptr) -> bool {
-    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::CONDITION;
+    return IsExtended(ptr) &&
+           HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::CONDITION;
   }
 
   /** * accessors **/
   static auto frame(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->frame;
+    return Untag<Layout>(condition)->frame;
   }
 
   static auto tag(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->tag;
+    return Untag<Layout>(condition)->tag;
   }
 
   static auto source(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->source;
+    return Untag<Layout>(condition)->source;
   }
 
   static auto reason(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->reason;
+    return Untag<Layout>(condition)->reason;
   }
 
  public: /* type model */
@@ -113,6 +114,8 @@ class Condition : public Type {
     condition_.reason = reason;
 
     tag_ = Entag(reinterpret_cast<void*>(&condition_), TAG::EXTEND);
+
+    hImage_ = new HeapFmt<Layout>(0, tag_);
   }
 };
 

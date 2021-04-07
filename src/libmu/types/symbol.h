@@ -34,9 +34,10 @@ class Symbol : public Type {
     Tag ns;
     Tag name;
     Tag value;
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout symbol_;
+  Layout symbol_;
+  HeapFmt<Layout>* hImage_;
 
  public:
   static constexpr auto IsType(Tag ptr) -> bool {
@@ -64,7 +65,7 @@ class Symbol : public Type {
   static auto ns(Tag symbol) -> Tag {
     assert(IsType(symbol));
 
-    return IsKeyword(symbol) ? NIL : Untag<HeapLayout>(symbol)->ns;
+    return IsKeyword(symbol) ? NIL : Untag<Layout>(symbol)->ns;
   }
 
   static auto ns(Tag symbol, Tag ns) -> void;
@@ -72,7 +73,7 @@ class Symbol : public Type {
   static auto value(Tag symbol) -> Tag {
     assert(IsType(symbol));
 
-    return IsKeyword(symbol) ? symbol : Untag<HeapLayout>(symbol)->value;
+    return IsKeyword(symbol) ? symbol : Untag<Layout>(symbol)->value;
   }
 
   static auto name(Tag symbol) -> Tag {
@@ -81,7 +82,7 @@ class Symbol : public Type {
     return IsKeyword(symbol)
                ? MakeImmediate(ImmediateData(symbol), ImmediateSize(symbol),
                                IMMEDIATE_CLASS::STRING)
-               : Untag<HeapLayout>(symbol)->name;
+               : Untag<Layout>(symbol)->name;
   }
 
   /** * namespaces **/
@@ -94,7 +95,7 @@ class Symbol : public Type {
   static auto Bind(Tag symbol, Tag value) -> Tag {
     assert(IsType(symbol));
 
-    Untag<HeapLayout>(symbol)->value = value;
+    Untag<Layout>(symbol)->value = value;
     return symbol;
   }
 

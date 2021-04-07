@@ -156,7 +156,7 @@ auto Stream::Close(Tag stream) -> Tag {
 
 /** evict stream to heap **/
 auto Stream::Evict(Env* env) -> Tag {
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM);
 
   *hp = stream_;
   hp->fn = Env::Evict(env, hp->fn);
@@ -171,8 +171,8 @@ auto Stream::EvictTag(Env* env, Tag stream) -> Tag {
   assert(!Env::IsEvicted(env, stream));
 
   // printf("EvictTag: stream\n");
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STREAM);
-  auto sp = Untag<HeapLayout>(stream);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STREAM);
+  auto sp = Untag<Layout>(stream);
 
   *hp = *sp;
   hp->fn = Env::Evict(env, hp->fn);

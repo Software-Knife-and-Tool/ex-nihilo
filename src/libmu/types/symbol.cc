@@ -95,7 +95,7 @@ auto Symbol::ns(Tag symbol, Tag ns) -> void {
   assert(!IsKeyword(symbol));
   assert(Namespace::IsType(ns));
 
-  Untag<HeapLayout>(symbol)->ns = ns;
+  Untag<Layout>(symbol)->ns = ns;
 }
 
 /** * is symbol bound to a value? */
@@ -189,7 +189,7 @@ auto Symbol::ParseSymbol(Env* env, std::string string, bool intern) -> Tag {
 
 /** evict symbol to heap **/
 auto Symbol::Evict(Env* env) -> Tag {
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL);
 
   *hp = symbol_;
   hp->ns = Env::Evict(env, hp->ns);
@@ -206,8 +206,8 @@ auto Symbol::EvictTag(Env* env, Tag symbol) -> Tag {
   assert(!Env::IsEvicted(env, symbol));
 
   // printf("EvictTag: symbol\n");
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::SYMBOL);
-  auto sp = Untag<HeapLayout>(symbol);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::SYMBOL);
+  auto sp = Untag<Layout>(symbol);
 
   *hp = *sp;
   hp->ns = Env::Evict(env, hp->ns);
