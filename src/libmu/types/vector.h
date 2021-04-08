@@ -20,7 +20,7 @@
 #include <memory>
 #include <vector>
 
-#include "libmu/heapfmt.h"
+#include "libmu/tagfmt.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -43,7 +43,7 @@ class Vector : public Type {
   } Layout;
 
   Layout vector_;
-  HeapFmt<Layout>* hImage_;
+  TagFmt<Layout>* tagFmt_;
 
   std::vector<Tag> srcTag_;
   std::vector<char> srcChar_;
@@ -71,9 +71,9 @@ class Vector : public Type {
 
   static constexpr auto IsType(Tag ptr) -> bool {
     return (IsExtended(ptr) &&
-            HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::VECTOR) ||
+            TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::VECTOR) ||
            (IsExtended(ptr) &&
-            HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRING) ||
+            TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRING) ||
            (IsImmediate(ptr) && ImmediateClass(ptr) == IMMEDIATE_CLASS::STRING);
   }
 
@@ -127,7 +127,7 @@ class Vector : public Type {
   static auto EvictTag(Env*, Tag) -> Tag;
 
   explicit Vector(Tag tag) {
-    hImage_ = nullptr;
+    tagFmt_ = nullptr;
     tag_ = tag;
   }
 

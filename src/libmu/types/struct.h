@@ -38,7 +38,7 @@ class Struct : public Type {
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRUCT;
+           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
   static auto stype(Tag str) -> Tag { return Untag<Layout>(str)->stype; }

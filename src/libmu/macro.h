@@ -40,8 +40,7 @@ class Macro : public Type {
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
-    return IsExtended(ptr) &&
-           HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::MACRO;
+    return IsExtended(ptr) && TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::MACRO;
   }
 
   static Tag func(Tag ptr) {

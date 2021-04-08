@@ -22,7 +22,7 @@
 #include "libmu/platform/platform.h"
 
 #include "libmu/env.h"
-#include "libmu/heapfmt.h"
+#include "libmu/tagfmt.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -47,7 +47,7 @@ class Stream : public Type {
  public: /* tag */
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           HeapFmt<Layout>::SysClass(ptr) == Type::SYS_CLASS::STREAM;
+           TagFmt<Layout>::SysClass(ptr) == Type::SYS_CLASS::STREAM;
   }
 
   static auto IsFunction(Tag) -> bool;

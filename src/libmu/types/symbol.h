@@ -37,7 +37,7 @@ class Symbol : public Type {
   } Layout;
 
   Layout symbol_;
-  HeapFmt<Layout>* hImage_;
+  // TagFmt<Layout>* tagFmt_;
 
  public:
   static constexpr auto IsType(Tag ptr) -> bool {

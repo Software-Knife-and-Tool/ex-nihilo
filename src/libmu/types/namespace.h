@@ -94,7 +94,7 @@ class Namespace : public Type {
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::NAMESPACE;
+           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::NAMESPACE;
   }
 
   /** * accessor **/

@@ -36,7 +36,7 @@ class Condition : public Type {
   } Layout;
 
   Layout condition_;
-  HeapFmt<Layout>* hImage_;
+  TagFmt<Layout>* tagFmt_;
 
  public:
   enum class CONDITION_CLASS : uint8_t {
@@ -66,7 +66,7 @@ class Condition : public Type {
 
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           HeapFmt<Layout>::SysClass(ptr) == SYS_CLASS::CONDITION;
+           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::CONDITION;
   }
 
   /** * accessors **/
@@ -115,7 +115,7 @@ class Condition : public Type {
 
     tag_ = Entag(reinterpret_cast<void*>(&condition_), TAG::EXTEND);
 
-    hImage_ = new HeapFmt<Layout>(0, tag_);
+    tagFmt_ = new TagFmt<Layout>(0, tag_);
   }
 };
 
