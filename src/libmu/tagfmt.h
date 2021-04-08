@@ -48,6 +48,8 @@ class TagFmt {
   Tag tag_;
 
  public:
+  static constexpr size_t HeapWords(size_t nbytes) { return (nbytes + 7) / 8; }
+
   /** * HeapInfo from Tag **/
   static heap::Heap::HeapInfo* GetHeapInfo(Tag ptr) {
     return Type::Untag<HeapInfo>(ptr) - 1;
@@ -59,8 +61,6 @@ class TagFmt {
 
     return heap::Heap::SysClass(static_cast<HeapInfo>(hinfo));
   }
-
-  static constexpr size_t HeapWords(size_t nbytes) { return (nbytes + 7) / 8; }
 
   /** * dump tag format **/
   template <typename T>
