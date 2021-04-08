@@ -8,11 +8,11 @@
 
 /********
  **
- **  vector.h: library vectors
+ **  vectorT.h: library typed vectors
  **
  **/
-#if !defined(LIBMU_TYPES_VECTOR_H_)
-#define LIBMU_TYPES_VECTOR_H_
+#if !defined(LIBMU_TYPES_VECTORT_H_)
+#define LIBMU_TYPES_VECTORT_H_
 
 #include <cassert>
 #include <cstring>
@@ -162,7 +162,6 @@ class Vector : public Type {
     }
 
     iterator operator++(int) { /* ++operator */
-
       iterator retn = current_;
 
       operator++();
@@ -177,4 +176,4 @@ class Vector : public Type {
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* LIBMU_TYPES_VECTOR_H_ */
+#endif /* LIBMU_TYPES_VECTORT_H_ */
