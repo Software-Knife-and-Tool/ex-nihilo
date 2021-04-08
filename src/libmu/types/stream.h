@@ -22,6 +22,7 @@
 #include "libmu/platform/platform.h"
 
 #include "libmu/env.h"
+#include "libmu/tagfmt.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -39,14 +40,14 @@ class Stream : public Type {
   typedef struct {
     Platform::StreamId streamId;
     Tag fn;
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout stream_;
+  Layout stream_;
 
  public: /* tag */
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           heap::Heap::SysClass(ptr) == Type::SYS_CLASS::STREAM;
+           TagFmt<Layout>::SysClass(ptr) == Type::SYS_CLASS::STREAM;
   }
 
   static auto IsFunction(Tag) -> bool;
@@ -58,13 +59,13 @@ class Stream : public Type {
   static auto streamId(Tag stream) -> Platform::StreamId {
     assert(IsType(stream));
 
-    return Untag<HeapLayout>(stream)->streamId;
+    return Untag<Layout>(stream)->streamId;
   }
 
   static auto func(Tag stream) -> Tag {
     assert(IsType(stream));
 
-    return Untag<HeapLayout>(stream)->fn;
+    return Untag<Layout>(stream)->fn;
   }
 
   static auto MakeInputFile(Env* env, std::string path) -> Tag {

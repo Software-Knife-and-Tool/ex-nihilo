@@ -34,19 +34,19 @@ class Macro : public Type {
  private:
   typedef struct {
     Tag func;
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout macro_;
+  Layout macro_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
-    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::MACRO;
+    return IsExtended(ptr) && TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::MACRO;
   }
 
   static Tag func(Tag ptr) {
     assert(IsType(ptr));
 
-    return Untag<HeapLayout>(ptr)->func;
+    return Untag<Layout>(ptr)->func;
   }
 
   static auto MacroExpand(Env*, Tag) -> Tag;
@@ -58,7 +58,7 @@ class Macro : public Type {
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
-    auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
+    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::MACRO);
 
     *sp = macro_;
     sp->func = Env::Evict(env, sp->func);
@@ -74,8 +74,8 @@ class Macro : public Type {
     assert(!Env::IsEvicted(env, macro));
 
     // printf("EvictTag: macro\n");
-    auto sp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::MACRO);
-    auto mp = Untag<HeapLayout>(macro);
+    auto sp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::MACRO);
+    auto mp = Untag<Layout>(macro);
 
     *sp = *mp;
     sp->func = Env::Evict(env, sp->func);

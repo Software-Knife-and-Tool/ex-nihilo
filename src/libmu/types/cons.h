@@ -31,21 +31,21 @@ class Cons : public Type {
   typedef struct {
     Tag car;
     Tag cdr;
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout cons_;
+  Layout cons_;
 
  public: /* Tag */
   static constexpr auto car(Tag cp) -> Tag {
     assert(IsList(cp));
 
-    return Null(cp) ? NIL : Untag<HeapLayout>(cp)->car;
+    return Null(cp) ? NIL : Untag<Layout>(cp)->car;
   }
 
   static constexpr auto cdr(Tag cp) -> Tag {
     assert(IsList(cp));
 
-    return Null(cp) ? NIL : Untag<HeapLayout>(cp)->cdr;
+    return Null(cp) ? NIL : Untag<Layout>(cp)->cdr;
   }
 
   static constexpr auto IsType(Tag ptr) -> bool {
@@ -85,13 +85,13 @@ class Cons : public Type {
   /** * cons iterator **/
   template <typename T>
   struct cons_iter {
-    typedef HeapLayout* iterator;
+    typedef Layout* iterator;
 
     iterator cons_;
     iterator current_;
 
     cons_iter(Tag cons)
-        : cons_(Null(cons) ? end() : Untag<HeapLayout>(cons)), current_(cons_) {
+        : cons_(Null(cons) ? end() : Untag<Layout>(cons)), current_(cons_) {
       assert(IsList(cons));
     }
 
@@ -105,8 +105,7 @@ class Cons : public Type {
 
     iterator& operator++() { /* ++operator */
 
-      current_ =
-          IsType(current_->cdr) ? Untag<HeapLayout>(current_->cdr) : end();
+      current_ = IsType(current_->cdr) ? Untag<Layout>(current_->cdr) : end();
       return *&current_;
     }
 

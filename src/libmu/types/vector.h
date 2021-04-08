@@ -20,9 +20,10 @@
 #include <memory>
 #include <vector>
 
-#include "libmu/heap/heap.h"
+#include "libmu/tagfmt.h"
 #include "libmu/type.h"
 
+#include "libmu/heap/heap.h"
 #include "libmu/types/fixnum.h"
 
 namespace libmu {
@@ -39,10 +40,10 @@ class Vector : public Type {
     SYS_CLASS type; /* vector type */
     size_t length;  /* length of vector in units */
     uint64_t base;  /* base of data */
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout vector_;
-  heap::Heap::HeapImage* hImage_;
+  Layout vector_;
+  TagFmt<Layout>* tagFmt_;
 
   std::vector<Tag> srcTag_;
   std::vector<char> srcChar_;
@@ -54,18 +55,14 @@ class Vector : public Type {
   /** * accessors **/
   static const size_t MAX_LENGTH = 1024;
 
-  static auto type(Tag vec) -> SYS_CLASS {
-    return Untag<HeapLayout>(vec)->type;
-  }
+  static auto type(Tag vec) -> SYS_CLASS { return Untag<Layout>(vec)->type; }
 
-  static auto length(Tag vec) -> size_t {
-    return Untag<HeapLayout>(vec)->length;
-  }
+  static auto length(Tag vec) -> size_t { return Untag<Layout>(vec)->length; }
 
-  static auto base(Tag vec) -> uint64_t { return Untag<HeapLayout>(vec)->base; }
+  static auto base(Tag vec) -> uint64_t { return Untag<Layout>(vec)->base; }
 
   static auto base(Tag vec, uint64_t base) -> uint64_t {
-    Untag<HeapLayout>(vec)->base = base;
+    Untag<Layout>(vec)->base = base;
     return base;
   }
 
@@ -73,8 +70,10 @@ class Vector : public Type {
   static auto MapC(Env*, Tag, Tag) -> void;
 
   static constexpr auto IsType(Tag ptr) -> bool {
-    return (IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::VECTOR) ||
-           (IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRING) ||
+    return (IsExtended(ptr) &&
+            TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::VECTOR) ||
+           (IsExtended(ptr) &&
+            TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRING) ||
            (IsImmediate(ptr) && ImmediateClass(ptr) == IMMEDIATE_CLASS::STRING);
   }
 
@@ -99,7 +98,7 @@ class Vector : public Type {
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
                ? ImmediateSize(vec)
-               : Untag<HeapLayout>(vec)->length;
+               : Untag<Layout>(vec)->length;
   }
 
   static auto TypeOf(Tag vec) -> SYS_CLASS {
@@ -107,7 +106,7 @@ class Vector : public Type {
 
     return (IsImmediate(vec) && ImmediateClass(vec) == IMMEDIATE_CLASS::STRING)
                ? SYS_CLASS::CHAR
-               : Untag<HeapLayout>(vec)->type;
+               : Untag<Layout>(vec)->type;
   }
 
   static auto VecType(Tag vec) -> Tag {
@@ -127,7 +126,10 @@ class Vector : public Type {
   auto Evict(Env*) -> Tag;
   static auto EvictTag(Env*, Tag) -> Tag;
 
-  explicit Vector(Tag tag) { tag_ = tag; }
+  explicit Vector(Tag tag) {
+    tagFmt_ = nullptr;
+    tag_ = tag;
+  }
 
   explicit Vector(Env*, std::vector<char>);
   explicit Vector(Env*, std::vector<float>);

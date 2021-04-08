@@ -121,6 +121,7 @@ auto Heap::room(SYS_CLASS tag) -> size_t {
   return total_size;
 }
 
+#if 0
 /** * heap object marked? **/
 auto Heap::IsGcMarked(Tag ptr) -> bool {
   auto hinfo = GetHeapInfo(ptr);
@@ -134,6 +135,7 @@ auto Heap::GcMark(Tag ptr) -> void {
 
   *hinfo = RefBits(*hinfo, 1);
 }
+#endif
 
 /** * clear refbits **/
 auto Heap::ClearRefBits() -> void {

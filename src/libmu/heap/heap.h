@@ -49,23 +49,12 @@ class Heap {
                                  static_cast<uint8_t>(tag));
   }
 
-  /** * print HeapInfo **/
-  static void Print(HeapInfo hinfo) {
+  /** * dump HeapInfo **/
+  static void Dump(HeapInfo hinfo) {
     printf(
         "\n0x%016llx: reloc: 0x%llx size: %zu refbits: 0x%x sys class: 0x%x\n",
         hinfo, Reloc(hinfo), Size(hinfo), RefBits(hinfo),
         static_cast<uint8_t>(SysClass(hinfo)));
-  }
-
-  static SYS_CLASS SysClass(Tag ptr) {
-    auto hinfo = *GetHeapInfo(ptr);
-
-    return SysClass(hinfo);
-  }
-
-  /** * HeapInfo from Tag **/
-  static HeapInfo* GetHeapInfo(Tag ptr) {
-    return core::Type::Untag<HeapInfo>(ptr) - 1;
   }
 
  private:
@@ -76,6 +65,7 @@ class Heap {
   char* alloc_;          /* alloc barrier */
   HeapInfo* conses_;     /* gc caching */
 
+ public:
   /** * SYS_CLASS from HeapInfo **/
   static constexpr SYS_CLASS SysClass(HeapInfo hinfo) {
     return static_cast<SYS_CLASS>(static_cast<uint64_t>(hinfo) & 0xff);
@@ -127,31 +117,6 @@ class Heap {
 
   constexpr size_t size() { return pagesz_ * npages_; }
   constexpr size_t alloc() { return alloc_ - uaddr_; }
-
-  static constexpr size_t HeapWords(size_t nbytes) { return (nbytes + 7) / 8; }
-
-  typedef std::vector<uint64_t> HeapImage;
-
-  /** * dump heap image **/
-  template <typename T>
-  void DumpHeapImage(Tag ptr) {
-    if (!core::Type::IsImmediate(ptr)) {
-      printf("HeapImage: tag 0x%016llx", ptr);
-      auto heapInfo = GetHeapInfo(ptr);
-      auto size = Size(*heapInfo);
-      // auto refbits = RefBits(*heapInfo);
-      // auto reloc = Reloc(*heapInfo);
-      auto sys_class = SysClass(*heapInfo);
-
-      Print(*heapInfo);
-      printf("image: %u(%lu words), layout %lu(%lu words)\n", size,
-             HeapWords(size), sizeof(T), HeapWords(sizeof(T)));
-      printf("system class: %s\n", core::Type::SysClassOf(sys_class).c_str());
-      for (uint32_t i = 0; i < HeapWords(size); ++i)
-        if (static_cast<uint64_t>(heapInfo[i + 1]))
-          printf("% 2d: 0x%016llx\n", i, heapInfo[i + 1]);
-    }
-  }
 
   void* Alloc(size_t, SYS_CLASS);
 

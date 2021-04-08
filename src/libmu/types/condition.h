@@ -33,9 +33,10 @@ class Condition : public Type {
     Tag frame;  /* frame */
     Tag source; /* on source object */
     Tag reason; /* condition string */
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout condition_;
+  Layout condition_;
+  TagFmt<Layout>* tagFmt_;
 
  public:
   enum class CONDITION_CLASS : uint8_t {
@@ -64,72 +65,40 @@ class Condition : public Type {
   };
 
   static constexpr auto IsType(Tag ptr) -> bool {
-    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::CONDITION;
+    return IsExtended(ptr) &&
+           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::CONDITION;
   }
 
   /** * accessors **/
   static auto frame(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->frame;
+    return Untag<Layout>(condition)->frame;
   }
 
   static auto tag(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->tag;
+    return Untag<Layout>(condition)->tag;
   }
 
   static auto source(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->source;
+    return Untag<Layout>(condition)->source;
   }
 
   static auto reason(Tag condition) -> Tag {
     assert(IsType(condition));
 
-    return Untag<HeapLayout>(condition)->reason;
+    return Untag<Layout>(condition)->reason;
   }
 
  public: /* type model */
-  auto Evict(Env* env) -> Tag {
-    auto hp =
-        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
-
-    *hp = condition_;
-
-    hp->tag = Env::Evict(env, condition_.tag);
-    hp->frame = Env::Evict(env, condition_.frame);
-    hp->source = Env::Evict(env, condition_.source);
-    hp->reason = Env::Evict(env, condition_.reason);
-
-    tag_ = Entag(hp, TAG::EXTEND);
-
-    return tag_;
-  }
+  auto Evict(Env*) -> Tag;
 
  public: /* object */
-  static auto EvictTag(Env* env, Tag condition) -> Tag {
-    assert(IsType(condition));
-    assert(!Env::IsEvicted(env, condition));
-
-    // printf("EvictTag: condition\n");
-
-    auto hp =
-        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONDITION);
-    auto cp = Untag<HeapLayout>(condition);
-
-    *hp = *cp;
-
-    hp->tag = Env::Evict(env, cp->tag);
-    hp->frame = Env::Evict(env, cp->frame);
-    hp->source = Env::Evict(env, cp->source);
-    hp->reason = Env::Evict(env, cp->reason);
-
-    return Entag(hp, TAG::EXTEND);
-  }
-
+  static auto EvictTag(Env*, Tag) -> Tag;
   static auto GcMark(Env*, Tag) -> void;
   static auto ViewOf(Env* env, Tag) -> Tag;
 
@@ -145,6 +114,8 @@ class Condition : public Type {
     condition_.reason = reason;
 
     tag_ = Entag(reinterpret_cast<void*>(&condition_), TAG::EXTEND);
+
+    tagFmt_ = new TagFmt<Layout>(0, tag_);
   }
 };
 

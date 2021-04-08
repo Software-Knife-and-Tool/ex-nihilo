@@ -259,7 +259,7 @@ auto Cons::Read(Env* env, Tag stream) -> Tag {
 
 /** * evict cons to heap **/
 auto Cons::Evict(Env* env) -> Tag {
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS);
 
   *hp = cons_;
 
@@ -277,8 +277,8 @@ auto Cons::EvictTag(Env* env, Tag cons) -> Tag {
 
   // printf("EvictTag: cons\n");
 
-  auto hp = env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::CONS);
-  auto cp = Untag<HeapLayout>(cons);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONS);
+  auto cp = Untag<Layout>(cons);
 
   *hp = *cp;
 

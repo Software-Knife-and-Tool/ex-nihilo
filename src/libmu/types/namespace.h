@@ -87,39 +87,40 @@ class Namespace : public Type {
     Tag imports; /* list of namespaces */
     std::shared_ptr<symbol_map> externs;
     std::shared_ptr<symbol_map> interns;
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout namespace_;
+  Layout namespace_;
 
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
-    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::NAMESPACE;
+    return IsExtended(ptr) &&
+           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::NAMESPACE;
   }
 
   /** * accessor **/
   static auto name(Tag ns) -> Tag {
     assert(IsType(ns));
 
-    return Untag<HeapLayout>(ns)->name;
+    return Untag<Layout>(ns)->name;
   }
 
   /** * accessors **/
   static auto imports(Tag ns) -> Tag {
     assert(IsType(ns));
 
-    return Untag<HeapLayout>(ns)->imports;
+    return Untag<Layout>(ns)->imports;
   }
 
   static auto externs(Tag ns) -> symbol_map {
     assert(IsType(ns));
 
-    return *Untag<HeapLayout>(ns)->externs.get();
+    return *Untag<Layout>(ns)->externs.get();
   }
 
   static auto interns(Tag ns) -> symbol_map {
     assert(IsType(ns));
 
-    return *Untag<HeapLayout>(ns)->interns.get();
+    return *Untag<Layout>(ns)->interns.get();
   }
 
   /** * is in namespace externs? **/
@@ -144,10 +145,10 @@ class Namespace : public Type {
     assert(String::IsType(str));
 
     auto key = static_cast<Tag>(hash_id(str));
-    auto entry = find(Untag<HeapLayout>(ns)->externs, key);
+    auto entry = find(Untag<Layout>(ns)->externs, key);
 
-    return isFound(Untag<HeapLayout>(ns)->externs, entry) ? entry->second
-                                                          : Type::NIL;
+    return isFound(Untag<Layout>(ns)->externs, entry) ? entry->second
+                                                      : Type::NIL;
   }
 
   /** * find symbol in namespace interns **/
@@ -156,10 +157,10 @@ class Namespace : public Type {
     assert(String::IsType(str));
 
     auto key = static_cast<Tag>(hash_id(str));
-    auto entry = find(Untag<HeapLayout>(ns)->interns, key);
+    auto entry = find(Untag<Layout>(ns)->interns, key);
 
-    return isFound(Untag<HeapLayout>(ns)->interns, entry) ? entry->second
-                                                          : Type::NIL;
+    return isFound(Untag<Layout>(ns)->interns, entry) ? entry->second
+                                                      : Type::NIL;
   }
 
   static auto Symbols(Env*, Tag) -> Tag;

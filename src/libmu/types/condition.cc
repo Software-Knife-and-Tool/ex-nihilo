@@ -29,6 +29,38 @@ namespace core {
 
 using Tag = Type::Tag;
 
+/** * condition vector to heap **/
+auto Condition::Evict(Env* env) -> Tag {
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONDITION);
+
+  *hp = condition_;
+  hp->tag = Env::Evict(env, condition_.tag);
+  hp->frame = Env::Evict(env, condition_.frame);
+  hp->source = Env::Evict(env, condition_.source);
+  hp->reason = Env::Evict(env, condition_.reason);
+
+  tag_ = Entag(hp, TAG::EXTEND);
+
+  return tag_;
+}
+
+auto Condition::EvictTag(Env* env, Tag cond) -> Tag {
+  assert(IsType(cond));
+  assert(!Env::IsEvicted(env, cond));
+
+  Layout* hi = Untag<Layout>(cond);
+  auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::CONDITION);
+
+  *hp = *hi;
+
+  hp->tag = Env::Evict(env, hi->tag);
+  hp->frame = Env::Evict(env, hi->frame);
+  hp->source = Env::Evict(env, hi->source);
+  hp->reason = Env::Evict(env, hi->reason);
+
+  return Entag(hp, TAG::EXTEND);
+}
+
 /** * garbage collection **/
 auto Condition::GcMark(Env* env, Tag condition) -> void {
   assert(IsType(condition));

@@ -31,17 +31,18 @@ class Struct : public Type {
   typedef struct {
     Tag stype; /* keyword */
     Tag slots; /* slot values alist (slot-name . value)) */
-  } HeapLayout;
+  } Layout;
 
-  HeapLayout struct_;
+  Layout struct_;
 
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
-    return IsExtended(ptr) && Heap::SysClass(ptr) == SYS_CLASS::STRUCT;
+    return IsExtended(ptr) &&
+           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
-  static auto stype(Tag str) -> Tag { return Untag<HeapLayout>(str)->stype; }
-  static auto slots(Tag str) -> Tag { return Untag<HeapLayout>(str)->slots; }
+  static auto stype(Tag str) -> Tag { return Untag<Layout>(str)->stype; }
+  static auto slots(Tag str) -> Tag { return Untag<Layout>(str)->slots; }
 
   static auto GcMark(Env* env, Tag ptr) -> void {
     assert(IsType(ptr));
@@ -66,8 +67,7 @@ class Struct : public Type {
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
-    auto hp =
-        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
+    auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STRUCT);
 
     *hp = struct_;
     hp->slots = Env::Evict(env, hp->slots);
@@ -84,9 +84,8 @@ class Struct : public Type {
     assert(!Env::IsEvicted(env, strct));
 
     // printf("EvictTag: struct\n");
-    auto hp =
-        env->heap_alloc<HeapLayout>(sizeof(HeapLayout), SYS_CLASS::STRUCT);
-    auto sp = Untag<HeapLayout>(strct);
+    auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::STRUCT);
+    auto sp = Untag<Layout>(strct);
 
     *hp = *sp;
     hp->slots = Env::Evict(env, hp->slots);
