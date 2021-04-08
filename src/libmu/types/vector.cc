@@ -17,7 +17,7 @@
 
 #include "libmu/core.h"
 #include "libmu/env.h"
-#include "libmu/tagfmt.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -35,14 +35,14 @@ namespace core {
 /** * evict vector to heap **/
 auto Vector::Evict(Env* env) -> Tag {
   auto hp = env->heap_alloc<Layout>(
-      sizeof(Layout) + TagFmt<Layout>::HeapWords(vector_.length) * 8,
+      sizeof(Layout) + TagFormat<Layout>::HeapWords(vector_.length) * 8,
       SYS_CLASS::VECTOR);
 
   *hp = vector_;
   hp->base = reinterpret_cast<uint64_t>(
-      (char*)hp + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8);
+      (char*)hp + TagFormat<Layout>::HeapWords(sizeof(Layout)) * 8);
 
-  std::memcpy(hp + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8,
+  std::memcpy(hp + TagFormat<Layout>::HeapWords(sizeof(Layout)) * 8,
               srcTag_.data(), vector_.length * 8);
 
   tag_ = Entag(hp, TAG::EXTEND);
@@ -60,9 +60,9 @@ auto Vector::EvictTag(Env* env, Tag vector) -> Tag {
 
   *hp = *hl;
   hp->base = reinterpret_cast<uint64_t>(
-      (char*)hp + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8);
+      (char*)hp + TagFormat<Layout>::HeapWords(sizeof(Layout)) * 8);
 
-  std::memcpy(hp + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8,
+  std::memcpy(hp + TagFormat<Layout>::HeapWords(sizeof(Layout)) * 8,
               reinterpret_cast<char*>(base(vector)), length(vector) * 8);
 
   // env->heap_->DumpHeapImage<Layout>(Entag(hp, TAG::EXTEND));
@@ -86,8 +86,8 @@ auto Vector::ViewOf(Env* env, Tag vector) -> Tag {
 auto Vector::GcMark(Env* env, Tag vec) -> void {
   assert(IsType(vec));
 
-  if (!Type::IsImmediate(vec) && !env->heap_->IsGcMarked(vec)) {
-    env->heap_->GcMark(vec);
+  if (!Type::IsImmediate(vec) && !TagFormat<Layout>::IsGcMarked(vec)) {
+    TagFormat<Layout>::GcMark(vec);
 
     switch (Vector::TypeOf(vec)) {
       case SYS_CLASS::BYTE:
@@ -121,108 +121,68 @@ auto Vector::Read(Env* env, Tag stream) -> Tag {
 }
 
 /** * allocate a general vector from the machine heap **/
-Vector::Vector(Env* env, std::vector<Tag> src) {
-  size_t nalloc =
-      sizeof(Heap::HeapInfo) + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8;
-
+Vector::Vector(Env*, std::vector<Tag> src) {
   srcTag_ = src;
 
   vector_.type = SYS_CLASS::T;
   vector_.length = src.size();
-  vector_.base = reinterpret_cast<uint64_t>(srcTag_.data());
+  vector_.base = reinterpret_cast<uint64_t>(src.data());
 
-  tagFmt_ =
-      new std::vector<uint64_t>(1 + TagFmt<Layout>::HeapWords(sizeof(Layout)));
-  tagFmt_->at(0) =
-      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
-
-  std::memcpy(tagFmt_->data() + 1, &vector_, sizeof(Layout));
-  tag_ = Entag(tagFmt_->data() + 1, TAG::EXTEND);
-  // env->heap_->DumpHeapImage<Layout>(tag_);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::VECTOR, TAG::EXTEND, &vector_);
+  tag_ = tagFormat_->tag_;
 }
 
 /** * allocate a char vector from the heap **/
-Vector::Vector(Env* env, std::vector<char> src) {
+Vector::Vector(Env*, std::vector<char> src) {
   if (src.size() <= IMMEDIATE_STR_MAX) {
     tag_ = String::MakeImmediate(std::string(src.begin(), src.end()));
   } else {
-    size_t nalloc =
-        sizeof(Heap::HeapInfo) + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8;
-
-    tagFmt_ = new std::vector<uint64_t>(
-        1 + TagFmt<Layout>::HeapWords(sizeof(Layout)));
-    tagFmt_->at(0) =
-        static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::STRING));
-
     srcChar_ = src;
 
     vector_.type = SYS_CLASS::CHAR;
     vector_.length = src.size();
     vector_.base = reinterpret_cast<uint64_t>(srcChar_.data());
 
-    std::memcpy(tagFmt_->data() + 1, &vector_, sizeof(Layout));
-    tag_ = Entag(tagFmt_->data() + 1, TAG::EXTEND);
+    tagFormat_ =
+        new TagFormat<Layout>(SYS_CLASS::VECTOR, TAG::EXTEND, &vector_);
+    tag_ = tagFormat_->tag_;
   }
 }
 
 /** * allocate a byte vector from the heap **/
-Vector::Vector(Env* env, std::vector<uint8_t> src) {
-  size_t nalloc =
-      sizeof(Heap::HeapInfo) + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8;
-
-  tagFmt_ =
-      new std::vector<uint64_t>(1 + TagFmt<Layout>::HeapWords(sizeof(Layout)));
-  tagFmt_->at(0) =
-      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
-
+Vector::Vector(Env*, std::vector<uint8_t> src) {
   srcByte_ = src;
 
   vector_.type = SYS_CLASS::BYTE;
   vector_.length = src.size();
   vector_.base = reinterpret_cast<uint64_t>(srcByte_.data());
 
-  std::memcpy(tagFmt_->data() + 1, &vector_, sizeof(Layout));
-  tag_ = Entag(tagFmt_->data() + 1, TAG::EXTEND);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::VECTOR, TAG::EXTEND, &vector_);
+  tag_ = tagFormat_->tag_;
 }
 
 /** * allocate a fixnum vector from the heap **/
-Vector::Vector(Env* env, std::vector<int64_t> src) {
-  size_t nalloc =
-      sizeof(Heap::HeapInfo) + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8;
-
-  tagFmt_ =
-      new std::vector<uint64_t>(1 + TagFmt<Layout>::HeapWords(sizeof(Layout)));
-  tagFmt_->at(0) =
-      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
-
+Vector::Vector(Env*, std::vector<int64_t> src) {
   srcFixnum_ = src;
 
   vector_.type = SYS_CLASS::FIXNUM;
   vector_.length = src.size();
   vector_.base = reinterpret_cast<uint64_t>(srcFixnum_.data());
 
-  std::memcpy(tagFmt_->data() + 1, &vector_, sizeof(Layout));
-  tag_ = Entag(tagFmt_->data() + 1, TAG::EXTEND);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::VECTOR, TAG::EXTEND, &vector_);
+  tag_ = tagFormat_->tag_;
 }
 
 /** * allocate a float vector from the heap **/
-Vector::Vector(Env* env, std::vector<float> src) {
-  size_t nalloc =
-      sizeof(Heap::HeapInfo) + TagFmt<Layout>::HeapWords(sizeof(Layout)) * 8;
-
-  tagFmt_ =
-      new std::vector<uint64_t>(1 + TagFmt<Layout>::HeapWords(sizeof(Layout)));
-  tagFmt_->at(0) =
-      static_cast<uint64_t>(Heap::MakeHeapInfo(nalloc, SYS_CLASS::VECTOR));
-
+Vector::Vector(Env*, std::vector<float> src) {
   srcFloat_ = src;
 
   vector_.type = SYS_CLASS::FLOAT;
   vector_.length = src.size();
   vector_.base = reinterpret_cast<uint64_t>(srcFloat_.data());
 
-  std::memcpy(tagFmt_->data() + 1, &vector_, sizeof(Layout));
-  tag_ = Entag(tagFmt_->data() + 1, TAG::EXTEND);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::VECTOR, TAG::EXTEND, &vector_);
+  tag_ = tagFormat_->tag_;
 }
 
 } /* namespace core */

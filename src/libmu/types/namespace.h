@@ -90,11 +90,12 @@ class Namespace : public Type {
   } Layout;
 
   Layout namespace_;
+  TagFormat<Layout>* tagFormat_;
 
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::NAMESPACE;
+           TagFormat<Layout>::SysClass(ptr) == SYS_CLASS::NAMESPACE;
   }
 
   /** * accessor **/

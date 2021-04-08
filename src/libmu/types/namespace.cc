@@ -18,6 +18,7 @@
 
 #include "libmu/core.h"
 #include "libmu/env.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -34,8 +35,8 @@ namespace core {
 auto Namespace::GcMark(Env* env, Tag ns) -> void {
   assert(IsType(ns));
 
-  if (!env->heap_->IsGcMarked(ns)) {
-    env->heap_->GcMark(ns);
+  if (!TagFormat<Layout>::IsGcMarked(ns)) {
+    TagFormat<Layout>::GcMark(ns);
     env->GcMark(env, name(ns));
     env->GcMark(env, imports(ns));
     for (auto entry : externs(ns)) Symbol::GcMark(env, entry.second);
@@ -199,7 +200,9 @@ Namespace::Namespace(Tag name, Tag imports) : Type() {
   namespace_.externs = std::make_shared<symbol_map>();
   namespace_.interns = std::make_shared<symbol_map>();
 
-  tag_ = Entag(reinterpret_cast<void*>(&namespace_), TAG::EXTEND);
+  tagFormat_ =
+      new TagFormat<Layout>(SYS_CLASS::NAMESPACE, TAG::EXTEND, &namespace_);
+  tag_ = tagFormat_->tag_;
 }
 
 } /* namespace core */

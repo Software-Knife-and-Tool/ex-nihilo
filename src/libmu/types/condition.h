@@ -36,7 +36,7 @@ class Condition : public Type {
   } Layout;
 
   Layout condition_;
-  TagFmt<Layout>* tagFmt_;
+  TagFormat<Layout>* tagFormat_;
 
  public:
   enum class CONDITION_CLASS : uint8_t {
@@ -66,7 +66,7 @@ class Condition : public Type {
 
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::CONDITION;
+           TagFormat<Layout>::SysClass(ptr) == SYS_CLASS::CONDITION;
   }
 
   /** * accessors **/
@@ -113,9 +113,9 @@ class Condition : public Type {
     condition_.source = source;
     condition_.reason = reason;
 
-    tag_ = Entag(reinterpret_cast<void*>(&condition_), TAG::EXTEND);
-
-    tagFmt_ = new TagFmt<Layout>(0, tag_);
+    tagFormat_ =
+        new TagFormat<Layout>(SYS_CLASS::MACRO, TAG::EXTEND, &condition_);
+    tag_ = tagFormat_->tag_;
   }
 };
 

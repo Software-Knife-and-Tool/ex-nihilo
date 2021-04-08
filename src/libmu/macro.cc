@@ -20,6 +20,7 @@
 #include "libmu/compiler.h"
 #include "libmu/core.h"
 #include "libmu/env.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"
@@ -59,7 +60,7 @@ auto MacroExpand1(Env* env, Tag form) -> std::pair<bool, Tag> {
 auto Macro::GcMark(Env* env, Tag macro) -> void {
   assert(IsType(macro));
 
-  env->heap_->GcMark(macro);
+  TagFormat<Layout>::GcMark(macro);
   env->GcMark(env, func(macro));
 }
 

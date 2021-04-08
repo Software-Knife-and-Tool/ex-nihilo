@@ -87,8 +87,8 @@ auto CheckArity(Env* env, Tag fn, const std::vector<Tag>& args) -> void {
 auto Function::GcMark(Env* ev, Tag fn) -> void {
   assert(IsType(fn));
 
-  if (!ev->heap_->IsGcMarked(fn)) {
-    ev->heap_->GcMark(fn);
+  if (!TagFormat<Layout>::IsGcMarked(fn)) {
+    TagFormat<Layout>::GcMark(fn);
     ev->GcMark(ev, env(fn));
     ev->GcMark(ev, form(fn));
     ev->GcMark(ev, name(fn));

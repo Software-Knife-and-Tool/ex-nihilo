@@ -35,7 +35,6 @@ class Env;
 using platform::Platform;
 
 using SYS_CLASS = core::Type::SYS_CLASS;
-using Tag = core::Type::Tag;
 
 class Heap {
  public: /* tag */
@@ -121,8 +120,6 @@ class Heap {
   void* Alloc(size_t, SYS_CLASS);
 
   auto Gc() -> size_t;
-  auto IsGcMarked(Tag) -> bool;
-  auto GcMark(Tag) -> void;
   auto ClearRefBits() -> void;
   auto FindFree(size_t, SYS_CLASS) -> HeapInfo*;
 

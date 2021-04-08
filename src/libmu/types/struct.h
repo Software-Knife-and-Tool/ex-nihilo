@@ -17,6 +17,7 @@
 #include <cassert>
 
 #include "libmu/env.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/heap/heap.h"
@@ -38,7 +39,7 @@ class Struct : public Type {
  public: /* Tag */
   static constexpr auto IsType(Tag ptr) -> bool {
     return IsExtended(ptr) &&
-           TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::STRUCT;
+           TagFormat<Layout>::SysClass(ptr) == SYS_CLASS::STRUCT;
   }
 
   static auto stype(Tag str) -> Tag { return Untag<Layout>(str)->stype; }
@@ -47,8 +48,8 @@ class Struct : public Type {
   static auto GcMark(Env* env, Tag ptr) -> void {
     assert(IsType(ptr));
 
-    if (!env->heap_->IsGcMarked(ptr)) {
-      env->heap_->GcMark(ptr);
+    if (!TagFormat<Layout>::IsGcMarked(ptr)) {
+      TagFormat<Layout>::GcMark(ptr);
       env->GcMark(env, slots(ptr));
       env->GcMark(env, stype(ptr));
     }

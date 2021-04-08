@@ -23,6 +23,7 @@
 #include "libmu/compiler.h"
 #include "libmu/core.h"
 #include "libmu/env.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/types/cons.h"
