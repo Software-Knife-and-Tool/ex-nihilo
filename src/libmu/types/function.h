@@ -138,6 +138,7 @@ class Function : public Type {
 
  public: /* type model */
   auto Evict(Env* env) -> Tag {
+    printf("evict function\n");
     auto hp = env->heap_alloc<Layout>(sizeof(Layout), SYS_CLASS::FUNCTION);
 
     *hp = function_;

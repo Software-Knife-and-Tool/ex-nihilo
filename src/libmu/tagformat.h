@@ -98,45 +98,13 @@ class TagFormat {
   }
 
   /** * evict format **/
-  template <typename T>
-  void Evict(Tag ptr) {
-    if (!core::Type::IsImmediate(ptr)) {
-      printf("HeapImage: tag 0x%016llx", ptr);
-      auto heapInfo = GetHeapInfo(ptr);
-      auto size = heap::Heap::Size(*heapInfo);
-      // auto refbits = heap::Heap::RefBits(*heapInfo);
-      // auto reloc = heap::Heap::Reloc(*heapInfo);
-      auto sys_class = heap::Heap::SysClass(*heapInfo);
-
-      heap::Heap::Dump(*heapInfo);
-      printf("image: %u(%lu words), layout %lu(%lu words)\n", size,
-             HeapWords(size), sizeof(T), HeapWords(sizeof(T)));
-      printf("system class: %s\n", core::Type::SysClassOf(sys_class).c_str());
-      for (uint32_t i = 0; i < HeapWords(size); ++i)
-        if (static_cast<uint64_t>(heapInfo[i + 1]))
-          printf("% 2d: 0x%016llx\n", i, heapInfo[i + 1]);
-    }
+  void Evict(Tag) {
+    // assert(!IsEvicted(ptr));
   }
 
   /** * evict tag format **/
-  template <typename T>
-  void EvictTag(Tag ptr) {
-    if (!core::Type::IsImmediate(ptr)) {
-      printf("HeapImage: tag 0x%016llx", ptr);
-      auto heapInfo = GetHeapInfo(ptr);
-      auto size = heap::Heap::Size(*heapInfo);
-      // auto refbits = heap::Heap::RefBits(*heapInfo);
-      // auto reloc = heap::Heap::Reloc(*heapInfo);
-      auto sys_class = heap::Heap::SysClass(*heapInfo);
-
-      heap::Heap::Dump(*heapInfo);
-      printf("image: %u(%lu words), layout %lu(%lu words)\n", size,
-             HeapWords(size), sizeof(T), HeapWords(sizeof(T)));
-      printf("system class: %s\n", core::Type::SysClassOf(sys_class).c_str());
-      for (uint32_t i = 0; i < HeapWords(size); ++i)
-        if (static_cast<uint64_t>(heapInfo[i + 1]))
-          printf("% 2d: 0x%016llx\n", i, heapInfo[i + 1]);
-    }
+  void EvictTag(Tag) {
+    // assert(!IsEvicted(ptr));
   }
 
  public: /* tag */
