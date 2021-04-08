@@ -19,6 +19,7 @@
 
 #include "libmu/core.h"
 #include "libmu/env.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/types/function.h"
@@ -65,8 +66,8 @@ auto Condition::EvictTag(Env* env, Tag cond) -> Tag {
 auto Condition::GcMark(Env* env, Tag condition) -> void {
   assert(IsType(condition));
 
-  if (!env->heap_->IsGcMarked(condition)) {
-    env->heap_->GcMark(condition);
+  if (!TagFormat<Layout>::IsGcMarked(condition)) {
+    TagFormat<Layout>::GcMark(condition);
     env->GcMark(env, tag(condition));
     env->GcMark(env, source(condition));
     env->GcMark(env, frame(condition));

@@ -37,7 +37,7 @@ class Symbol : public Type {
   } Layout;
 
   Layout symbol_;
-  // TagFmt<Layout>* tagFmt_;
+  TagFormat<Layout>* tagFormat_;
 
  public:
   static constexpr auto IsType(Tag ptr) -> bool {

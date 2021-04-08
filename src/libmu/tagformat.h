@@ -8,11 +8,11 @@
 
 /********
  **
- **  tagfmt.h: libmu tags
+ **  tagformat.h: libmu tags
  **
  **/
-#if !defined(LIBMU_TAGFMT_H_)
-#define LIBMU_TAGFMT_H_
+#if !defined(LIBMU_TAGFORMAT_H_)
+#define LIBMU_TAGFORMAT_H_
 
 #include <algorithm>
 #include <cassert>
@@ -39,13 +39,13 @@ using Tag = core::Type::Tag;
 using HeapInfo = heap::Heap::HeapInfo;
 
 template <typename H>
-class TagFmt {
+class TagFormat {
  public:
   typedef std::vector<uint64_t> HeapFormat;
+  Tag tag_;
 
  private:
-  HeapFormat* tagFmt_;
-  Tag tag_;
+  HeapFormat* tagFormat_;
 
  public:
   static constexpr size_t HeapWords(size_t nbytes) { return (nbytes + 7) / 8; }
@@ -60,6 +60,20 @@ class TagFmt {
     auto hinfo = *GetHeapInfo(ptr);
 
     return heap::Heap::SysClass(static_cast<HeapInfo>(hinfo));
+  }
+
+  /** * heap object marked? **/
+  static auto IsGcMarked(Tag ptr) -> bool {
+    auto hinfo = GetHeapInfo(ptr);
+
+    return heap::Heap::RefBits(*hinfo) == 0 ? false : true;
+  }
+
+  /** * mark heap object **/
+  static auto GcMark(Tag ptr) -> void {
+    auto hinfo = GetHeapInfo(ptr);
+
+    *hinfo = heap::Heap::RefBits(*hinfo, 1);
   }
 
   /** * dump tag format **/
@@ -126,25 +140,23 @@ class TagFmt {
   }
 
  public: /* tag */
-  explicit TagFmt(size_t extra, Tag ptr) {
-    auto sc = SysClass(ptr);
+  explicit TagFormat(Type::SYS_CLASS sc, Type::TAG tag, H* layout) {
     size_t nalloc = sizeof(heap::Heap::HeapInfo) + HeapWords(sizeof(H)) * 8;
 
-    tagFmt_ =
-        new std::vector<uint64_t>(1 + HeapWords(sizeof(H)) + HeapWords(extra));
+    tagFormat_ = new std::vector<uint64_t>(1 + HeapWords(sizeof(H)));
 
-    tagFmt_->at(0) =
+    tagFormat_->at(0) =
         static_cast<uint64_t>(heap::Heap::MakeHeapInfo(nalloc, sc));
 
-    auto hi = reinterpret_cast<H*>(tagFmt_->data() + 1);
+    auto hi = reinterpret_cast<H*>(tagFormat_->data() + 1);
 
-    *hi = *reinterpret_cast<H*>(Type::Untag<uint64_t>(ptr));
-    tag_ = Type::Entag(tagFmt_->data() + 1, Type::TAG::EXTEND);
+    *hi = *layout;
+    tag_ = Type::Entag(tagFormat_->data() + 1, tag);
   }
 
-} /* class TagFmt */;
+} /* class TagFormat */;
 
 } /* namespace core */
 } /* namespace libmu */
 
-#endif /* LIBMU_TAGFMT_H_ */
+#endif /* LIBMU_TAGFORMAT_H_ */

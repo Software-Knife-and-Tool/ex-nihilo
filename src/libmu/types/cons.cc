@@ -16,6 +16,7 @@
 #include <cassert>
 
 #include "libmu/core.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/types/condition.h"
@@ -30,8 +31,8 @@ namespace core {
 auto Cons::GcMark(Env* env, Tag ptr) -> void {
   assert(IsType(ptr));
 
-  if (!env->heap_->IsGcMarked(ptr)) {
-    env->heap_->GcMark(ptr);
+  if (!TagFormat<Layout>::IsGcMarked(ptr)) {
+    TagFormat<Layout>::GcMark(ptr);
     env->GcMark(env, car(ptr));
     env->GcMark(env, cdr(ptr));
   }
@@ -293,7 +294,8 @@ Cons::Cons(Tag car, Tag cdr) : Type() {
   cons_.car = car;
   cons_.cdr = cdr;
 
-  tag_ = Entag(reinterpret_cast<void*>(&cons_), TAG::CONS);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::CONS, TAG::CONS, &cons_);
+  tag_ = tagFormat_->tag_;
 }
 
 } /* namespace core */

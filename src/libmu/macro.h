@@ -37,10 +37,12 @@ class Macro : public Type {
   } Layout;
 
   Layout macro_;
+  TagFormat<Layout>* tagFormat_;
 
  public: /* Tag */
   static constexpr bool IsType(Tag ptr) {
-    return IsExtended(ptr) && TagFmt<Layout>::SysClass(ptr) == SYS_CLASS::MACRO;
+    return IsExtended(ptr) &&
+           TagFormat<Layout>::SysClass(ptr) == SYS_CLASS::MACRO;
   }
 
   static Tag func(Tag ptr) {
@@ -88,7 +90,8 @@ class Macro : public Type {
 
     macro_.func = func;
 
-    tag_ = Entag(reinterpret_cast<void*>(&macro_), TAG::EXTEND);
+    tagFormat_ = new TagFormat<Layout>(SYS_CLASS::MACRO, TAG::EXTEND, &macro_);
+    tag_ = tagFormat_->tag_;
   }
 }; /* class Macro */
 

@@ -24,6 +24,7 @@
 #include "libmu/core.h"
 #include "libmu/env.h"
 #include "libmu/readtable.h"
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 #include "libmu/types/char.h"
@@ -42,12 +43,12 @@ auto Stream::IsFunction(Tag ptr) -> bool {
 }
 
 /** * garbage collection **/
-auto Stream::GcMark(Env* env, Tag stream) -> void {
+auto Stream::GcMark(Env*, Tag stream) -> void {
   assert(IsType(stream));
 
-  if (IsFunction(stream)) env->heap_->GcMark(func(stream));
+  if (IsFunction(stream)) TagFormat<Layout>::GcMark(func(stream));
 
-  env->heap_->GcMark(stream);
+  TagFormat<Layout>::GcMark(stream);
 }
 
 /** * view of struct object **/
@@ -193,7 +194,8 @@ Stream::Stream(Tag fn) : Type() {
   stream_.streamId = Platform::STREAM_ERROR;
   stream_.fn = fn;
 
-  tag_ = Entag(reinterpret_cast<void*>(&stream_), TAG::EXTEND);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::STREAM, TAG::EXTEND, &stream_);
+  tag_ = tagFormat_->tag_;
 }
 
 } /* namespace core */

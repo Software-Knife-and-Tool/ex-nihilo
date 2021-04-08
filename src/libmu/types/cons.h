@@ -18,6 +18,7 @@
 #include <functional>
 #include <memory>
 
+#include "libmu/tagformat.h"
 #include "libmu/type.h"
 
 namespace libmu {
@@ -34,6 +35,7 @@ class Cons : public Type {
   } Layout;
 
   Layout cons_;
+  TagFormat<Layout>* tagFormat_;
 
  public: /* Tag */
   static constexpr auto car(Tag cp) -> Tag {

@@ -82,8 +82,8 @@ auto Symbol::ViewOf(Env* env, Tag symbol) -> Tag {
 auto Symbol::GcMark(Env* env, Tag symbol) -> void {
   assert(IsType(symbol));
 
-  if (!IsKeyword(symbol) && !env->heap_->IsGcMarked(symbol)) {
-    env->heap_->GcMark(symbol);
+  if (!IsKeyword(symbol) && !TagFormat<Layout>::IsGcMarked(symbol)) {
+    TagFormat<Layout>::GcMark(symbol);
     env->GcMark(env, name(symbol));
     env->GcMark(env, value(symbol));
   }
@@ -226,7 +226,8 @@ Symbol::Symbol(Tag ns, Tag name) {
   symbol_.name = name;
   symbol_.value = static_cast<Tag>(core::SYNTAX_CHAR::UNBOUND);
 
-  tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::SYMBOL, TAG::SYMBOL, &symbol_);
+  tag_ = tagFormat_->tag_;
 }
 
 /** * allocate an unbound symbol from the heap **/
@@ -238,7 +239,8 @@ Symbol::Symbol(Tag ns, Tag name, Tag value) {
   symbol_.name = name;
   symbol_.value = value;
 
-  tag_ = Type::Entag(reinterpret_cast<void*>(&symbol_), TAG::SYMBOL);
+  tagFormat_ = new TagFormat<Layout>(SYS_CLASS::SYMBOL, TAG::SYMBOL, &symbol_);
+  tag_ = tagFormat_->tag_;
 }
 
 } /* namespace core */
