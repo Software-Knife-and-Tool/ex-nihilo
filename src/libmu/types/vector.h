@@ -31,15 +31,16 @@ namespace core {
 
 using heap::Heap;
 
-/** vector class type **/
+/** * Vector type class **/
 class Vector : public Type {
- private:
+ public:
   typedef struct {
     SYS_CLASS type; /* vector type */
     size_t length;  /* length of vector in units */
     uint64_t base;  /* base of data */
   } Layout;
 
+ public:
   Layout vector_;
   TagFormat<Layout>* tagFormat_;
 
@@ -127,12 +128,6 @@ class Vector : public Type {
     tag_ = tag;
   }
 
-  explicit Vector(Env*, std::vector<char>);
-  explicit Vector(Env*, std::vector<float>);
-  explicit Vector(Env*, std::vector<uint8_t>);
-  explicit Vector(Env*, std::vector<int64_t>);
-  explicit Vector(Env*, std::vector<Tag>);
-
   /** * vector iterator **/
   template <typename V>
   struct vector_iter {
@@ -173,6 +168,25 @@ class Vector : public Type {
   };
 
 }; /* class Vector */
+
+/** * VectorT type class **/
+template <SYS_CLASS sc, typename V>
+class VectorT : public Vector {
+private:
+  std::vector<V> src_;
+
+ public: /* type model */
+  explicit VectorT(Env*, std::vector<Tag> src) {
+    src_ = src;
+
+    vector_.type = sc;
+    vector_.length = src.size();
+    vector_.base = reinterpret_cast<uint64_t>(src.data());
+
+    tagFormat_ = new TagFormat<Layout>(SYS_CLASS::VECTOR, TAG::EXTEND, &vector_);
+    tag_ = tagFormat_->tag_;
+  }
+}; /* class VectorT */
 
 } /* namespace core */
 } /* namespace libmu */
