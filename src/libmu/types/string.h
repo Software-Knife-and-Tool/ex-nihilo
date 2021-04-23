@@ -75,9 +75,13 @@ class String : public Vector {
   static auto Read(Env*, Tag) -> Tag;
   static auto ViewOf(Env* env, Tag) -> Tag;
 
+#if 0
+    if (src.size() <= IMMEDIATE_STR_MAX) {
+    tag_ = String::MakeImmediate(std::string(src.begin(), src.end()));
+#endif
  public: /* object */
   explicit String(Env* env, std::string src)
-      : Vector(env, std::vector<char>(src.begin(), src.end())) {}
+    : VectorT<SYS_CLASS::STRING, char>(env, std::vector<char>(src.begin(), src.end())) {}
 };
 
 } /* namespace core */

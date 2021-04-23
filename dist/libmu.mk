@@ -27,7 +27,7 @@ OBJS =  \
     string.o           \
     symbol.o           \
     type.o             \
-    vector-types.o     \
+    vectorT.o	       \
     vector.o           \
     mu-char.o          \
     mu-cons.o          \
