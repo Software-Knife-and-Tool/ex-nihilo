@@ -1,6 +1,6 @@
 # Gyre
 
-### Do not use this, it's broken to hell and gone and is here for reference only, and will soon vanish
+### Do not use this; it's broken to hell and gone. It's here for reference only and will soon vanish
 
 ### The Gyre Programming Environment
 is a single address space system that targets x86_64 and Aarch64 POSIX[1] kernels. The *libmu* kernel is written in C++14, compiled with Clang (or gcc), and implements a kernel language that supports Lisp-style data types in a garbage collected environment.
